@@ -1,0 +1,323 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- build configuration -->
+<project name="nenya" default="compile" basedir=".">
+
+  <!-- import overriding properties -->
+  <property file="build.properties"/>
+
+  <!-- configuration parameters -->
+  <property name="app.name"       value="nenya"/>
+  <property name="deploy.dir"     value="dist"/>
+  <property name="savedoc.dir"    value="docs"/>
+  <property name="lib.version"    value="1.0"/>
+
+  <!-- derived properties -->  
+  <property name="javadoc.home"   value="${deploy.dir}/docs"/>
+  <property name="classes.dir"    value="${deploy.dir}/classes"/>
+
+  <!-- declare our classpath business -->
+  <path id="classpath">
+    <pathelement location="${classes.dir}"/>
+    <fileset dir="lib" includes="**/*.jar"/>
+  </path>
+
+  <!-- generates additional methods for distributed object classes -->
+  <target name="gendobj" depends="prepare"> 
+    <taskdef name="dobj" classpathref="classpath"
+             classname="com.threerings.presents.tools.GenDObjectTask"/>
+    <!-- make sure the dobject class files are all compiled -->
+    <javac srcdir="src/java" destdir="${classes.dir}"
+           debug="on" optimize="${build.optimize}" deprecation="on"
+           source="1.5" target="1.5">
+      <classpath refid="classpath"/>
+      <include name="**/*Object.java"/>
+    </javac>
+    <!-- now generate the associated files -->
+    <dobj classpathref="classpath">
+      <fileset dir="src/java" includes="**/*Object.java"/>
+    </dobj>
+  </target>
+
+  <!-- generates marshaller and dispatcher classes for all invocation -->
+  <!-- service declarations -->
+  <target name="genservice"> 
+    <taskdef name="service" classpathref="classpath"
+             classname="com.threerings.presents.tools.GenServiceTask"/>
+    <!-- make sure the service class files are all compiled -->
+    <javac srcdir="src/java" destdir="${classes.dir}"
+           debug="on" optimize="${build.optimize}" deprecation="on"
+           source="1.5" target="1.5">
+      <classpath refid="classpath"/>
+      <include name="**/*Service.java"/>
+      <exclude name="**/InvocationService.java"/>
+    </javac>
+    <!-- now generate the associated files -->
+    <service header="lib/SOURCE_HEADER" classpathref="classpath">
+      <fileset dir="src/java" includes="**/*Service.java"
+        excludes="**/InvocationService.java"/>
+      <providerless service="AdminService"/>
+      <providerless service="ChatService"/>
+      <providerless service="SpeakService"/>
+      <providerless service="LocationService"/>
+      <providerless service="BodyService"/>
+      <providerless service="SimulatorService"/>
+      <providerless service="ParlorService"/>
+      <providerless service="TimeBaseService"/>
+      <providerless service="SpotService"/>
+      <providerless service="ZoneService"/>
+      <providerless service="SceneService"/>
+    </service>
+  </target>
+
+  <!-- generates sender and decoder classes for all invocation -->
+  <!-- receiver declarations -->
+  <target name="genreceiver"> 
+    <taskdef name="receiver" classpathref="classpath"
+             classname="com.threerings.presents.tools.GenReceiverTask"/>
+    <!-- make sure the receiver class files are all compiled -->
+    <javac srcdir="src/java" destdir="${classes.dir}"
+           debug="on" optimize="${build.optimize}" deprecation="on"
+           source="1.5" target="1.5">
+      <classpath refid="classpath"/>
+      <include name="**/*Receiver.java"/>
+      <exclude name="**/InvocationReceiver.java"/>
+    </javac>
+    <!-- now generate the associated files -->
+    <receiver header="lib/SOURCE_HEADER" classpathref="classpath">
+      <fileset dir="src/java" includes="**/*Receiver.java"
+        excludes="**/InvocationReceiver.java"/>
+    </receiver>
+  </target>
+
+  <!-- checks the availability of certain libraries -->
+  <target name="check-available">
+    <available property="lwjgl.present"
+     classname="org.lwjgl.LWJGLException" classpathref="classpath"/>
+    <echo message="Have LWJGL: ${lwjgl.present}"/>
+    <available property="jme.present"
+     classname="com.jme.scene.Node" classpathref="classpath"/>
+    <echo message="Have JME: ${jme.present}"/>
+    <available property="jme-bui.present"
+     classname="com.jmex.bui.BWindow" classpathref="classpath"/>
+    <echo message="Have JME-BUI: ${jme-bui.present}"/>
+    <available property="jme-sound.present"
+     classname="com.jmex.sound.openAL.SoundSystem" classpathref="classpath"/>
+    <echo message="Have OPenAL: ${jme-sound.present}"/>
+    <condition property="build.jme">
+      <and>
+        <isset property="jme.present"/>
+        <isset property="jme-bui.present"/>
+      </and>
+    </condition>
+    <condition property="build.openal">
+      <and>
+        <isset property="lwjgl.present"/>
+        <isset property="jme-sound.present"/>
+      </and>
+    </condition>
+  </target>
+
+  <!-- prepares the application directories -->
+  <target name="prepare">
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <mkdir dir="${classes.dir}/rsrc"/>
+    <mkdir dir="${javadoc.home}"/>
+    <copy todir="${classes.dir}">
+      <fileset dir="src/java" includes="**/*.properties"/>
+      <fileset dir="src/java" includes="**/*.tmpl"/>
+    </copy>
+    <copy todir="${classes.dir}/rsrc">
+      <fileset dir="rsrc" includes="**/*" excludes="**/bundles/**"/>
+    </copy>
+  </target>
+
+  <!-- cleans out the installed application -->
+  <target name="clean">
+    <delete dir="${deploy.dir}"/>
+    <ant dir="tests" target="clean"/>
+  </target>
+
+  <!-- build the java class files -->
+  <target name="compile" depends="check-available,prepare">
+    <javac srcdir="src/java" destdir="${classes.dir}"
+           debug="on" optimize="{$build.optimize}" deprecation="on"
+           source="1.5" target="1.5">
+      <classpath refid="classpath"/>
+      <exclude name="com/threerings/jme/**" unless="build.jme"/>
+      <exclude name="com/threerings/openal/**" unless="build.openal"/>
+      <exclude name="**/OggPlayer.java"/>
+      <exclude name="**/ModPlayer.java"/>
+      <exclude name="**/MidiPlayer.java"/>
+      <exclude name="**/Mp3Player.java"/>
+      <!--<compilerarg value="-Xlint:unchecked"/>-->
+    </javac>
+  </target>
+
+  <!-- build the native libraries -->
+  <target name="ncompile" depends="prepare">
+    <echo message="Doing native compilation on ${os.name}..."/>
+    <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" 
+     executable="make"><arg line="install"/></exec>
+    <exec dir="src/java/com/threerings/util/unsafe/${os.name}" 
+     executable="make"><arg line="install"/></exec>
+  </target>
+
+  <!-- build the javadoc documentation -->
+  <target name="javadoc" depends="prepare">
+    <javadoc sourcepath="src/java" packagenames="com.threerings.*"
+             destdir="${javadoc.home}" stylesheetfile="docs/stylesheet.css"
+             additionalparam="-breakiterator"
+             link="http://www.threerings.net/code/nenya/nenya/docs/api">
+      <classpath refid="classpath"/>
+      <link href="http://java.sun.com/j2se/1.5/docs/api/"/>
+      <!-- ant documentation is not available online, sorry kids -->
+      <link href="file:///usr/share/doc/ant-doc/javadocs"/>
+      <link href="http://samskivert.com/code/samskivert/samskivert/docs/api"/>
+      <link href="http://www.jmonkeyengine.com/doc"/>
+    </javadoc>
+    <copy todir="${javadoc.home}">
+      <fileset dir="src/java" includes="**/*.png"/>
+    </copy>
+  </target>
+
+  <!-- builds the javadocs and stuffs them in a directory where they -->
+  <!-- won't be blown away when we do "clean" next time -->
+  <target name="savedoc" depends="javadoc">
+    <delete dir="${savedoc.dir}/api"/>
+    <copy todir="${savedoc.dir}/api">
+      <fileset dir="${javadoc.home}" includes="**/*"/>
+    </copy>
+  </target>
+
+  <!-- builds the various tests -->
+  <target name="tests">
+    <ant dir="tests" target="compile"/>
+  </target>
+
+  <!-- a target for rebuilding everything -->
+  <target name="all"
+          depends="clean,prepare,compile,ncompile,javadoc,tests,dist"/>
+
+  <!-- builds our distribution files (war and jar) -->
+  <target name="dist" depends="prepare,compile,ncompile,tests">
+    <!-- build our various jar files -->
+    <jar destfile="${deploy.dir}/${app.name}-rsrc.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
+    </jar>
+    <jar destfile="${deploy.dir}/${app.name}-media.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
+      <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
+      <fileset dir="${classes.dir}" includes="com/threerings/util/**"/>
+    </jar>
+    <jar destfile="${deploy.dir}/${app.name}-miso.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/miso/**"/>
+      <fileset dir="${classes.dir}" includes="rsrc/config/miso/**"/>
+    </jar>
+    <jar destfile="${deploy.dir}/${app.name}-cast.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
+    </jar>
+    <jar destfile="${deploy.dir}/${app.name}-jme.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/jme/**"/>
+      <fileset dir="${classes.dir}" includes="rsrc/media/jme/**"/>
+      <fileset dir="${classes.dir}" includes="rsrc/i18n/jme/**"/>
+    </jar>
+    <jar destfile="${deploy.dir}/${app.name}-openal.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>
+    </jar>
+  </target>
+
+  <!-- various bits used by the retroweaver tasks -->
+  <taskdef name="weave" classpathref="classpath"
+           classname="com.rc.retroweaver.ant.RetroWeaverTask"/>
+  <property name="inpre" value="${deploy.dir}/${app.name}"/>
+  <property name="outpre" value="${deploy.dir}/retro/${app.name}"/>
+
+  <!-- a helper task for 'retro' -->
+  <target name="vweave">
+    <path id="retrocp">
+      <pathelement location="/usr/local/jdk1.4/jre/lib/rt.jar"/>
+      <fileset dir="lib" includes="**/*.jar"/>
+      <fileset dir="${deploy.dir}/retro" includes="*.jar"/>
+    </path>
+    <weave inputjar="${inpre}-${which}.jar" outputjar="${outpre}-${which}.jar"
+           failonerror="true">
+      <classpath refid="retrocp"/>
+    </weave>
+  </target>
+
+  <!-- converts our 1.5 code to a 1.4 compatible format -->
+  <target name="retro" depends="dist">
+    <mkdir dir="${deploy.dir}/retro"/>
+
+    <!-- we weave everything a first time without verification so that -->
+    <!-- interdependencies will resolve the second time -->
+    <weave inputjar="${inpre}-cast.jar" outputjar="${outpre}-cast.jar"/>
+    <weave inputjar="${inpre}-micasa.jar" outputjar="${outpre}-micasa.jar"/>
+    <weave inputjar="${inpre}-miso.jar" outputjar="${outpre}-miso.jar"/>
+    <weave inputjar="${inpre}-media.jar" outputjar="${outpre}-media.jar"/>
+    <weave inputjar="${inpre}-rsrc.jar" outputjar="${outpre}-rsrc.jar"/>
+
+    <!-- now weave again with the verifier to check for unweavable 1.5isms -->
+    <antcall target="vweave"><param name="which" value="cast"/></antcall>
+    <antcall target="vweave"><param name="which" value="micasa"/></antcall>
+    <antcall target="vweave"><param name="which" value="miso"/></antcall>
+    <antcall target="vweave"><param name="which" value="media"/></antcall>
+    <antcall target="vweave"><param name="which" value="rsrc"/></antcall>
+  </target>
+
+  <!-- generate a class hierarchy diagram -->
+  <target name="hierviz" depends="prepare,compile">
+    <taskdef name="viztool" classname="com.samskivert.viztool.DriverTask"/>
+    <viztool visualizer="com.samskivert.viztool.hierarchy.HierarchyVisualizer"
+      pkgroot="com.threerings.miso" classes="com.threerings.miso.*"
+      output="hierviz.ps">
+      <classpath refid="classpath"/>
+    </viztool>
+  </target>
+
+  <!-- generate a class hierarchy diagram -->
+  <target name="sumgen" depends="prepare,compile">
+    <taskdef name="viztool" classname="com.samskivert.viztool.DriverTask"/>
+    <viztool visualizer="com.samskivert.viztool.summary.SummaryVisualizer"
+      pkgroot="com.threerings.miso"
+      classes="com.threerings.miso.*Scene.*"
+      output="summary.ps">
+      <classpath refid="base.classpath"/>
+    </viztool>
+  </target>
+
+  <!-- creates a tarball and zipfile for source distribution -->
+  <target name="distrib">
+     <echo message="You may want to stop and run 'ant savedoc' first."/>
+     <echo message="Building ${lib.version} tar.gz distribution..."/>
+     <tar destfile="nenya-${lib.version}.tar.gz" compression="gzip">
+       <tarfileset dir=".." mode="0775" dirmode="0775">
+         <include name="nenya/bin/**"/>
+         <include name="nenya/tests/bin/**"/>
+         <exclude name="**/CVS"/>
+       </tarfileset>
+       <tarfileset dir=".." mode="0664" dirmode="0775">
+         <include name="nenya/**"/>
+         <exclude name="**/CVS"/>
+         <exclude name="nenya/bin/**"/>
+         <exclude name="nenya/tests/bin/**"/>
+         <exclude name="nenya/tests/dist/**"/>
+         <exclude name="nenya/dist/**"/>
+         <exclude name="nenya/code/**"/>
+         <exclude name="nenya/nenya-*.*"/>
+       </tarfileset>
+     </tar>
+     <echo message="Building ${lib.version} zip distribution..."/>
+     <zip destfile="nenya-${lib.version}.zip">
+       <fileset dir="..">
+         <include name="nenya/**"/>
+         <exclude name="**/CVS"/>
+         <exclude name="nenya/dist/**"/>
+         <exclude name="nenya/code/**"/>
+         <exclude name="nenya/nenya-*.*"/>
+       </fileset>
+     </zip>
+  </target>
+
+</project>

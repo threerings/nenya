@@ -1,0 +1,196 @@
+<!-- build configuration -->
+<project name="narya tests" default="compile" basedir=".">
+
+  <!-- things you may want to change -->
+  <property name="junit.fork"     value="true"/>
+
+  <!-- things you probably don't want to change -->
+  <property name="test.dir"   value="."/>
+  <property name="src.dir"    value="src/java"/>
+  <property name="deploy.dir" value="dist"/>
+
+  <property name="cbundle.dir" value="rsrc/bundles/components"/>
+  <property name="tbundle.dir" value="rsrc/bundles/tiles"/>
+
+  <!-- declare our classpath -->
+  <property name="classes.dir" value="${deploy.dir}/classes"/>
+  <property name="narya.classes.dir" value="../${deploy.dir}/classes"/>
+  <path id="classpath">
+    <pathelement location="${classes.dir}"/>
+    <pathelement location="${narya.classes.dir}"/>
+    <fileset dir="../lib" includes="**/*.jar"/>
+  </path>
+
+  <!-- checks the availability of certain libraries -->
+  <target name="check-available">
+    <available property="lwjgl.present"
+     classname="org.lwjgl.LWJGLException" classpathref="classpath"/>
+    <available property="jme.present"
+     classname="com.jme.scene.Node" classpathref="classpath"/>
+    <available property="jme-bui.present"
+     classname="com.jme.bui.BWindow" classpathref="classpath"/>
+    <condition property="build.jme">
+      <and>
+        <isset property="jme.present"/>
+        <isset property="jme-bui.present"/>
+      </and>
+    </condition>
+    <condition property="build.openal">
+      <and>
+        <isset property="lwjgl.present"/>
+      </and>
+    </condition>
+  </target>
+
+  <!-- generates additional methods for distributed object classes -->
+  <target name="gendobj" depends="prepare"> 
+    <taskdef name="dobj"
+             classname="com.threerings.presents.tools.GenDObjectTask"
+             classpathref="classpath"/>
+    <!-- make sure the dobject class files are all compiled -->
+    <javac srcdir="src/java" destdir="${classes.dir}"
+           debug="on" optimize="${build.optimize}" deprecation="on"
+           source="1.4" target="1.4">
+      <classpath refid="classpath"/>
+      <include name="**/*Object.java"/>
+    </javac>
+    <!-- now generate the associated files -->
+    <dobj classpathref="classpath">
+      <fileset dir="src/java" includes="**/*Object.java"/>
+    </dobj>
+  </target>
+
+  <!-- generates marshaller and dispatcher classes for all invocation
+       service declarations -->
+  <target name="genservice">
+    <apply executable="../bin/genservice" failonerror="true" parallel="true">
+      <arg value="--classpath"/>
+      <arg value="${classes.dir}:${narya.classes.dir}"/>
+      <arg value="--sourcedir"/>
+      <arg value="src/java"/>
+      <fileset dir="src/java" includes="**/*Service.java"
+        excludes="**/InvocationService.java"/>
+    </apply>
+  </target>
+
+  <!-- generates sender and decoder classes for all invocation
+       receiver declarations -->
+  <target name="genreceiver">
+    <apply executable="../bin/genreceiver" failonerror="true" parallel="true">
+      <arg value="--classpath"/>
+      <arg value="${classes.dir}:${narya.classes.dir}"/>
+      <arg value="--sourcedir"/>
+      <arg value="src/java"/>
+      <fileset dir="src/java" includes="**/*Receiver.java"
+        excludes="**/InvocationReceiver.java"/>
+    </apply>
+  </target>
+
+  <!-- prepares the application directories -->
+  <target name="prepare">
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <copy todir="${classes.dir}">
+      <fileset dir="${src.dir}" includes="**/*.properties"/>
+    </copy>
+    <copy todir="${classes.dir}/rsrc">
+      <fileset dir="rsrc" includes="**/*"/>
+    </copy>
+  </target>
+
+  <!-- cleans out the installed application -->
+  <target name="clean">
+    <delete dir="${deploy.dir}"/>
+  </target>
+
+  <!-- build the java class files -->
+  <target name="compile" depends="check-available,prepare">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}"
+      debug="on" optimize="off" deprecation="off">
+      <classpath refid="classpath"/>
+      <exclude name="com/threerings/jme/**" unless="build.jme"/>
+      <exclude name="com/threerings/openal/**" unless="build.openal"/>
+    </javac>
+  </target>
+
+  <!-- test the component metadata bundling process -->
+  <target name="cbundles" description="Build component bundles.">
+    <!-- define our tasks -->
+    <taskdef name="metabundle"
+      classname="com.threerings.cast.bundle.tools.MetadataBundlerTask"
+      classpathref="classpath"/>
+    <taskdef name="cbundle"
+      classname="com.threerings.cast.bundle.tools.ComponentBundlerTask"
+      classpathref="classpath"/>
+
+    <!-- build the metadata bundles -->
+    <metabundle actiondef="${cbundle.dir}/actions.xml"
+      classdef="${cbundle.dir}/classes.xml"
+      target="${cbundle.dir}/metadata.jar"/>
+
+    <!-- blow away the components map file so that we get a consistent -->
+    <!-- mapping every time-->
+    <delete file="${cbundle.dir}/components.map"/>         
+
+    <!-- build the component bundles -->
+    <cbundle actiondef="${cbundle.dir}/actions.xml"
+      target="${cbundle.dir}/pirate/components.jar"
+      mapfile="${cbundle.dir}/components.map"
+      root="${cbundle.dir}/pirate">
+      <fileset dir="${cbundle.dir}/pirate" includes="**/*.png"
+        excludes="components/**"/>
+    </cbundle>
+    <cbundle actiondef="${cbundle.dir}/actions.xml"
+      target="${cbundle.dir}/vessel/components.jar"
+      mapfile="${cbundle.dir}/components.map"
+      root="${cbundle.dir}/vessel">
+      <fileset dir="${cbundle.dir}/vessel" includes="**/*.png"
+        excludes="components/**"/>
+    </cbundle>
+  </target>
+
+  <!-- test the tileset bundling process -->
+  <target name="tsbundles" description="Build tileset bundles.">
+    <!-- blow away the tilesetid map file so that we get a consistent -->
+    <!-- mapping every time-->
+    <delete file="${tbundle.dir}/tilesets.map"/>         
+
+    <!-- build the tileset bundles -->
+    <taskdef name="tilebundle"
+      classname="com.threerings.media.tile.bundle.tools.TileSetBundlerTask"
+      classpathref="classpath"/>
+    <tilebundle config="${tbundle.dir}/bundler-config.xml"
+      mapfile="${tbundle.dir}/tilesets.map">
+      <fileset dir="${tbundle.dir}/ground" includes="**/*.xml"/>
+    </tilebundle>
+    <tilebundle config="${tbundle.dir}/bundler-config.xml"
+      mapfile="${tbundle.dir}/tilesets.map">
+      <fileset dir="${tbundle.dir}/objects" includes="**/*.xml"/>
+    </tilebundle>
+
+    <!-- build the fringe configurations -->
+    <taskdef name="conffringe"
+      classname="com.threerings.miso.tile.tools.CompileFringeConfigurationTask"
+      classpathref="classpath"/>
+    <conffringe
+     tilesetmap="${tbundle.dir}/tilesets.map"
+     fringedef="rsrc/config/miso/tile/fringeconf.xml"
+     target="rsrc/config/miso/tile/fringeconf.dat"/>
+  </target>
+
+  <!-- run the tests -->
+  <target name="test" depends="compile,cbundles,tsbundles"
+    description="Run the tests.">
+    <junit printsummary="no" haltonfailure="yes" fork="${junit.fork}">
+      <classpath refid="classpath"/>
+      <sysproperty key="test_dir" value="${test.dir}"/>
+      <sysproperty key="resource_dir" value="${test.dir}/rsrc"/>
+      <formatter type="brief" usefile="false"/>
+      <batchtest>
+        <fileset dir="${src.dir}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+</project>

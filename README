@@ -1,0 +1,69 @@
+The Nenya library
+-----------------
+
+The Nenya library provides various facilities for making networked multiplayer
+games. It's various packages include:
+
+  * geom, util - basic tools for doing data structure manipulation and some
+    geometry math
+  * resource - tools for bundling, deploying and managing media (images,
+    sounds, etc.) with a game
+  * media - a framework for doing "active" rendering in Java
+  * media.image - tools for loading, caching, manipulating and displaying images
+  * media.sound - tools for loading, caching, and playing audio
+  * media.animation, media.sprite - works in concert with the active
+    rendering system and provides tools for defining and manipulating
+    sprites (graphical entities that follow paths) and animations
+    (graphical entities that affect the display in other ways)
+  * miso - a framework for defining and displaying isometrically rendered scenes
+  * cast - a framework for defining and using recolorable, composited
+    characters with different poses and actions
+
+Documentation is somewhat sparse at the moment, but inspection of the code in
+the tests/ directory shows examples of use of many features of the library.
+
+Building
+--------
+
+Building the library is very simple. First ensure that the necessary third
+party jar files are available in the lib/ directory. See lib/README for a list
+of the necessary third party jar files and how to get them.
+
+The library is built using Ant, a modern build tool written in and for Java. If
+you aren't already using Ant for other projects, it can be found here:
+
+  http://ant.apache.org/
+
+Invoke ant with any of the following targets:
+
+  all: builds the distribution files and javadoc documentation
+  compile: builds only the class files (dist/classes)
+  javadoc: builds only the javadoc documentation (dist/docs)
+  dist: builds the distribution jar files (dist/*.jar)
+
+Distribution
+------------
+
+The Nenya library is released under the LGPL. The most recent version of the
+library is available here:
+
+  http://www.threerings.net/code/nenya/
+
+Contribution
+------------
+
+Contributions to Nenya are welcome. Read-only access to the subversion
+repository is available at:
+
+svn://code.threerings.net/narya/trunk
+
+Patches can be mailed to Michael Bayne <mdb@threerings.net>.
+
+Contact Information
+-------------------
+
+Nenya is actively developed by the scurvy dogs at Three Rings Design, Inc.
+Contact Michael Bayne <mdb@threerings.net> with questions, comments and other
+wordly endeavors.
+
+$Id$
