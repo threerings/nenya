@@ -140,6 +140,7 @@
     <jar destfile="${deploy.dir}/${app.name}-media.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
+      <fileset dir="${classes.dir}" includes="com/threerings/tools/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/util/**"/>
     </jar>
     <jar destfile="${deploy.dir}/${app.name}-miso.jar">
