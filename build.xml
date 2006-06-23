@@ -128,7 +128,7 @@
       <fileset dir="src/java" includes="**/*.tmpl"/>
     </copy>
     <copy todir="${classes.dir}/rsrc">
-      <fileset dir="rsrc" includes="**/*" excludes="**/bundles/**"/>
+      <fileset dir="rsrc" includes="**/*"/>
     </copy>
   </target>
 
@@ -212,15 +212,15 @@
     </jar>
     <jar destfile="${deploy.dir}/${app.name}-miso.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/miso/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/config/miso/**"/>
+      <fileset dir="${classes.dir}" includes="rsrc/**/miso/**"/>
     </jar>
     <jar destfile="${deploy.dir}/${app.name}-cast.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
+      <fileset dir="${classes.dir}" includes="rsrc/**/cast/**"/>
     </jar>
     <jar destfile="${deploy.dir}/${app.name}-jme.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/jme/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/media/jme/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/i18n/jme/**"/>
+      <fileset dir="${classes.dir}" includes="rsrc/**/jme/**"/>
     </jar>
     <jar destfile="${deploy.dir}/${app.name}-openal.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>
