@@ -21,7 +21,7 @@
 
 package com.threerings.util.keybd;
 
-import com.threerings.util.Log;
+import static com.threerings.NenyaLog.log;
 
 /**
  * Provides access to the native operating system's auto-repeat keyboard
@@ -69,13 +69,13 @@ public class Keyboard
             System.loadLibrary("keybd");
             _haveLib = init();
             if (_haveLib) {
-                Log.info("Loaded native keyboard library.");
+                log.info("Loaded native keyboard library.");
             } else {
-                Log.info("Native keyboard library initialization failed.");
+                log.info("Native keyboard library initialization failed.");
             }
 
         } catch (UnsatisfiedLinkError e) {
-            Log.warning("Failed to load native keyboard library " +
+            log.warning("Failed to load native keyboard library " +
                         "[e=" + e + "].");
             _haveLib = false;
         }

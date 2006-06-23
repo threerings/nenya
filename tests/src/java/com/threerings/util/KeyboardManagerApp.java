@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.ControllerProvider;
 
-import com.threerings.util.Log;
+import static com.threerings.NenyaLog.log;
 
 public class KeyboardManagerApp
 {
@@ -98,7 +98,7 @@ public class KeyboardManagerApp
         public boolean handleAction (ActionEvent action)
         {
             String cmd = action.getActionCommand();
-            Log.info("handleAction [cmd=" + cmd + "].");
+            log.info("handleAction [cmd=" + cmd + "].");
             return true;
         }
     }

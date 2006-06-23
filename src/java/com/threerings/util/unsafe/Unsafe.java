@@ -21,8 +21,9 @@
 
 package com.threerings.util.unsafe;
 
-import com.threerings.util.Log;
 import com.samskivert.util.RunAnywhere;
+
+import static com.threerings.NenyaLog.log;
 
 /**
  * A native library for doing unsafe things. Don't use this library. If
@@ -66,7 +67,7 @@ public class Unsafe
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException ie) {
-                Log.info("Thread.sleep(" + millis + ") interrupted.");
+                log.info("Thread.sleep(" + millis + ") interrupted.");
             }
         }
     }
@@ -138,7 +139,7 @@ public class Unsafe
             System.loadLibrary("unsafe");
             _loaded = init();
         } catch (UnsatisfiedLinkError e) {
-            Log.warning("Failed to load 'unsafe' library: " + e + ".");
+            log.warning("Failed to load 'unsafe' library: " + e + ".");
         }
     }
 }

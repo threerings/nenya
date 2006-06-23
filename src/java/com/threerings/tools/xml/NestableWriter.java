@@ -1,5 +1,5 @@
 //
-// $Id: Log.java 4191 2006-06-13 22:42:20Z ray $
+// $Id: NestableWriter.java 4191 2006-06-13 22:42:20Z ray $
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved
@@ -19,38 +19,21 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-package com.threerings.util;
+package com.threerings.tools.xml;
+
+import org.xml.sax.SAXException;
+import com.megginson.sax.DataWriter;
 
 /**
- * A placeholder class that contains a reference to the log object used by
- * the media services package.
+ * Provides the writing component of the nestable parsing system described
+ * by {@link NestableRuleSet}.
  */
-public class Log
+public interface NestableWriter
 {
-    public static com.samskivert.util.Log log =
-	new com.samskivert.util.Log("util");
-
-    /** Convenience function. */
-    public static void debug (String message)
-    {
-	log.debug(message);
-    }
-
-    /** Convenience function. */
-    public static void info (String message)
-    {
-	log.info(message);
-    }
-
-    /** Convenience function. */
-    public static void warning (String message)
-    {
-	log.warning(message);
-    }
-
-    /** Convenience function. */
-    public static void logStackTrace (Throwable t)
-    {
-	log.logStackTrace(com.samskivert.util.Log.WARNING, t);
-    }
+    /**
+     * Called to generate XML for the supplied object to the supplied data
+     * writer.
+     */
+    public void write (Object object, DataWriter writer)
+        throws SAXException;
 }

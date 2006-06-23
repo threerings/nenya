@@ -27,6 +27,8 @@ import com.samskivert.util.ResultListener;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
 
+import static com.threerings.NenyaLog.log;
+
 /**
  * Encapsulates a bunch of hackery needed to invoke an external web browser
  * from within a Java application.
@@ -78,13 +80,13 @@ public class BrowserUtil
             cmd = new String[] { genagent, url.toString() };
         }
 
-        Log.info("Browsing URL [cmd=" + StringUtil.join(cmd, " ") + "].");
+        log.info("Browsing URL [cmd=" + StringUtil.join(cmd, " ") + "].");
         try {
             Process process = Runtime.getRuntime().exec(cmd);
             BrowserTracker tracker = new BrowserTracker(process, url, listener);
             tracker.start();
         } catch (Exception e) {
-            Log.warning("Failed to launch browser [url=" + url +
+            log.warning("Failed to launch browser [url=" + url +
                         ", error=" + e + "].");
             listener.requestFailed(e);
         }
@@ -109,7 +111,7 @@ public class BrowserUtil
                 }
 
                 String errmsg = "Launched browser failed [rv=" + rv + "].";
-                Log.warning(errmsg);
+                log.warning(errmsg);
                 if (!RunAnywhere.isWindows()) {
                     _listener.requestFailed(new Exception(errmsg));
                     return;
@@ -124,12 +126,11 @@ public class BrowserUtil
                 rv = process.exitValue();
                 if (rv != 0) {
                     errmsg = "Failed to launch iexplore.exe [rv=" + rv + "].";
-                    Log.warning(errmsg);
+                    log.warning(errmsg);
                     _listener.requestFailed(new Exception(errmsg));
                 }
 
             } catch (Exception e) {
-                Log.logStackTrace(e);
                 _listener.requestFailed(e);
             }
         }

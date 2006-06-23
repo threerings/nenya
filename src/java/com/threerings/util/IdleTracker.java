@@ -28,6 +28,8 @@ import java.awt.event.AWTEventListener;
 import com.samskivert.util.Interval;
 import com.samskivert.util.RunQueue;
 
+import static com.threerings.NenyaLog.log;
+
 /**
  * Used to track user idleness in an AWT application.
  */
@@ -137,7 +139,7 @@ public abstract class IdleTracker
         case ACTIVE:
             // check whether they've idled out
             if (now >= (_lastEvent + _toIdleTime)) {
-                Log.info("User idle for " + (now-_lastEvent) + "ms.");
+                log.info("User idle for " + (now-_lastEvent) + "ms.");
                 _state = IDLE;
                 idledOut();
             }
@@ -146,7 +148,7 @@ public abstract class IdleTracker
         case IDLE:
             // check whether they've been idle for too long
             if (now >= (_lastEvent + _toIdleTime + _toAbandonTime)) {
-                Log.info("User idle for " + (now-_lastEvent) + "ms. " +
+                log.info("User idle for " + (now-_lastEvent) + "ms. " +
                          "Abandoning ship.");
                 _state = ABANDONED;
                 abandonedShip();

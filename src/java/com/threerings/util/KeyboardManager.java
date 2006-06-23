@@ -44,6 +44,8 @@ import com.samskivert.util.RunAnywhere;
 
 import com.threerings.util.keybd.Keyboard;
 
+import static com.threerings.NenyaLog.log;
+
 /**
  * The keyboard manager observes keyboard actions on a particular
  * component and posts commands associated with the key presses to the
@@ -139,7 +141,7 @@ public class KeyboardManager
     {
         // report incorrect usage
         if (enabled && _target == null) {
-            Log.warning("Attempt to enable uninitialized keyboard manager!");
+            log.warning("Attempt to enable uninitialized keyboard manager!");
             Thread.dumpStack();
             return;
         }
@@ -262,7 +264,7 @@ public class KeyboardManager
         // bail if we're not enabled, we haven't the focus, or we're not
         // showing on-screen
         if (!_enabled || !_focus || !_target.isShowing()) {
-//             Log.info("dispatchKeyEvent [enabled=" + _enabled +
+//             log.info("dispatchKeyEvent [enabled=" + _enabled +
 //                      ", focus=" + _focus +
 //                      ", showing=" + ((_target == null) ? "N/A" :
 //                                      "" + _target.isShowing()) + "].");
@@ -360,7 +362,7 @@ public class KeyboardManager
     {
         if (DEBUG_EVENTS) {
             int keyCode = e.getKeyCode();
-            Log.info(msg + " [key=" + KeyEvent.getKeyText(keyCode) + "].");
+            log.info(msg + " [key=" + KeyEvent.getKeyText(keyCode) + "].");
         }
     }
 
@@ -442,7 +444,7 @@ public class KeyboardManager
                 _scheduled = true;
 
                 if (DEBUG_EVENTS) {
-                    Log.info("Pressing key [key=" + _keyText + "].");
+                    log.info("Pressing key [key=" + _keyText + "].");
                 }
             }
 
@@ -478,7 +480,7 @@ public class KeyboardManager
             // infrequently.
             if (_lastPress == _lastRelease) {
                 if (DEBUG_EVENTS) {
-                    Log.warning("Insta-releasing key due to equal key " +
+                    log.warning("Insta-releasing key due to equal key " +
                                 "press/release times [key=" + _keyText + "].");
                 }
                 release(time);
@@ -497,7 +499,7 @@ public class KeyboardManager
             }
 
             if (DEBUG_EVENTS) {
-                Log.info("Releasing key [key=" + _keyText + "].");
+                log.info("Releasing key [key=" + _keyText + "].");
             }
 
             // remove the repeat interval
@@ -523,7 +525,7 @@ public class KeyboardManager
             long deltaRelease = now - _lastRelease;
 
             if (KeyboardManager.DEBUG_INTERVAL) {
-                Log.info("Interval [key=" + _keyText +
+                log.info("Interval [key=" + _keyText +
                          ", deltaPress=" + deltaPress +
                          ", deltaRelease=" + deltaRelease + "].");
             }
@@ -541,7 +543,7 @@ public class KeyboardManager
 //                         _siid = IntervalManager.register(
 //                             this, delay, Long.valueOf(_lastPress), false);
 //                         if (KeyboardManager.DEBUG_INTERVAL) {
-//                             Log.info("Registered sub-interval " +
+//                             log.info("Registered sub-interval " +
 //                                      "[id=" + _siid + "].");
 //                         }
 
@@ -572,7 +574,7 @@ public class KeyboardManager
                 // sub-interval was registered
                 if (_lastPress != ((Long)arg).longValue()) {
                     if (KeyboardManager.DEBUG_INTERVAL) {
-                        Log.warning("Key pressed since sub-interval was " +
+                        log.warning("Key pressed since sub-interval was " +
                                     "registered, aborting release check " +
                                     "[key=" + _keyText + "].");
                     }

@@ -25,7 +25,7 @@ import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import com.threerings.util.Log;
+import static com.threerings.NenyaLog.log;
 
 public class KeyTimerApp
 {
@@ -60,7 +60,7 @@ public class KeyTimerApp
             _prStart = now;
 
             if (_rpStart != -1) {
-                Log.info("RP\t" + (now - _rpStart));
+                log.info("RP\t" + (now - _rpStart));
             }
 
             logKey("keyPressed", e);
@@ -71,7 +71,7 @@ public class KeyTimerApp
             long now = System.currentTimeMillis();
             _rpStart = now;
 
-            Log.info("PR\t" + (now - _prStart));
+            log.info("PR\t" + (now - _prStart));
 
             logKey("keyReleased", e);
         }
@@ -87,7 +87,7 @@ public class KeyTimerApp
         protected void logKey (String msg, KeyEvent e)
         {
             int keyCode = e.getKeyCode();
-            Log.info(msg + " [key=" + KeyEvent.getKeyText(keyCode) + "].");
+            log.info(msg + " [key=" + KeyEvent.getKeyText(keyCode) + "].");
         }
 
         protected long _prStart, _rpStart;
