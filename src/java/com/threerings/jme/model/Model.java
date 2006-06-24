@@ -487,6 +487,20 @@ public class Model extends ModelNode
      */
     public float startAnimation (String name)
     {
+        return startAnimation (name, 0, +1);
+    }
+
+    /**
+     * Starts the named animation.
+     *
+     * @param fidx the frame to start with
+     * @param fdir the direction to go (+1 forward, -1 backward)
+     *
+     * @return the duration of the started animation (for looping animations,
+     * the duration of one cycle), or -1 if the animation was not found
+     */
+    public float startAnimation (String name, int fidx, int fdir)
+    {
         Animation anim = getAnimation(name);
         if (anim == null) {
             return -1f;
@@ -494,12 +508,14 @@ public class Model extends ModelNode
         if (_anim != null) {
             _animObservers.apply(new AnimCancelledOp(_animName));
         }
+        _paused = false;
         _anim = anim;
         _animName = name;
-        _fidx = 0;
-        _nidx = 1;
-        _fdir = +1;
+        _fidx = fidx;
+        _nidx = fidx;
+        _fdir = fdir;
         _elapsed = 0f;
+        advanceFrameCounter();
         _animObservers.apply(new AnimStartedOp(_animName));
         return anim.getDuration() / _animSpeed;
     }
@@ -552,8 +568,33 @@ public class Model extends ModelNode
         if (_anim == null) {
             return;
         }
+        _paused = false;
         _anim = null;
         _animObservers.apply(new AnimCancelledOp(_animName));
+    }
+
+    /**
+     * Sets the pause state of the animation.
+     */
+    public void pauseAnimation (boolean pause)
+    {
+        _paused = pause;
+    }
+
+    /**
+     * Returns the pause state of the animation.
+     */
+    public boolean isAnimationPaused ()
+    {
+        return _paused;
+    }
+
+    /**
+     * Causes the animation to start running in reverse.
+     */
+    public void reverseAnimation ()
+    {
+        _fdir *= -1;
     }
     
     /**
@@ -825,8 +866,12 @@ public class Model extends ModelNode
         
         // advance the frame counter if necessary
         while (_elapsed > 1f) {
-            advanceFrameCounter();
-            _elapsed -= 1f;
+            if (!_paused) {
+                advanceFrameCounter();
+                _elapsed -= 1f;
+            } else {
+                _elapsed = 1f;
+            }
         }
         
         // update the target transforms and animation frame if not outside the
@@ -866,12 +911,11 @@ public class Model extends ModelNode
         }
         
         // if the next index is the same as this one, we are finished
-        if (_fidx == _nidx) {
+        if (_fidx == _nidx && !_paused) {
             _anim = null;
             _animObservers.apply(new AnimCompletedOp(_animName));
             return;
         }
-        
         _elapsed += (time * _anim.frameRate);
     }
     
@@ -883,10 +927,10 @@ public class Model extends ModelNode
         _fidx = _nidx;
         int nframes = _anim.transforms.length;
         if (_anim.repeatType == Controller.RT_CLAMP) {
-            _nidx = Math.min(_nidx + 1, nframes - 1);
+            _nidx = Math.max(0, Math.min(_nidx + _fdir, nframes - 1));
             
         } else if (_anim.repeatType == Controller.RT_WRAP) {
-            _nidx = (_nidx + 1) % nframes;
+            _nidx = (_nidx + _fdir) % nframes;
             
         } else { // _anim.repeatType == Controller.RT_CYCLE
             if ((_nidx + _fdir) < 0 || (_nidx + _fdir) >= nframes) {
@@ -953,6 +997,9 @@ public class Model extends ModelNode
     
     /** The frame portion elapsed since the start of the current frame. */
     protected float _elapsed;
+
+    /** The pause status of this model. */
+    protected boolean _paused;
     
     /** The amount of update time accumulated while outside of view frustum. */
     protected float _accum;
