@@ -464,15 +464,15 @@ public class ModelDef
         String[] controllers = StringUtil.parseStringArray(
             props.getProperty("controllers", ""));
         for (int ii = 0; ii < controllers.length; ii++) {
-            Spatial target = nodes.get(controllers[ii]);
+            Properties subProps = 
+                PropertiesUtil.getSubProperties(props, controllers[ii]);
+            String node = subProps.getProperty("node", controllers[ii]);
+            Spatial target = nodes.get(node);
             if (target == null) {
-                Log.warning("Missing controller node [name=" +
-                    controllers[ii] + "].");
+                Log.warning("Missing controller node [name=" + node + "].");
                 continue;
             }
-            ModelController ctrl = createController(
-                PropertiesUtil.getSubProperties(props, controllers[ii]),
-                target);
+            ModelController ctrl = createController(subProps, target);
             if (ctrl != null) {
                 model.addController(ctrl);
             }
