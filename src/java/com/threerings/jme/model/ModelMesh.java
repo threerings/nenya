@@ -36,6 +36,7 @@ import java.nio.channels.FileChannel;
 import java.util.Properties;
 
 import com.jme.bounding.BoundingVolume;
+import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
@@ -92,6 +93,8 @@ public class ModelMesh extends TriMesh
     {
         _textures = (texture == null) ? null : StringUtil.parseStringArray(
             props.getProperty(texture, texture));
+        _sphereMapped = Boolean.parseBoolean(
+            props.getProperty(texture + ".sphere_map"));
         _solid = solid;
         _transparent = transparent;
     }
@@ -278,6 +281,7 @@ public class ModelMesh extends TriMesh
         out.writeInt(_textureBufferSize);
         out.writeInt(_indexBufferSize);
         out.writeObject(_textures);
+        out.writeBoolean(_sphereMapped);
         out.writeBoolean(_solid);
         out.writeBoolean(_transparent);
     }
@@ -297,6 +301,7 @@ public class ModelMesh extends TriMesh
         _textureBufferSize = in.readInt();
         _indexBufferSize = in.readInt();
         _textures = (String[])in.readObject();
+        _sphereMapped = in.readBoolean();
         _solid = in.readBoolean();
         _transparent = in.readBoolean();
     }
@@ -336,6 +341,10 @@ public class ModelMesh extends TriMesh
         _tstates = new TextureState[_textures.length];
         for (int ii = 0; ii < _textures.length; ii++) {
             _tstates[ii] = tprov.getTexture(_textures[ii]);
+            if (_sphereMapped) {
+                _tstates[ii].getTexture().setEnvironmentalMapMode(
+                    Texture.EM_SPHERE);
+            }
         }
         if (_tstates[0] != null) {
             setRenderState(_tstates[0]);
@@ -529,6 +538,9 @@ public class ModelMesh extends TriMesh
     
     /** The name of this model's textures, or <code>null</code> for none. */
     protected String[] _textures;
+    
+    /** Whether or not to use sphere mapping on this model's textures. */
+    protected boolean _sphereMapped;
     
     /** Whether or not this mesh can enable back-face culling. */
     protected boolean _solid;
