@@ -844,6 +844,7 @@ public class ModelViewer extends JmeCanvasApp
             super.setVisible(visible);
             if (visible && _spatial.getParent() == null) {
                 _ctx.getGeometry().attachChild(_spatial);
+                _spatial.updateRenderState();
             } else if (!visible && _spatial.getParent() != null) {
                 _ctx.getGeometry().detachChild(_spatial);
             }
