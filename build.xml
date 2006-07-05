@@ -34,7 +34,7 @@
     <echo message="Have JME-BUI: ${jme-bui.present}"/>
     <available property="jme-sound.present"
      classname="com.jmex.sound.openAL.SoundSystem" classpathref="classpath"/>
-    <echo message="Have OPenAL: ${jme-sound.present}"/>
+    <echo message="Have OpenAL: ${jme-sound.present}"/>
     <condition property="build.jme">
       <and>
         <isset property="jme.present"/>
