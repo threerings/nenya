@@ -255,6 +255,7 @@ public class ModelMesh extends TriMesh
             mstore._textures = _textures;
             mstore._tstates = _tstates;
         }
+        mstore._sphereMapped = _sphereMapped;
         return mstore;
     }
     
