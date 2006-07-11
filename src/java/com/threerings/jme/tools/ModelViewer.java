@@ -40,6 +40,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -88,6 +91,7 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.Debugger;
@@ -681,6 +685,13 @@ public class ModelViewer extends JmeCanvasApp
      */
     protected void importFile (File file)
     {
+        final File parent = file.getParentFile();
+        TextureKey.setLocationOverride(new TextureKey.LocationOverride() {
+            public URL getLocation (String name)
+                throws MalformedURLException {
+                return new URL(parent.toURL(), name);
+            }
+        });
         try {
             new ImportDialog(file,
                 (Spatial)BinaryImporter.getInstance().load(
@@ -690,6 +701,7 @@ public class ModelViewer extends JmeCanvasApp
             e.printStackTrace();
             _status.setText(_msg.get("m.load_error", file, e));
         }
+        TextureKey.setLocationOverride(null);
     }
     
     /**
