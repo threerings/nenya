@@ -9,7 +9,6 @@
   <property name="app.name"       value="nenya"/>
   <property name="deploy.dir"     value="dist"/>
   <property name="savedoc.dir"    value="docs"/>
-  <property name="lib.version"    value="1.0"/>
 
   <!-- derived properties -->  
   <property name="javadoc.home"   value="${deploy.dir}/docs"/>
@@ -224,29 +223,28 @@
   <!-- creates a tarball and zipfile for source distribution -->
   <target name="distrib">
      <echo message="You may want to stop and run 'ant savedoc' first."/>
-     <echo message="Building ${lib.version} tar.gz distribution..."/>
-     <tar destfile="nenya-${lib.version}.tar.gz" compression="gzip">
+     <echo message="Building tar.gz distribution..."/>
+     <tar destfile="../nenya-snapshot.tar.gz" compression="gzip">
        <tarfileset dir=".." mode="0775" dirmode="0775">
          <include name="nenya/bin/**"/>
          <include name="nenya/tests/bin/**"/>
-         <exclude name="**/CVS"/>
+         <exclude name="**/.svn"/>
        </tarfileset>
        <tarfileset dir=".." mode="0664" dirmode="0775">
          <include name="nenya/**"/>
-         <exclude name="**/CVS"/>
-         <exclude name="nenya/bin/**"/>
-         <exclude name="nenya/tests/bin/**"/>
+         <exclude name="**/.svn"/>
          <exclude name="nenya/tests/dist/**"/>
          <exclude name="nenya/dist/**"/>
          <exclude name="nenya/code/**"/>
          <exclude name="nenya/nenya-*.*"/>
        </tarfileset>
      </tar>
-     <echo message="Building ${lib.version} zip distribution..."/>
-     <zip destfile="nenya-${lib.version}.zip">
+     <echo message="Building zip distribution..."/>
+     <zip destfile="../nenya-snapshot.zip">
        <fileset dir="..">
          <include name="nenya/**"/>
-         <exclude name="**/CVS"/>
+         <exclude name="**/.svn"/>
+         <exclude name="nenya/tests/dist/**"/>
          <exclude name="nenya/dist/**"/>
          <exclude name="nenya/code/**"/>
          <exclude name="nenya/nenya-*.*"/>
