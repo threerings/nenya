@@ -4,10 +4,11 @@ commons-io.jar
 jme-awt.jar
 jme-bui.jar
 jme-effects.jar
-jme.jar
 jme-model.jar
 jme-sound.jar
 jme-terrain.jar
+jme.jar
+junit-3.7.jar
 lwjgl.jar
 lwjgl_util.jar
 narya-base.jar
