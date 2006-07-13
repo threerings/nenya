@@ -154,8 +154,7 @@ public class ObjectInfo extends SimpleStreamableObject
         try {
             return super.clone();
         } catch (CloneNotSupportedException cnse) {
-            // notgunnahappen.
-            return null;
+            throw new RuntimeException(cnse);
         }
     }
 

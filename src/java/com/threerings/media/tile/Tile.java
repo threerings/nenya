@@ -136,8 +136,7 @@ public class Tile // implements Cloneable
 //         try {
 //             return (Tile)super.clone();
 //         } catch (CloneNotSupportedException cnse) {
-//             String errmsg = "All is wrong with the universe: " + cnse;
-//             throw new RuntimeException(errmsg);
+//             throw new RuntimeException(cnse);
 //         }
 //     }
 

@@ -118,9 +118,9 @@ public abstract class MisoSceneModel extends SimpleStreamableObject
     public Object clone ()
     {
         try {
-            return (MisoSceneModel)super.clone();
+            return super.clone();
         } catch (CloneNotSupportedException cnse) {
-            throw new RuntimeException("MisoSceneModel.clone: " + cnse);
+            throw new RuntimeException(cnse);
         }
     }
 

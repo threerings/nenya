@@ -223,8 +223,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
                 section.objectInfo = (ObjectInfo[])objectInfo.clone();
                 return section;
             } catch (CloneNotSupportedException cnse) {
-                throw new RuntimeException(
-                    "SparseMisoSceneModel.Section.clone: " + cnse);
+                throw new RuntimeException(cnse);
             }
         }
 
