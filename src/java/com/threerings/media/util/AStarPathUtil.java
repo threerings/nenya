@@ -53,6 +53,21 @@ public class AStarPathUtil
     }
 
     /**
+     * Provides extended traversibility information when computing paths.
+     */
+    public static interface ExtendedTraversalPred extends TraversalPred
+    {
+        /**
+         * Requests to know if the specific traverser (which was provided
+         * in the call to {@link #getPath}) can traverse from the specified
+         * source tile coordinate to the specified destination tile
+         * coodinate.
+         */
+        public boolean canTraverse (
+                Object traverser, int sx, int sy, int dx, int dy);
+    }
+
+    /**
      * Considers all the possible steps the piece in question can take.
      */
     public static class Stepper
@@ -338,8 +353,15 @@ public class AStarPathUtil
         protected boolean isStepValid (int sx, int sy, int dx, int dy)
         {
             // not traversable if the destination itself fails test
-            if (!isTraversable(dx, dy)) {
-                return false;
+            if (tpred instanceof ExtendedTraversalPred) {
+                if (!((ExtendedTraversalPred)tpred).canTraverse(
+                        trav, sx, sy, dx, dy)) {
+                    return false;
+                }
+            } else {
+                if (!isTraversable(dx, dy)) {
+                    return false;
+                }
             }
 
             // if the step is diagonal, make sure the corners don't impede
