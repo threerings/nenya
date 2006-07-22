@@ -294,7 +294,7 @@ public class MisoScenePanel extends VirtualMediaPanel
 
         // get a reasonable tile path through the scene
         long start = System.currentTimeMillis();
-        List points = AStarPathUtil.getPath(
+        List<Point> points = AStarPathUtil.getPath(
             this, sprite, longestPath, src.x, src.y, dest.x, dest.y, loose);
         long duration = System.currentTimeMillis() - start;
 

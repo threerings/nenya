@@ -133,52 +133,52 @@ public class AStarPathUtil
      *
      * @return the list of points in the path.
      */
-    public static List getPath (TraversalPred tpred, Stepper stepper,
-                                Object trav, int longest, int ax, int ay,
-                                int bx, int by, boolean partial)
+    public static List<Point> getPath (
+            TraversalPred tpred, Stepper stepper, Object trav, int longest, 
+            int ax, int ay, int bx, int by, boolean partial)
     {
-	Info info = new Info(tpred, trav, longest, bx, by);
+        Info info = new Info(tpred, trav, longest, bx, by);
 
-	// set up the starting node
-	Node s = info.getNode(ax, ay);
-	s.g = 0;
-	s.h = getDistanceEstimate(ax, ay, bx, by);
-	s.f = s.g + s.h;
+        // set up the starting node
+        Node s = info.getNode(ax, ay);
+        s.g = 0;
+        s.h = getDistanceEstimate(ax, ay, bx, by);
+        s.f = s.g + s.h;
 
-	// push starting node on the open list
-	info.open.add(s);
+        // push starting node on the open list
+        info.open.add(s);
         _considered = 1;
 
         // track the best path
         float bestdist = Float.MAX_VALUE;
         Node bestpath = null;
 
-	// while there are more nodes on the open list
-	while (info.open.size() > 0) {
+        // while there are more nodes on the open list
+        while (info.open.size() > 0) {
 
-	    // pop the best node so far from open
-	    Node n = (Node)info.open.first();
-	    info.open.remove(n);
+            // pop the best node so far from open
+            Node n = (Node)info.open.first();
+            info.open.remove(n);
 
-	    // if node is a goal node
-	    if (n.x == bx && n.y == by) {
-		// construct and return the acceptable path
-		return getNodePath(n);
-	    } else if (partial) {
-                float pathdist = MathUtil.distance(n.x, n.y, bx, by);
-                if (pathdist < bestdist) {
-                    bestdist = pathdist;
-                    bestpath = n;
+            // if node is a goal node
+            if (n.x == bx && n.y == by) {
+                // construct and return the acceptable path
+                return getNodePath(n);
+            } else if (partial) {
+                    float pathdist = MathUtil.distance(n.x, n.y, bx, by);
+                    if (pathdist < bestdist) {
+                        bestdist = pathdist;
+                        bestpath = n;
+                    }
                 }
-            }
 
-	    // consider each successor of the node
+            // consider each successor of the node
             stepper.init(info, n);
             stepper.considerSteps(n.x, n.y);
 
-	    // push the node on the closed list
-	    info.closed.add(n);
-	}
+            // push the node on the closed list
+            info.closed.add(n);
+        }
 
         // return the best path we could find if we were asked to do so
         if (bestpath != null) {
@@ -193,8 +193,9 @@ public class AStarPathUtil
      * Gets a path with the default stepper which assumes the piece can
      * move one in any of the eight cardinal directions.
      */
-    public static List getPath (TraversalPred tpred, Object trav, int longest,
-                                int ax, int ay, int bx, int by, boolean partial)
+    public static List<Point> getPath (
+            TraversalPred tpred, Object trav, int longest,
+            int ax, int ay, int bx, int by, boolean partial)
     {
         return getPath(
             tpred, new Stepper(), trav, longest, ax, ay, bx, by, partial);
@@ -226,40 +227,40 @@ public class AStarPathUtil
             return;
         }
 
-	// calculate the new cost for this node
-	int newg = n.g + cost;
+        // calculate the new cost for this node
+        int newg = n.g + cost;
 
-        // make sure the cost is reasonable
-        if (newg > info.maxcost) {
-//            Log.info("Rejected costly step.");
+            // make sure the cost is reasonable
+            if (newg > info.maxcost) {
+    //            Log.info("Rejected costly step.");
+                return;
+            }
+
+        // retrieve the node corresponding to this location
+        Node np = info.getNode(x, y);
+
+        // skip if it's already in the open or closed list or if its
+        // actual cost is less than the just-calculated cost
+        if ((info.open.contains(np) || info.closed.contains(np)) &&
+            np.g <= newg) {
             return;
         }
 
-	// retrieve the node corresponding to this location
-	Node np = info.getNode(x, y);
+        // remove the node from the open list since we're about to
+        // modify its score which determines its placement in the list
+        info.open.remove(np);
 
-	// skip if it's already in the open or closed list or if its
-	// actual cost is less than the just-calculated cost
-	if ((info.open.contains(np) || info.closed.contains(np)) &&
-	    np.g <= newg) {
-	    return;
-	}
+        // update the node's information
+        np.parent = n;
+        np.g = newg;
+        np.h = getDistanceEstimate(np.x, np.y, info.destx, info.desty);
+        np.f = np.g + np.h;
 
-	// remove the node from the open list since we're about to
-	// modify its score which determines its placement in the list
-	info.open.remove(np);
+        // remove it from the closed list if it's present
+        info.closed.remove(np);
 
-	// update the node's information
-	np.parent = n;
-	np.g = newg;
-	np.h = getDistanceEstimate(np.x, np.y, info.destx, info.desty);
-	np.f = np.g + np.h;
-
-	// remove it from the closed list if it's present
-	info.closed.remove(np);
-
-	// add it to the open list for further consideration
-	info.open.add(np);
+        // add it to the open list for further consideration
+        info.open.add(np);
         _considered++;
     }
 
@@ -272,21 +273,21 @@ public class AStarPathUtil
      *
      * @return the list detailing the path.
      */
-    protected static List getNodePath (Node n)
+    protected static List<Point> getNodePath (Node n)
     {
-	Node cur = n;
-	ArrayList path = new ArrayList();
+        Node cur = n;
+        ArrayList<Point> path = new ArrayList<Point>();
 
-	while (cur != null) {
-	    // add to the head of the list since we're traversing from
-	    // the end to the beginning
-	    path.add(0, new Point(cur.x, cur.y));
+        while (cur != null) {
+            // add to the head of the list since we're traversing from
+            // the end to the beginning
+            path.add(0, new Point(cur.x, cur.y));
 
-	    // advance to the next node in the path
-	    cur = cur.parent;
-	}
+            // advance to the next node in the path
+            cur = cur.parent;
+        }
 
-	return path;
+        return path;
     }
 
     /**
@@ -318,10 +319,10 @@ public class AStarPathUtil
         public Object trav;
 
         /** The set of open nodes being searched. */
-        public SortedSet open;
+        public SortedSet<Node> open;
 
         /** The set of closed nodes being searched. */
-        public ArrayList closed;
+        public ArrayList<Node> closed;
 
         /** The destination coordinates in the tile array. */
         public int destx, desty;
@@ -342,8 +343,8 @@ public class AStarPathUtil
             this.maxcost = longest * ADJACENT_COST;
 
             // construct the open and closed lists
-            open = new TreeSet();
-            closed = new ArrayList();
+            open = new TreeSet<Node>();
+            closed = new ArrayList<Node>();
         }
 
         /**
@@ -390,7 +391,7 @@ public class AStarPathUtil
             // note: this _could_ break for unusual values of x and y.
             // perhaps use a IntTuple as a key? Bleah.
             int key = (x << 16) | (y & 0xffff);
-            Node node = (Node) _nodes.get(key);
+            Node node = _nodes.get(key);
             if (node == null) {
                 node = new Node(x, y);
                 _nodes.put(key, node);
@@ -399,7 +400,7 @@ public class AStarPathUtil
         }
 
         /** The nodes being considered in the path. */
-        protected HashIntMap _nodes = new HashIntMap();
+        protected HashIntMap<Node> _nodes = new HashIntMap<Node>();
     }
 
     /**
