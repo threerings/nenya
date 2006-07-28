@@ -21,12 +21,14 @@
 
 package com.threerings.jme.model;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import java.util.Properties;
 
-import com.jme.math.Vector3f;
-import com.jme.scene.Geometry;
+import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
-import com.jme.util.geom.BufferUtils;
 
 /**
  * A model controller whose target represents an emitter.
@@ -36,44 +38,51 @@ public abstract class EmissionController extends ModelController
     @Override // documentation inherited
     public void configure (Properties props, Spatial target)
     {
-        // substitute underlying mesh for geometry targets
-        if (target instanceof ModelNode) {
-            Spatial mesh = ((ModelNode)target).getChild("mesh");
-            if (mesh != null) {
-                target = mesh;
-            }
-        }
         super.configure(props, target);
+        _hideTarget = Boolean.parseBoolean(
+            props.getProperty("hide_target", "true"));
     }
     
     @Override // documentation inherited
     public void init (Model model)
     {
         super.init(model);
-        _target.setCullMode(Spatial.CULL_ALWAYS);
-    }
-    
-    /**
-     * Determines the current location of the emitter in world coordinates.
-     */
-    protected void getEmitterLocation (Vector3f result)
-    {
-        result.set(_target.getWorldTranslation());
-    }
-    
-    /**
-     * Determines the current direction of the emitter in world coordinates.
-     */
-    protected void getEmitterDirection (Vector3f result)
-    {
-        if (_target instanceof Geometry) {
-            BufferUtils.populateFromBuffer(result,
-                ((Geometry)_target).getNormalBuffer(0), 0);
-        } else {
-            result.set(0f, 0f, -1f);
+        if (_hideTarget) {
+            _target.setCullMode(Spatial.CULL_ALWAYS);
         }
-        _target.getWorldRotation().multLocal(result);
     }
+    
+    @Override // documentation inherited
+    public Controller putClone (
+        Controller store, Model.CloneCreator properties)
+    {
+        if (store == null) {
+            return null;
+        }
+        EmissionController estore = (EmissionController)store;
+        super.putClone(estore, properties);
+        estore._hideTarget = _hideTarget;
+        return estore;
+    }
+    
+    @Override // documentation inherited
+    public void writeExternal (ObjectOutput out)
+        throws IOException
+    {
+        super.writeExternal(out);
+        out.writeBoolean(_hideTarget);
+    }
+    
+    @Override // documentation inherited
+    public void readExternal (ObjectInput in)
+        throws IOException, ClassNotFoundException
+    {
+        super.readExternal(in);
+        _hideTarget = in.readBoolean();
+    }
+    
+    /** Whether or not the target should be hidden from view. */
+    protected boolean _hideTarget;
     
     private static final long serialVersionUID = 1;
 }
