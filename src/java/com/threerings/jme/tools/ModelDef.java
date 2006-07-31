@@ -467,7 +467,8 @@ public class ModelDef
             Properties subProps = 
                 PropertiesUtil.getSubProperties(props, controllers[ii]);
             String node = subProps.getProperty("node", controllers[ii]);
-            Spatial target = nodes.get(node);
+            Spatial target = node.equals(model.getName()) ?
+                model : nodes.get(node);
             if (target == null) {
                 Log.warning("Missing controller node [name=" + node + "].");
                 continue;
