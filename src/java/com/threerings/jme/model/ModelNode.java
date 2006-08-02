@@ -107,9 +107,8 @@ public class ModelNode extends Node
     @Override // documentation inherited
     public void updateWorldBound ()
     {
-        // if the node is culled, there are no mesh descendants and thus no
-        // bounds
-        if (cullMode != CULL_ALWAYS) {
+        // don't bother updating if we know there are no visible descendants
+        if (_hasVisibleDescendants) {
             super.updateWorldBound();
         }
     }
@@ -171,6 +170,7 @@ public class ModelNode extends Node
                     ((ModelSpatial)child).putClone(null, properties));
             }
         }
+        mstore._hasVisibleDescendants = _hasVisibleDescendants;
         return mstore;
     }
     
@@ -327,16 +327,15 @@ public class ModelNode extends Node
      */
     protected boolean cullInvisibleNodes ()
     {
-        boolean hasVisibleDescendants = false;
         for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
             Spatial child = getChild(ii);
             if (!(child instanceof ModelNode) ||
                 ((ModelNode)child).cullInvisibleNodes()) {
-                hasVisibleDescendants = true;
+                _hasVisibleDescendants = true;
             }
         }
-        setCullMode(hasVisibleDescendants ? CULL_INHERIT : CULL_ALWAYS);
-        return hasVisibleDescendants;
+        setCullMode(_hasVisibleDescendants ? CULL_INHERIT : CULL_ALWAYS);
+        return _hasVisibleDescendants;
     }
     
     /**
@@ -403,5 +402,8 @@ public class ModelNode extends Node
     protected Matrix4f _localTransform = new Matrix4f(),
         _modelTransform = new Matrix4f();
 
+    /** Whether or not this node has mesh descendants. */
+    protected boolean _hasVisibleDescendants;
+    
     private static final long serialVersionUID = 1;
 }

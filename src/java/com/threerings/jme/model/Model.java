@@ -794,7 +794,8 @@ public class Model extends ModelNode
                 getWorldTranslation(), getWorldScale(), worldBound);
             
         } else {
-            super.updateGeometricState(_accum, initiator);
+            super.updateGeometricState(_shouldAccumulate ? _accum : time,
+                initiator);
             _accum = 0f;
         }
     }
@@ -847,7 +848,9 @@ public class Model extends ModelNode
         // initialize the controllers
         for (Object ctrl : getControllers()) {
             if (ctrl instanceof ModelController) {
-                ((ModelController)ctrl).init(this);
+                ModelController mctrl = (ModelController)ctrl;
+                mctrl.init(this);
+                _shouldAccumulate |= mctrl.shouldAccumulate();
             }
         }
     }
@@ -1003,6 +1006,9 @@ public class Model extends ModelNode
     
     /** The amount of update time accumulated while outside of view frustum. */
     protected float _accum;
+    
+    /** Whether or not we should accumulate update time while out of view. */
+    protected boolean _shouldAccumulate;
     
     /** The child node that contains the model's emissions in world space. */
     protected Node _emissionNode;

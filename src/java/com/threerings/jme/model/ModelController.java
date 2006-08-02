@@ -85,6 +85,16 @@ public abstract class ModelController extends Controller
     }
     
     /**
+     * Determines whether the controller updates should include time
+     * accumulated while the model was out of sight.  Accumulating will
+     * be turned off only if all controllers are non-accumulating.
+     */
+    public boolean shouldAccumulate ()
+    {
+        return true;
+    }
+    
+    /**
      * Creates or populates and returns a clone of this object using the given
      * clone properties.
      *
