@@ -21,6 +21,7 @@
 
 package com.threerings.jme;
 
+import java.awt.AWTEvent;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.EventQueue;
@@ -112,7 +113,12 @@ public class JmeCanvasApp extends JmeApp
     {
         // LWJGL's canvas releases the context after painting.  we make it
         // current again, because we want it valid when we process events.
+        // block mouse and keyboard events until the context is valid.
         return new LWJGLCanvas() {
+            public void addNotify () {
+                super.addNotify();
+                disableEvents(MOUSE_KEY_EVENT_MASK);
+            }
             public void update (Graphics g) {
                 super.update(g);
                 try {
@@ -121,6 +127,10 @@ public class JmeCanvasApp extends JmeApp
                     Log.warning("Failed to make context current [error=" +
                         e + "].");
                 }
+            }
+            protected void initGL () {
+                super.initGL();
+                enableEvents(MOUSE_KEY_EVENT_MASK);
             }
         };
     }
@@ -181,4 +191,10 @@ public class JmeCanvasApp extends JmeApp
     };
 
     protected Canvas _canvas;
+    
+    protected static final long MOUSE_KEY_EVENT_MASK =
+        AWTEvent.MOUSE_EVENT_MASK |
+        AWTEvent.MOUSE_MOTION_EVENT_MASK |
+        AWTEvent.MOUSE_WHEEL_EVENT_MASK |
+        AWTEvent.KEY_EVENT_MASK;
 }
