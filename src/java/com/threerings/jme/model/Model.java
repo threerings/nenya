@@ -508,6 +508,14 @@ public class Model extends ModelNode
         if (_anim != null) {
             _animObservers.apply(new AnimCancelledOp(_animName));
         }
+        
+        // first cull all model nodes, then re-activate the ones in the
+        // target list
+        cullModelNodes();
+        for (Spatial target : anim.transformTargets) {
+            ((ModelNode)target).updateCullMode();
+        }
+        
         _paused = false;
         _anim = anim;
         _animName = name;

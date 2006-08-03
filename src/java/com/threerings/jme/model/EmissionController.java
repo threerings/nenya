@@ -49,6 +49,11 @@ public abstract class EmissionController extends ModelController
         super.init(model);
         if (_hideTarget) {
             _target.setCullMode(Spatial.CULL_ALWAYS);
+            if (_target instanceof ModelNode) {
+                // make sure the node isn't turned back on by an
+                // animation
+                ((ModelNode)_target).setForceCull(true);
+            }
         }
     }
     

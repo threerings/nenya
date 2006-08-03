@@ -282,6 +282,24 @@ public class ModelNode extends Node
         }
     }
     
+    /**
+     * Sets whether this node should be culled even if it has mesh
+     * descendants.
+     */
+    public void setForceCull (boolean force)
+    {
+        _forceCull = force;
+    }
+    
+    /**
+     * Checks whether this node should be culled even if it has mesh
+     * descendants.
+     */
+    public boolean getForceCull ()
+    {
+        return _forceCull;
+    }
+    
     // documentation inherited from interface ModelSpatial
     public void writeBuffers (FileChannel out)
         throws IOException
@@ -334,7 +352,7 @@ public class ModelNode extends Node
                 _hasVisibleDescendants = true;
             }
         }
-        setCullMode(_hasVisibleDescendants ? CULL_INHERIT : CULL_ALWAYS);
+        updateCullMode();
         return _hasVisibleDescendants;
     }
     
@@ -373,6 +391,31 @@ public class ModelNode extends Node
     }
     
     /**
+     * Recursively culls all model nodes under this one in preparation for
+     * activating the ones listed in an animation.
+     */
+    protected void cullModelNodes ()
+    {
+        for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
+            Spatial child = getChild(ii);
+            if (child instanceof ModelNode) {
+                child.setCullMode(CULL_ALWAYS);
+                ((ModelNode)child).cullModelNodes();
+            }
+        }
+    }
+    
+    /**
+     * Makes this node visible if and only if it has visible descendants and
+     * has not been specifically culled.
+     */
+    protected void updateCullMode ()
+    {
+        setCullMode((_hasVisibleDescendants && !_forceCull) ?
+            CULL_INHERIT : CULL_ALWAYS);
+    }
+    
+    /**
      * Sets a matrix to the transform defined by the given translation,
      * rotation, and scale values.
      */
@@ -404,6 +447,9 @@ public class ModelNode extends Node
 
     /** Whether or not this node has mesh descendants. */
     protected boolean _hasVisibleDescendants;
+    
+    /** If true, cull the node even if it has mesh descendants. */
+    protected boolean _forceCull;
     
     private static final long serialVersionUID = 1;
 }
