@@ -164,13 +164,14 @@ public class AStarPathUtil
             if (n.x == bx && n.y == by) {
                 // construct and return the acceptable path
                 return getNodePath(n);
+                
             } else if (partial) {
-                    float pathdist = MathUtil.distance(n.x, n.y, bx, by);
-                    if (pathdist < bestdist) {
-                        bestdist = pathdist;
-                        bestpath = n;
-                    }
+                float pathdist = MathUtil.distance(n.x, n.y, bx, by);
+                if (pathdist < bestdist) {
+                    bestdist = pathdist;
+                    bestpath = n;
                 }
+            }
 
             // consider each successor of the node
             stepper.init(info, n);
@@ -185,8 +186,8 @@ public class AStarPathUtil
             return getNodePath(bestpath);
         }
 
-	// no path found
-	return null;
+    	// no path found
+    	return null;
     }
 
     /**

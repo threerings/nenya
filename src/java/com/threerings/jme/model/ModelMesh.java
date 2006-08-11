@@ -33,6 +33,7 @@ import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import com.jme.bounding.BoundingVolume;
@@ -45,6 +46,7 @@ import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
@@ -148,6 +150,30 @@ public class ModelMesh extends TriMesh
             getLocalTranslation().subtractLocal(offset);
             getBatch(0).getModelBound().getCenter().set(Vector3f.ZERO);
             getBatch(0).translatePoints(offset);
+        }
+    }
+    
+    /**
+     * Adds an overlay layer to this mesh.  After the mesh is rendered with
+     * its configured states, these states will be applied and the mesh will
+     * be rendered again.
+     */
+    public void addOverlay (RenderState[] overlay)
+    {
+        if (_overlays == null) {
+            _overlays = new ArrayList<RenderState[]>(1);
+        }
+        _overlays.add(overlay);
+    }
+    
+    /**
+     * Removes a layer from this mesh.
+     */
+    public void removeOverlay (RenderState[] overlay)
+    {
+        _overlays.remove(overlay);
+        if (_overlays.isEmpty()) {
+            _overlays = null;
         }
     }
     
@@ -485,6 +511,15 @@ public class ModelMesh extends TriMesh
         reconstruct(vbbuf, nbbuf, cbbuf, tbbuf, ibbuf);
     }
     
+    @Override // documentation inherited
+    protected void setupBatchList ()
+    {
+        batchList = new ArrayList<GeomBatch>(1);
+        TriangleBatch batch = new OverlayBatch();
+        batch.setParentGeom(this);
+        batchList.add(batch);
+    }
+    
     /**
      * Locks the transform and bounds of this mesh on the assumption that its
      * position will not change.
@@ -526,6 +561,34 @@ public class ModelMesh extends TriMesh
         _overlayZBuffer.setWritable(false);
     }
     
+    /** Renders overlays as well as the base layer. */
+    protected class OverlayBatch extends TriangleBatch
+    {
+        @Override // documentation inherited
+        public void draw (Renderer r)
+        {
+            super.draw(r);
+            if (_overlays != null && isEnabled() && r.isProcessingQueue()) {
+                for (RenderState[] overlay : _overlays) {
+                    for (RenderState rstate : overlay) {
+                        int idx = rstate.getType();
+                        _ostates[idx] = states[idx];
+                        states[idx] = rstate;
+                    }
+                    r.draw(this);
+                    for (RenderState rstate : overlay) {
+                        int idx = rstate.getType();
+                        states[idx] = _ostates[idx];
+                    }
+                }
+            }
+        }
+        
+        /** Temporarily stores the original states. */
+        protected RenderState[] _ostates =
+            new RenderState[RenderState.RS_MAX_STATE];
+    }
+    
     /** The sizes of the various buffers (zero for <code>null</code>). */
     protected int _vertexBufferSize, _normalBufferSize, _colorBufferSize,
         _textureBufferSize, _indexBufferSize;
@@ -548,6 +611,9 @@ public class ModelMesh extends TriMesh
     
     /** Whether or not this mesh must be rendered as transparent. */
     protected boolean _transparent;
+    
+    /** If non-null, additional layers to render over the base layer. */
+    protected ArrayList<RenderState[]> _overlays;
     
     /** For prototype meshes, the resolved texture states. */
     protected TextureState[] _tstates;
