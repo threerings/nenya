@@ -23,14 +23,16 @@ package com.threerings.jme.chat;
 
 import java.util.StringTokenizer;
 
+import com.jme.renderer.ColorRGBA;
+
+import com.jmex.bui.BButton;
 import com.jmex.bui.BContainer;
 import com.jmex.bui.BTextArea;
 import com.jmex.bui.BTextField;
 import com.jmex.bui.event.ActionEvent;
 import com.jmex.bui.event.ActionListener;
 import com.jmex.bui.layout.BorderLayout;
-
-import com.jme.renderer.ColorRGBA;
+import com.jmex.bui.layout.GroupLayout;
 
 import com.threerings.util.Name;
 
@@ -57,15 +59,10 @@ public class ChatView extends BContainer
         _chatdtr = chatdtr;
         setLayoutManager(new BorderLayout(2, 2));
         add(_text = new BTextArea(), BorderLayout.CENTER);
-        add(_input = new BTextField(), BorderLayout.SOUTH);
-
-        _input.addListener(new ActionListener() {
-            public void actionPerformed (ActionEvent event) {
-                if (handleInput(_input.getText())) {
-                    _input.setText("");
-                }
-            }
-        });
+        _incont = new BContainer(GroupLayout.makeHStretch());
+        add(_incont, BorderLayout.SOUTH);
+        _incont.add(_input = new BTextField());
+        _input.addListener(_inlist);
     }
 
     public void willEnterPlace (PlaceObject plobj)
@@ -92,6 +89,12 @@ public class ChatView extends BContainer
             _chatdtr.removeChatDisplay(this);
             _spsvc = null;
         }
+    }
+
+    public void setChatButton (BButton button)
+    {
+        _incont.add(button, GroupLayout.FIXED);
+        button.addListener(_inlist);
     }
 
     /**
@@ -174,8 +177,18 @@ public class ChatView extends BContainer
         }
     }
 
+    /** Used to trigger sending chat (on return key or button press). */
+    protected ActionListener _inlist = new ActionListener() {
+        public void actionPerformed (ActionEvent event) {
+            if (handleInput(_input.getText())) {
+                _input.setText("");
+            }
+        }
+    };
+
     protected ChatDirector _chatdtr;
     protected SpeakService _spsvc;
     protected BTextArea _text;
+    protected BContainer _incont;
     protected BTextField _input;
 }
