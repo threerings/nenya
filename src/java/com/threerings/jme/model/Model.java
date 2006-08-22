@@ -37,6 +37,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
@@ -738,8 +739,12 @@ public class Model extends ModelNode
      */
     public void lockInstance ()
     {
-        // collect the controller targets and lock recursively
+        // collect the instance's animation and controller targets and lock
+        // recursively
         HashSet<Spatial> targets = new HashSet<Spatial>();
+        for (String aname : getAnimationNames()) {
+            Collections.addAll(targets, getAnimation(aname).transformTargets);
+        }
         for (Object ctrl : getControllers()) {
             if (ctrl instanceof ModelController) {
                 targets.add(((ModelController)ctrl).getTarget());
