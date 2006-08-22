@@ -40,6 +40,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.SharedMesh;
@@ -97,6 +98,11 @@ public class ModelMesh extends TriMesh
             props.getProperty(texture, texture));
         _sphereMapped = Boolean.parseBoolean(
             props.getProperty(texture + ".sphere_map"));
+        _filterMode = "nearest".equals(
+            props.getProperty(texture + ".filter")) ?
+                Texture.FM_NEAREST : Texture.FM_LINEAR;
+        _mipMapMode = getMipMapMode(props.getProperty(texture + ".mipmap"));
+        _emissiveMap = props.getProperty(texture + ".emissive");
         _solid = solid;
         _transparent = transparent;
     }
@@ -116,6 +122,9 @@ public class ModelMesh extends TriMesh
             colors == null ? null : colors.asFloatBuffer(),
             textures == null ? null : textures.asFloatBuffer(),
             indices == null ? null : indices.asIntBuffer());
+        for (int ii = 1, nn = getTextureCount(); ii < nn; ii++) {
+            setTextureBuffer(0, getTextureBuffer(0, 0), ii);
+        }
         _vertexByteBuffer = vertices;
         _normalByteBuffer = normals;
         _colorByteBuffer = colors;
@@ -183,6 +192,9 @@ public class ModelMesh extends TriMesh
         FloatBuffer textures, IntBuffer indices)
     {
         super.reconstruct(vertices, normals, colors, textures, indices);
+        for (int ii = 1, nn = getTextureCount(); ii < nn; ii++) {
+            setTextureBuffer(0, getTextureBuffer(0, 0), ii);
+        }
         
         _vertexBufferSize = (vertices == null) ? 0 : vertices.capacity();
         _normalBufferSize = (normals == null) ? 0 : normals.capacity();
@@ -197,6 +209,9 @@ public class ModelMesh extends TriMesh
         FloatBuffer textures)
     {
         super.reconstruct(vertices, normals, colors, textures);
+        for (int ii = 1, nn = getTextureCount(); ii < nn; ii++) {
+            setTextureBuffer(0, getTextureBuffer(0, 0), ii);
+        }
         
         _vertexBufferSize = (vertices == null) ? 0 : vertices.capacity();
         _normalBufferSize = (normals == null) ? 0 : normals.capacity();
@@ -282,6 +297,9 @@ public class ModelMesh extends TriMesh
             mstore._tstates = _tstates;
         }
         mstore._sphereMapped = _sphereMapped;
+        mstore._filterMode = _filterMode;
+        mstore._mipMapMode = _mipMapMode;
+        mstore._emissiveMap = _emissiveMap;
         return mstore;
     }
     
@@ -309,6 +327,9 @@ public class ModelMesh extends TriMesh
         out.writeInt(_indexBufferSize);
         out.writeObject(_textures);
         out.writeBoolean(_sphereMapped);
+        out.writeInt(_filterMode);
+        out.writeInt(_mipMapMode);
+        out.writeObject(_emissiveMap);
         out.writeBoolean(_solid);
         out.writeBoolean(_transparent);
     }
@@ -329,6 +350,9 @@ public class ModelMesh extends TriMesh
         _indexBufferSize = in.readInt();
         _textures = (String[])in.readObject();
         _sphereMapped = in.readBoolean();
+        _filterMode = in.readInt();
+        _mipMapMode = in.readInt();
+        _emissiveMap = (String)in.readObject();
         _solid = in.readBoolean();
         _transparent = in.readBoolean();
     }
@@ -365,12 +389,27 @@ public class ModelMesh extends TriMesh
         if (_textures == null) {
             return;
         }
+        Texture emissiveTex = null;
+        if (_emissiveMap != null) {
+            TextureState tstate = tprov.getTexture(_emissiveMap);
+            emissiveTex = tstate.getTexture();
+            emissiveTex.setApply(Texture.AM_BLEND);
+            emissiveTex.setBlendColor(ColorRGBA.white);
+        }
         _tstates = new TextureState[_textures.length];
         for (int ii = 0; ii < _textures.length; ii++) {
             _tstates[ii] = tprov.getTexture(_textures[ii]);
+            Texture tex = _tstates[ii].getTexture();
             if (_sphereMapped) {
-                _tstates[ii].getTexture().setEnvironmentalMapMode(
-                    Texture.EM_SPHERE);
+                tex.setEnvironmentalMapMode(Texture.EM_SPHERE);
+            }
+            tex.setFilter(_filterMode);
+            tex.setMipmapState(_mipMapMode);
+            if (emissiveTex != null) {
+                _tstates[ii] = DisplaySystem.getDisplaySystem().
+                    getRenderer().createTextureState();
+                _tstates[ii].setTexture(emissiveTex, 0);
+                _tstates[ii].setTexture(tex, 1);
             }
         }
         if (_tstates[0] != null) {
@@ -521,6 +560,15 @@ public class ModelMesh extends TriMesh
     }
     
     /**
+     * Returns the number of textures this mesh uses (they must all share the
+     * same texture coordinates).
+     */
+    protected int getTextureCount ()
+    {
+        return (_emissiveMap == null) ? 1 : 2;
+    }
+    
+    /**
      * Locks the transform and bounds of this mesh on the assumption that its
      * position will not change.
      */
@@ -528,6 +576,29 @@ public class ModelMesh extends TriMesh
     {
         lockBounds();
         _transformLocked = true;
+    }
+    
+    /**
+     * Returns the mip-map mode corresponding to the given string
+     * (defaulting to {@link Texture#MM_LINEAR_LINEAR}).
+     */
+    protected static int getMipMapMode (String mmode)
+    {
+        if ("none".equals(mmode)) {
+            return Texture.MM_NONE;
+        } else if ("nearest".equals(mmode)) {
+            return Texture.MM_NEAREST;
+        } else if ("linear".equals(mmode)) {
+            return Texture.MM_LINEAR;
+        } else if ("nearest_nearest".equals(mmode)) {
+            return Texture.MM_NEAREST_NEAREST;
+        } else if ("nearest_linear".equals(mmode)) {
+            return Texture.MM_NEAREST_LINEAR;
+        } else if ("linear_nearest".equals(mmode)) {
+            return Texture.MM_LINEAR_NEAREST;
+        } else {
+            return Texture.MM_LINEAR_LINEAR;
+        }
     }
     
     /**
@@ -605,6 +676,15 @@ public class ModelMesh extends TriMesh
     
     /** Whether or not to use sphere mapping on this model's textures. */
     protected boolean _sphereMapped;
+    
+    /** The filter mode to use on magnification. */
+    protected int _filterMode;
+    
+    /** The mipmap mode to use on minification. */
+    protected int _mipMapMode;
+    
+    /** The emissive map, if specified. */
+    protected String _emissiveMap;
     
     /** Whether or not this mesh can enable back-face culling. */
     protected boolean _solid;

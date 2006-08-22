@@ -400,7 +400,10 @@ public class SkinMesh extends ModelMesh
             TriangleBatch batch = getBatch(0), tbatch = new TriangleBatch();
             tbatch.setParentGeom(DUMMY_MESH);
             tbatch.setColorBuffer(batch.getColorBuffer());
-            tbatch.setTextureBuffer(batch.getTextureBuffer(0), 0);
+            int nunits = batch.getNumberOfUnits();
+            for (int ii = 0; ii < nunits; ii++) {
+                tbatch.setTextureBuffer(batch.getTextureBuffer(ii), ii);
+            }
             tbatch.setIndexBuffer(batch.getIndexBuffer());
             tbatch.setVertexBuffer(BufferUtils.createFloatBuffer(_vbuf));
             tbatch.setNormalBuffer(BufferUtils.createFloatBuffer(_nbuf));
@@ -409,7 +412,9 @@ public class SkinMesh extends ModelMesh
                 VBOInfo vboinfo = new VBOInfo(true);
                 vboinfo.setVBOIndexEnabled(true);
                 vboinfo.setVBOColorID(ovboinfo.getVBOColorID());
-                vboinfo.setVBOTextureID(0, ovboinfo.getVBOTextureID(0));
+                for (int ii = 0; ii < nunits; ii++) {
+                    vboinfo.setVBOTextureID(ii, ovboinfo.getVBOTextureID(ii));
+                }
                 vboinfo.setVBOIndexID(ovboinfo.getVBOIndexID());
                 tbatch.setVBOInfo(vboinfo);
             } else if (_useDisplayLists) {
