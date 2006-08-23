@@ -175,18 +175,8 @@ public class SkinMesh extends ModelMesh
     {
         super.reconstruct(vertices, normals, colors, textures, indices);
         
-        // store the current buffers as the originals
-        storeOriginalBuffers();
-        
         // initialize the quantized frame table
         _frames = new HashIntMap<Object>();
-    }
-    
-    @Override // documentation inherited
-    public void centerVertices ()
-    {
-        super.centerVertices();
-        storeOriginalBuffers();
     }
     
     @Override // documentation inherited
@@ -279,10 +269,10 @@ public class SkinMesh extends ModelMesh
             VBOInfo vboinfo = new VBOInfo(false);
             vboinfo.setVBOColorEnabled(true);
             vboinfo.setVBOTextureEnabled(true);
-            vboinfo.setVBOIndexEnabled(true);
+            vboinfo.setVBOIndexEnabled(!_depthSorted);
             setVBOInfo(vboinfo);
         }
-        _useDisplayLists = useDisplayLists;
+        _useDisplayLists = useDisplayLists && !_depthSorted;
     }
     
     @Override // documentation inherited
@@ -410,7 +400,7 @@ public class SkinMesh extends ModelMesh
             VBOInfo ovboinfo = batch.getVBOInfo();
             if (ovboinfo != null) {
                 VBOInfo vboinfo = new VBOInfo(true);
-                vboinfo.setVBOIndexEnabled(true);
+                vboinfo.setVBOIndexEnabled(!_depthSorted);
                 vboinfo.setVBOColorID(ovboinfo.getVBOColorID());
                 for (int ii = 0; ii < nunits; ii++) {
                     vboinfo.setVBOTextureID(ii, ovboinfo.getVBOTextureID(ii));
@@ -425,11 +415,11 @@ public class SkinMesh extends ModelMesh
         }
     }
     
-    /**
-     * Stores the current vertex and normal buffers for later deformation.
-     */
+    @Override // documentation inherited
     protected void storeOriginalBuffers ()
     {
+        super.storeOriginalBuffers();
+        
         FloatBuffer vbuf = getVertexBuffer(0), nbuf = getNormalBuffer(0);
         vbuf.rewind();
         nbuf.rewind();
@@ -483,7 +473,7 @@ public class SkinMesh extends ModelMesh
     
     /** The original (undeformed) vertex and normal buffers and the deformed
      * versions. */
-    protected float[] _ovbuf, _onbuf, _vbuf, _nbuf;
+    protected float[] _onbuf, _ovbuf, _nbuf;
 
     /** The frame id to store on the next update.  If 0, don't store any frame
      * and skin the mesh as normal.  If -1, a frame has been stored and thus

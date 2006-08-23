@@ -36,8 +36,11 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -105,6 +108,8 @@ public class ModelMesh extends TriMesh
         _emissiveMap = props.getProperty(texture + ".emissive");
         _solid = solid;
         _transparent = transparent;
+        _depthSorted = _transparent && Boolean.parseBoolean(
+            props.getProperty("depth_sort"));
     }
     
     /**
@@ -130,6 +135,9 @@ public class ModelMesh extends TriMesh
         _colorByteBuffer = colors;
         _textureByteBuffer = textures;
         _indexByteBuffer = indices;
+        
+        // store any buffers that will be manipulated on a per-instance basis
+        storeOriginalBuffers();
         
         // initialize the model if we're displaying
         if (DisplaySystem.getDisplaySystem() == null) {
@@ -160,6 +168,7 @@ public class ModelMesh extends TriMesh
             getBatch(0).getModelBound().getCenter().set(Vector3f.ZERO);
             getBatch(0).translatePoints(offset);
         }
+        storeOriginalBuffers();
     }
     
     /**
@@ -271,7 +280,7 @@ public class ModelMesh extends TriMesh
             mbatch.setTextureBuffer(properties.isSet("texcoords") ?
                 texcoords : BufferUtils.clone(texcoords), ii);
         }
-        mbatch.setIndexBuffer(properties.isSet("indices") ?
+        mbatch.setIndexBuffer((properties.isSet("indices") && !_depthSorted) ?
             batch.getIndexBuffer() :
                 BufferUtils.clone(batch.getIndexBuffer()));
         if (properties.isSet("vboinfo")) {
@@ -300,6 +309,11 @@ public class ModelMesh extends TriMesh
         mstore._filterMode = _filterMode;
         mstore._mipMapMode = _mipMapMode;
         mstore._emissiveMap = _emissiveMap;
+        mstore._solid = _solid;
+        mstore._transparent = _transparent;
+        mstore._depthSorted = _depthSorted;
+        mstore._oibuf = _oibuf;
+        mstore._vbuf = _vbuf;
         return mstore;
     }
     
@@ -332,6 +346,7 @@ public class ModelMesh extends TriMesh
         out.writeObject(_emissiveMap);
         out.writeBoolean(_solid);
         out.writeBoolean(_transparent);
+        out.writeBoolean(_depthSorted);
     }
     
     // documentation inherited from interface Externalizable
@@ -355,6 +370,7 @@ public class ModelMesh extends TriMesh
         _emissiveMap = (String)in.readObject();
         _solid = in.readBoolean();
         _transparent = in.readBoolean();
+        _depthSorted = in.readBoolean();
     }
     
     // documentation inherited from interface ModelSpatial
@@ -375,10 +391,10 @@ public class ModelMesh extends TriMesh
     {
         if (useVBOs && renderer.supportsVBO()) {
             VBOInfo vboinfo = new VBOInfo(true);
-            vboinfo.setVBOIndexEnabled(true);
+            vboinfo.setVBOIndexEnabled(!_depthSorted);
             setVBOInfo(vboinfo);
             
-        } else if (useDisplayLists) {
+        } else if (useDisplayLists && !_depthSorted) {
             lockMeshes(renderer);
         }
     }
@@ -554,7 +570,7 @@ public class ModelMesh extends TriMesh
     protected void setupBatchList ()
     {
         batchList = new ArrayList<GeomBatch>(1);
-        TriangleBatch batch = new OverlayBatch();
+        TriangleBatch batch = new ModelBatch();
         batch.setParentGeom(this);
         batchList.add(batch);
     }
@@ -566,6 +582,24 @@ public class ModelMesh extends TriMesh
     protected int getTextureCount ()
     {
         return (_emissiveMap == null) ? 1 : 2;
+    }
+    
+    /**
+     * For buffers that must be manipulated in some fashion, this method stores
+     * the originals.
+     */
+    protected void storeOriginalBuffers ()
+    {
+        if (!_depthSorted) {
+            return;
+        }
+        IntBuffer ibuf = getIndexBuffer(0);
+        ibuf.rewind();
+        IntBuffer.wrap(_oibuf = new int[ibuf.capacity()]).put(ibuf);
+        
+        FloatBuffer vbuf = getVertexBuffer(0);
+        vbuf.rewind();
+        FloatBuffer.wrap(_vbuf = new float[vbuf.capacity()]).put(vbuf);
     }
     
     /**
@@ -632,12 +666,65 @@ public class ModelMesh extends TriMesh
         _overlayZBuffer.setWritable(false);
     }
     
-    /** Renders overlays as well as the base layer. */
-    protected class OverlayBatch extends TriangleBatch
+    /**
+     * Sorts the encoded triangle index/distance pairs in {@link #_tcodes}
+     * using a two-pass (16 bit) radix sort (as described by
+     * <a href="http://codercorner.com/RadixSortRevisited.htm">Pierre
+     * Terdiman</a>.  {@link #_bcounts} is assumed to be initialized to the
+     * counts for the first radix.
+     */
+    protected static void sortTriangleCodes (int tcount)
+    {
+        // initialize the offsets for the first radix (LSB) and clear
+        // the counts
+        initByteOffsets();
+        
+        // sort by the first radix and get the counts for the second
+        // (swapping directions in the hope of using the cache more
+        // effectively)
+        if (_stcodes == null || _stcodes.length < tcount) {
+            _stcodes = new int[tcount];
+        }
+        int tcode;
+        for (int ii = tcount - 1; ii >= 0; ii--) {
+            tcode = _tcodes[ii];
+            _stcodes[_boffsets[tcode & 0xFF]++] = tcode;
+            _bcounts[(tcode >> 8) & 0xFF]++;
+        }
+        
+        // initialize offsets for the second radix, clear counts, and
+        // sort by the second radix
+        initByteOffsets();
+        for (int ii = 0; ii < tcount; ii++) {
+            tcode = _stcodes[ii];
+            _tcodes[_boffsets[(tcode >> 8) & 0xFF]++] = tcode;
+        }
+    }
+    
+    /**
+     * Sets the initial byte offsets used to place bytes within the sorted
+     * array using the byte counts, clearing the counts in the process.
+     */
+    protected static void initByteOffsets ()
+    {
+        _boffsets[0] = 0;
+        for (int ii = 1; ii < 256; ii++) {
+            _boffsets[ii] = _boffsets[ii - 1] + _bcounts[ii - 1];
+            _bcounts[ii - 1] = 0;
+        }
+        _bcounts[255] = 0;
+    }
+    
+    /** Sorts triangles for transparent meshes and renders overlays as well as
+     * the base layer. */
+    protected class ModelBatch extends TriangleBatch
     {
         @Override // documentation inherited
         public void draw (Renderer r)
         {
+            if (_depthSorted && isEnabled() && r.isProcessingQueue()) {
+                sortTriangles(r);
+            }
             super.draw(r);
             if (_overlays != null && isEnabled() && r.isProcessingQueue()) {
                 for (RenderState[] overlay : _overlays) {
@@ -653,6 +740,72 @@ public class ModelMesh extends TriMesh
                     }
                 }
             }
+        }
+        
+        /**
+         * Sorts the batch's triangles by their distance to the camera.
+         */
+        protected void sortTriangles (Renderer r)
+        {
+            // using the camera's direction in model space and the position
+            // and size of the model bound, find a set of plane parameters
+            // that determine the distance to a camera-aligned plane
+            // that touches the near edge of the bounding volume, as well
+            // as a scaling factor that brings the distance into a 16-bit
+            // integer range
+            getParentGeom().getWorldRotation().inverse().mult(
+                r.getCamera().getDirection(), _cdir);
+            BoundingVolume mbound = getModelBound();
+            Vector3f mc = mbound.getCenter();
+            float radius;
+            if (mbound instanceof BoundingSphere) {
+                radius = ((BoundingSphere)mbound).getRadius();
+            } else { // mbound instanceof BoundingBox
+                BoundingBox bbox = (BoundingBox)mbound;
+                radius = FastMath.sqrt(3f) * Math.max(bbox.xExtent,
+                    Math.max(bbox.yExtent, bbox.zExtent));
+            }
+            float a = _cdir.x, b = _cdir.y, c = _cdir.z,
+                d = radius - a*mc.x - b*mc.y - c*mc.z,
+                dscale = 65535f / (radius * 2);
+            
+            // encode the model's triangles into integers such that the
+            // high 16 bits represent the original triangle index and the
+            // low 16 bits represent the distance to the plane.  also
+            // increment the byte counts used for radix sorting
+            int tcount = getTriangleCount(), idx, idist;
+            if (_tcodes == null || _tcodes.length < tcount) {
+                _tcodes = new int[tcount];
+            }
+            FloatBuffer vbuf = getVertexBuffer();
+            for (int ii = 0; ii < tcount; ii++) {
+                idx = _oibuf[ii*3] * 3;
+                idist = (int)((a*_vbuf[idx++] + b*_vbuf[idx++] +
+                    c*_vbuf[idx] + d) * dscale);
+                _tcodes[ii] = (ii << 16) | idist;
+                _bcounts[idist & 0xFF]++;
+            }
+            
+            // sort the encoded triangles by increasing distance
+            sortTriangleCodes(tcount);
+            
+            // reorder the triangles as dictated by the sorted codes, furthest
+            // triangles first
+            int icount = tcount * 3;
+            if (_sibuf == null || _sibuf.length < icount) {
+                _sibuf = new int[icount];
+            }
+            for (int ii = tcount - 1, sidx = 0; ii >= 0; ii--) {
+                idx = ((_tcodes[ii] >> 16) & 0xFFFF) * 3;
+                _sibuf[sidx++] = _oibuf[idx++];
+                _sibuf[sidx++] = _oibuf[idx++];
+                _sibuf[sidx++] = _oibuf[idx];
+            }
+            
+            // copy the indices to the buffer
+            IntBuffer ibuf = getIndexBuffer();
+            ibuf.rewind();
+            ibuf.put(_sibuf, 0, icount);
         }
         
         /** Temporarily stores the original states. */
@@ -692,6 +845,10 @@ public class ModelMesh extends TriMesh
     /** Whether or not this mesh must be rendered as transparent. */
     protected boolean _transparent;
     
+    /** Whether or not the triangles of this mesh should be depth-sorted before
+     * rendering. */
+    protected boolean _depthSorted;
+    
     /** If non-null, additional layers to render over the base layer. */
     protected ArrayList<RenderState[]> _overlays;
     
@@ -703,6 +860,12 @@ public class ModelMesh extends TriMesh
      * transformations to display lists. */
     protected boolean _transformLocked;
     
+    /** For depth-sorted and skinned meshes, the array of vertices. */
+    protected float[] _vbuf;
+    
+    /** For depth-sorted meshes, the original array of indices. */
+    protected int[] _oibuf;
+    
     /** The shared state for back face culling. */
     protected static CullState _backCull;
     
@@ -711,6 +874,18 @@ public class ModelMesh extends TriMesh
     
     /** The shared state for checking, but not writing to, the z buffer. */
     protected static ZBufferState _overlayZBuffer;
+    
+    /** Work vector to store the camera direction. */
+    protected static Vector3f _cdir = new Vector3f();
+    
+    /** Work arrays used to sort triangles. */
+    protected static int[] _tcodes, _stcodes;
+    
+    /** Holds counts of each byte and array offsets for radix sorting. */
+    protected static int[] _bcounts = new int[256], _boffsets = new int[256];
+    
+    /** Work array used to hold indices of sorted triangles. */
+    protected static int[] _sibuf;
     
     private static final long serialVersionUID = 1;
 }
