@@ -769,19 +769,29 @@ public class ModelMesh extends TriMesh
                 d = radius - a*mc.x - b*mc.y - c*mc.z,
                 dscale = 65535f / (radius * 2);
             
+            // premultiply the scale and averaging factor
+            a *= dscale / 3f;
+            b *= dscale / 3f;
+            c *= dscale / 3f;
+            d *= dscale;
+            
             // encode the model's triangles into integers such that the
             // high 16 bits represent the original triangle index and the
             // low 16 bits represent the distance to the plane.  also
             // increment the byte counts used for radix sorting
-            int tcount = getTriangleCount(), idx, idist;
+            int tcount = getTriangleCount(), idist;
             if (_tcodes == null || _tcodes.length < tcount) {
                 _tcodes = new int[tcount];
             }
-            FloatBuffer vbuf = getVertexBuffer();
-            for (int ii = 0; ii < tcount; ii++) {
-                idx = _oibuf[ii*3] * 3;
-                idist = (int)((a*_vbuf[idx++] + b*_vbuf[idx++] +
-                    c*_vbuf[idx] + d) * dscale);
+            int i1, i2, i3;
+            for (int ii = 0, idx = 0; ii < tcount; ii++) {
+                i1 = _oibuf[idx++] * 3;
+                i2 = _oibuf[idx++] * 3;
+                i3 = _oibuf[idx++] * 3;
+                idist = (int)(
+                    a * (_vbuf[i1++] + _vbuf[i2++] + _vbuf[i3++]) +
+                    b * (_vbuf[i1++] + _vbuf[i2++] + _vbuf[i3++]) +
+                    c * (_vbuf[i1++] + _vbuf[i2++] + _vbuf[i3++]) + d);
                 _tcodes[ii] = (ii << 16) | idist;
                 _bcounts[idist & 0xFF]++;
             }
@@ -791,7 +801,7 @@ public class ModelMesh extends TriMesh
             
             // reorder the triangles as dictated by the sorted codes, furthest
             // triangles first
-            int icount = tcount * 3;
+            int icount = tcount * 3, idx;
             if (_sibuf == null || _sibuf.length < icount) {
                 _sibuf = new int[icount];
             }

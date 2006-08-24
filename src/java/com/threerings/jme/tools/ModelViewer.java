@@ -366,6 +366,7 @@ public class ModelViewer extends JmeCanvasApp
     {
         super.initDisplay();
         _ctx.getRenderer().setBackgroundColor(ColorRGBA.gray);
+        _ctx.getRenderer().getQueue().setTwoPassTransparency(false);
     }
     
     @Override // documentation inherited
