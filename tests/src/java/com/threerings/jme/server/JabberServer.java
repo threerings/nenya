@@ -7,7 +7,6 @@ import com.threerings.crowd.Log;
 import com.threerings.crowd.data.PlaceObject;
 import com.threerings.crowd.server.CrowdServer;
 import com.threerings.crowd.server.PlaceManager;
-import com.threerings.crowd.server.PlaceRegistry;
 
 import com.threerings.jme.data.JabberConfig;
 
@@ -24,13 +23,8 @@ public class JabberServer extends CrowdServer
         super.init();
 
         // create a single location
-        plreg.createPlace(
-            new JabberConfig(), new PlaceRegistry.CreationObserver() {
-            public void placeCreated (PlaceObject place, PlaceManager pmgr) {
-                Log.info("Created chat room " + pmgr.where() + ".");
-                _place = pmgr;
-            }
-        });
+        _place = plreg.createPlace(new JabberConfig());
+        Log.info("Created chat room " + _place.where() + ".");
     }
 
     public static void main (String[] args)
