@@ -23,7 +23,13 @@ package com.threerings.util;
 
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import com.samskivert.util.Interval;
 import com.samskivert.util.RunQueue;
@@ -50,21 +56,26 @@ public abstract class IdleTracker
         _lastEvent = getTimeStamp();
     }
 
-    public void start (KeyboardManager keymgr, RunQueue rqueue)
+    public void start (KeyboardManager keymgr root, RunQueue rqueue)
     {
-        // we want to observe all mouse and keyboard events
-        long eventMask =
-            AWTEvent.MOUSE_EVENT_MASK |
-            AWTEvent.MOUSE_MOTION_EVENT_MASK |
-            AWTEvent.MOUSE_WHEEL_EVENT_MASK |
-            AWTEvent.KEY_EVENT_MASK;
+        start(keymgr, null, rqueue);
+    }
 
-        // add the global event listener
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            public void eventDispatched (AWTEvent event) {
-                handleUserActivity();
+    public void start (KeyboardManager keymgr, Window root, RunQueue rqueue)
+    {
+        EventListener listener = new EventListener();
+        try {
+            // try to add a global event listener
+            Toolkit.getDefaultToolkit().addAWTEventListener(
+                listener, EVENT_MASK);
+        } catch (SecurityException se) {
+            // fall back to listening to our main window
+            if (root != null) {
+                root.addKeyListener(listener);
+                root.addMouseListener(listener);
+                root.addMouseMotionListener(listener);
             }
-        }, eventMask);
+        }
 
         // and tie into the keyboard manager if one is provided
         if (keymgr != null) {
@@ -157,6 +168,48 @@ public abstract class IdleTracker
         }
     }
 
+    protected class EventListener
+        implements AWTEventListener, KeyListener, MouseListener,
+                   MouseMotionListener
+    {
+        public void eventDispatched (AWTEvent event) {
+            handleUserActivity();
+        }
+
+        public void keyTyped (KeyEvent e) {
+            eventDispatched(e);
+        }
+        public void keyPressed (KeyEvent e) {
+            eventDispatched(e);
+        }
+        public void keyReleased (KeyEvent e) {
+            eventDispatched(e);
+        }
+
+        public void mouseClicked (MouseEvent e) {
+            eventDispatched(e);
+        }
+        public void mousePressed (MouseEvent e) {
+            eventDispatched(e);
+        }
+        public void mouseReleased (MouseEvent e) {
+            eventDispatched(e);
+        }
+        public void mouseEntered (MouseEvent e) {
+            eventDispatched(e);
+        }
+        public void mouseExited (MouseEvent e) {
+            eventDispatched(e);
+        }
+
+        public void mouseDragged (MouseEvent e) {
+            eventDispatched(e);
+        }
+        public void mouseMoved (MouseEvent e) {
+            eventDispatched(e);
+        }
+    }
+
 //     /** The user's current state. */
 //     protected static enum State { ACTIVE, IDLE, ABANDONED };
 
@@ -176,4 +229,11 @@ public abstract class IdleTracker
     protected static final int ACTIVE = 0;
     protected static final int IDLE = 1;
     protected static final int ABANDONED = 2;
+
+    // we want to observe all mouse and keyboard events
+    protected static final long EVENT_MASK =         
+        AWTEvent.MOUSE_EVENT_MASK |
+        AWTEvent.MOUSE_MOTION_EVENT_MASK |
+        AWTEvent.MOUSE_WHEEL_EVENT_MASK |
+        AWTEvent.KEY_EVENT_MASK;
 }

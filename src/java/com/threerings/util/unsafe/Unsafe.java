@@ -138,6 +138,8 @@ public class Unsafe
         try {
             System.loadLibrary("unsafe");
             _loaded = init();
+        } catch (SecurityException se) {
+            log.warning("Failed to load 'unsafe' library: " + se + ".");
         } catch (UnsatisfiedLinkError e) {
             log.warning("Failed to load 'unsafe' library: " + e + ".");
         }

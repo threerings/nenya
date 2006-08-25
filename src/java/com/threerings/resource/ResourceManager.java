@@ -181,12 +181,16 @@ public class ResourceManager
 
         // set up a URL handler so that things can be loaded via urls
         // with the 'resource' protocol
-        AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run () {
-                Handler.registerHandler(ResourceManager.this);
-                return null;
-            }
-        });
+        try {
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run () {
+                    Handler.registerHandler(ResourceManager.this);
+                    return null;
+                }
+            });
+        } catch (SecurityException se) {
+            Log.info("Running in sandbox. Unable to bind rsrc:// handler.");
+        }
     }
 
     /**
