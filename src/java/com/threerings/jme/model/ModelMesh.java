@@ -100,16 +100,20 @@ public class ModelMesh extends TriMesh
         _textures = (texture == null) ? null : StringUtil.parseStringArray(
             props.getProperty(texture, texture));
         _sphereMapped = Boolean.parseBoolean(
-            props.getProperty(texture + ".sphere_map"));
+            getSubProperty(props, texture, "sphere_map"));
         _filterMode = "nearest".equals(
-            props.getProperty(texture + ".filter")) ?
+            getSubProperty(props, texture, "filter")) ?
                 Texture.FM_NEAREST : Texture.FM_LINEAR;
-        _mipMapMode = getMipMapMode(props.getProperty(texture + ".mipmap"));
-        _emissiveMap = props.getProperty(texture + ".emissive");
+        _mipMapMode = getMipMapMode(
+            getSubProperty(props, texture, "mipmap"));
+        _emissiveMap = getSubProperty(props, texture, "emissive");
         _solid = solid;
         _transparent = transparent;
-        _depthSorted = _transparent && Boolean.parseBoolean(
-            props.getProperty("depth_sort"));
+        String threshold = getSubProperty(props, texture, "alpha_threshold");
+        _alphaThreshold = (threshold == null) ?
+            DEFAULT_ALPHA_THRESHOLD : Float.parseFloat(threshold);
+        _translucent = _transparent && Boolean.parseBoolean(
+            getSubProperty(props, texture, "translucent"));
     }
     
     /**
@@ -151,8 +155,14 @@ public class ModelMesh extends TriMesh
         }
         if (_transparent) {
             setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-            setRenderState(_blendAlpha);
-            setRenderState(_overlayZBuffer);
+            if (_translucent) {
+                setRenderState(_blendAlpha);
+                setRenderState(_overlayZBuffer);
+            } else if (_alphaThreshold == DEFAULT_ALPHA_THRESHOLD) {
+                setRenderState(_defaultTestAlpha);
+            } else {
+                setRenderState(createTestAlpha(_alphaThreshold));
+            }
         }
     }
     
@@ -280,7 +290,7 @@ public class ModelMesh extends TriMesh
             mbatch.setTextureBuffer(properties.isSet("texcoords") ?
                 texcoords : BufferUtils.clone(texcoords), ii);
         }
-        mbatch.setIndexBuffer((properties.isSet("indices") && !_depthSorted) ?
+        mbatch.setIndexBuffer((properties.isSet("indices") && !_translucent) ?
             batch.getIndexBuffer() :
                 BufferUtils.clone(batch.getIndexBuffer()));
         if (properties.isSet("vboinfo")) {
@@ -311,7 +321,7 @@ public class ModelMesh extends TriMesh
         mstore._emissiveMap = _emissiveMap;
         mstore._solid = _solid;
         mstore._transparent = _transparent;
-        mstore._depthSorted = _depthSorted;
+        mstore._translucent = _translucent;
         mstore._oibuf = _oibuf;
         mstore._vbuf = _vbuf;
         return mstore;
@@ -346,7 +356,8 @@ public class ModelMesh extends TriMesh
         out.writeObject(_emissiveMap);
         out.writeBoolean(_solid);
         out.writeBoolean(_transparent);
-        out.writeBoolean(_depthSorted);
+        out.writeFloat(_alphaThreshold);
+        out.writeBoolean(_translucent);
     }
     
     // documentation inherited from interface Externalizable
@@ -370,7 +381,8 @@ public class ModelMesh extends TriMesh
         _emissiveMap = (String)in.readObject();
         _solid = in.readBoolean();
         _transparent = in.readBoolean();
-        _depthSorted = in.readBoolean();
+        _alphaThreshold = in.readFloat();
+        _translucent = in.readBoolean();
     }
     
     // documentation inherited from interface ModelSpatial
@@ -391,10 +403,10 @@ public class ModelMesh extends TriMesh
     {
         if (useVBOs && renderer.supportsVBO()) {
             VBOInfo vboinfo = new VBOInfo(true);
-            vboinfo.setVBOIndexEnabled(!_depthSorted);
+            vboinfo.setVBOIndexEnabled(!_translucent);
             setVBOInfo(vboinfo);
             
-        } else if (useDisplayLists && !_depthSorted) {
+        } else if (useDisplayLists && !_translucent) {
             lockMeshes(renderer);
         }
     }
@@ -590,7 +602,7 @@ public class ModelMesh extends TriMesh
      */
     protected void storeOriginalBuffers ()
     {
-        if (!_depthSorted) {
+        if (!_translucent) {
             return;
         }
         IntBuffer ibuf = getIndexBuffer(0);
@@ -610,6 +622,17 @@ public class ModelMesh extends TriMesh
     {
         lockBounds();
         _transformLocked = true;
+    }
+    
+    /**
+     * Gets a sub-property from the given set, falling back on the main
+     * property if the sub-property is not specified.
+     */
+    protected static String getSubProperty (
+        Properties props, String prefix, String property)
+    {
+        return props.getProperty(prefix + "." + property,
+            props.getProperty(property));
     }
     
     /**
@@ -661,9 +684,25 @@ public class ModelMesh extends TriMesh
         _backCull.setCullMode(CullState.CS_BACK);
         _blendAlpha = renderer.createAlphaState();
         _blendAlpha.setBlendEnabled(true);
+        _defaultTestAlpha = createTestAlpha(DEFAULT_ALPHA_THRESHOLD);
         _overlayZBuffer = renderer.createZBufferState();
         _overlayZBuffer.setFunction(ZBufferState.CF_LEQUAL);
         _overlayZBuffer.setWritable(false);
+    }
+    
+    /**
+     * Creates an alpha state what will throw away fragments with alpha
+     * values less than or equal to the given threshold.
+     */
+    protected static AlphaState createTestAlpha (float threshold)
+    {
+        AlphaState astate = DisplaySystem.getDisplaySystem().
+            getRenderer().createAlphaState();
+        astate.setBlendEnabled(true);
+        astate.setTestEnabled(true);
+        astate.setTestFunction(AlphaState.TF_GREATER);
+        astate.setReference(threshold);
+        return astate;
     }
     
     /**
@@ -722,7 +761,7 @@ public class ModelMesh extends TriMesh
         @Override // documentation inherited
         public void draw (Renderer r)
         {
-            if (_depthSorted && isEnabled() && r.isProcessingQueue()) {
+            if (_translucent && isEnabled() && r.isProcessingQueue()) {
                 sortTriangles(r);
             }
             super.draw(r);
@@ -855,9 +894,12 @@ public class ModelMesh extends TriMesh
     /** Whether or not this mesh must be rendered as transparent. */
     protected boolean _transparent;
     
+    /** The alpha threshold below which fragments are discarded. */
+    protected float _alphaThreshold;
+    
     /** Whether or not the triangles of this mesh should be depth-sorted before
      * rendering. */
-    protected boolean _depthSorted;
+    protected boolean _translucent;
     
     /** If non-null, additional layers to render over the base layer. */
     protected ArrayList<RenderState[]> _overlays;
@@ -882,6 +924,9 @@ public class ModelMesh extends TriMesh
     /** The shared state for alpha blending. */
     protected static AlphaState _blendAlpha;
     
+    /** The shared state for alpha testing with the default threshold. */
+    protected static AlphaState _defaultTestAlpha;
+    
     /** The shared state for checking, but not writing to, the z buffer. */
     protected static ZBufferState _overlayZBuffer;
     
@@ -896,6 +941,9 @@ public class ModelMesh extends TriMesh
     
     /** Work array used to hold indices of sorted triangles. */
     protected static int[] _sibuf;
+    
+    /** The default alpha threshold. */
+    protected static final float DEFAULT_ALPHA_THRESHOLD = 0.5f;
     
     private static final long serialVersionUID = 1;
 }

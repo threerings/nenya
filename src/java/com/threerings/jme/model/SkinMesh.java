@@ -269,10 +269,10 @@ public class SkinMesh extends ModelMesh
             VBOInfo vboinfo = new VBOInfo(false);
             vboinfo.setVBOColorEnabled(true);
             vboinfo.setVBOTextureEnabled(true);
-            vboinfo.setVBOIndexEnabled(!_depthSorted);
+            vboinfo.setVBOIndexEnabled(!_translucent);
             setVBOInfo(vboinfo);
         }
-        _useDisplayLists = useDisplayLists && !_depthSorted;
+        _useDisplayLists = useDisplayLists && !_translucent;
     }
     
     @Override // documentation inherited
@@ -400,7 +400,7 @@ public class SkinMesh extends ModelMesh
             VBOInfo ovboinfo = batch.getVBOInfo();
             if (ovboinfo != null) {
                 VBOInfo vboinfo = new VBOInfo(true);
-                vboinfo.setVBOIndexEnabled(!_depthSorted);
+                vboinfo.setVBOIndexEnabled(!_translucent);
                 vboinfo.setVBOColorID(ovboinfo.getVBOColorID());
                 for (int ii = 0; ii < nunits; ii++) {
                     vboinfo.setVBOTextureID(ii, ovboinfo.getVBOTextureID(ii));
