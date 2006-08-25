@@ -36,6 +36,7 @@ import com.threerings.media.Log;
  * top-level class.
  */
 public class ManagedJApplet extends JApplet
+    implements FrameManager.ManagedRoot
 {
     // from interface FrameManager.ManagedRoot
     public void init (FrameManager fmgr)
