@@ -1,9 +1,9 @@
 //
-// $Id: ManagedJFrame.java 3285 2004-12-28 03:48:40Z mdb $
+// $Id$
 //
-// Narya library - tools for developing networked games
-// Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved
-// http://www.threerings.net/code/narya/
+// Nenya library - tools for developing networked games
+// Copyright (C) 2002-2006 Three Rings Design, Inc., All Rights Reserved
+// http://www.threerings.net/code/nenya/
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published
@@ -21,50 +21,22 @@
 
 package com.threerings.media;
 
+import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Window;
-
-import javax.swing.JFrame;
-
-import com.samskivert.util.StringUtil;
+import javax.swing.JApplet;
 
 import com.threerings.media.Log;
 
 /**
- * When using the {@link FrameManager}, one must use this top-level frame
- * class.
+ * When using the {@link FrameManager} in an Applet, one must use this
+ * top-level class.
  */
-public class ManagedJFrame extends JFrame
-    implements FrameManager.ManagedRoot
+public class ManagedJApplet extends JApplet
 {
-    /**
-     * Constructs a managed frame with no title.
-     */
-    public ManagedJFrame ()
-    {
-        this("");
-    }
-
-    /**
-     * Constructs a managed frame with the specified title.
-     */
-    public ManagedJFrame (String title)
-    {
-        super(title);
-    }
-
-    /**
-     * Constructs a managed frame in the specified graphics configuration.
-     */
-    public ManagedJFrame (GraphicsConfiguration gc)
-    {
-        super(gc);
-    }
-
     // from interface FrameManager.ManagedRoot
     public void init (FrameManager fmgr)
     {
@@ -74,7 +46,11 @@ public class ManagedJFrame extends JFrame
     // from interface FrameManager.ManagedRoot
     public Window getWindow ()
     {
-        return this;
+        Component parent = getParent();
+        while (!(parent instanceof Window) && parent != null) {
+            parent = parent.getParent();
+        }
+        return (Window)parent;
     }
 
     /**
@@ -85,19 +61,15 @@ public class ManagedJFrame extends JFrame
         return _fmgr;
     }
 
-    /**
-     * We catch paint requests and forward them on to the repaint
-     * infrastructure.
-     */
+    @Override // from Component
     public void paint (Graphics g)
     {
+        // we catch paint requests and forward them on to the repaint
+        // infrastructure
         update(g);
     }
 
-    /**
-     * We catch update requests and forward them on to the repaint
-     * infrastructure.
-     */
+    @Override // from Component
     public void update (Graphics g)
     {
         Shape clip = g.getClip();
@@ -114,6 +86,8 @@ public class ManagedJFrame extends JFrame
 
         if (_fmgr != null) {
             _fmgr.restoreFromBack(dirty);
+        } else {
+            Log.info("Dropping AWT dirty rect " + dirty + " (" + clip + ").");
         }
     }
 

@@ -33,10 +33,12 @@ import javax.swing.JMenuBar;
 
 import com.samskivert.swing.util.MenuUtil;
 
+import com.threerings.media.ManagedJFrame;
+
 /**
  * The viewer frame is the main application window.
  */
-public class ViewerFrame extends JFrame
+public class ViewerFrame extends ManagedJFrame
 {
     /**
      * Creates a frame in which the viewer application can operate.

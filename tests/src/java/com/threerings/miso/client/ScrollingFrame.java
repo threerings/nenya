@@ -26,17 +26,17 @@ import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.samskivert.swing.VGroupLayout;
 
+import com.threerings.media.ManagedJFrame;
 import com.threerings.media.SafeScrollPane;
 
 /**
  * The main application window.
  */
-public class ScrollingFrame extends JFrame
+public class ScrollingFrame extends ManagedJFrame
 {
     /**
      * Creates a frame in which the scrolling test app can operate.

@@ -42,7 +42,6 @@ import java.awt.EventQueue;
 import javax.swing.JLayeredPane;
 import javax.swing.RepaintManager;
 import javax.swing.JRootPane;
-import javax.swing.RootPaneContainer;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -123,14 +122,29 @@ public abstract class FrameManager
     }
 
     /**
+     * Provides a bridge between either {@link ManagedJFrame} or {@link
+     * ManagedJApplet} and the frame manager.
+     */
+    public static interface ManagedRoot
+    {
+        /** Configures the root with a reference to its frame manager. */
+        public void init (FrameManager fmgr);
+
+        /** Returns the window at the root of the UI hierarchy. */
+        public Window getWindow ();
+
+        /** Returns the top-level Swing pane. */
+        public JRootPane getRootPane();
+    }
+
+    /**
      * Creates a frame manager that will use a {@link SystemMediaTimer} to
      * obtain timing information, which is available on every platform, but
      * returns inaccurate time stamps on many platforms.
      *
-     * @see #newInstance(Window, RootPaneContainer, MediaTimer)
+     * @see #newInstance(ManagedRoot, MediaTimer)
      */
-    public static FrameManager newInstance (
-        Window window, RootPaneContainer root)
+    public static FrameManager newInstance (ManagedRoot root)
     {
         // first try creating a PerfTimer which is the best if we're using
         // JDK1.4.2
@@ -142,20 +156,14 @@ public abstract class FrameManager
                      "System.currentTimeMillis() based timer.");
             timer = new SystemMediaTimer();
         }
-        return newInstance(window, root, timer);
+        return newInstance(root, timer);
     }
 
     /**
-     * Constructs a frame manager that will do its rendering to the
-     * supplied frame. It is likely that the caller will want to have put
-     * the frame into full-screen exclusive mode prior to providing it to
-     * the frame manager so that the frame manager can take advantage of
-     * optimizations available in that mode.
-     *
-     * @see GraphicsDevice#setFullScreenWindow
+     * Constructs a frame manager that will do its rendering to the supplied
+     * root.
      */
-    public static FrameManager newInstance (
-        Window window, RootPaneContainer root, MediaTimer timer)
+    public static FrameManager newInstance (ManagedRoot root, MediaTimer timer)
     {
         FrameManager fmgr;
         if (_useFlip.getValue()) {
@@ -165,21 +173,18 @@ public abstract class FrameManager
             Log.info("Creating back frame manager.");
             fmgr = new BackFrameManager();
         }
-        fmgr.init(window, root, timer);
+        fmgr.init(root, timer);
         return fmgr;
     }
 
     /**
      * Initializes this frame manager and prepares it for operation.
      */
-    protected void init (
-        Window window, RootPaneContainer root, MediaTimer timer)
+    protected void init (ManagedRoot root, MediaTimer timer)
     {
-        _window = window;
+        _window = root.getWindow();
         _root = root;
-        if (window instanceof ManagedJFrame) {
-            ((ManagedJFrame)window).init(this);
-        }
+        _root.init(this);
         _timer = timer;
 
         // set up our custom repaint manager
@@ -773,7 +778,7 @@ public abstract class FrameManager
     protected Window _window;
 
     /** Provides access to our Swing bits. */
-    protected RootPaneContainer _root;
+    protected ManagedRoot _root;
 
     /** Used to obtain timing measurements. */
     protected MediaTimer _timer;

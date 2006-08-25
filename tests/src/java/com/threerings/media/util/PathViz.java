@@ -74,7 +74,7 @@ public class PathViz extends MediaPanel
     public static void main (String[] args)
     {
         ManagedJFrame frame = new ManagedJFrame("Path viz");
-        FrameManager fmgr = FrameManager.newInstance(frame, frame);
+        FrameManager fmgr = FrameManager.newInstance(frame);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(new PathViz(fmgr));
