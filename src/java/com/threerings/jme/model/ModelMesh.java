@@ -321,6 +321,7 @@ public class ModelMesh extends TriMesh
         mstore._emissiveMap = _emissiveMap;
         mstore._solid = _solid;
         mstore._transparent = _transparent;
+        mstore._alphaThreshold = _alphaThreshold;
         mstore._translucent = _translucent;
         mstore._oibuf = _oibuf;
         mstore._vbuf = _vbuf;
