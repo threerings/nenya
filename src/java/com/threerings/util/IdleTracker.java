@@ -56,7 +56,7 @@ public abstract class IdleTracker
         _lastEvent = getTimeStamp();
     }
 
-    public void start (KeyboardManager keymgr root, RunQueue rqueue)
+    public void start (KeyboardManager keymgr, RunQueue rqueue)
     {
         start(keymgr, null, rqueue);
     }
