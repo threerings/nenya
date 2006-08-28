@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
 
+import com.samskivert.util.Predicate;
+
 import com.threerings.media.AbstractMediaManager;
 import com.threerings.media.MediaPanel;
 
@@ -36,14 +38,6 @@ import com.threerings.media.MediaPanel;
  */
 public class SpriteManager extends AbstractMediaManager
 {
-    /** A predicate used to operate on sprites (see {@link #removeSprites}. */
-    public static interface Predicate
-    {
-        /** Returns true if this sprite is to be included by the predicate,
-         * false if it should be excluded. */
-        public boolean evaluate (Sprite sprite);
-    }
-
     /**
      * Construct and initialize the sprite manager.
      */
@@ -162,12 +156,12 @@ public class SpriteManager extends AbstractMediaManager
     /**
      * Removes all sprites that match the supplied predicate.
      */
-    public void removeSprites (Predicate pred)
+    public void removeSprites (Predicate<Sprite> pred)
     {
         int idxoff = 0;
         for (int ii = 0, ll = _media.size(); ii < ll; ii++) {
             Sprite sprite = (Sprite)_media.get(ii-idxoff);
-            if (pred.evaluate(sprite)) {
+            if (pred.isMatch(sprite)) {
                 _media.remove(sprite);
                 sprite.invalidate();
                 sprite.shutdown();

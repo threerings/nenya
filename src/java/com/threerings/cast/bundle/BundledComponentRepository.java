@@ -33,10 +33,8 @@ import java.util.Iterator;
 
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.IntIntMap;
+import com.samskivert.util.Predicate;
 import com.samskivert.util.Tuple;
-
-import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.collections.Predicate;
 
 import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
@@ -219,14 +217,14 @@ public class BundledComponentRepository
     // documentation inherited
     public Iterator enumerateComponentIds (final ComponentClass compClass)
     {
-        Predicate classP = new Predicate() {
-            public boolean evaluate (Object input) {
+        Predicate<Integer> pred = new Predicate<Integer>() {
+            public boolean isMatch (Integer input) {
                 CharacterComponent comp = (CharacterComponent)
                     _components.get(input);
                 return comp.componentClass.equals(compClass);
             }
         };
-        return new FilterIterator(_components.keySet().iterator(), classP);
+        return pred.filter(_components.keySet().iterator());
     }
 
     /**
