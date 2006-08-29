@@ -199,9 +199,11 @@ public class ModelMesh extends TriMesh
      */
     public void removeOverlay (RenderState[] overlay)
     {
-        _overlays.remove(overlay);
-        if (_overlays.isEmpty()) {
-            _overlays = null;
+        if (_overlays != null) {
+            _overlays.remove(overlay);
+            if (_overlays.isEmpty()) {
+                _overlays = null;
+            }
         }
     }
     
