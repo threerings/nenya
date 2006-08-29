@@ -95,7 +95,7 @@ import com.jme.util.TextureKey;
 import com.jme.util.TextureManager;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.Debugger;
-import com.jmex.effects.particles.ParticleMesh;
+import com.jmex.effects.particles.ParticleGeometry;
 
 import com.samskivert.swing.GroupLayout;
 import com.samskivert.swing.Spacer;
@@ -111,6 +111,7 @@ import com.threerings.jme.Log;
 import com.threerings.jme.camera.CameraHandler;
 import com.threerings.jme.model.Model;
 import com.threerings.jme.model.TextureProvider;
+import com.threerings.jme.util.SpatialVisitor;
 
 /**
  * A simple viewer application that allows users to examine models and their
@@ -832,8 +833,8 @@ public class ModelViewer extends JmeCanvasApp
             JPanel bpanel = new JPanel();
             bpanel.add(new JButton(new AbstractAction(
                 _msg.get("m.respawn_particles")) {
-                public void actionPerformed (ActionEvent e) {
-                    forceRespawn(_spatial);   
+                public void actionPerformed (ActionEvent e) {   
+                    _respawner.traverse(_spatial);
                 }
             }));
             bpanel.add(new JButton(new AbstractAction(_msg.get("m.close")) {
@@ -860,21 +861,6 @@ public class ModelViewer extends JmeCanvasApp
                 _spatial.updateRenderState();
             } else if (!visible && _spatial.getParent() != null) {
                 _ctx.getGeometry().detachChild(_spatial);
-            }
-        }
-        
-        /**
-         * Recursively forces all particles to respawn.
-         */
-        protected void forceRespawn (Spatial spatial)
-        {
-            if (spatial instanceof ParticleMesh) {
-                ((ParticleMesh)spatial).forceRespawn();
-            } else if (spatial instanceof Node) {
-                Node node = (Node)spatial;
-                for (int ii = 0, nn = node.getQuantity(); ii < nn; ii++) {
-                    forceRespawn(node.getChild(ii));
-                }
             }
         }
         
@@ -1024,6 +1010,14 @@ public class ModelViewer extends JmeCanvasApp
     /** The app configuration. */
     protected static Config _config =
         new Config("com/threerings/jme/tools/ModelViewer");
+    
+    /** Forces all particle systems to respawn. */
+    protected static SpatialVisitor<ParticleGeometry> _respawner =
+        new SpatialVisitor<ParticleGeometry>(ParticleGeometry.class) {
+        protected void visit (ParticleGeometry geom) {
+            geom.forceRespawn();
+        }
+    };
     
     /** The number of lines on the grid in each direction. */
     protected static final int GRID_SIZE = 32;
