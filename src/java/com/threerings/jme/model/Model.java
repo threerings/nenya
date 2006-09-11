@@ -800,10 +800,10 @@ public class Model extends ModelNode
         _accum += time;
         if (_outside) {
             if (!wasOutside) {
-                updateModelBound();
+                storeWorldBound();
             }
             updateWorldVectors();
-            worldBound = _modelBound.transform(getWorldRotation(),
+            worldBound = _storedBound.transform(getWorldRotation(),
                 getWorldTranslation(), getWorldScale(), worldBound);
             
         } else {
@@ -824,19 +824,21 @@ public class Model extends ModelNode
         }
     }
     
-    @Override // documentation inherited
-    public void updateModelBound ()
+    /**
+     * Transforms the current world bound into model space and stores it for
+     * when the model is offscreen.
+     */
+    protected void storeWorldBound ()
     {
         if (worldBound == null) {
             return;
         }
-        setTransform(getWorldTranslation(), getWorldRotation(),
-            getWorldScale(), _xform);
-        _xform.invertLocal();
-        _xform.toTranslationVector(_trans);
-        extractScale(_xform, _scale);
-        _xform.toRotationQuat(_rot);
-        _modelBound = worldBound.transform(_rot, _trans, _scale, _modelBound);
+        _rot.set(getWorldRotation()).inverseLocal();
+        _scale.set(Vector3f.UNIT_XYZ).divideLocal(getWorldScale());
+        _rot.mult(getWorldTranslation(), _trans).multLocal(
+            _scale).negateLocal();
+        _storedBound = worldBound.transform(
+            _rot, _trans, _scale, _storedBound);
     }
     
     /**
@@ -956,25 +958,6 @@ public class Model extends ModelNode
         }
     }
     
-    /**
-     * Extracts the scale factor from the given transform and normalizes it.
-     */
-    protected static void extractScale (Matrix4f m, Vector3f scale)
-    {
-        scale.x = FastMath.sqrt(m.m00*m.m00 + m.m01*m.m01 + m.m02*m.m02);
-        m.m00 /= scale.x;
-        m.m01 /= scale.x;
-        m.m02 /= scale.x;
-        scale.y = FastMath.sqrt(m.m10*m.m10 + m.m11*m.m11 + m.m12*m.m12);
-        m.m10 /= scale.y;
-        m.m11 /= scale.y;
-        m.m12 /= scale.y;
-        scale.z = FastMath.sqrt(m.m20*m.m20 + m.m21*m.m21 + m.m22*m.m22);
-        m.m20 /= scale.z;
-        m.m21 /= scale.z;
-        m.m22 /= scale.z;
-    }
-    
     /** A reference to the prototype, or <code>null</code> if this is a
      * prototype. */
     protected Model _prototype;
@@ -1026,8 +1009,9 @@ public class Model extends ModelNode
     /** The child node that contains the model's emissions in world space. */
     protected Node _emissionNode;
     
-    /** The model space bounding volume. */
-    protected BoundingVolume _modelBound;
+    /** The model space bounding volume stored for use when the model is
+     * offscreen. */
+    protected BoundingVolume _storedBound;
     
     /** Whether or not we were outside the frustum at the last update. */
     protected boolean _outside;
