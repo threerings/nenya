@@ -28,6 +28,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Window;
 import javax.swing.JApplet;
+import javax.swing.RepaintManager;
 
 import com.threerings.media.Log;
 
@@ -60,36 +61,6 @@ public class ManagedJApplet extends JApplet
     public FrameManager getFrameManager ()
     {
         return _fmgr;
-    }
-
-    @Override // from Component
-    public void paint (Graphics g)
-    {
-        // we catch paint requests and forward them on to the repaint
-        // infrastructure
-        update(g);
-    }
-
-    @Override // from Component
-    public void update (Graphics g)
-    {
-        Shape clip = g.getClip();
-        Rectangle dirty;
-        if (clip != null) {
-            dirty = clip.getBounds();
-        } else {
-            dirty = getRootPane().getBounds();
-            // account for our frame insets
-            Insets insets = getInsets();
-            dirty.x += insets.left;
-            dirty.y += insets.top;
-        }
-
-        if (_fmgr != null) {
-            _fmgr.restoreFromBack(dirty);
-        } else {
-            Log.info("Dropping AWT dirty rect " + dirty + " (" + clip + ").");
-        }
     }
 
     protected FrameManager _fmgr;
