@@ -58,16 +58,13 @@ public class Handler extends URLStreamHandler
      */
     public static void registerHandler (ResourceManager rmgr)
     {
-        // if we already have a resource manager registered; don't
-        // register another one
-        if (_rmgr != null) {
-            Log.warning("Refusing duplicate resource handler registration.");
-            return;
+        // we only want to wire up our Handler once, but if a new resource
+        // manager comes along, we'll point the existing handler there
+        if (_rmgr == null) {
+            // wire up our handler with the handy dandy attachable URL factory
+            AttachableURLFactory.attachHandler("resource", Handler.class);
         }
         _rmgr = rmgr;
-
-        // wire up our handler with the handy dandy attachable URL factory
-        AttachableURLFactory.attachHandler("resource", Handler.class);
     }
 
     // documentation inherited
