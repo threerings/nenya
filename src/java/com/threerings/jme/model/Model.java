@@ -44,7 +44,6 @@ import java.util.Properties;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.FastMath;
-import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -830,15 +829,22 @@ public class Model extends ModelNode
      */
     protected void storeWorldBound ()
     {
-        if (worldBound == null) {
-            return;
-        }
-        _rot.set(getWorldRotation()).inverseLocal();
-        _scale.set(Vector3f.UNIT_XYZ).divideLocal(getWorldScale());
-        _rot.mult(getWorldTranslation(), _trans).multLocal(
-            _scale).negateLocal();
-        _storedBound = worldBound.transform(
-            _rot, _trans, _scale, _storedBound);
+        Quaternion orot = new Quaternion(getLocalRotation());
+        Vector3f otrans = new Vector3f(getLocalTranslation()),
+            oscale = new Vector3f(getLocalScale());
+        
+        getLocalRotation().set(Quaternion.IDENTITY);
+        getLocalTranslation().set(Vector3f.ZERO);
+        getLocalScale().set(Vector3f.UNIT_XYZ);
+        
+        updateWorldData(0f);
+        updateWorldBound();
+        
+        _storedBound = worldBound.clone(_storedBound);
+        
+        getLocalRotation().set(orot);
+        getLocalTranslation().set(otrans);
+        getLocalScale().set(oscale);
     }
     
     /**
@@ -1015,11 +1021,6 @@ public class Model extends ModelNode
     
     /** Whether or not we were outside the frustum at the last update. */
     protected boolean _outside;
-    
-    /** Temporary transform variables. */
-    protected Matrix4f _xform = new Matrix4f();
-    protected Vector3f _trans = new Vector3f(), _scale = new Vector3f();
-    protected Quaternion _rot = new Quaternion();
     
     /** Animation completion listeners. */
     protected ObserverList<AnimationObserver> _animObservers =
