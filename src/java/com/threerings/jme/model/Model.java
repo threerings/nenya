@@ -829,22 +829,17 @@ public class Model extends ModelNode
      */
     protected void storeWorldBound ()
     {
-        Quaternion orot = new Quaternion(getLocalRotation());
-        Vector3f otrans = new Vector3f(getLocalTranslation()),
-            oscale = new Vector3f(getLocalScale());
-        
-        getLocalRotation().set(Quaternion.IDENTITY);
-        getLocalTranslation().set(Vector3f.ZERO);
-        getLocalScale().set(Vector3f.UNIT_XYZ);
-        
-        updateWorldData(0f);
+        // update the bounds with an identity transform (which will be
+        // overwritten after this method is called)
+        getWorldRotation().set(Quaternion.IDENTITY);
+        getWorldTranslation().set(Vector3f.ZERO);
+        getWorldScale().set(Vector3f.UNIT_XYZ);
+        for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
+            getChild(ii).updateGeometricState(0f, false);
+        }
         updateWorldBound();
         
         _storedBound = worldBound.clone(_storedBound);
-        
-        getLocalRotation().set(orot);
-        getLocalTranslation().set(otrans);
-        getLocalScale().set(oscale);
     }
     
     /**
