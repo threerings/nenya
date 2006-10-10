@@ -111,11 +111,11 @@ public class ChatView extends BContainer
     }
 
     // documentation inherited from interface ChatDisplay
-    public void displayMessage (ChatMessage msg)
+    public boolean displayMessage (ChatMessage msg, boolean alreadyDisplayed)
     {
         // we may be restricted in the chat types we handle
         if (!handlesType(msg.localtype)) {
-            return;
+            return false;
         }
 
         if (msg instanceof UserMessage) {
@@ -127,12 +127,15 @@ public class ChatView extends BContainer
                 append("<" + umsg.speaker + "> ", ColorRGBA.blue);
                 append(umsg.message + "\n");
             }
+            return true;
 
         } else if (msg instanceof SystemMessage) {
             append(msg.message + "\n", ColorRGBA.red);
+            return true;
 
         } else {
             Log.warning("Received unknown message type: " + msg + ".");
+            return false;
         }
     }
 
