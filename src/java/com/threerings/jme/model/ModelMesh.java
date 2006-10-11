@@ -60,6 +60,7 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.geom.BufferUtils;
 
+import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.Log;
@@ -87,6 +88,16 @@ public class ModelMesh extends TriMesh
     }
     
     /**
+     * Reconfigures this model with a new set of (sub-)properties.  Textures
+     * must be (re-)resolved after calling this method.
+     */
+    public void reconfigure (Properties props)
+    {
+        configure(_solid, _textureKey, _transparent, props);
+        setRenderStates();
+    }
+    
+    /**
      * Configures this mesh based on the given parameters and (sub-)properties.
      *
      * @param texture the texture specified in the model export, if any (can be
@@ -97,23 +108,23 @@ public class ModelMesh extends TriMesh
     public void configure (
         boolean solid, String texture, boolean transparent, Properties props)
     {
+        _textureKey = texture;
         _textures = (texture == null) ? null : StringUtil.parseStringArray(
             props.getProperty(texture, texture));
-        _sphereMapped = Boolean.parseBoolean(
-            getSubProperty(props, texture, "sphere_map"));
-        _filterMode = "nearest".equals(
-            getSubProperty(props, texture, "filter")) ?
+        Properties tprops = PropertiesUtil.getFilteredProperties(
+            props, texture);
+        _sphereMapped = Boolean.parseBoolean(tprops.getProperty("sphere_map"));
+        _filterMode = "nearest".equals(tprops.getProperty("filter")) ?
                 Texture.FM_NEAREST : Texture.FM_LINEAR;
-        _mipMapMode = getMipMapMode(
-            getSubProperty(props, texture, "mipmap"));
-        _emissiveMap = getSubProperty(props, texture, "emissive");
+        _mipMapMode = getMipMapMode(tprops.getProperty("mipmap"));
+        _emissiveMap = tprops.getProperty("emissive");
         _solid = solid;
         _transparent = transparent;
-        String threshold = getSubProperty(props, texture, "alpha_threshold");
+        String threshold = tprops.getProperty("alpha_threshold");
         _alphaThreshold = (threshold == null) ?
             DEFAULT_ALPHA_THRESHOLD : Float.parseFloat(threshold);
-        _translucent = _transparent && Boolean.parseBoolean(
-            getSubProperty(props, texture, "translucent"));
+        _translucent = _transparent &&
+            Boolean.parseBoolean(tprops.getProperty("translucent"));
     }
     
     /**
@@ -144,26 +155,7 @@ public class ModelMesh extends TriMesh
         storeOriginalBuffers();
         
         // initialize the model if we're displaying
-        if (DisplaySystem.getDisplaySystem() == null) {
-            return;
-        }
-        if (_backCull == null) {
-            initSharedStates();
-        }
-        if (_solid) {
-            setRenderState(_backCull);
-        }
-        if (_transparent) {
-            setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-            if (_translucent) {
-                setRenderState(_blendAlpha);
-                setRenderState(_overlayZBuffer);
-            } else if (_alphaThreshold == DEFAULT_ALPHA_THRESHOLD) {
-                setRenderState(_defaultTestAlpha);
-            } else {
-                setRenderState(createTestAlpha(_alphaThreshold));
-            }
-        }
+        setRenderStates();
     }
     
     /**
@@ -308,6 +300,7 @@ public class ModelMesh extends TriMesh
             mbatch.setModelBound(properties.isSet("bound") ?
                 batch.getModelBound() : batch.getModelBound().clone(null));
         }
+        mstore._textureKey = _textureKey;
         if (_textures != null && _textures.length > 1) {
             int tidx = properties.random % _textures.length;
             mstore._textures = new String[] { _textures[tidx] };
@@ -352,6 +345,7 @@ public class ModelMesh extends TriMesh
         out.writeInt(_colorBufferSize);
         out.writeInt(_textureBufferSize);
         out.writeInt(_indexBufferSize);
+        out.writeObject(_textureKey);
         out.writeObject(_textures);
         out.writeBoolean(_sphereMapped);
         out.writeInt(_filterMode);
@@ -377,6 +371,7 @@ public class ModelMesh extends TriMesh
         _colorBufferSize = in.readInt();
         _textureBufferSize = in.readInt();
         _indexBufferSize = in.readInt();
+        _textureKey = (String)in.readObject();
         _textures = (String[])in.readObject();
         _sphereMapped = in.readBoolean();
         _filterMode = in.readInt();
@@ -445,6 +440,8 @@ public class ModelMesh extends TriMesh
         }
         if (_tstates[0] != null) {
             setRenderState(_tstates[0]);
+        } else {
+            clearRenderState(RenderState.RS_TEXTURE);
         }
     }
     
@@ -618,6 +615,34 @@ public class ModelMesh extends TriMesh
     }
     
     /**
+     * Sets the model's render states (excluding the texture state, which is
+     * set by {@link #resolveTextures}) according to its configuration.
+     */
+    protected void setRenderStates ()
+    {
+        if (DisplaySystem.getDisplaySystem() == null) {
+            return;
+        }
+        if (_backCull == null) {
+            initSharedStates();
+        }
+        if (_solid) {
+            setRenderState(_backCull);
+        }
+        if (_transparent) {
+            setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+            if (_translucent) {
+                setRenderState(_blendAlpha);
+                setRenderState(_overlayZBuffer);
+            } else if (_alphaThreshold == DEFAULT_ALPHA_THRESHOLD) {
+                setRenderState(_defaultTestAlpha);
+            } else {
+                setRenderState(createTestAlpha(_alphaThreshold));
+            }
+        }
+    }
+    
+    /**
      * Locks the transform and bounds of this mesh on the assumption that its
      * position will not change.
      */
@@ -625,17 +650,6 @@ public class ModelMesh extends TriMesh
     {
         lockBounds();
         _transformLocked = true;
-    }
-    
-    /**
-     * Gets a sub-property from the given set, falling back on the main
-     * property if the sub-property is not specified.
-     */
-    protected static String getSubProperty (
-        Properties props, String prefix, String property)
-    {
-        return props.getProperty(prefix + "." + property,
-            props.getProperty(property));
     }
     
     /**
@@ -875,6 +889,10 @@ public class ModelMesh extends TriMesh
     
     /** The type of bounding volume that this mesh should use. */
     protected int _boundingType;
+    
+    /** The name of the texture specified in the model file, which acts as a
+     * property key and a default value. */ 
+    protected String _textureKey;
     
     /** The name of this model's textures, or <code>null</code> for none. */
     protected String[] _textures;

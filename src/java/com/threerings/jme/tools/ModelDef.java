@@ -76,7 +76,8 @@ public class ModelDef
         public Spatial getSpatial (Properties props)
         {
             if (_spatial == null) {
-                _spatial = createSpatial(new NodeProperties(props, name));
+                _spatial = createSpatial(
+                    PropertiesUtil.getFilteredProperties(props, name));
                 setTransform();
             }
             return _spatial;
@@ -540,35 +541,5 @@ public class ModelDef
             array[ii] = list.get(ii);
         }
         return array;
-    }
-    
-    /** A wrapper for the model properties providing access to the properties
-     * of a node within the model. */
-    protected static class NodeProperties extends Properties
-    {
-        public NodeProperties (Properties mprops, String name)
-        {
-            _mprops = mprops;
-            _prefix = name + ".";
-        }
-        
-        @Override // documentation inherited
-        public String getProperty (String key)
-        {
-            return getProperty(key, null);
-        }
-        
-        @Override // documentation inherited
-        public String getProperty (String key, String defaultValue)
-        {
-            return _mprops.getProperty(_prefix + key,
-                _mprops.getProperty(key, defaultValue));
-        }
-        
-        /** The properties of the model. */
-        protected Properties _mprops;
-        
-        /** The node prefix. */
-        protected String _prefix;
     }
 }

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 
 import com.jme.bounding.BoundingVolume;
@@ -53,9 +54,12 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 
 import com.samskivert.util.ObserverList;
+import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.RandomUtil;
+import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.Log;
+import com.threerings.jme.util.SpatialVisitor;
 
 /**
  * The base node for models.
@@ -401,6 +405,14 @@ public class Model extends ModelNode
     }
     
     /**
+     * Returns the names of the model's variant configurations.
+     */
+    public String[] getVariantNames ()
+    {
+        return StringUtil.parseStringArray(_props.getProperty("variants", ""));
+    }
+    
+    /**
      * Adds an animation to the model's library.  This should only be called by
      * the model compiler.
      */
@@ -714,6 +726,39 @@ public class Model extends ModelNode
                 ((ModelController)ctrl).resolveTextures(tprov);
             }
         }
+    }
+    
+    /**
+     * Creates a new prototype using the given variant configuration.
+     * Use {@link #createInstance} on the returned prototype to create
+     * additional instances of the variant.
+     */
+    public Model createPrototype (String variant)
+    {
+        if (_prototype != null) {
+            return _prototype.createPrototype(variant);
+        }
+        // create an instance and rebind all animations
+        final Model prototype = createInstance();
+        for (Map.Entry<String, Animation> entry : _anims.entrySet()) {
+            prototype._anims.put(entry.getKey(),
+                entry.getValue().rebind(prototype._pnodes));
+        }
+        prototype._prototype = null;
+        prototype._pnodes = null;
+        
+        // reconfigure meshes with new variant type
+        if (variant != null) {
+            prototype._props = PropertiesUtil.getFilteredProperties(
+                _props, variant);
+            new SpatialVisitor<ModelMesh>(ModelMesh.class) {
+                public void visit (ModelMesh mesh) {
+                    mesh.reconfigure(PropertiesUtil.getFilteredProperties(
+                        prototype._props, mesh.getParent().getName()));
+                }
+            }.traverse(prototype);
+        }
+        return prototype;
     }
     
     /**

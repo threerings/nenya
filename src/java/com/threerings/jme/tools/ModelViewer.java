@@ -100,6 +100,7 @@ import com.jmex.effects.particles.ParticleGeometry;
 import com.samskivert.swing.GroupLayout;
 import com.samskivert.swing.Spacer;
 import com.samskivert.util.Config;
+import com.samskivert.util.ObjectUtil;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.resource.ResourceManager;
@@ -230,6 +231,9 @@ public class ModelViewer extends JmeCanvasApp
         view.add(_normals);
         view.addSeparator();
         
+        _vmenu = new JMenu(_msg.get("m.model_variant"));
+        view.add(_vmenu);
+        
         JMenu amode = new JMenu(_msg.get("m.animation_mode"));
         final JRadioButtonMenuItem flipbook =
             new JRadioButtonMenuItem(_msg.get("m.mode_flipbook")),
@@ -252,6 +256,7 @@ public class ModelViewer extends JmeCanvasApp
                 }
             }
         };
+        
         mgroup.add(flipbook);
         mgroup.add(morph);
         mgroup.add(skin);
@@ -591,11 +596,82 @@ public class ModelViewer extends JmeCanvasApp
         if (_model != null) {
             _ctx.getGeometry().detachChild(_model);
         }
-        _ctx.getGeometry().attachChild(_model = model);
+        _ctx.getGeometry().attachChild(_model = _omodel = model);
         _model.setAnimationMode(_animMode);
         _model.lockStaticMeshes(_ctx.getRenderer(), true, true);
         
-        // resolve the textures from the file's directory
+        // load the model's textures
+        resolveModelTextures(file);
+        
+        // recenter the camera
+        _model.updateGeometricState(0f, true);
+        ((OrbitCameraHandler)_camhand).recenter();
+        
+        // configure the variant menu
+        _variant = null;
+        _vmenu.removeAll();
+        ButtonGroup vgroup = new ButtonGroup() {
+            public void setSelected (ButtonModel model, boolean b) {
+                super.setSelected(model, b);
+                String variant = model.getActionCommand();
+                if (b && !ObjectUtil.equals(variant, _variant)) {
+                    setVariant(model.getActionCommand());
+                }
+            }
+        };
+        JRadioButtonMenuItem def = new JRadioButtonMenuItem(
+            _msg.get("m.variant_default"));
+        def.setActionCommand(null);
+        vgroup.add(def);
+        _vmenu.add(def);
+        for (String variant : _model.getVariantNames()) {
+            JRadioButtonMenuItem vitem = new JRadioButtonMenuItem(variant);
+            vitem.setActionCommand(variant);
+            vgroup.add(vitem);
+            _vmenu.add(vitem);
+        }
+        vgroup.setSelected(def.getModel(), true);
+
+        // configure the animation panel
+        String[] anims = _model.getAnimationNames();
+        if (anims.length == 0) {
+            _animctrls.setVisible(false);
+            return;
+        }
+        _model.addAnimationObserver(_animobs);
+        _animctrls.setVisible(true);
+        DefaultComboBoxModel abmodel = new DefaultComboBoxModel(anims);
+        _animbox.setModel(abmodel);
+        updateAnimationSpeed();
+        
+        // if there are any sequences, add those as well
+        String[] seqs = StringUtil.parseStringArray(
+            _model.getProperties().getProperty("sequences", ""));
+        for (String seq : seqs) {
+            abmodel.addElement(seq);
+        }
+    }
+    
+    /**
+     * Switches to the named variant.
+     */
+    protected void setVariant (String variant)
+    {
+        _model.stopAnimation();
+        _ctx.getGeometry().detachChild(_model);
+        _ctx.getGeometry().attachChild(
+            _model = _omodel.createPrototype(variant));
+        _model.addAnimationObserver(_animobs);
+        updateAnimationSpeed();
+        resolveModelTextures(_loaded);
+        _variant = variant;
+    }
+    
+    /**
+     * Resolve the textures from the file's directory.
+     */
+    protected void resolveModelTextures (File file)
+    {
         final File dir = file.getParentFile();
         _model.resolveTextures(new TextureProvider() {
             public TextureState getTexture (String name) {
@@ -625,29 +701,6 @@ public class ModelViewer extends JmeCanvasApp
                 new HashMap<String, TextureState>();
         });
         _model.updateRenderState();
-        
-        // recenter the camera
-        _model.updateGeometricState(0f, true);
-        ((OrbitCameraHandler)_camhand).recenter();
-        
-        // configure the animation panel
-        String[] anims = _model.getAnimationNames();
-        if (anims.length == 0) {
-            _animctrls.setVisible(false);
-            return;
-        }
-        _model.addAnimationObserver(_animobs);
-        _animctrls.setVisible(true);
-        DefaultComboBoxModel abmodel = new DefaultComboBoxModel(anims);
-        _animbox.setModel(abmodel);
-        updateAnimationSpeed();
-        
-        // if there are any sequences, add those as well
-        String[] seqs = StringUtil.parseStringArray(
-            _model.getProperties().getProperty("sequences", ""));
-        for (String seq : seqs) {
-            abmodel.addElement(seq);
-        }
     }
     
     /**
@@ -731,6 +784,9 @@ public class ModelViewer extends JmeCanvasApp
     /** The viewer frame. */
     protected JFrame _frame;
     
+    /** The variant menu. */
+    protected JMenu _vmenu;
+    
     /** Debug view switches. */
     protected JCheckBoxMenuItem _pivots, _bounds, _normals;
     
@@ -758,6 +814,9 @@ public class ModelViewer extends JmeCanvasApp
     /** The desired animation mode. */
     protected Model.AnimationMode _animMode;
     
+    /** The desired variant. */
+    protected String _variant;
+    
     /** The light rotation dialog. */
     protected RotateLightDialog _rldialog;
     
@@ -769,6 +828,9 @@ public class ModelViewer extends JmeCanvasApp
     
     /** The currently loaded model. */
     protected Model _model;
+    
+    /** The original model (before switching to a variant). */
+    protected Model _omodel;
     
     /** Reused to draw pivot axes. */
     protected Line _axes;
