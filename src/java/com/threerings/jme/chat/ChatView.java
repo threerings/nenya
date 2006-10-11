@@ -67,7 +67,7 @@ public class ChatView extends BContainer
 
     public void willEnterPlace (PlaceObject plobj)
     {
-        setSpeakService(plobj.speakService);
+        setSpeakService(plobj.speakService, null);
     }
 
     public void didLeavePlace (PlaceObject plobj)
@@ -75,10 +75,11 @@ public class ChatView extends BContainer
         clearSpeakService();
     }
 
-    public void setSpeakService (SpeakService spsvc)
+    public void setSpeakService (SpeakService spsvc, String localType)
     {
         if (spsvc != null) {
             _spsvc = spsvc;
+            _localType = localType;
             _chatdtr.addChatDisplay(this);
         }
     }
@@ -88,6 +89,7 @@ public class ChatView extends BContainer
         if (_spsvc != null) {
             _chatdtr.removeChatDisplay(this);
             _spsvc = null;
+            _localType = null;
         }
     }
 
@@ -162,7 +164,7 @@ public class ChatView extends BContainer
 
     protected boolean handlesType (String localType)
     {
-        return true;
+        return _localType == null || _localType.equals(localType);
     }
 
     protected boolean handleInput (String text)
@@ -191,6 +193,8 @@ public class ChatView extends BContainer
 
     protected ChatDirector _chatdtr;
     protected SpeakService _spsvc;
+    protected String _localType;
+
     protected BTextArea _text;
     protected BContainer _incont;
     protected BTextField _input;
