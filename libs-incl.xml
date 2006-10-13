@@ -13,9 +13,9 @@
     <include name="${libs.dir}/narya-base.jar"/>
     <include name="${libs.dir}/narya-distrib.jar"/>
     <!-- or from the build directories of the actual projects -->
-    <include name="${samskivert.dir}/dist/samskivert.jar"/>
-    <include name="${narya.dir}/dist/narya-base.jar"/>
-    <include name="${narya.dir}/dist/narya-distrib.jar"/>
+    <include name="${project.dir}/samskivert/dist/samskivert.jar"/>
+    <include name="${project.dir}/narya/dist/narya-base.jar"/>
+    <include name="${project.dir}/narya/dist/narya-distrib.jar"/>
     <!-- these LWJGL and JME libraries are optional -->
     <include name="${libs.dir}/lwjgl.jar"/>
     <include name="${libs.dir}/lwjgl_util.jar"/>
@@ -26,6 +26,6 @@
     <include name="${libs.dir}/jme-terrain.jar"/>
     <include name="${libs.dir}/jme.jar"/>
     <include name="${libs.dir}/jme-bui.jar"/>
-    <include name="${bui.dir}/dist/jme-bui.jar"/>
+    <include name="${project.dir}/jme-bui/dist/jme-bui.jar"/>
   </fileset>
 </project>
