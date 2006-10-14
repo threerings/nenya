@@ -843,6 +843,9 @@ public class Model extends ModelNode
         // update controllers and children with accumulated time
         _accum += time;
         if (_outside) {
+            if ((lockedMode & LOCKED_TRANSFORMS) != 0) {
+                return; // world bound will not changed
+            }
             if (!wasOutside) {
                 storeWorldBound();
             }
