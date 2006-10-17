@@ -295,17 +295,6 @@ public class CharacterManager
             }
         }
 
-        // add any necessary masks
-        for (int ii = 0; ii < ccount; ii++) {
-            ComponentFrames cframes = (ComponentFrames)sources.get(ii);
-            CharacterComponent mcomp = (CharacterComponent)ccomps.get(
-                cframes.ccomp.componentClass.mask);
-            if (mcomp != null) {
-                cframes.frames = compositeMask(action, cframes.ccomp,
-                    cframes.frames, mcomp);
-            }
-        }
-        
         // now create any necessary shadow layers
         if (shadows != null) {
             Iterator iter = shadows.entrySet().iterator();
@@ -319,6 +308,18 @@ public class CharacterManager
                 }
             }
         }
+
+        // add any necessary masks
+        for (int ii = 0, nn = sources.size(); ii < nn; ii++) {
+            ComponentFrames cframes = (ComponentFrames)sources.get(ii);
+            CharacterComponent mcomp = (CharacterComponent)ccomps.get(
+                cframes.ccomp.componentClass.mask);
+            if (mcomp != null) {
+                cframes.frames = compositeMask(action, cframes.ccomp,
+                    cframes.frames, mcomp);
+            }
+        }
+        
 
         // use those to create an entity that will lazily composite things
         // together as they are needed
