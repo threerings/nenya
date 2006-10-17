@@ -163,6 +163,12 @@ public class CompositedMultiFrameImage
                 source.getTrimmedBounds(index, tbounds);
                 _bounds = combineBounds(_bounds, tbounds);
             }
+            if (_bounds.width <= 0) {
+                _bounds.width = 1;
+            }
+            if (_bounds.height <= 0) {
+                _bounds.height = 1;
+            }
 
             // compute our new origin
             _origin.x = (_sources[0].frames.getXOrigin(_orient, index) -
