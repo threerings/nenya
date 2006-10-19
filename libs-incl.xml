@@ -17,15 +17,15 @@
     <include name="${project.dir}/narya/dist/narya-base.jar"/>
     <include name="${project.dir}/narya/dist/narya-distrib.jar"/>
     <!-- these LWJGL and JME libraries are optional -->
-    <include name="${libs.dir}/lwjgl.jar"/>
-    <include name="${libs.dir}/lwjgl_util.jar"/>
-    <include name="${libs.dir}/jme-awt.jar"/>
-    <include name="${libs.dir}/jme-effects.jar"/>
-    <include name="${libs.dir}/jme-model.jar"/>
-    <include name="${libs.dir}/jme-sound.jar"/>
-    <include name="${libs.dir}/jme-terrain.jar"/>
-    <include name="${libs.dir}/jme.jar"/>
-    <include name="${libs.dir}/jme-bui.jar"/>
+    <include name="lib/lwjgl.jar"/>
+    <include name="lib/lwjgl_util.jar"/>
+    <include name="lib/jme-awt.jar"/>
+    <include name="lib/jme-effects.jar"/>
+    <include name="lib/jme-model.jar"/>
+    <include name="lib/jme-sound.jar"/>
+    <include name="lib/jme-terrain.jar"/>
+    <include name="lib/jme.jar"/>
+    <include name="lib/jme-bui.jar"/>
     <include name="${project.dir}/jme-bui/dist/jme-bui.jar"/>
   </fileset>
 </project>
