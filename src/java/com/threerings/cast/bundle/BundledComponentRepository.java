@@ -345,9 +345,10 @@ public class BundledComponentRepository
 
                 // if that failed too, we're hosed
                 if (aset == null) {
-                    // if this is a shadow image, no need to freak out as they
-                    // are optional
-                    if (!StandardActions.SHADOW_TYPE.equals(type)) {
+                    // if this is a shadow or crop image, no need to freak out 
+                    // as they are optional
+                    if (!StandardActions.CROP_TYPE.equals(type) && 
+                        !StandardActions.SHADOW_TYPE.equals(type)) {
                         Log.warning("Unable to locate tileset for action '" +
                                     imgpath + "' " + component + ".");
                         if (_wipeOnFailure) {
