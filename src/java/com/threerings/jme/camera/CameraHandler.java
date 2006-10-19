@@ -264,7 +264,7 @@ public class CameraHandler
         }
         
         // create a rotation matrix
-        _rotm.fromAxisAngle(axis, deltaAngle);
+        _rotm.fromAngleAxis(deltaAngle, axis);
 
         // rotate the direction vector and the camera itself
         _rotm.mult(direction, direction);
