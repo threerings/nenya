@@ -47,7 +47,7 @@ public class Rotator extends ModelController
     {
         super.configure(props, target);
         String axisstr = props.getProperty("axis", "x"),
-            rpsstr = props.getProperty("radpersec", "3.14");
+            velstr = props.getProperty("velocity", "3.14");
         if (axisstr.equalsIgnoreCase("x")) {
             _axis = Vector3f.UNIT_X;
         } else if (axisstr.equalsIgnoreCase("y")) {
@@ -65,9 +65,9 @@ public class Rotator extends ModelController
             }
         }
         try {
-            _radpersec = Float.parseFloat(rpsstr);
+            _velocity = Float.parseFloat(velstr);
         } catch (NumberFormatException e) {
-            Log.warning("Invalid rotation rate [radpersec=" + rpsstr + "].");
+            Log.warning("Invalid angular velocity [velocity=" + velstr + "].");
         }
     }
     
@@ -77,7 +77,7 @@ public class Rotator extends ModelController
         if (!isActive()) {
             return;
         }
-        _rot.fromAngleNormalAxis(time * _radpersec, _axis);
+        _rot.fromAngleNormalAxis(time * _velocity, _axis);
         _target.getLocalRotation().multLocal(_rot);
     }
     
@@ -93,7 +93,7 @@ public class Rotator extends ModelController
         }
         super.putClone(rstore, properties);
         rstore._axis = _axis;
-        rstore._radpersec = _radpersec;
+        rstore._velocity = _velocity;
         return rstore;
     }
     
@@ -103,7 +103,7 @@ public class Rotator extends ModelController
     {
         super.writeExternal(out);
         out.writeObject(_axis);
-        out.writeFloat(_radpersec);
+        out.writeFloat(_velocity);
     }
     
     // documentation inherited from interface Externalizable
@@ -112,14 +112,14 @@ public class Rotator extends ModelController
     {
         super.readExternal(in);
         _axis = (Vector3f)in.readObject();
-        _radpersec = in.readFloat();
+        _velocity = in.readFloat();
     }
 
     /** The axis about which to rotate. */
     protected Vector3f _axis;
     
     /** The velocity at which to rotate in radians per second. */
-    protected float _radpersec;
+    protected float _velocity;
     
     /** A temporary quaternion. */
     protected Quaternion _rot = new Quaternion();
