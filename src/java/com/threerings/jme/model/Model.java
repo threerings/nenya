@@ -740,9 +740,11 @@ public class Model extends ModelNode
         }
         // create an instance and rebind all animations
         final Model prototype = createInstance();
-        for (Map.Entry<String, Animation> entry : _anims.entrySet()) {
-            prototype._anims.put(entry.getKey(),
-                entry.getValue().rebind(prototype._pnodes));
+        if (_anims != null) {
+            for (Map.Entry<String, Animation> entry : _anims.entrySet()) {
+                prototype._anims.put(entry.getKey(),
+                    entry.getValue().rebind(prototype._pnodes));
+            }
         }
         prototype._prototype = null;
         prototype._pnodes = null;
