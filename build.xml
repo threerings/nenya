@@ -96,7 +96,9 @@
       <exclude name="**/ModPlayer.java"/>
       <exclude name="**/MidiPlayer.java"/>
       <exclude name="**/Mp3Player.java"/>
-      <!--<compilerarg value="-Xlint:unchecked"/>-->
+      <compilerarg value="-Xlint"/>
+      <compilerarg value="-Xlint:-serial"/>
+      <compilerarg value="-Xlint:-unchecked"/> <!-- TODO: fix -->
     </javac>
   </target>
 

@@ -484,8 +484,7 @@ public class DirtyItemList
          * Returns whether two dirty items have a partitioning object
          * between them on the given axis.
          */
-        protected int comparePartitioned (
-            int axis, DirtyItem da, DirtyItem db)
+        protected int comparePartitioned (int axis, DirtyItem da, DirtyItem db)
         {
             // prepare for the partitioning check
             SortableArrayList sitems;
@@ -560,6 +559,7 @@ public class DirtyItemList
                         dp.rx <= db.lx) {
                         return (swapped) ? 1 : -1;
                     }
+                    break;
 
                 case Y_AXIS:
                 default:
@@ -569,6 +569,7 @@ public class DirtyItemList
                         dp.oy <= db.ry) {
                         return (swapped) ? 1 : -1;
                     }
+                    break;
                 }
             }
 
