@@ -173,6 +173,15 @@ public class Sound
         }
     }
 
+    /**
+     * Called to check if this sound is currently playing.
+     */
+    public boolean isPlaying ()
+    {
+        return (_sourceId != -1 && AL10.AL_PLAYING ==
+                AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE));
+    }
+
     protected Sound (SoundGroup group, ClipBuffer buffer)
     {
         _group = group;
