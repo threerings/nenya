@@ -43,6 +43,8 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.text.DecimalFormat;
+
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -231,6 +233,17 @@ public class ModelViewer extends JmeCanvasApp
         view.add(_normals);
         view.addSeparator();
         
+        Action campos = new AbstractAction(_msg.get("m.view_campos")) {
+            public void actionPerformed (ActionEvent e) {
+                _campos.setVisible(!_campos.isVisible());
+            }
+        };
+        campos.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
+        campos.putValue(Action.ACCELERATOR_KEY,
+            KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
+        view.add(new JCheckBoxMenuItem(campos));
+        view.addSeparator();
+        
         _vmenu = new JMenu(_msg.get("m.model_variant"));
         view.add(_vmenu);
         
@@ -284,6 +297,7 @@ public class ModelViewer extends JmeCanvasApp
         Action rcamera = new AbstractAction(_msg.get("m.view_recenter")) {
             public void actionPerformed (ActionEvent e) {
                 ((OrbitCameraHandler)_camhand).recenter();
+                updateCameraPosition();
             }
         };
         rcamera.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
@@ -343,10 +357,18 @@ public class ModelViewer extends JmeCanvasApp
         });
         _animctrls.setVisible(false);
         
+        JPanel spanel = new JPanel(new BorderLayout());
+        bpanel.add(spanel, BorderLayout.SOUTH);
+        
         _status = new JLabel(" ");
         _status.setHorizontalAlignment(JLabel.LEFT);
         _status.setBorder(BorderFactory.createEtchedBorder());
-        bpanel.add(_status, BorderLayout.SOUTH);
+        spanel.add(_status, BorderLayout.CENTER);
+        
+        _campos = new JLabel(" ");
+        _campos.setBorder(BorderFactory.createEtchedBorder());
+        _campos.setVisible(false);
+        spanel.add(_campos, BorderLayout.EAST);
         
         _frame.pack();
         _frame.setVisible(true);
@@ -380,14 +402,33 @@ public class ModelViewer extends JmeCanvasApp
     {
         super.initInput();
         
-        _camhand.setTiltLimits(FastMath.PI / 16.0f, FastMath.PI * 7.0f / 16.0f);
-        _camhand.setZoomLimits(1f, 100f);
+        _camhand.setTiltLimits(-FastMath.HALF_PI, FastMath.HALF_PI);
+        _camhand.setZoomLimits(1f, 500f);
         _camhand.tiltCamera(-FastMath.PI * 7.0f / 16.0f);
+        updateCameraPosition();
         
         MouseOrbiter orbiter = new MouseOrbiter();
         _canvas.addMouseListener(orbiter);
         _canvas.addMouseMotionListener(orbiter);
         _canvas.addMouseWheelListener(orbiter);
+    }
+    
+    /**
+     * Updates the camera position label.
+     */
+    protected void updateCameraPosition ()
+    {
+        Camera cam = _camhand.getCamera();
+        Vector3f pos = cam.getLocation(), dir = cam.getDirection(),
+            left = cam.getLeft();
+        float heading = -FastMath.atan2(dir.x, dir.y) * FastMath.RAD_TO_DEG,
+            pitch = FastMath.asin(dir.z) * FastMath.RAD_TO_DEG;
+        _campos.setText(
+            "XYZ: " + CAMPOS_FORMAT.format(pos.x) + ", " +
+            CAMPOS_FORMAT.format(pos.y) + ", " +
+            CAMPOS_FORMAT.format(pos.z) +
+            " HP: " + CAMPOS_FORMAT.format(heading) + ", " +
+            CAMPOS_FORMAT.format(pitch));
     }
     
     @Override // documentation inherited
@@ -606,6 +647,7 @@ public class ModelViewer extends JmeCanvasApp
         // recenter the camera
         _model.updateGeometricState(0f, true);
         ((OrbitCameraHandler)_camhand).recenter();
+        updateCameraPosition();
         
         // configure the variant menu
         _variant = null;
@@ -804,6 +846,9 @@ public class ModelViewer extends JmeCanvasApp
     
     /** The status bar. */
     protected JLabel _status;
+    
+    /** The camera position display. */
+    protected JLabel _campos;
     
     /** The model file chooser. */
     protected JFileChooser _chooser;
@@ -1009,12 +1054,14 @@ public class ModelViewer extends JmeCanvasApp
             } else {
                 _camhand.panCamera(-dx/8f, dy/8f);
             }
+            updateCameraPosition();
         }
         
         // documentation inherited from interface MouseWheelListener
         public void mouseWheelMoved (MouseWheelEvent e)
         {
             _camhand.zoomCamera(e.getWheelRotation() * 10f);
+            updateCameraPosition();
         }
         
         /** The last recorded position of the mouse cursor. */
@@ -1086,4 +1133,8 @@ public class ModelViewer extends JmeCanvasApp
     
     /** The spacing between lines on the grid. */
     protected static final float GRID_SPACING = 2.5f;
+    
+    /** The number formal used for the camera position. */
+    protected static final DecimalFormat CAMPOS_FORMAT =
+        new DecimalFormat("+000.000;-000.000");
 }
