@@ -80,7 +80,11 @@ public class BrowserUtil
             cmd = new String[] { genagent, url.toString() };
         }
 
-        log.info("Browsing URL [cmd=" + StringUtil.join(cmd, " ") + "].");
+        // obscure any password information
+        String logcmd = StringUtil.join(cmd, " ");
+        logcmd = logcmd.replaceAll("password=[^&]*", "password=XXX");
+        log.info("Browsing URL [cmd=" + logcmd + "].");
+
         try {
             Process process = Runtime.getRuntime().exec(cmd);
             BrowserTracker tracker = new BrowserTracker(process, url, listener);
