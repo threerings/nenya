@@ -28,7 +28,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.samskivert.swing.*;
+import com.samskivert.swing.HGroupLayout;
+import com.samskivert.swing.VGroupLayout;
 
 import com.threerings.cast.ComponentClass;
 
@@ -48,13 +49,13 @@ public class ClassEditor extends JPanel implements ChangeListener
         _components = components;
         _cclass = cclass;
 
-        GroupLayout gl = new VGroupLayout(GroupLayout.STRETCH);
-        gl.setOffAxisPolicy(GroupLayout.STRETCH);
-        setLayout(gl);
+        VGroupLayout vgl = new VGroupLayout(VGroupLayout.STRETCH);
+        vgl.setOffAxisPolicy(VGroupLayout.STRETCH);
+        setLayout(vgl);
 
-        gl = new HGroupLayout();
-        gl.setJustification(GroupLayout.LEFT);
-        JPanel sub = new JPanel(gl);
+        HGroupLayout hgl = new HGroupLayout();
+        hgl.setJustification(HGroupLayout.LEFT);
+        JPanel sub = new JPanel(hgl);
 
         sub.add(new JLabel(cclass.name + ": "));
         sub.add(_clabel = new JLabel("0"));

@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.swing.*;
 
-import com.samskivert.swing.*;
+import com.samskivert.swing.VGroupLayout;
 
 import com.threerings.cast.Log;
 import com.threerings.cast.*;
@@ -42,7 +42,7 @@ public class ComponentPanel extends JPanel
      */
     public ComponentPanel (BuilderModel model, String cprefix)
     {
-	setLayout(new VGroupLayout(GroupLayout.STRETCH));
+	setLayout(new VGroupLayout(VGroupLayout.STRETCH));
 	// set up a border
 	setBorder(BorderFactory.createEtchedBorder());
         // add the component editors to the panel

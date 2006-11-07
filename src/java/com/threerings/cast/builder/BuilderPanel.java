@@ -22,7 +22,8 @@
 package com.threerings.cast.builder;
 
 import javax.swing.*;
-import com.samskivert.swing.*;
+import com.samskivert.swing.HGroupLayout;
+import com.samskivert.swing.VGroupLayout;
 
 import com.threerings.cast.CharacterManager;
 import com.threerings.cast.ComponentRepository;
@@ -45,8 +46,8 @@ public class BuilderPanel extends JPanel
 	// give ourselves a wee bit of a border
 	setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        GroupLayout gl = new HGroupLayout(GroupLayout.STRETCH);
-        gl.setOffAxisPolicy(GroupLayout.STRETCH);
+        HGroupLayout gl = new HGroupLayout(HGroupLayout.STRETCH);
+        gl.setOffAxisPolicy(HGroupLayout.STRETCH);
 
         // create the builder model
         BuilderModel model = new BuilderModel(crepo);
