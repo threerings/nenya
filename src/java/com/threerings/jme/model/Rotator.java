@@ -22,8 +22,6 @@
 package com.threerings.jme.model;
 
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 import java.util.Properties;
 
@@ -31,6 +29,10 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.OutputCapsule;
 
 import com.samskivert.util.StringUtil;
 
@@ -97,24 +99,26 @@ public class Rotator extends ModelController
         return rstore;
     }
     
-    // documentation inherited from interface Externalizable
-    public void writeExternal (ObjectOutput out)
+    @Override // documentation inherited
+    public void read (JMEImporter im)
         throws IOException
     {
-        super.writeExternal(out);
-        out.writeObject(_axis);
-        out.writeFloat(_velocity);
+        super.read(im);
+        InputCapsule capsule = im.getCapsule(this);
+        _axis = (Vector3f)capsule.readSavable("axis", null);
+        _velocity = capsule.readFloat("velocity", 0f);
     }
     
-    // documentation inherited from interface Externalizable
-    public void readExternal (ObjectInput in)
-        throws IOException, ClassNotFoundException
+    @Override // documentation inherited
+    public void write (JMEExporter ex)
+        throws IOException
     {
-        super.readExternal(in);
-        _axis = (Vector3f)in.readObject();
-        _velocity = in.readFloat();
+        super.write(ex);
+        OutputCapsule capsule = ex.getCapsule(this);
+        capsule.write(_axis, "axis", null);
+        capsule.write(_velocity, "velocity", 0f);
     }
-
+    
     /** The axis about which to rotate. */
     protected Vector3f _axis;
     

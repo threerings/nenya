@@ -199,23 +199,17 @@ public class ModelDef
             
             // set the various buffers
             int vsize = vertices.size();
-            ByteOrder no = ByteOrder.nativeOrder();
-            ByteBuffer vbbuf = ByteBuffer.allocateDirect(vsize*3*4).order(no),
-                nbbuf = ByteBuffer.allocateDirect(vsize*3*4).order(no),
-                tbbuf = tcoords ?
-                    ByteBuffer.allocateDirect(vsize*2*4).order(no) : null,
-                ibbuf = ByteBuffer.allocateDirect(indices.size()*4).order(no);
-            FloatBuffer vbuf = vbbuf.asFloatBuffer(),
-                nbuf = nbbuf.asFloatBuffer(),
-                tbuf = tcoords ? tbbuf.asFloatBuffer() : null;
+            FloatBuffer vbuf = BufferUtils.createVector3Buffer(vsize),
+                nbuf = BufferUtils.createVector3Buffer(vsize),
+                tbuf = tcoords ? BufferUtils.createVector2Buffer(vsize) : null;
             for (int ii = 0; ii < vsize; ii++) {
                 vertices.get(ii).setInBuffers(vbuf, nbuf, tbuf);
             }
-            IntBuffer ibuf = ibbuf.asIntBuffer();
+            IntBuffer ibuf = BufferUtils.createIntBuffer(indices.size());
             for (int ii = 0, nn = indices.size(); ii < nn; ii++) {
                 ibuf.put(indices.get(ii));
             }
-            _mesh.reconstruct(vbbuf, nbbuf, null, tbbuf, ibbuf);
+            _mesh.reconstruct(vbuf, nbuf, null, tbuf, ibuf);
             
             _mesh.setModelBound("sphere".equals(props.getProperty("bound")) ?
                 new BoundingSphere() : new BoundingBox());

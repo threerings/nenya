@@ -22,13 +22,7 @@
 package com.threerings.jme.model;
 
 import java.io.DataOutput;
-import java.io.Externalizable;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,6 +35,10 @@ import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.OutputCapsule;
 
 import com.threerings.jme.Log;
 
@@ -48,7 +46,7 @@ import com.threerings.jme.Log;
  * A {@link Node} with a serialization mechanism tailored to stored models.
  */
 public class ModelNode extends Node
-    implements Externalizable, ModelSpatial
+    implements ModelSpatial
 {
     /**
      * No-arg constructor for deserialization.
@@ -174,31 +172,36 @@ public class ModelNode extends Node
         return mstore;
     }
     
-    // documentation inherited from interface Externalizable
-    public void writeExternal (ObjectOutput out)
+    @Override // documentation inherited
+    public void read (JMEImporter im)
         throws IOException
     {
-        out.writeUTF(getName());
-        out.writeObject(getLocalTranslation());
-        out.writeObject(getLocalRotation());
-        out.writeObject(getLocalScale());
-        out.writeObject(getChildren());
-    }
-    
-    // documentation inherited from interface Externalizable
-    public void readExternal (ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        setName(in.readUTF());
-        setLocalTranslation((Vector3f)in.readObject());
-        setLocalRotation((Quaternion)in.readObject());
-        setLocalScale((Vector3f)in.readObject());
-        ArrayList<Spatial> children = (ArrayList<Spatial>)in.readObject();
+        InputCapsule capsule = im.getCapsule(this);
+        setName(capsule.readString("name", null));
+        setLocalTranslation((Vector3f)capsule.readSavable(
+            "localTranslation", null));
+        setLocalRotation((Quaternion)capsule.readSavable(
+            "localRotation", null));
+        setLocalScale((Vector3f)capsule.readSavable(
+            "localScale", null));
+        ArrayList children = capsule.readSavableArrayList("children", null);
         if (children != null) {
-            for (Spatial child : children) {
-                attachChild(child);
+            for (Object child : children) {
+                attachChild((Spatial)child);
             }
         }
+    }
+    
+    @Override // documentation inherited
+    public void write (JMEExporter ex)
+        throws IOException
+    {
+        OutputCapsule capsule = ex.getCapsule(this);
+        capsule.write(getName(), "name", null);
+        capsule.write(getLocalTranslation(), "localTranslation", null);
+        capsule.write(getLocalRotation(), "localRotation", null);
+        capsule.write(getLocalScale(), "localScale", null);
+        capsule.writeSavableArrayList(getChildren(), "children", null);
     }
     
     // documentation inherited from interface ModelSpatial
@@ -298,41 +301,6 @@ public class ModelNode extends Node
     public boolean getForceCull ()
     {
         return _forceCull;
-    }
-    
-    // documentation inherited from interface ModelSpatial
-    public void writeBuffers (FileChannel out)
-        throws IOException
-    {
-        for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
-            Spatial child = getChild(ii);
-            if (child instanceof ModelSpatial) {
-                ((ModelSpatial)child).writeBuffers(out);
-            }
-        }
-    }
-  
-    // documentation inherited from interface ModelSpatial
-    public void readBuffers (FileChannel in)
-        throws IOException
-    {
-        for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
-            Spatial child = getChild(ii);
-            if (child instanceof ModelSpatial) {
-                ((ModelSpatial)child).readBuffers(in);
-            }
-        }
-    }
-    
-    // documentation inherited from interface ModelSpatial
-    public void sliceBuffers (MappedByteBuffer map)
-    {
-        for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
-            Spatial child = getChild(ii);
-            if (child instanceof ModelSpatial) {
-                ((ModelSpatial)child).sliceBuffers(map);
-            }
-        }
     }
     
     /**

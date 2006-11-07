@@ -21,10 +21,7 @@
 
 package com.threerings.jme.model;
 
-import java.io.Externalizable;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,6 +30,10 @@ import java.util.Properties;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.OutputCapsule;
 
 import com.samskivert.util.StringUtil;
 
@@ -40,7 +41,6 @@ import com.samskivert.util.StringUtil;
  * The superclass of procedural animation controllers for models.
  */
 public abstract class ModelController extends Controller
-    implements Externalizable
 {
     /**
      * Configures this controller based on the supplied (sub-)properties and
@@ -113,20 +113,30 @@ public abstract class ModelController extends Controller
         return mstore;
     }
     
-    // documentation inherited from interface Externalizable
-    public void writeExternal (ObjectOutput out)
+    @Override // documentation inherited
+    public void read (JMEImporter im)
         throws IOException
     {
-        out.writeObject(_target);
-        out.writeObject(_animations);
+        InputCapsule capsule = im.getCapsule(this);
+        _target = (Spatial)capsule.readSavable("target", null);
+        String[] anims = capsule.readStringArray("animations", null);
+        if (anims != null) {
+            _animations = new HashSet<String>();
+            Collections.addAll(_animations, anims);
+        } else {
+            _animations = null;
+        }
     }
     
-    // documentation inherited from interface Externalizable
-    public void readExternal (ObjectInput in)
-        throws IOException, ClassNotFoundException
+    @Override // documentation inherited
+    public void write (JMEExporter ex)
+        throws IOException
     {
-        _target = (Spatial)in.readObject();
-        _animations = (HashSet<String>)in.readObject();
+        OutputCapsule capsule = ex.getCapsule(this);
+        capsule.write(_target, "target", null);
+        capsule.write((_animations == null) ?
+            null : _animations.toArray(new String[_animations.size()]),
+            "animations", null);
     }
     
     /**

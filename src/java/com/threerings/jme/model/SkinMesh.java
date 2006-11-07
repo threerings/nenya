@@ -22,9 +22,7 @@
 package com.threerings.jme.model;
 
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.Serializable;
 
 import java.nio.ByteBuffer;
@@ -45,6 +43,11 @@ import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.system.DisplaySystem;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.HashIntMap;
@@ -59,7 +62,7 @@ public class SkinMesh extends ModelMesh
     /** Represents the vertex weights of a group of vertices influenced by the
      * same set of bones. */
     public static class WeightGroup
-        implements Serializable
+        implements Savable
     {
         /** The number of vertices in this weight group. */
         public int vertexCount;
@@ -89,12 +92,40 @@ public class SkinMesh extends ModelMesh
             return wgroup;
         }
         
+        // documentation inherited
+        public Class getClassTag ()
+        {
+            return getClass();
+        }
+        
+        // documentation inherited
+        public void read (JMEImporter im)
+            throws IOException
+        {
+            InputCapsule capsule = im.getCapsule(this);
+            vertexCount = capsule.readInt("vertexCount", 0);
+            Savable[] sbones = capsule.readSavableArray("bones", null);
+            bones = new Bone[sbones.length];
+            System.arraycopy(sbones, 0, bones, 0, sbones.length);
+            weights = capsule.readFloatArray("weights", null);
+        }
+
+        // documentation inherited
+        public void write (JMEExporter ex)
+            throws IOException
+        {
+            OutputCapsule capsule = ex.getCapsule(this);
+            capsule.write(vertexCount, "vertexCount", 0);
+            capsule.write(bones, "bones", null);
+            capsule.write(weights, "weights", null);
+        }
+    
         private static final long serialVersionUID = 1;
     }
 
     /** Represents a bone that influences the mesh. */
     public static class Bone
-        implements Serializable
+        implements Savable
     {
         /** The node that defines the bone's position. */
         public ModelNode node;
@@ -107,7 +138,12 @@ public class SkinMesh extends ModelMesh
         
         public Bone (ModelNode node)
         {
+            this();
             this.node = node;
+        }
+        
+        public Bone ()
+        {
             transform = new Matrix4f();
         }
         
@@ -124,16 +160,28 @@ public class SkinMesh extends ModelMesh
             return bone;
         }
         
-        /**
-         * Initializes the bone's transient state.
-         */
-        private void readObject (ObjectInputStream in)
-            throws IOException, ClassNotFoundException
+        // documentation inherited
+        public Class getClassTag ()
         {
-            in.defaultReadObject();
-            transform = new Matrix4f();
+            return getClass();
         }
-     
+        
+        // documentation inherited
+        public void read (JMEImporter im)
+            throws IOException
+        {
+            InputCapsule capsule = im.getCapsule(this);
+            node = (ModelNode)capsule.readSavable("node", null);
+        }
+
+        // documentation inherited
+        public void write (JMEExporter ex)
+            throws IOException
+        {
+            OutputCapsule capsule = ex.getCapsule(this);
+            capsule.write(node, "node", null);
+        }
+    
         private static final long serialVersionUID = 1;
     }
     
@@ -170,8 +218,8 @@ public class SkinMesh extends ModelMesh
     
     @Override // documentation inherited
     public void reconstruct (
-        ByteBuffer vertices, ByteBuffer normals, ByteBuffer colors,
-        ByteBuffer textures, ByteBuffer indices)
+        FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors,
+        FloatBuffer textures, IntBuffer indices)
     {
         super.reconstruct(vertices, normals, colors, textures, indices);
         
@@ -218,19 +266,24 @@ public class SkinMesh extends ModelMesh
     }
     
     @Override // documentation inherited
-    public void writeExternal (ObjectOutput out)
+    public void read (JMEImporter im)
         throws IOException
     {
-        super.writeExternal(out);
-        out.writeObject(_weightGroups);
+        super.read(im);
+        InputCapsule capsule = im.getCapsule(this);
+        Savable[] swgroups = capsule.readSavableArray("weightGroups", null);
+        WeightGroup[] wgroups = new WeightGroup[swgroups.length];
+        System.arraycopy(swgroups, 0, wgroups, 0, swgroups.length);
+        setWeightGroups(wgroups);
     }
     
     @Override // documentation inherited
-    public void readExternal (ObjectInput in)
-        throws IOException, ClassNotFoundException
+    public void write (JMEExporter ex)
+        throws IOException
     {
-        super.readExternal(in);
-        setWeightGroups((WeightGroup[])in.readObject());
+        super.write(ex);
+        OutputCapsule capsule = ex.getCapsule(this);
+        capsule.write(_weightGroups, "weightGroups", null);
     }
     
     @Override // documentation inherited

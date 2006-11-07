@@ -624,7 +624,7 @@ public class ModelViewer extends JmeCanvasApp
         throws IOException
     {
         _status.setText(_msg.get("m.loading_model", file));
-        setModel(Model.readFromFile(file, false), file);
+        setModel(Model.readFromFile(file), file);
     }
     
     /**

@@ -21,13 +21,6 @@
 
 package com.threerings.jme.model;
 
-import java.io.Externalizable;
-import java.io.IOException;
-
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-
-import com.jme.math.Matrix4f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 
@@ -95,21 +88,4 @@ public interface ModelSpatial
      * to create a new instance
      */
     public Spatial putClone (Spatial store, Model.CloneCreator properties);
-    
-    /**
-     * Recursively writes any data buffers to the output channel.
-     */    
-    public void writeBuffers (FileChannel out)
-        throws IOException;
-    
-    /**
-     * Recursively reads any data buffers from the input channel.
-     */
-    public void readBuffers (FileChannel in)
-        throws IOException;
-    
-    /**
-     * Recursively slices any data buffers from the buffer map.
-     */
-    public void sliceBuffers (MappedByteBuffer map);
 }

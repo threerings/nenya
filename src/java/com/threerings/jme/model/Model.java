@@ -21,20 +21,15 @@
 
 package com.threerings.jme.model;
 
-import java.io.Externalizable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import java.nio.ByteOrder;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.FloatBuffer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +47,13 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
+import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.export.binary.BinaryImporter;
 
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.PropertiesUtil;
@@ -99,7 +101,7 @@ public class Model extends ModelNode
     
     /** An animation for the model. */
     public static class Animation
-        implements Serializable
+        implements Savable
     {
         /** The rate of the animation in frames per second. */
         public int frameRate;
@@ -171,30 +173,52 @@ public class Model extends ModelNode
             }
         }
         
-        private void writeObject (ObjectOutputStream out)
+        // documentation inherited
+        public Class getClassTag ()
+        {
+            return getClass();
+        }
+        
+        // documentation inherited
+        public void read (JMEImporter im)
             throws IOException
         {
-            out.defaultWriteObject();
-            out.writeInt(transforms.length);
+            InputCapsule capsule = im.getCapsule(this);
+            frameRate = capsule.readInt("frameRate", 0);
+            repeatType = capsule.readInt("repeatType", Controller.RT_CLAMP);
+            Savable[] ttargs = capsule.readSavableArray(
+                "transformTargets", null);
+            transformTargets = new Spatial[ttargs.length];
+            System.arraycopy(ttargs, 0, transformTargets, 0, ttargs.length);
+            FloatBuffer pxforms = capsule.readFloatBuffer("transforms", null);
+            transforms = new Transform[pxforms.capacity() /
+                Transform.PACKED_SIZE / transformTargets.length][];
             for (int ii = 0; ii < transforms.length; ii++) {
-                for (int jj = 0; jj < transformTargets.length; jj++) {
-                    transforms[ii][jj].writeExternal(out);
+                Transform[] frame = transforms[ii] =
+                    new Transform[transformTargets.length];
+                for (int jj = 0; jj < frame.length; jj++) {
+                    frame[jj] = new Transform(pxforms);
                 }
             }
         }
 
-        private void readObject (ObjectInputStream in)
-            throws IOException, ClassNotFoundException
+        // documentation inherited
+        public void write (JMEExporter ex)
+            throws IOException
         {
-            in.defaultReadObject();
-            transforms = new Transform[in.readInt()][transformTargets.length];
-            for (int ii = 0; ii < transforms.length; ii++) {
-                for (int jj = 0; jj < transformTargets.length; jj++) {
-                    transforms[ii][jj] = new Transform(new Vector3f(),
-                        new Quaternion(), new Vector3f());
-                    transforms[ii][jj].readExternal(in);
+            OutputCapsule capsule = ex.getCapsule(this);
+            capsule.write(frameRate, "frameRate", 0);
+            capsule.write(repeatType, "repeatType", Controller.RT_CLAMP);
+            capsule.write(transformTargets, "transformTargets", null);
+            FloatBuffer pxforms = FloatBuffer.allocate(transforms.length *
+                transformTargets.length * Transform.PACKED_SIZE);
+            for (Transform[] frame : transforms) {
+                for (Transform xform : frame) {
+                    xform.writeToBuffer(pxforms);
                 }
             }
+            pxforms.rewind();
+            capsule.write(pxforms, "transforms", null);
         }
         
         private static final long serialVersionUID = 1;
@@ -202,14 +226,24 @@ public class Model extends ModelNode
     
     /** A frame element that manipulates the target's transform. */
     public static final class Transform
-        implements Externalizable
     {
+        /** The number of floats required to store a packed transform. */
+        public static final int PACKED_SIZE = 3 + 4 + 3;
+        
         public Transform (
             Vector3f translation, Quaternion rotation, Vector3f scale)
         {
             _translation = translation;
             _rotation = rotation;
             _scale = scale;
+        }
+        
+        public Transform (FloatBuffer buf)
+        {
+            _translation = new Vector3f(buf.get(), buf.get(), buf.get());
+            _rotation = new Quaternion(buf.get(), buf.get(), buf.get(),
+                buf.get());
+            _scale = new Vector3f(buf.get(), buf.get(), buf.get());
         }
         
         public void apply (Spatial target)
@@ -234,29 +268,29 @@ public class Model extends ModelNode
             target.getLocalScale().interpolate(_scale, next._scale, alpha);
         }
         
-        // documentation inherited from interface Externalizable
-        public void writeExternal (ObjectOutput out)
-            throws IOException
+        /**
+         * Writes this transform to the current position in the supplied
+         * buffer.
+         */
+        public void writeToBuffer (FloatBuffer buf)
         {
-            _translation.writeExternal(out);
-            _rotation.writeExternal(out);
-            _scale.writeExternal(out);
+            buf.put(_translation.x);
+            buf.put(_translation.y);
+            buf.put(_translation.z);
+            
+            buf.put(_rotation.x);
+            buf.put(_rotation.y);
+            buf.put(_rotation.z);
+            buf.put(_rotation.w);
+            
+            buf.put(_scale.x);
+            buf.put(_scale.y);
+            buf.put(_scale.z);
         }
         
-        // documentation inherited from interface Externalizable
-        public void readExternal (ObjectInput in)
-            throws IOException, ClassNotFoundException
-        {
-            _translation.readExternal(in);
-            _rotation.readExternal(in);
-            _scale.readExternal(in);
-        }
-
         /** The transform at this frame. */
         protected Vector3f _translation, _scale;
         protected Quaternion _rotation;
-        
-        private static final long serialVersionUID = 1;
     }
     
     /** Customized clone creator for models. */
@@ -326,34 +360,14 @@ public class Model extends ModelNode
     
     /**
      * Attempts to read a model from the specified file.
-     *
-     * @param map if true, map buffers into memory directly from the
-     * file
      */
-    public static Model readFromFile (File file, boolean map)
+    public static Model readFromFile (File file)
         throws IOException
     {
         // read the serialized model and its children
         FileInputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        Model model;
-        try {
-            model = (Model)ois.readObject();
-        } catch (ClassNotFoundException e) {
-            Log.warning("Encountered unknown class [error=" + e + "].");
-            return null;
-        }
-        
-        // then either read or map the buffers
-        FileChannel fc = fis.getChannel();
-        if (map) {
-            long pos = fc.position();
-            model.sliceBuffers(fc.map(FileChannel.MapMode.READ_ONLY,
-                pos, fc.size() - pos));
-        } else {
-            model.readBuffers(fc);
-        }
-        ois.close();
+        Model model = (Model)BinaryImporter.getInstance().load(fis);
+        fis.close();
         
         // initialize the model as a prototype
         model.initPrototype();
@@ -677,17 +691,44 @@ public class Model extends ModelNode
     {
         // start out by writing this node and its children
         FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(this);
-        
-        // now traverse the scene graph appending buffers to the
-        // end of the file
-        writeBuffers(fos.getChannel());
-        oos.close();
+        BinaryExporter.getInstance().save(this, fos);
+        fos.close();
     }
     
     @Override // documentation inherited
-    public void writeExternal (ObjectOutput out)
+    public void read (JMEImporter im)
+        throws IOException
+    {
+        super.read(im);
+        InputCapsule capsule = im.getCapsule(this);
+        String[] propNames = capsule.readStringArray("propNames", null),
+            propValues = capsule.readStringArray("propValues", null);
+        _props = new Properties();
+        for (int ii = 0; ii < propNames.length; ii++) {
+            _props.setProperty(propNames[ii], propValues[ii]);
+        }
+        String[] animNames = capsule.readStringArray("animNames", null);
+        if (animNames != null) {
+            Savable[] animValues = capsule.readSavableArray(
+                "animValues", null);
+            _anims = new HashMap<String, Animation>();
+            for (int ii = 0; ii < animNames.length; ii++) {
+                _anims.put(animNames[ii], (Animation)animValues[ii]);
+            }
+        } else {
+            _anims = null;
+        }
+        ArrayList controllers = capsule.readSavableArrayList(
+            "controllers", null);
+        if (controllers != null) {
+            for (Object ctrl : controllers) {
+                addController((Controller)ctrl);
+            }
+        }
+    }
+    
+    @Override // documentation inherited
+    public void write (JMEExporter ex)
         throws IOException
     {
         // don't serialize the emission node; it contains transient geometry
@@ -695,28 +736,24 @@ public class Model extends ModelNode
         if (_emissionNode != null) {
             detachChild(_emissionNode);
         }
-        super.writeExternal(out);
+        super.write(ex);
         if (_emissionNode != null) {
             attachChild(_emissionNode);
         }
-        out.writeObject(_props);
-        out.writeObject(_anims);
-        out.writeObject(getControllers());
+        OutputCapsule capsule = ex.getCapsule(this);
+        capsule.write(_props.keySet().toArray(new String[_props.size()]),
+            "propNames", null);
+        capsule.write(_props.values().toArray(new String[_props.size()]),
+            "propValues", null);
+        if (_anims != null) {
+            capsule.write(_anims.keySet().toArray(
+                new String[_anims.size()]), "animNames", null);
+            capsule.write(_anims.values().toArray(
+                new Animation[_anims.size()]), "animValues", null);
+        }
+        capsule.writeSavableArrayList(getControllers(), "controllers", null);
     }
     
-    @Override // documentation inherited
-    public void readExternal (ObjectInput in)
-        throws IOException, ClassNotFoundException
-    {
-        super.readExternal(in);
-        _props = (Properties)in.readObject();
-        _anims = (HashMap<String, Animation>)in.readObject();
-        ArrayList controllers = (ArrayList)in.readObject();
-        for (Object ctrl : controllers) {
-            addController((Controller)ctrl);
-        }
-    }
-
     @Override // documentation inherited
     public void resolveTextures (TextureProvider tprov)
     {

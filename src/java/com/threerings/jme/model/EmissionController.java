@@ -22,13 +22,15 @@
 package com.threerings.jme.model;
 
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 
 import java.util.Properties;
 
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.OutputCapsule;
 
 /**
  * A model controller whose target represents an emitter.
@@ -71,19 +73,21 @@ public abstract class EmissionController extends ModelController
     }
     
     @Override // documentation inherited
-    public void writeExternal (ObjectOutput out)
+    public void read (JMEImporter im)
         throws IOException
     {
-        super.writeExternal(out);
-        out.writeBoolean(_hideTarget);
+        super.read(im);
+        InputCapsule capsule = im.getCapsule(this);
+        _hideTarget = capsule.readBoolean("hideTarget", true);
     }
     
     @Override // documentation inherited
-    public void readExternal (ObjectInput in)
-        throws IOException, ClassNotFoundException
+    public void write (JMEExporter ex)
+        throws IOException
     {
-        super.readExternal(in);
-        _hideTarget = in.readBoolean();
+        super.write(ex);
+        OutputCapsule capsule = ex.getCapsule(this);
+        capsule.write(_hideTarget, "hideTarget", true);
     }
     
     /** Whether or not the target should be hidden from view. */
