@@ -39,6 +39,7 @@ public class TileMultiFrameImage implements MultiFrameImage
     public TileMultiFrameImage (TileSet source)
     {
         _source = source;
+        _tileCount = _source.getTileCount();
     }
 
     /**
@@ -53,7 +54,7 @@ public class TileMultiFrameImage implements MultiFrameImage
     // documentation inherited from interface
     public int getFrameCount ()
     {
-        return _source.getTileCount();
+        return _tileCount;
     }
 
     // documentation inherited from interface
@@ -81,4 +82,7 @@ public class TileMultiFrameImage implements MultiFrameImage
     }
 
     protected TileSet _source;
+
+    /** The number of tiles in the source image. */
+    protected int _tileCount;
 }
