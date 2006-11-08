@@ -50,6 +50,7 @@ import com.jme.util.export.OutputCapsule;
 import com.jme.util.export.Savable;
 import com.jme.util.geom.BufferUtils;
 
+import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.HashIntMap;
 
 import com.threerings.jme.Log;
@@ -104,9 +105,8 @@ public class SkinMesh extends ModelMesh
         {
             InputCapsule capsule = im.getCapsule(this);
             vertexCount = capsule.readInt("vertexCount", 0);
-            Savable[] sbones = capsule.readSavableArray("bones", null);
-            bones = new Bone[sbones.length];
-            System.arraycopy(sbones, 0, bones, 0, sbones.length);
+            bones = ArrayUtil.copy(capsule.readSavableArray("bones", null),
+                new Bone[0]);
             weights = capsule.readFloatArray("weights", null);
         }
 
@@ -271,10 +271,8 @@ public class SkinMesh extends ModelMesh
     {
         super.read(im);
         InputCapsule capsule = im.getCapsule(this);
-        Savable[] swgroups = capsule.readSavableArray("weightGroups", null);
-        WeightGroup[] wgroups = new WeightGroup[swgroups.length];
-        System.arraycopy(swgroups, 0, wgroups, 0, swgroups.length);
-        setWeightGroups(wgroups);
+        setWeightGroups(ArrayUtil.copy(capsule.readSavableArray(
+            "weightGroups", null), new WeightGroup[0]));
     }
     
     @Override // documentation inherited

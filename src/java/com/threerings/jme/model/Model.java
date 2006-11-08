@@ -55,6 +55,7 @@ import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
 
+import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.RandomUtil;
@@ -186,10 +187,8 @@ public class Model extends ModelNode
             InputCapsule capsule = im.getCapsule(this);
             frameRate = capsule.readInt("frameRate", 0);
             repeatType = capsule.readInt("repeatType", Controller.RT_CLAMP);
-            Savable[] ttargs = capsule.readSavableArray(
-                "transformTargets", null);
-            transformTargets = new Spatial[ttargs.length];
-            System.arraycopy(ttargs, 0, transformTargets, 0, ttargs.length);
+            transformTargets = ArrayUtil.copy(capsule.readSavableArray(
+                "transformTargets", null), new Spatial[0]);
             FloatBuffer pxforms = capsule.readFloatBuffer("transforms", null);
             transforms = new Transform[pxforms.capacity() /
                 Transform.PACKED_SIZE / transformTargets.length][];
