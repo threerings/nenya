@@ -95,8 +95,9 @@ public class ChatView extends BContainer
 
     public void setChatButton (BButton button)
     {
-        _incont.add(button, GroupLayout.FIXED);
-        button.addListener(_inlist);
+        _inBtn = button;
+        _incont.add(_inBtn, GroupLayout.FIXED);
+        _inBtn.addListener(_inlist);
     }
 
     /**
@@ -110,6 +111,9 @@ public class ChatView extends BContainer
     // documentation inherited from interface ChatDisplay
     public void clear ()
     {
+        if (_input.hasFocus() || _inBtn.hasFocus()) {
+            _text.clearText();
+        }
     }
 
     // documentation inherited from interface ChatDisplay
@@ -198,4 +202,5 @@ public class ChatView extends BContainer
     protected BTextArea _text;
     protected BContainer _incont;
     protected BTextField _input;
+    protected BButton _inBtn;
 }
