@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <!-- declares the libraries needed to build nenya -->
 <project name="library-dependencies">
-  <fileset dir="${projects.root}" id="nenya.libs">
-    <include name="${libs.dir}/commons-collections.jar"/>
-    <include name="${libs.dir}/commons-digester.jar"/>
-    <include name="${libs.dir}/commons-io.jar"/>
-    <include name="${libs.dir}/junit-3.7.jar"/>
-    <include name="${libs.dir}/retroweaver-all-1.2.2.jar"/>
-    <include name="${libs.dir}/xml-writer.jar"/>
-    <include name="${distlib.dir}/samskivert.jar"/>
-    <include name="${distlib.dir}/narya-base.jar"/>
-    <include name="${distlib.dir}/narya-distrib.jar"/>
+  <fileset dir="${libs.dir}" id="nenya.libs">
+    <include name="commons-collections.jar"/>
+    <include name="commons-digester.jar"/>
+    <include name="commons-io.jar"/>
+    <include name="junit-3.7.jar"/>
+    <include name="narya-base.jar"/>
+    <include name="narya-distrib.jar"/>
+    <include name="retroweaver-all-1.2.2.jar"/>
+    <include name="samskivert.jar"/>
+    <include name="xml-writer.jar"/>
     <!-- these LWJGL, JME and JME-BUI libraries are optional -->
-    <include name="${distlib.dir}/lwjgl.jar"/>
-    <include name="${distlib.dir}/lwjgl_util.jar"/>
-    <include name="${distlib.dir}/jme-awt.jar"/>
-    <include name="${distlib.dir}/jme-effects.jar"/>
-    <include name="${distlib.dir}/jme-model.jar"/>
-    <include name="${distlib.dir}/jme-sound.jar"/>
-    <include name="${distlib.dir}/jme-terrain.jar"/>
-    <include name="${distlib.dir}/jme.jar"/>
-    <include name="${distlib.dir}/jme-bui.jar"/>
+    <include name="lwjgl.jar"/>
+    <include name="lwjgl_util.jar"/>
+    <include name="jme-awt.jar"/>
+    <include name="jme-effects.jar"/>
+    <include name="jme-model.jar"/>
+    <include name="jme-sound.jar"/>
+    <include name="jme-terrain.jar"/>
+    <include name="jme.jar"/>
+    <include name="jme-bui.jar"/>
   </fileset>
 </project>
