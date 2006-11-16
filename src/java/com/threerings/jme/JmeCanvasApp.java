@@ -163,6 +163,7 @@ public class JmeCanvasApp extends JmeApp
             renderer.setHeadless(true);
             setRenderer(renderer);
             _display.setRenderer(renderer);
+            _display.getCurrentContext().setupRecords(renderer);
             DisplaySystem.updateStates(renderer);
 
             if (!init()) {

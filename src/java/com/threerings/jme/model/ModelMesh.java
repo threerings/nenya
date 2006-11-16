@@ -86,6 +86,13 @@ public class ModelMesh extends TriMesh
         super(name);
     }
     
+    @Override // documentation inherited
+    public int hashCode ()
+    {
+        // hash on the name rather than the identity for consistent ordering
+        return getName().hashCode();
+    }
+    
     /**
      * Reconfigures this model with a new set of (sub-)properties.  Textures
      * must be (re-)resolved after calling this method.

@@ -64,6 +64,13 @@ public class ModelNode extends Node
         super(name);
     }
     
+    @Override // documentation inherited
+    public int hashCode ()
+    {
+        // hash on the name rather than the identity for consistent ordering
+        return getName().hashCode();
+    }
+    
     /**
      * Recursively searches the scene graph rooted at this node for a
      * node with the provided name.
@@ -391,7 +398,7 @@ public class ModelNode extends Node
         Vector3f translation, Quaternion rotation, Vector3f scale,
         Matrix4f result)
     {
-        result.set(rotation);
+        result.setRotationQuaternion(rotation);
         result.setTranslation(translation);
         
         result.m00 *= scale.x;

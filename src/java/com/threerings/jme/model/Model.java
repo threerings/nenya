@@ -917,7 +917,7 @@ public class Model extends ModelNode
     {
         // update the bounds with an identity transform (which will be
         // overwritten after this method is called)
-        getWorldRotation().set(Quaternion.IDENTITY);
+        getWorldRotation().loadIdentity();
         getWorldTranslation().set(Vector3f.ZERO);
         getWorldScale().set(Vector3f.UNIT_XYZ);
         for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
