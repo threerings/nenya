@@ -8,24 +8,18 @@
     <include name="${libs.dir}/junit-3.7.jar"/>
     <include name="${libs.dir}/retroweaver-all-1.2.2.jar"/>
     <include name="${libs.dir}/xml-writer.jar"/>
-    <!-- these might come from lib/ -->
-    <include name="${libs.dir}/samskivert.jar"/>
-    <include name="${libs.dir}/narya-base.jar"/>
-    <include name="${libs.dir}/narya-distrib.jar"/>
-    <!-- or from the build directories of the actual projects -->
-    <include name="${project.dir}/samskivert/dist/samskivert.jar"/>
-    <include name="${project.dir}/narya/dist/narya-base.jar"/>
-    <include name="${project.dir}/narya/dist/narya-distrib.jar"/>
-    <!-- these LWJGL and JME libraries are optional -->
-    <include name="lib/lwjgl.jar"/>
-    <include name="lib/lwjgl_util.jar"/>
-    <include name="lib/jme-awt.jar"/>
-    <include name="lib/jme-effects.jar"/>
-    <include name="lib/jme-model.jar"/>
-    <include name="lib/jme-sound.jar"/>
-    <include name="lib/jme-terrain.jar"/>
-    <include name="lib/jme.jar"/>
-    <include name="lib/jme-bui.jar"/>
-    <include name="${project.dir}/jme-bui/dist/jme-bui.jar"/>
+    <include name="${distlib.dir}/samskivert.jar"/>
+    <include name="${distlib.dir}/narya-base.jar"/>
+    <include name="${distlib.dir}/narya-distrib.jar"/>
+    <!-- these LWJGL, JME and JME-BUI libraries are optional -->
+    <include name="${distlib.dir}/lwjgl.jar"/>
+    <include name="${distlib.dir}/lwjgl_util.jar"/>
+    <include name="${distlib.dir}/jme-awt.jar"/>
+    <include name="${distlib.dir}/jme-effects.jar"/>
+    <include name="${distlib.dir}/jme-model.jar"/>
+    <include name="${distlib.dir}/jme-sound.jar"/>
+    <include name="${distlib.dir}/jme-terrain.jar"/>
+    <include name="${distlib.dir}/jme.jar"/>
+    <include name="${distlib.dir}/jme-bui.jar"/>
   </fileset>
 </project>
