@@ -23,6 +23,8 @@ package com.threerings.jme;
 
 import java.io.File;
 
+import java.util.Arrays;
+
 import com.samskivert.util.Queue;
 import com.samskivert.util.RunQueue;
 import com.samskivert.util.StringUtil;
@@ -33,6 +35,7 @@ import com.jme.renderer.Renderer;
 
 import com.jme.scene.Node;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ZBufferState;
 
 import com.jme.system.DisplaySystem;
@@ -304,6 +307,10 @@ public class JmeApp
         // start with a black background
         _display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
+        // enable all of the "quick compares," which means that states will
+        // be refreshed only when necessary
+        Arrays.fill(RenderState.QUICK_COMPARE, true);
+        
         // set up the camera
         _camera.setFrustumPerspective(45.0f, width/(float)height, 1, 10000);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
