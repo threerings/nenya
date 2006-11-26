@@ -1,8 +1,8 @@
 //
-// $Id: Log.java 3099 2004-08-27 02:21:06Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
-// Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved
+// Copyright (C) 2002-2006 Three Rings Design, Inc., All Rights Reserved
 // http://www.threerings.net/code/narya/
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -21,19 +21,21 @@
 
 package com.threerings.jme;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- * A placeholder class that contains a reference to the log object used by
- * this package.
+ * A placeholder class that contains a reference to the log object used by this package.
  */
 public class Log
 {
-    public static com.samskivert.util.Log log =
-	new com.samskivert.util.Log("narya.jme");
+    /** We dispatch our log messages through this logger. */
+    public static Logger log = Logger.getLogger("com.threerings.nenya.jme");
 
     /** Convenience function. */
     public static void debug (String message)
     {
-	log.debug(message);
+	log.fine(message);
     }
 
     /** Convenience function. */
@@ -51,6 +53,6 @@ public class Log
     /** Convenience function. */
     public static void logStackTrace (Throwable t)
     {
-	log.logStackTrace(com.samskivert.util.Log.WARNING, t);
+	log.log(Level.WARNING, t.getMessage(), t);
     }
 }
