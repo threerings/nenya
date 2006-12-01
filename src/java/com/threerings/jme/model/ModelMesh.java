@@ -383,7 +383,7 @@ public class ModelMesh extends TriMesh
             return;
         }
         Texture emissiveTex = null;
-        if (_emissiveMap != null) {
+        if (_emissiveMap != null && TextureState.getNumberOfFixedUnits() >= 2) {
             TextureState tstate = tprov.getTexture(_emissiveMap);
             emissiveTex = tstate.getTexture();
             emissiveTex.setApply(Texture.AM_BLEND);
