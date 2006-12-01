@@ -194,6 +194,14 @@ public class ResourceManager
     }
 
     /**
+     * Set where we should look for locale-specific resources.
+     */
+    public void setLocalePrefix (String prefix)
+    {
+        _localePrefix = prefix;
+    }
+
+    /**
      * Initializes the bundle sets to be made available by this resource
      * manager.  Applications that wish to make use of resource bundles
      * should call this method after constructing the resource manager.
@@ -419,6 +427,23 @@ public class ResourceManager
         }
 
         // if we still didn't find anything, try the classloader
+
+        // First try a locale-specific file
+        if (_localePrefix != null) {
+            final String rpath = PathUtil.appendPath(_rootPath,
+                PathUtil.appendPath(_localePrefix, path));
+            in = (InputStream)AccessController.doPrivileged(
+                new PrivilegedAction() {
+                    public Object run () {
+                        return _loader.getResourceAsStream(rpath);
+                    }
+                });
+            if (in != null) {
+                return in;
+            }
+        }
+
+        // But if we didn't find that, try locale-neutral.
         final String rpath = PathUtil.appendPath(_rootPath, path);
         in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
             public Object run () {
@@ -460,6 +485,22 @@ public class ResourceManager
         File file = getResourceFile(path);
         if (file != null && file.exists()) {
             return new FileImageInputStream(file);
+        }
+
+        // First try a locale-specific file
+        if (_localePrefix != null) {
+            final String rpath = PathUtil.appendPath(_rootPath,
+                PathUtil.appendPath(_localePrefix, path));
+            InputStream in = (InputStream)AccessController.doPrivileged(
+                new PrivilegedAction() {
+                    public Object run () {
+                        return _loader.getResourceAsStream(rpath);
+                    }
+                });
+            if (in != null) {
+                return new MemoryCacheImageInputStream(
+                    new BufferedInputStream(in));
+            }
         }
 
         // if we still didn't find anything, try the classloader
@@ -685,6 +726,9 @@ public class ResourceManager
 
     /** A table of our resource sets. */
     protected HashMap _sets = new HashMap();
+
+    /** Locale to search for locale-specific resources, if any. */
+    protected String _localePrefix = null;
 
     /** The prefix of configuration entries that describe a resource
      * set. */

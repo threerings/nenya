@@ -137,6 +137,16 @@ public class ImageManager
     }
 
     /**
+     * Clears all images out of the cache.
+     */
+    public void clearCache ()
+    {
+        Log.info("Clearing image manager cache.");
+
+        _ccache.clear();
+    }
+
+    /**
      * Creates a buffered image, optimized for display on our graphics
      * device.
      */
