@@ -548,7 +548,17 @@ public class ResourceManager
         // look for the resource in any of the bundles
         int size = bundles.length;
         for (int ii = 0; ii < size; ii++) {
-            InputStream instr = bundles[ii].getResource(path);
+            InputStream instr = null;
+
+            // Try a localized version first.
+            if (_localePrefix != null) {
+                instr = bundles[ii].getResource(
+                    PathUtil.appendPath(_localePrefix, path));
+            }
+            // If we didn't find that, try a generic.
+            if (instr == null) {
+                instr = bundles[ii].getResource(path);
+            }
             if (instr != null) {
 //                 Log.info("Found resource [rset=" + rset +
 //                          ", bundle=" + bundles[ii].getSource().getPath() +
@@ -586,7 +596,18 @@ public class ResourceManager
         // look for the resource in any of the bundles
         int size = bundles.length;
         for (int ii = 0; ii < size; ii++) {
-            File file = bundles[ii].getResourceFile(path);
+            File file = null;
+            // Try a localized version first.
+            if (_localePrefix != null) {
+                file = bundles[ii].getResourceFile(
+                    PathUtil.appendPath(_localePrefix, path));
+            }
+
+            // If we didn't find that, try generic.
+            if (file == null) {
+                file = bundles[ii].getResourceFile(path);
+            }
+
             if (file != null) {
 //                 Log.info("Found image resource [rset=" + rset +
 //                          ", bundle=" + bundles[ii].getSource() +
