@@ -69,25 +69,14 @@ public abstract class Animation extends AbstractMedia
             return; // no-op
         }
 
-        // start with our current bounds
-        Rectangle dirty = new Rectangle(_bounds);
+        // make a note of our current bounds
+        Rectangle obounds = new Rectangle(_bounds);
 
         // move ourselves
         super.setLocation(x, y);
 
-        // grow the dirty rectangle to incorporate our new bounds and pass
-        // the dirty region to our region manager
-        if (_mgr != null) {
-            // if our new bounds intersect our old bounds, grow a single
-            // dirty rectangle to incorporate them both
-            if (_bounds.intersects(dirty)) {
-                dirty.add(_bounds);
-            } else {
-                // otherwise invalidate our new bounds separately
-                _mgr.getRegionManager().invalidateRegion(_bounds);
-            }
-            _mgr.getRegionManager().addDirtyRegion(dirty);
-        }
+        // this method will invalidate our old and new bounds efficiently
+        invalidateAfterChange(obounds);
     }
 
     // documentation inherited

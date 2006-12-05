@@ -272,9 +272,42 @@ public abstract class AbstractMedia
     }
 
     /**
+     * If this media's size or location are changing, it should create a new
+     * rectangle from its old boudns (new Rectangle(_bounds)), then effect the
+     * bounds changes and then call this method with the old bounds and this
+     * method will either merge the new bounds with the old to create a single
+     * dirty rectangle or dirty them separately depending on which is more
+     * appropriate. It will also behave properly if this media is not currently
+     * managed (not being rendered) by NOOPing.
+     *
+     * <em>Do not</em> pass {@link #_bounds} to this method. The rectangle
+     * passed in will be modified and then passed on to the region manager
+     * which will modify it further.
+     */
+    protected void invalidateAfterChange (Rectangle obounds)
+    {
+        // if we're not added we need not dirty
+        if (_mgr == null) {
+            return;
+        }
+
+        // if our new bounds intersect our old bounds, grow a single dirty
+        // rectangle to incorporate them both
+        if (_bounds.intersects(obounds)) {
+            obounds.add(_bounds);
+        } else {
+            // otherwise invalidate our new bounds separately
+            _mgr.getRegionManager().invalidateRegion(_bounds);
+        }
+
+        // finally invalidate the original/merged bounds
+        _mgr.getRegionManager().addDirtyRegion(obounds);
+    }
+
+    /**
      * Called by the media manager after the media is removed from service.
-     * Derived classes may override this method, but should be sure to
-     * call <code>super.shutdown()</code>.
+     * Derived classes may override this method, but should be sure to call
+     * <code>super.shutdown()</code>.
      */
     protected void shutdown ()
     {
