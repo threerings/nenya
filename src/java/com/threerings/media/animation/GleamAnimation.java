@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Transparency;
 
 import com.threerings.media.sprite.Sprite;
@@ -35,7 +36,7 @@ public class GleamAnimation extends Animation
     public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color,
                            int upmillis, int downmillis, boolean fadeIn)
     {
-        super(sprite.getBounds());
+        super(new Rectangle(sprite.getBounds()));
         _spmgr = spmgr;
         _sprite = sprite;
         _color = color;
@@ -60,6 +61,14 @@ public class GleamAnimation extends Animation
             _finished = true;
             _spmgr.addSprite(_sprite);
             return;
+        }
+
+        // if the sprite is moved or changed size while we're gleaming it,
+        // track those changes
+        if (!_bounds.equals(_sprite.getBounds())) {
+            Rectangle obounds = new Rectangle(_bounds);
+            _bounds.setBounds(_sprite.getBounds());
+            invalidateAfterChange(obounds);
         }
 
         if (_alpha != alpha) {
