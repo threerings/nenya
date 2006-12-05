@@ -273,7 +273,7 @@ public abstract class AbstractMedia
 
     /**
      * If this media's size or location are changing, it should create a new
-     * rectangle from its old boudns (new Rectangle(_bounds)), then effect the
+     * rectangle from its old bounds (new Rectangle(_bounds)), then effect the
      * bounds changes and then call this method with the old bounds and this
      * method will either merge the new bounds with the old to create a single
      * dirty rectangle or dirty them separately depending on which is more
