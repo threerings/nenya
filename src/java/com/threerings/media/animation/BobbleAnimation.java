@@ -46,8 +46,8 @@ public class BobbleAnimation extends Animation
     public BobbleAnimation (
         Mirage image, int sx, int sy, int rx, int ry, int duration)
     {
-        super(new Rectangle(sx - rx, sy - ry, sx + image.getWidth() + rx,
-                            sy + image.getHeight() + ry));
+        super(new Rectangle(sx - rx, sy - ry, image.getWidth() + rx,
+                            image.getHeight() + ry));
 
         // save things off
         _image = image;
@@ -74,8 +74,8 @@ public class BobbleAnimation extends Animation
         // calculate the latest position
         int dx = RandomUtil.getInt(_rx);
         int dy = RandomUtil.getInt(_ry);
-        _x = (_sx + dx) * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
-        _y = (_sy + dy) * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
+        _x = _sx + dx * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
+        _y = _sy + dy * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
     }
 
     // documentation inherited
