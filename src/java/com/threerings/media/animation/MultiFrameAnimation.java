@@ -98,11 +98,23 @@ public class MultiFrameAnimation extends Animation
             _finished = true;
 
         } else if (fidx != _fidx) {
+            // make a note of our current bounds
+            Rectangle dirty = new Rectangle(_bounds);
+
             // update our frame index and bounds
             setFrameIndex(fidx);
 
-            // and have ourselves repainted
-            invalidate();
+            if (_mgr != null) {
+                // if our new bounds intersect our old bounds, grow a single
+                // dirty rectangle to incorporate them both, otherwise
+                // invalidate them separately
+                if (_bounds.intersects(dirty)) {
+                    dirty.add(_bounds);
+                } else {
+                    _mgr.getRegionManager().invalidateRegion(_bounds);
+                }
+                _mgr.getRegionManager().addDirtyRegion(dirty);
+            }
         }
     }
 
