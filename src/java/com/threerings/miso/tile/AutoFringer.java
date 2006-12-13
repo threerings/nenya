@@ -62,6 +62,13 @@ public class AutoFringer
     }
 
     /**
+     * Returns the fringe configuration used by this fringer.
+     */
+    public FringeConfiguration getFringeConf () {
+        return _fringeconf;
+    }
+
+    /**
      * Compute and return the fringe tile to be inserted at the specified
      * location.
      */
@@ -69,7 +76,7 @@ public class AutoFringer
                                    HashMap masks)
     {
         // get the tileset id of the base tile we are considering
-        int underset = scene.getBaseTileId(col, row) >> 16;
+        int underset = adjustTileSetId(scene.getBaseTileId(col, row) >> 16);
 
         // start with a clean temporary fringer map
         _fringers.clear();
@@ -85,8 +92,8 @@ public class AutoFringer
 
                 // determine the tileset for this tile
                 int btid = scene.getBaseTileId(x, y);
-                int baseset = (btid <= 0) ?
-                    scene.getDefaultBaseTileSet() : (btid >> 16);
+                int baseset = adjustTileSetId((btid <= 0) ?
+                    scene.getDefaultBaseTileSet() : (btid >> 16));
 
                 // determine if it fringes on our tile
                 int pri = _fringeconf.fringesOn(baseset, underset);
@@ -278,6 +285,15 @@ public class AutoFringer
             ret[ii] = ((Integer) indexes.get(ii)).intValue();
         }
         return ret;
+    }
+
+    /**
+     * Allow subclasses to apply arbitrary modifications to tileset ids for
+     * whatever nefarious purposes they may have.
+     */
+    protected int adjustTileSetId (int tileSetId) {
+        // by default, nothing.
+        return tileSetId;
     }
 
     /**
