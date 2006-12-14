@@ -64,6 +64,20 @@ public class SoundGroup
      */
     public void dispose ()
     {
+        reclaimAll();
+        if (_sourceIds != null) {
+            _sources.clear();
+            AL10.alDeleteSources(_sourceIds);
+            _sourceIds = null;
+        }
+    }
+
+    /**
+     * Stops and reclaims all sounds from this sound group but does not
+     * free the sources.
+     */
+    public void reclaimAll ()
+    {
         if (_sourceIds != null) {
             // make sure any bound sources are released
             for (Source source : _sources) {
@@ -72,9 +86,6 @@ public class SoundGroup
                     source.holder.reclaim();
                 }
             }
-            _sources.clear();
-            AL10.alDeleteSources(_sourceIds);
-            _sourceIds = null;
         }
     }
 
