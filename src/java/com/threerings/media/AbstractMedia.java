@@ -239,7 +239,7 @@ public abstract class AbstractMedia
     /**
      * Initialize the media.
      */
-    protected final void init (AbstractMediaManager manager)
+    public final void init (AbstractMediaManager manager)
     {
         _mgr = manager;
         init();
