@@ -204,7 +204,8 @@ public class ImageCache
      public Image getImage (String rsrcPath, float scale, boolean flip)
      {
         // first check the cache
-        WeakReference<Image> iref = _imgcache.get(rsrcPath);
+         String key = rsrcPath + ":" + scale;
+         WeakReference<Image> iref = _imgcache.get(key);
         Image image;
         if (iref != null && (image = iref.get()) != null) {
             return image;
@@ -224,7 +225,7 @@ public class ImageCache
 
         // create and cache a new JME image with the appropriate data
         image = createImage(bufimg, scale, flip);
-        _imgcache.put(rsrcPath, new WeakReference<Image>(image));
+        _imgcache.put(key, new WeakReference<Image>(image));
         return image;
     }
 
@@ -235,7 +236,7 @@ public class ImageCache
      */
     public BImage getBImage (String rsrcPath)
     {
-        return getBImage(rsrcPath, false);
+        return getBImage(rsrcPath, 1f, false);
     }
 
     /**
@@ -243,10 +244,12 @@ public class ImageCache
      * which case it is prepared for use by BUI.  <em>Note:</em> these images are cached separately
      * from the {@link Image} and {@link BufferedImage} caches.
      *
+     * @param scale If none-unity the image will be scaled by the supplied factor before being
+     * converted into a {@link BImage}.
      * @param returnNull If set to true, will return a null instead of generating an error image on
      * failure
      */
-    public BImage getBImage (String rsrcPath, boolean returnNull)
+    public BImage getBImage (String rsrcPath, float scale, boolean returnNull)
     {
         // first check the cache
         WeakReference<BImage> iref = _buicache.get(rsrcPath);
@@ -269,8 +272,11 @@ public class ImageCache
             bufimg = ImageUtil.createErrorImage(64, 64);
         }
 
-        // create and cache a new BUI image with the appropriate data
-        image = new BImage(bufimg, true);
+        // create and cache a new BUI image with the appropriate (scaled if necessary) data
+        image = new BImage(scale == 1f ? bufimg :
+                           bufimg.getScaledInstance(Math.round(bufimg.getWidth()*scale),
+                                                    Math.round(bufimg.getHeight()*scale),
+                                                    BufferedImage.SCALE_SMOOTH), true);
         _buicache.put(rsrcPath, new WeakReference<BImage>(image));
         return image;
     }
