@@ -201,11 +201,10 @@ public class ImageCache
      * @param scale a scale factor to apply to the image.  As with the flip setting, the scale
      * factor is not cached.
      */
-     public Image getImage (String rsrcPath, float scale, boolean flip)
-     {
+    public Image getImage (String rsrcPath, float scale, boolean flip)
+    {
         // first check the cache
-         String key = rsrcPath + ":" + scale;
-         WeakReference<Image> iref = _imgcache.get(key);
+        WeakReference<Image> iref = _imgcache.get(rsrcPath);
         Image image;
         if (iref != null && (image = iref.get()) != null) {
             return image;
@@ -225,7 +224,7 @@ public class ImageCache
 
         // create and cache a new JME image with the appropriate data
         image = createImage(bufimg, scale, flip);
-        _imgcache.put(key, new WeakReference<Image>(image));
+        _imgcache.put(rsrcPath, new WeakReference<Image>(image));
         return image;
     }
 
@@ -252,7 +251,8 @@ public class ImageCache
     public BImage getBImage (String rsrcPath, float scale, boolean returnNull)
     {
         // first check the cache
-        WeakReference<BImage> iref = _buicache.get(rsrcPath);
+        String key = rsrcPath + ":" + scale;
+        WeakReference<BImage> iref = _buicache.get(key);
         BImage image;
         if (iref != null && (image = iref.get()) != null) {
             return image;
@@ -277,7 +277,7 @@ public class ImageCache
                            bufimg.getScaledInstance(Math.round(bufimg.getWidth()*scale),
                                                     Math.round(bufimg.getHeight()*scale),
                                                     BufferedImage.SCALE_SMOOTH), true);
-        _buicache.put(rsrcPath, new WeakReference<BImage>(image));
+        _buicache.put(key, new WeakReference<BImage>(image));
         return image;
     }
 
