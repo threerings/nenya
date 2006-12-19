@@ -7,8 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: _gcEnabled */
-/* Inaccessible static: _loaded */
 /*
  * Class:     com_threerings_util_unsafe_Unsafe
  * Method:    enableGC
@@ -31,6 +29,38 @@ JNIEXPORT void JNICALL Java_com_threerings_util_unsafe_Unsafe_disableGC
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_threerings_util_unsafe_Unsafe_nativeSleep
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_threerings_util_unsafe_Unsafe
+ * Method:    nativeSetuid
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_threerings_util_unsafe_Unsafe_nativeSetuid
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_threerings_util_unsafe_Unsafe
+ * Method:    nativeSetgid
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_threerings_util_unsafe_Unsafe_nativeSetgid
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_threerings_util_unsafe_Unsafe
+ * Method:    nativeSeteuid
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_threerings_util_unsafe_Unsafe_nativeSeteuid
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     com_threerings_util_unsafe_Unsafe
+ * Method:    nativeSetegid
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_threerings_util_unsafe_Unsafe_nativeSetegid
   (JNIEnv *, jclass, jint);
 
 /*

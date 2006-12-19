@@ -73,7 +73,7 @@ public class Unsafe
     }
 
     /**
-     * Sets the processes uid to the specified value.
+     * Sets the process' uid to the specified value.
      *
      * @return true if the uid was changed, false if we were unable to do so.
      */
@@ -86,14 +86,40 @@ public class Unsafe
     }
 
     /**
-     * Sets the processes uid to the specified value.
+     * Sets the process' gid to the specified value.
      *
-     * @return true if the uid was changed, false if we were unable to do so.
+     * @return true if the gid was changed, false if we were unable to do so.
      */
     public static boolean setgid (int gid)
     {
         if (_loaded && !RunAnywhere.isWindows()) {
             return nativeSetgid(gid);
+        }
+        return false;
+    }
+
+    /**
+     * Sets the process' effective uid to the specified value.
+     *
+     * @return true if the euid was changed, false if we were unable to do so.
+     */
+    public static boolean seteuid (int uid)
+    {
+        if (_loaded && !RunAnywhere.isWindows()) {
+            return nativeSeteuid(uid);
+        }
+        return false;
+    }
+
+    /**
+     * Sets the process' effective gid to the specified value.
+     *
+     * @return true if the egid was changed, false if we were unable to do so.
+     */
+    public static boolean setegid (int gid)
+    {
+        if (_loaded && !RunAnywhere.isWindows()) {
+            return nativeSetegid(gid);
         }
         return false;
     }
@@ -122,6 +148,16 @@ public class Unsafe
      * Calls through to the native OS system call to change our gid.
      */
     protected static native boolean nativeSetgid (int gid);
+
+    /**
+     * Calls through to the native OS system call to change our euid.
+     */
+    protected static native boolean nativeSeteuid (int uid);
+
+    /**
+     * Calls through to the native OS system call to change our egid.
+     */
+    protected static native boolean nativeSetegid (int gid);
 
     /**
      * Called to initialize our library.
