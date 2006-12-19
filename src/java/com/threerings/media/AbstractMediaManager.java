@@ -56,11 +56,13 @@ public abstract class AbstractMediaManager
     }
 
     /**
-     * Returns the media panel with which we are coordinating.
+     * Creates a graphics that can be used to compute metrics or whatever else a media might need.
+     * The caller should call {@link Graphics2D#dispose} on the returned object when it is done
+     * with it.
      */
-    public MediaPanel getMediaPanel ()
+    public Graphics2D createGraphics ()
     {
-        return _panel;
+        return (Graphics2D)_panel.getGraphics();
     }
 
     /**

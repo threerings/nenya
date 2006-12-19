@@ -96,13 +96,17 @@ public class LabelSprite extends Sprite
      */
     protected void layoutLabel ()
     {
-        Graphics2D gfx = (Graphics2D)_mgr.getMediaPanel().getGraphics();
-        if (gfx != null) {
+        Graphics2D gfx = _mgr.createGraphics();
+        if (gfx == null) {
+            return;
+        }
+        try {
             gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                  (_antiAliased) ?
                                  RenderingHints.VALUE_ANTIALIAS_ON :
                                  RenderingHints.VALUE_ANTIALIAS_OFF);
             _label.layout(gfx);
+        } finally {
             gfx.dispose();
         }
     }

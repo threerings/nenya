@@ -61,7 +61,7 @@ public class FadeLabelAnimation extends FadeAnimation
 
         // if our label is not yet laid out, do the deed
         if (!_label.isLaidOut()) {
-            Graphics2D gfx = (Graphics2D)_mgr.getMediaPanel().getGraphics();
+            Graphics2D gfx = (Graphics2D)_mgr.createGraphics();
             if (gfx != null) {
                 gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                      _antiAliased ?

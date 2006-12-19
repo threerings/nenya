@@ -254,7 +254,12 @@ public class ButtonSprite extends Sprite
 
         // lay out the label if not already
         if (!_label.isLaidOut()) {
-            _label.layout(_mgr.getMediaPanel());
+            Graphics2D gfx = _mgr.createGraphics();
+            try {
+                _label.layout(gfx);
+            } finally {
+                gfx.dispose();
+            }
         }
 
         updateBounds();
