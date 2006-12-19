@@ -17,10 +17,17 @@ import com.threerings.jme.util.TimeFunction;
  */
 public class WindowSlider extends Node
 {
+    // slides from the specified location into the center of the screen
     public static final int FROM_TOP = 0;
     public static final int FROM_RIGHT = 1;
+
+    // slides from the center of the screen off screen in the specified direction
     public static final int TO_TOP = 2;
     public static final int TO_RIGHT = 3;
+
+    // slides down from the specified location stopping when whole window is visible (window
+    // remains "stuck" to the edge from which it slid in)
+    public static final int FROM_TOP_STICKY = 4;
 
     /**
      * Creates a window slider with the specified mode and window that will
@@ -65,6 +72,11 @@ public class WindowSlider extends Node
             end = swidth+wwidth;
             window.setLocation(start, (sheight-wheight)/2 + dy);
             break;
+
+        case FROM_TOP_STICKY:
+            start = sheight+wheight;
+            end = sheight-wheight + dy;
+            window.setLocation((swidth-wwidth)/2 + dx, start);
         }
 
         _mode = mode;
