@@ -445,7 +445,7 @@ public class ModelMesh extends TriMesh
      */
     protected int getTextureCount ()
     {
-        return (_emissiveMap == null) ? 1 : 2;
+        return (_emissiveMap == null || TextureState.getNumberOfFixedUnits() < 2) ? 1 : 2;
     }
     
     /**
