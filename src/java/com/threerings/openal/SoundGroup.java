@@ -84,6 +84,7 @@ public class SoundGroup
                 if (source.holder != null) {
                     source.holder.stop();
                     source.holder.reclaim();
+                    source.holder = null;
                 }
             }
         }
