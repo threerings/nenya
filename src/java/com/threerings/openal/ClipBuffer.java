@@ -53,7 +53,7 @@ public class ClipBuffer
     public static Comparable makeKey (ClipProvider provider, String path)
     {
         // we'll just use a string, amazing!
-        return provider + path;
+        return provider + ":" + path;
     }
 
     /**

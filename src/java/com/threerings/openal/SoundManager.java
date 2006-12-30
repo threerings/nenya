@@ -34,37 +34,31 @@ import com.samskivert.util.Queue;
 import com.samskivert.util.RunQueue;
 
 /**
- * An interface to the OpenAL library that provides a number of additional
- * services:
+ * An interface to the OpenAL library that provides a number of additional services:
  *
  * <ul>
  * <li> an object oriented interface to the OpenAL system
- * <li> a mechanism for loading a group of sounds and freeing their
- * resources all at once
- * <li> a mechanism for loading sounds in a background thread and
- * preloading sounds that are likely to be needed soon
+ * <li> a mechanism for loading a group of sounds and freeing their resources all at once
+ * <li> a mechanism for loading sounds in a background thread and preloading sounds that are likely
+ * to be needed soon
  * </ul>
  *
- * <p><em>Note:</em> the sound manager is not thread safe (other than
- * during its interactions with its internal background loading
- * thread). It assumes that all sound loading and play requests will be
- * made from a single thread.
+ * <p><em>Note:</em> the sound manager is not thread safe (other than during its interactions with
+ * its internal background loading thread). It assumes that all sound loading and play requests
+ * will be made from a single thread.
  */
 public class SoundManager
 {
     /**
-     * Creates, initializes and returns the singleton sound manager
-     * instance.
+     * Creates, initializes and returns the singleton sound manager instance.
      *
-     * @param rqueue a queue that the sound manager can use to post short
-     * runnables that must be executed on the same thread from which all
-     * other sound methods will be called.
+     * @param rqueue a queue that the sound manager can use to post short runnables that must be
+     * executed on the same thread from which all other sound methods will be called.
      */
     public static SoundManager createSoundManager (RunQueue rqueue)
     {
         if (_soundmgr != null) {
-            throw new IllegalStateException(
-                "A sound manager has already been created.");
+            throw new IllegalStateException("A sound manager has already been created.");
         }
         _soundmgr = new SoundManager(rqueue);
         return _soundmgr;
@@ -79,9 +73,8 @@ public class SoundManager
     }
 
     /**
-     * Configures the size of our sound cache. If this value is larger
-     * than memory available to the underlying sound system, it will be
-     * reduced when OpenAL first tells us we're out of memory.
+     * Configures the size of our sound cache. If this value is larger than memory available to the
+     * underlying sound system, it will be reduced when OpenAL first tells us we're out of memory.
      */
     public void setCacheSize (int bytes)
     {
@@ -89,9 +82,8 @@ public class SoundManager
     }
 
     /**
-     * Configures the base gain (which must be a value between 0 and 1.0) which
-     * is multiplied to the individual gain assigned to sound effects (but not
-     * music).
+     * Configures the base gain (which must be a value between 0 and 1.0) which is multiplied to
+     * the individual gain assigned to sound effects (but not music).
      */
     public void setBaseGain (float gain)
     {
@@ -107,15 +99,13 @@ public class SoundManager
     }
 
     /**
-     * Creates an object that can be used to manage and play a group of
-     * sounds. <em>Note:</em> the sound group <em>must</em> be disposed
-     * when it is no longer needed via a call to {@link
+     * Creates an object that can be used to manage and play a group of sounds. <em>Note:</em> the
+     * sound group <em>must</em> be disposed when it is no longer needed via a call to {@link
      * SoundGroup#dispose}.
      *
-     * @param provider indicates from where the sound group will load its
-     * sounds.
-     * @param sources indicates the maximum number of simultaneous sounds
-     * that can play in this group.
+     * @param provider indicates from where the sound group will load its sounds.
+     * @param sources indicates the maximum number of simultaneous sounds that can play in this
+     * group.
      */
     public SoundGroup createGroup (ClipProvider provider, int sources)
     {
@@ -131,15 +121,15 @@ public class SoundManager
     }
     
     /**
-     * Updates all of the streams controlled by the manager.  This should be
-     * called once per frame by the application.
+     * Updates all of the streams controlled by the manager.  This should be called once per frame
+     * by the application.
      *
      * @param time the number of seconds elapsed since the last update
      */
     public void updateStreams (float time)
     {
-        // iterate backwards through the list so that streams can dispose of
-        // themselves during their update
+        // iterate backwards through the list so that streams can dispose of themselves during
+        // their update
         for (int ii = _streams.size() - 1; ii >= 0; ii--) {
             _streams.get(ii).update(time);
         }
@@ -164,15 +154,13 @@ public class SoundManager
 
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
-            Log.warning("Failed to initialize sound system " +
-                        "[errno=" + errno + "].");
+            Log.warning("Failed to initialize sound system [errno=" + errno + "].");
             // don't start the background loading thread
             return;
         }
 
         // configure our LRU map with a removal observer
-        _clips.setRemovalObserver(
-            new LRUHashMap.RemovalObserver<Comparable,ClipBuffer>() {
+        _clips.setRemovalObserver(new LRUHashMap.RemovalObserver<Comparable,ClipBuffer>() {
             public void removedFromMap (LRUHashMap<Comparable,ClipBuffer> map,
                                         final ClipBuffer item) {
                 _rqueue.postRunnable(new Runnable() {
@@ -193,10 +181,9 @@ public class SoundManager
     }
 
     /**
-     * Creates a clip buffer for the sound clip loaded via the specified
-     * provider with the specified path. The clip buffer may come from teh
-     * cache, and it will immediately be queued for loading if it is not
-     * already loaded.
+     * Creates a clip buffer for the sound clip loaded via the specified provider with the
+     * specified path. The clip buffer may come from teh cache, and it will immediately be queued
+     * for loading if it is not already loaded.
      */
     protected ClipBuffer getClip (ClipProvider provider, String path)
     {
@@ -222,9 +209,8 @@ public class SoundManager
     }
 
     /**
-     * Queues the supplied clip buffer up for resolution. The {@link Clip}
-     * will be loaded into memory and then bound into OpenAL on the
-     * background thread.
+     * Queues the supplied clip buffer up for resolution. The {@link Clip} will be loaded into
+     * memory and then bound into OpenAL on the background thread.
      */
     protected void queueClipLoad (ClipBuffer buffer)
     {
@@ -234,8 +220,8 @@ public class SoundManager
     }
 
     /**
-     * Queues the supplied clip buffer up using our {@link RunQueue} to
-     * notify its observers that it failed to load.
+     * Queues the supplied clip buffer up using our {@link RunQueue} to notify its observers that
+     * it failed to load.
      */
     protected void queueClipFailure (final ClipBuffer buffer)
     {
@@ -248,8 +234,8 @@ public class SoundManager
     }
 
     /**
-     * Adds the supplied clip buffer back to the cache after it has been marked
-     * for disposal and subsequently re-requested.
+     * Adds the supplied clip buffer back to the cache after it has been marked for disposal and
+     * subsequently re-requested.
      */
     protected void restoreClip (ClipBuffer buffer)
     {
@@ -257,8 +243,8 @@ public class SoundManager
     }
     
     /**
-     * Adds a stream to the list maintained by the manager.  Called by streams
-     * when they are created.
+     * Adds a stream to the list maintained by the manager.  Called by streams when they are
+     * created.
      */
     protected void addStream (Stream stream)
     {
@@ -266,8 +252,8 @@ public class SoundManager
     }
     
     /**
-     * Removes a stream from the list maintained by the manager.  Called by
-     * streams when they are disposed.
+     * Removes a stream from the list maintained by the manager.  Called by streams when they are
+     * disposed.
      */
     protected void removeStream (Stream stream)
     {
@@ -280,7 +266,7 @@ public class SoundManager
             while (true) {
                 final ClipBuffer buffer = (ClipBuffer)_toLoad.get();
                 try {
-                    Log.info("Loading " + buffer.getKey() + ".");
+                    Log.debug("Loading " + buffer.getKey() + ".");
                     final Clip clip = buffer.load();
                     _rqueue.postRunnable(new Runnable() {
                         public void run () {
@@ -290,19 +276,17 @@ public class SoundManager
                             if (buffer.bind(clip)) {
                                 _clips.put(ckey, buffer);
                             } else {
-                                // TODO: shrink the cache size if the bind
-                                // failed due to OUT_OF_MEMORY
+                                // TODO: shrink the cache size if the bind failed due to
+                                // OUT_OF_MEMORY
                             }
                         }
                     });
 
                 } catch (Throwable t) {
-                    Log.warning("Failed to load clip " +
-                                "[key=" + buffer.getKey() + "].");
+                    Log.warning("Failed to load clip [key=" + buffer.getKey() + "].");
                     Log.logStackTrace(t);
 
-                    // let the clip and its observers know that we are a
-                    // miserable failure
+                    // let the clip and its observers know that we are a miserable failure
                     queueClipFailure(buffer);
                 }
             }
@@ -312,16 +296,14 @@ public class SoundManager
     /** Used to get back from the background thread to our "main" thread. */
     protected RunQueue _rqueue;
 
-    /** A base gain that is multiplied by the individual gain assigned to
-     * sounds. */
+    /** A base gain that is multiplied by the individual gain assigned to sounds. */
     protected float _baseGain = 1;
 
     /** Contains a mapping of all currently-loading clips. */
-    protected HashMap<Comparable,ClipBuffer> _loading =
-        new HashMap<Comparable,ClipBuffer>();
+    protected HashMap<Comparable,ClipBuffer> _loading = new HashMap<Comparable,ClipBuffer>();
 
     /** Contains a mapping of all loaded clips. */
-    protected LRUHashMap<Comparable,ClipBuffer> _clips =
+    protected LRUHashMap<Comparable,ClipBuffer> _clips = 
         new LRUHashMap<Comparable,ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
 
     /** Contains a queue of clip buffers waiting to be loaded. */
@@ -330,8 +312,8 @@ public class SoundManager
     /** The list of active streams. */
     protected ArrayList<Stream> _streams = new ArrayList<Stream>();
     
-    /** The one and only sound manager, here for an exclusive performance
-     * by special request. Available for all your sound playing needs. */
+    /** The one and only sound manager, here for an exclusive performance by special request.
+     * Available for all your sound playing needs. */
     protected static SoundManager _soundmgr;
 
     /** Used to compute the in-memory size of sound samples. */
