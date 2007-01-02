@@ -601,6 +601,10 @@ public class Model extends ModelNode
         if (_anim == null) {
             return;
         }
+        if (_outside) {
+            // make sure the meshes are in the right places when we come back into view
+            updateMeshes();
+        }
         _paused = false;
         _anim = null;
         _animObservers.apply(new AnimCancelledOp(_animName));
@@ -982,37 +986,7 @@ public class Model extends ModelNode
         // update the target transforms and animation frame if not outside the
         // view frustum
         if (!_outside) {
-            if (_animMode == AnimationMode.FLIPBOOK) {
-                int frameId = (_anim.animId << 16) | _fidx;
-                _anim.applyFrame(_fidx);
-                if (!_anim.stored[_fidx]) {
-                    storeMeshFrame(frameId, false);
-                    updateWorldData(0f);
-                    _anim.stored[_fidx] = true;
-                }
-                setMeshFrame(frameId);
-                
-            } else if (_animMode == AnimationMode.MORPH) {
-                int frameId1 = (_anim.animId << 16) | _fidx,
-                    frameId2 = (_anim.animId << 16) | _nidx;
-                if (!_anim.stored[_fidx]) {
-                    storeMeshFrame(frameId1, true);
-                    _anim.applyFrame(_fidx);
-                    updateWorldData(0f);
-                    _anim.stored[_fidx] = true;
-                }
-                if (!_anim.stored[_nidx]) {
-                    storeMeshFrame(frameId2, true);
-                    _anim.applyFrame(_nidx);
-                    updateWorldData(0f);
-                    _anim.stored[_nidx] = true;
-                }
-                _anim.blendFrames(_fidx, _nidx, _elapsed);
-                blendMeshFrames(frameId1, frameId2, _elapsed);
-                
-            } else { // _animMode == AnimationMode.SKIN
-                _anim.blendFrames(_fidx, _nidx, _elapsed);
-            }
+            updateMeshes();   
         }
         
         // if the next index is the same as this one, we are finished
@@ -1042,6 +1016,44 @@ public class Model extends ModelNode
                 _fdir *= -1; // reverse direction
             }
             _nidx += _fdir;
+        }
+    }
+    
+    /**
+     * Updates the states of the model's meshes according to the animation state.
+     */
+    protected void updateMeshes ()
+    {
+        if (_animMode == AnimationMode.FLIPBOOK) {
+            int frameId = (_anim.animId << 16) | _fidx;
+            _anim.applyFrame(_fidx);
+            if (!_anim.stored[_fidx]) {
+                storeMeshFrame(frameId, false);
+                updateWorldData(0f);
+                _anim.stored[_fidx] = true;
+            }
+            setMeshFrame(frameId);
+            
+        } else if (_animMode == AnimationMode.MORPH) {
+            int frameId1 = (_anim.animId << 16) | _fidx,
+                frameId2 = (_anim.animId << 16) | _nidx;
+            if (!_anim.stored[_fidx]) {
+                storeMeshFrame(frameId1, true);
+                _anim.applyFrame(_fidx);
+                updateWorldData(0f);
+                _anim.stored[_fidx] = true;
+            }
+            if (!_anim.stored[_nidx]) {
+                storeMeshFrame(frameId2, true);
+                _anim.applyFrame(_nidx);
+                updateWorldData(0f);
+                _anim.stored[_nidx] = true;
+            }
+            _anim.blendFrames(_fidx, _nidx, _elapsed);
+            blendMeshFrames(frameId1, frameId2, _elapsed);
+            
+        } else { // _animMode == AnimationMode.SKIN
+            _anim.blendFrames(_fidx, _nidx, _elapsed);
         }
     }
     
