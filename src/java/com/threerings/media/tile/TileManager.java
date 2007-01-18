@@ -124,6 +124,14 @@ public class TileManager
     }
 
     /**
+     * Clears any cached tilesets.
+     */
+    public void clearCache ()
+    {
+        _handcache = new HashMap();
+    }
+
+    /**
      * Sets the tileset repository that will be used by the tile manager
      * when tiles are requested by tileset id.
      */
