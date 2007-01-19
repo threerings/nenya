@@ -146,6 +146,7 @@ public class Sprite extends Node
         if (_path != null) {
             Path oldpath = _path;
             _path = null;
+            removeController(oldpath);
             oldpath.wasRemoved();
             if (_observers != null) {
                 _observers.apply(new CancelledOp(this, oldpath));
