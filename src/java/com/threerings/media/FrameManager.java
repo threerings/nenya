@@ -414,7 +414,7 @@ public abstract class FrameManager
     protected void tick (long tickStamp)
     {
         long start = 0L, paint = 0L;
-        if (MediaPanel._perfDebug.getValue()) {
+        if (_perfDebug.getValue()) {
             start = paint = _timer.getElapsedMicros();
         }
         // if our frame is not showing (or is impossibly sized), don't try
@@ -427,7 +427,7 @@ public abstract class FrameManager
             // repaint our participants and components
             paint(tickStamp);
         }
-        if (MediaPanel._perfDebug.getValue()) {
+        if (_perfDebug.getValue()) {
             long end = _timer.getElapsedMicros();
             getPerfMetrics()[1].record((int)(paint-start)/100);
             getPerfMetrics()[2].record((int)(end-paint)/100);
@@ -491,6 +491,13 @@ public abstract class FrameManager
      * by our {@link ActiveRepaintManager}.
      */
     protected abstract void paint (long tickStamp);
+
+    /**
+     * Returns a graphics context with which to layout its media objects. The returned context must
+     * be disposed when layout is complete and must not be retained across frame ticks. Used by the
+     * {@link MediaOverlay}.
+     */
+    protected abstract Graphics2D createGraphics ();
 
     /**
      * Paints our frame participants and any dirty components via the
@@ -683,7 +690,7 @@ public abstract class FrameManager
                      "[sleepGran=" + _sleepGranularity.getValue() + "].");
             while (_running) {
                 long start = 0L;
-                if (MediaPanel._perfDebug.getValue()) {
+                if (_perfDebug.getValue()) {
                     start = _timer.getElapsedMicros();
                 }
                 Unsafe.sleep(_sleepGranularity.getValue());
@@ -841,6 +848,11 @@ public abstract class FrameManager
             "The number of milliseconds slept before checking to see if " +
             "it's time to queue up a new frame tick.", "narya.media.sleep_gran",
             MediaPrefs.config, RunAnywhere.isWindows() ? 10 : 7);
+
+    /** A debug hook that toggles FPS rendering. */
+    protected static RuntimeAdjust.BooleanAdjust _perfDebug = new RuntimeAdjust.BooleanAdjust(
+        "Toggles frames per second and dirty regions per tick rendering.",
+        "narya.media.fps_display", MediaPrefs.config, false);
 
     /** Whether to enable AWT event debugging for the frame. */
     protected static final boolean DEBUG_EVENTS = false;

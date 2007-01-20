@@ -41,10 +41,10 @@ public abstract class AbstractMediaManager
     /**
      * Default constructor.
      */
-    public AbstractMediaManager (MediaPanel panel)
+    public AbstractMediaManager (MediaHost host)
     {
-        _panel = panel;
-        _remgr = panel.getRegionManager();
+        _host = host;
+        _remgr = host.getRegionManager();
     }
 
     /**
@@ -62,7 +62,7 @@ public abstract class AbstractMediaManager
      */
     public Graphics2D createGraphics ()
     {
-        return (Graphics2D)_panel.getGraphics();
+        return _host.createGraphics();
     }
 
     /**
@@ -303,8 +303,8 @@ public abstract class AbstractMediaManager
         _notify.clear();
     }
 
-    /** The media panel we're working with. */
-    protected MediaPanel _panel;
+    /** The media host we're working with. */
+    protected MediaHost _host;
 
     /** The region manager. */
     protected RegionManager _remgr;

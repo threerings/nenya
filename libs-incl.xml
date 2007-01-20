@@ -2,6 +2,7 @@
 <!-- declares the libraries needed to build nenya -->
 <project name="library-dependencies">
   <fileset dir="${libs.dir}" id="nenya.libs">
+    <include name="ant.jar"/>
     <include name="commons-collections.jar"/>
     <include name="commons-digester.jar"/>
     <include name="commons-io.jar"/>

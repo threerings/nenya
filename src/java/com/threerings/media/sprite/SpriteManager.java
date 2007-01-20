@@ -31,7 +31,7 @@ import java.util.Iterator;
 import com.samskivert.util.Predicate;
 
 import com.threerings.media.AbstractMediaManager;
-import com.threerings.media.MediaPanel;
+import com.threerings.media.MediaHost;
 
 /**
  * The sprite manager manages the sprites running about in the game.
@@ -41,9 +41,9 @@ public class SpriteManager extends AbstractMediaManager
     /**
      * Construct and initialize the sprite manager.
      */
-    public SpriteManager (MediaPanel panel)
+    public SpriteManager (MediaHost host)
     {
-        super(panel);
+        super(host);
     }
 
     /**

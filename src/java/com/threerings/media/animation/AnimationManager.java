@@ -22,7 +22,7 @@
 package com.threerings.media.animation;
 
 import com.threerings.media.AbstractMediaManager;
-import com.threerings.media.MediaPanel;
+import com.threerings.media.MediaHost;
 
 /**
  * Manages a collection of animations, ticking them when the animation
@@ -35,9 +35,9 @@ public class AnimationManager extends AbstractMediaManager
      * Construct and initialize the animation manager which readies itself
      * to manage animations.
      */
-    public AnimationManager (MediaPanel panel)
+    public AnimationManager (MediaHost host)
     {
-        super(panel);
+        super(host);
     }
 
     /**

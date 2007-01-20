@@ -34,7 +34,7 @@ import java.awt.image.BufferStrategy;
  */
 public class FlipFrameManager extends FrameManager
 {
-    // documentation inherited
+    // from FrameManager
     protected void paint (long tickStamp)
     {
         // create our buffer strategy if we don't already have one
@@ -90,7 +90,13 @@ public class FlipFrameManager extends FrameManager
         } while (_bufstrat.contentsLost());
     }
 
-    // documentation inherited
+    // from FrameManager
+    protected Graphics2D createGraphics ()
+    {
+        return (Graphics2D)_bufstrat.getDrawGraphics();
+    }
+
+    // from FrameManager
     protected void restoreFromBack (Rectangle dirty)
     {
         // nothing doing

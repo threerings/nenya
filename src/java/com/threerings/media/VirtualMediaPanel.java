@@ -180,7 +180,7 @@ public class VirtualMediaPanel extends MediaPanel
     {
         // translate the screen rect into happy coordinates
         rect.translate(_vbounds.x, _vbounds.y);
-        _remgr.addDirtyRegion(rect);
+        _metamgr.getRegionManager().addDirtyRegion(rect);
     }
 
     // documentation inherited
@@ -245,7 +245,7 @@ public class VirtualMediaPanel extends MediaPanel
             // Mac OS X's redraw breaks on scrolling, so we repaint the
             // entire panel 
             if (RunAnywhere.isMacOS()) {
-                _remgr.invalidateRegion(_nx, _ny, width, height);
+                _metamgr.getRegionManager().invalidateRegion(_nx, _ny, width, height);
             } else {
                 _dx = dx;
                 _dy = dy;
@@ -257,15 +257,15 @@ public class VirtualMediaPanel extends MediaPanel
                 // and add invalid rectangles for the exposed areas
                 if (dy > 0) {
                     shei = Math.max(shei - dy, 0);
-                    _remgr.invalidateRegion(_nx, _ny + height - dy, width, dy);
+                    _metamgr.getRegionManager().invalidateRegion(_nx, _ny + height - dy, width, dy);
                 } else if (dy < 0) {
                     sy -= dy;
-                    _remgr.invalidateRegion(_nx, _ny, width, -dy);
+                    _metamgr.getRegionManager().invalidateRegion(_nx, _ny, width, -dy);
                 }
                 if (dx > 0) {
-                    _remgr.invalidateRegion(_nx + width - dx, sy, dx, shei);
+                    _metamgr.getRegionManager().invalidateRegion(_nx + width - dx, sy, dx, shei);
                 } else if (dx < 0) {
-                    _remgr.invalidateRegion(_nx, sy, -dx, shei);
+                    _metamgr.getRegionManager().invalidateRegion(_nx, sy, -dx, shei);
                 }
             }
 
@@ -290,20 +290,13 @@ public class VirtualMediaPanel extends MediaPanel
      */
     protected void viewLocationDidChange (int dx, int dy)
     {
-        if (_perfRect != null) {
-            Rectangle sdirty = new Rectangle(_perfRect);
-            sdirty.translate(-dx, -dy);
-            dirtyScreenRect(sdirty);
-        }
-
         // inform our view trackers
         for (int ii = 0, ll = _trackers.size(); ii < ll; ii++) {
             ((ViewTracker)_trackers.get(ii)).viewLocationDidChange(dx, dy);
         }
 
-        // let our sprites and animations know what's up
-        _animmgr.viewLocationDidChange(dx, dy);
-        _spritemgr.viewLocationDidChange(dx, dy);
+        // pass the word on to our sprite/anim managers via the meta manager
+        _metamgr.viewLocationDidChange(dx, dy);
     }
 
     /**

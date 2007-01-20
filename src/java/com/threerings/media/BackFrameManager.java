@@ -32,7 +32,7 @@ import java.awt.image.VolatileImage;
  */
 public class BackFrameManager extends FrameManager
 {
-    // documentation inherited
+    // from FrameManager
     protected void paint (long tickStamp)
     {
         // start out assuming we can do an incremental render
@@ -63,7 +63,7 @@ public class BackFrameManager extends FrameManager
                 if (_bgfx != null) {
                     _bgfx.dispose();
                 }
-                _bgfx = (Graphics2D)_backimg.getGraphics();
+                _bgfx = _backimg.createGraphics();
                 if (_fgfx != null) {
                     _fgfx.dispose();
                     _fgfx = null;
@@ -95,7 +95,13 @@ public class BackFrameManager extends FrameManager
         } while (_backimg.contentsLost());
     }
 
-    // documentation inherited
+    // from FrameManager
+    protected Graphics2D createGraphics ()
+    {
+        return _backimg.createGraphics();
+    }
+
+    // from FrameManager
     protected void restoreFromBack (Rectangle dirty)
     {
         if (_fgfx == null || _backimg == null) {
