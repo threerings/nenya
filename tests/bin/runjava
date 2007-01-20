@@ -59,7 +59,7 @@ my $classpath = "-classpath $root/tests/dist/classes:$root/dist/classes";
 
 # add zip and jar files from our lib/ directory and the global Java
 # libraries directory
-my @dirs = ( "$root/lib" );
+my @dirs = ( "$root/dist/lib" );
 foreach $dir (@dirs) {
     next unless (defined $dir);
     if (opendir(DIR, $dir)) {
