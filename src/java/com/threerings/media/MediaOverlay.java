@@ -26,7 +26,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import javax.swing.JRootPane;
 
+import com.threerings.media.animation.Animation;
 import com.threerings.media.animation.AnimationManager;
+import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 
 /**
@@ -47,11 +49,76 @@ public class MediaOverlay
     }
 
     /**
-     * Returns a reference to the sprite manager used by this media panel.
+     * Returns a reference to the sprite manager used by this media overlay.
      */
     public SpriteManager getSpriteManager ()
     {
         return _metamgr.getSpriteManager();
+    }
+
+    /**
+     * Adds a sprite to this overlay.
+     */
+    public void addSprite (Sprite sprite)
+    {
+        _metamgr.addSprite(sprite);
+    }
+
+    /**
+     * @return true if the sprite is already added to this overlay.
+     */
+    public boolean isManaged (Sprite sprite)
+    {
+        return _metamgr.isManaged(sprite);
+    }
+
+    /**
+     * Removes a sprite from this overlay.
+     */
+    public void removeSprite (Sprite sprite)
+    {
+        _metamgr.removeSprite(sprite);
+    }
+
+    /**
+     * Removes all sprites from this overlay.
+     */
+    public void clearSprites ()
+    {
+        _metamgr.clearSprites();
+    }
+
+    /**
+     * Adds an animation to this overlay. Animations are automatically removed when they finish.
+     */
+    public void addAnimation (Animation anim)
+    {
+        _metamgr.addAnimation(anim);
+    }
+
+    /**
+     * @return true if the animation is already added to this overlay.
+     */
+    public boolean isManaged (Animation anim)
+    {
+        return _metamgr.isManaged(anim);
+    }
+
+    /**
+     * Aborts a currently running animation and removes it from this overlay. Animations are
+     * normally automatically removed when they finish.
+     */
+    public void abortAnimation (Animation anim)
+    {
+        _metamgr.abortAnimation(anim);
+    }
+
+    /**
+     * Removes all animations from this overlay.
+     */
+    public void clearAnimations ()
+    {
+        _metamgr.clearAnimations();
     }
 
     /**
