@@ -211,6 +211,33 @@ public abstract class FrameManager
     }
 
     /**
+     * Returns an overlay that can be used to render sprites and animations on top of the entire
+     * frame. This is lazily created the first time this method is called and the overlay will
+     * remain a frame participant until {@link #clearMediaOverlay} is called. Be sure to coordinate
+     * access to the overlay in your application as there is only one overlay in existence at any
+     * time, and attempts to use an overlay after it has been cleared will fail.
+     */
+    public MediaOverlay getMediaOverlay ()
+    {
+        if (_overlay == null) {
+            _overlay = new MediaOverlay(this);
+            registerFrameParticipant(_overlay);
+        }
+        return _overlay;
+    }
+
+    /**
+     * Clears out any media overlay that is in use.
+     */
+    public void clearMediaOverlay ()
+    {
+        if (_overlay != null) {
+            removeFrameParticipant(_overlay);
+            _overlay = null;
+        }
+    }
+
+    /**
      * Starts up the per-frame tick
      */
     public void start ()
@@ -650,6 +677,9 @@ public abstract class FrameManager
 
     /** Our custom repaint manager. */
     protected ActiveRepaintManager _remgr;
+
+    /** If active, an overlay that will be rendering sprites and animations on top of the frame. */
+    protected MediaOverlay _overlay;
 
     /** The number of milliseconds per frame (14 by default, which gives an fps of ~71). */
     protected long _millisPerFrame = 14;

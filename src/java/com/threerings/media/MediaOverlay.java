@@ -21,8 +21,10 @@
 
 package com.threerings.media;
 
+import java.awt.Component;
 import java.awt.Graphics2D;
 
+import com.threerings.media.FrameParticipant;
 import com.threerings.media.animation.AnimationManager;
 import com.threerings.media.sprite.SpriteManager;
 
@@ -33,22 +35,14 @@ import com.threerings.media.sprite.SpriteManager;
  * it has left dirty.
  */
 public class MediaOverlay
-    implements MediaHost
+    implements MediaHost, FrameParticipant
 {
-    protected MediaOverlay (FrameManager fmgr)
-    {
-        _framemgr = fmgr;
-        _remgr = new RegionManager();
-        _animmgr = new AnimationManager(this);
-        _spritemgr = new SpriteManager(this);
-    }
-
     /**
      * Returns a reference to the animation manager used by this media panel.
      */
     public AnimationManager getAnimationManager ()
     {
-        return _animmgr;
+        return _metamgr.getAnimationManager();
     }
 
     /**
@@ -56,30 +50,48 @@ public class MediaOverlay
      */
     public SpriteManager getSpriteManager ()
     {
-        return _spritemgr;
+        return _metamgr.getSpriteManager();
     }
 
     // from interface MediaHost
     public Graphics2D createGraphics ()
     {
-        return _framemgr.createGraphics();
+        return _metamgr.getFrameManager().createGraphics();
     }
 
-    // from interface MediaHost
-    public RegionManager getRegionManager ()
+    // from interface FrameParticipant
+    public void tick (long tickStamp)
     {
-        return _remgr;
+        if (!_metamgr.isPaused()) {
+            // tick our meta manager which will tick our sprites and animations
+            _metamgr.tick(tickStamp);
+        }
+    }
+
+    // from interface FrameParticipant
+    public boolean needsPaint ()
+    {
+        return _metamgr.needsPaint();
+    }
+
+    // from interface FrameParticipant
+    public Component getComponent ()
+    {
+        return null; // TODO
+    }
+
+    /**
+     * Creates a media overlay. Only the {@link FrameManager} will construct an instance.
+     */
+    protected MediaOverlay (FrameManager fmgr)
+    {
+        _framemgr = fmgr;
+        _metamgr = new MetaMediaManager(fmgr, this);
     }
 
     /** The frame manager with whom we cooperate. */
     protected FrameManager _framemgr;
 
-    /** The animation manager in use by this overlay. */
-    protected AnimationManager _animmgr;
-
-    /** The sprite manager in use by this overlay. */
-    protected SpriteManager _spritemgr;
-
-    /** Used to accumulate and merge dirty regions on each tick. */
-    protected RegionManager _remgr;
+    /** Handles the heavy lifting involving media. */
+    protected MetaMediaManager _metamgr;
 }

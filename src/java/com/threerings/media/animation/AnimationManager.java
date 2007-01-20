@@ -32,15 +32,6 @@ import com.threerings.media.MediaHost;
 public class AnimationManager extends AbstractMediaManager
 {
     /**
-     * Construct and initialize the animation manager which readies itself
-     * to manage animations.
-     */
-    public AnimationManager (MediaHost host)
-    {
-        super(host);
-    }
-
-    /**
      * Registers the given {@link Animation} with the animation manager
      * for ticking and painting.
      */

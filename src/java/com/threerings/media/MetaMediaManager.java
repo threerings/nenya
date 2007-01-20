@@ -53,12 +53,9 @@ public class MetaMediaManager
         _framemgr = framemgr;
         _host = host;
 
-        // create our region manager
-        _remgr = new RegionManager();
-
-        // create our animation and sprite managers
-        _animmgr = new AnimationManager(host);
-        _spritemgr = new SpriteManager(host);
+        // initialize our managers
+        _animmgr.init(host, _remgr);
+        _spritemgr.init(host, _remgr);
     }
 
     /**
@@ -339,14 +336,14 @@ public class MetaMediaManager
     /** Our media host, so gracious and accomodating. */
     protected MediaHost _host;
 
+    /** Used to accumulate and merge dirty regions on each tick. */
+    protected RegionManager _remgr = new RegionManager();
+
     /** The animation manager in use by this panel. */
-    protected AnimationManager _animmgr;
+    protected AnimationManager _animmgr = new AnimationManager();
 
     /** The sprite manager in use by this panel. */
-    protected SpriteManager _spritemgr;
-
-    /** Used to accumulate and merge dirty regions on each tick. */
-    protected RegionManager _remgr;
+    protected SpriteManager _spritemgr = new SpriteManager();
 
     /** Whether we're currently paused. */
     protected boolean _paused;

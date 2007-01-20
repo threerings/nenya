@@ -234,12 +234,6 @@ public class MediaPanel extends JComponent
     }
 
     // from interface MediaHost
-    public RegionManager getRegionManager ()
-    {
-        return _metamgr.getRegionManager();
-    }
-
-    // from interface MediaHost
     public Graphics2D createGraphics ()
     {
         return (Graphics2D)getGraphics();

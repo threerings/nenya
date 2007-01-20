@@ -35,9 +35,4 @@ public interface MediaHost
      * disposed by the caller.
      */
     public Graphics2D createGraphics ();
-
-    /**
-     * Returns the region manager being used to manage dirty regions by the host.
-     */
-    public RegionManager getRegionManager ();
 }

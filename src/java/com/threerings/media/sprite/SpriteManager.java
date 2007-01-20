@@ -39,14 +39,6 @@ import com.threerings.media.MediaHost;
 public class SpriteManager extends AbstractMediaManager
 {
     /**
-     * Construct and initialize the sprite manager.
-     */
-    public SpriteManager (MediaHost host)
-    {
-        super(host);
-    }
-
-    /**
      * When an animated view processes its dirty rectangles, it may
      * require an expansion of the dirty region which may in turn
      * require the invalidation of more sprites than were originally

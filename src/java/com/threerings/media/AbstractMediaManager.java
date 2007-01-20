@@ -39,12 +39,12 @@ public abstract class AbstractMediaManager
     implements MediaConstants
 {
     /**
-     * Default constructor.
+     * Provides this media manager with its host and region manager.
      */
-    public AbstractMediaManager (MediaHost host)
+    public void init (MediaHost host, RegionManager remgr)
     {
         _host = host;
-        _remgr = host.getRegionManager();
+        _remgr = remgr;
     }
 
     /**
