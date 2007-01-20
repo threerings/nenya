@@ -129,12 +129,14 @@ public class MediaOverlay
      */
     public void propagateDirtyRegions (ActiveRepaintManager repmgr, JRootPane root)
     {
-        // this will clear out our region manager, so we need to keep these around for our
-        // subsequent call to paint
-        _dirty = _metamgr.getRegionManager().getDirtyRegions();
-        for (int ii = 0; ii < _dirty.length; ii++) {
-            Rectangle dirty = _dirty[ii];
-            repmgr.addDirtyRegion(root, dirty.x, dirty.y, dirty.width, dirty.height);
+        if (_metamgr.needsPaint()) {
+            // this will clear out our dirty regions, so we need to keep these around for our
+            // subsequent call to paint
+            _dirty = _metamgr.getRegionManager().getDirtyRegions();
+            for (int ii = 0; ii < _dirty.length; ii++) {
+                Rectangle dirty = _dirty[ii];
+                repmgr.addDirtyRegion(root, dirty.x, dirty.y, dirty.width, dirty.height);
+            }
         }
     }
 
@@ -146,12 +148,13 @@ public class MediaOverlay
      */
     public boolean paint (Graphics2D gfx)
     {
-        if (_metamgr.needsPaint()) {
+        if (_dirty != null) {
             for (int ii = 0; ii < _dirty.length; ii++) {
                 gfx.setClip(_dirty[ii]);
                 _metamgr.paintMedia(gfx, MediaConstants.BACK, _dirty[ii]);
                 _metamgr.paintMedia(gfx, MediaConstants.FRONT, _dirty[ii]);
             }
+            _dirty = null;
             return true;
         }
         return false;
