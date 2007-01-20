@@ -221,7 +221,6 @@ public abstract class FrameManager
     {
         if (_overlay == null) {
             _overlay = new MediaOverlay(this);
-            registerFrameParticipant(_overlay);
         }
         return _overlay;
     }
@@ -232,7 +231,6 @@ public abstract class FrameManager
     public void clearMediaOverlay ()
     {
         if (_overlay != null) {
-            removeFrameParticipant(_overlay);
             _overlay = null;
         }
     }
@@ -330,11 +328,11 @@ public abstract class FrameManager
         _timer = timer;
 
         // set up our custom repaint manager
-        _remgr = new ActiveRepaintManager(_window);
-        RepaintManager.setCurrentManager(_remgr);
+        _repainter = new ActiveRepaintManager(_window);
+        RepaintManager.setCurrentManager(_repainter);
 
         // turn off double buffering for the whole business because we handle repaints
-        _remgr.setDoubleBufferingEnabled(false);
+        _repainter.setDoubleBufferingEnabled(false);
     }
 
     /**
@@ -377,7 +375,7 @@ public abstract class FrameManager
 
         // validate any invalid components
         try {
-            _remgr.validateComponents();
+            _repainter.validateComponents();
         } catch (Throwable t) {
             Log.warning("Failure validating components.");
             Log.logStackTrace(t);
@@ -411,6 +409,11 @@ public abstract class FrameManager
                             "[part=" + StringUtil.safeToString(part) + "].");
                 Log.logStackTrace(t);
             }
+        }
+
+        // if we have an overlay, tick that too
+        if (_overlay != null) {
+            _overlay.tick(tickStamp);
         }
     }
 
@@ -494,8 +497,19 @@ public abstract class FrameManager
             }
         }
 
+        // if we have a media overlay, give that a chance to propagate dirty regions to the active
+        // repaint manager for areas it dirtied during this tick
+        if (_overlay != null) {
+            _overlay.propagateDirtyRegions(_repainter, _root.getRootPane());
+        }
+
         // repaint any widgets that have declared they need to be repainted since the last tick
-        boolean pcomp = _remgr.paintComponents(gfx, this);
+        boolean pcomp = _repainter.paintComponents(gfx, this);
+
+        // if we have a media overlay, give it a chance to paint on top of everything
+        if (_overlay != null) {
+            pcomp |= _overlay.paint(gfx);
+        }
 
         // let the caller know if anybody painted anything
         return ((painted > 0) || pcomp);
@@ -676,7 +690,7 @@ public abstract class FrameManager
     protected MediaTimer _timer;
 
     /** Our custom repaint manager. */
-    protected ActiveRepaintManager _remgr;
+    protected ActiveRepaintManager _repainter;
 
     /** If active, an overlay that will be rendering sprites and animations on top of the frame. */
     protected MediaOverlay _overlay;

@@ -47,18 +47,17 @@ import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
 
 /**
- * Used to get Swing's repainting to jive with our active rendering
- * strategy.
+ * Used to get Swing's repainting to jive with our active rendering strategy.
  *
  * @see FrameManager
  */
 public class ActiveRepaintManager extends RepaintManager
 {
     /**
-     * Components that are rooted in this component (which must be a {@link
-     * Window} or an {@link Applet}) will be rendered into the offscreen buffer
-     * managed by the frame manager. Other components will be rendered into
-     * separate offscreen buffers and repainted in the normal Swing manner.
+     * Components that are rooted in this component (which must be a {@link Window} or an {@link
+     * Applet}) will be rendered into the offscreen buffer managed by the frame manager. Other
+     * components will be rendered into separate offscreen buffers and repainted in the normal
+     * Swing manner.
      */
     public ActiveRepaintManager (Component root)
     {
@@ -75,9 +74,8 @@ public class ActiveRepaintManager extends RepaintManager
 
         // locate the validation root for this component
         for (Component c = comp; c != null; c = c.getParent()) {
-            // if the component is not part of an active widget hierarcy,
-            // we can stop now; if the component is a cell render pane,
-            // we're apparently supposed to ignore it as wel
+            // if the component is not part of an active widget hierarcy, we can stop now; if the
+            // component is a cell render pane, we're apparently supposed to ignore it as wel
             if (!c.isDisplayable() || c instanceof CellRendererPane) {
                 return;
             }
@@ -87,26 +85,23 @@ public class ActiveRepaintManager extends RepaintManager
                 continue;
             }
 
-            // if we find our validate root, we can stop looking; NOTE:
-            // JTextField incorrectly claims to be a validate root thereby
-            // fucking up the program something serious; we jovially
-            // ignore it's claims here and restore order to the universe;
-            // see bug #403550 for more fallout from Sun's fuckup
-            if (!(c instanceof JTextField) &&
-                !(c instanceof JScrollPane) &&
+            // if we find our validate root, we can stop looking; NOTE: JTextField incorrectly
+            // claims to be a validate root thereby fucking up the program something serious; we
+            // jovially ignore it's claims here and restore order to the universe; see bug #403550
+            // for more fallout from Sun's fuckup
+            if (!(c instanceof JTextField) && !(c instanceof JScrollPane) &&
                 ((JComponent)c).isValidateRoot()) {
                 vroot = c;
                 break;
             }
         }
 
-        // if we found no validation root we can abort as this component
-        // is not part of any valid widget hierarchy
+        // if we found no validation root we can abort as this component is not part of any valid
+        // widget hierarchy
         if (vroot == null) {
             if (DEBUG) {
                 Log.info("Skipping vrootless component: " + toString(comp));
             }
-            
             return;
         }
 
@@ -114,34 +109,29 @@ public class ActiveRepaintManager extends RepaintManager
         // that is showing
 	if (getRoot(vroot) == null) {
             if (DEBUG) {
-                Log.info("Skipping rootless component " +
-                         "[comp=" + toString(comp) +
+                Log.info("Skipping rootless component [comp=" + toString(comp) +
                          ", vroot=" + toString(vroot) + "].");
             }
 	    return;
 	}
 
-        // add the invalid component to our list and we'll validate it on
-        // the next frame
+        // add the invalid component to our list and we'll validate it on the next frame
         if (!ListUtil.containsRef(_invalid, vroot)) {
             if (DEBUG) {
                 Log.info("Invalidating " + toString(vroot) + ".");
             }
             _invalid = ListUtil.add(_invalid, vroot);
 
-            // on the mac, components frequently do not repaint themselves
-            // after being invalidated so we have to force a repaint from
-            // the validation roon on down
+            // on the mac, components frequently do not repaint themselves after being invalidated
+            // so we have to force a repaint from the validation roon on down
             if (RunAnywhere.isMacOS() && vroot instanceof JComponent) {
-                addDirtyRegion((JComponent)vroot, 0, 0,
-                               vroot.getWidth(), vroot.getHeight());
+                addDirtyRegion((JComponent)vroot, 0, 0, vroot.getWidth(), vroot.getHeight());
             }
         }
     }
 
     // documentation inherited
-    public synchronized void addDirtyRegion (
-        JComponent comp, int x, int y, int width, int height) 
+    public synchronized void addDirtyRegion (JComponent comp, int x, int y, int width, int height) 
     {
         // ignore invalid requests
         if ((width <= 0) || (height <= 0) || (comp == null) ||
@@ -151,8 +141,7 @@ public class ActiveRepaintManager extends RepaintManager
             return;
         }
 
-        // if this component is already dirty, simply expand their
-        // existing dirty rectangle
+        // if this component is already dirty, simply expand their existing dirty rectangle
 	Rectangle drect = (Rectangle)_dirty.get(comp);
 	if (drect != null) {
             drect.add(x, y);
@@ -168,28 +157,25 @@ public class ActiveRepaintManager extends RepaintManager
 
         if (DEBUG) {
             Log.info("Dirtying component [comp=" + toString(comp) +
-                     ", drect=" + StringUtil.toString(
-                         new Rectangle(x, y, width, height)) + "].");
+                     ", drect=" + StringUtil.toString(new Rectangle(x, y, width, height)) + "].");
         }
 
-        // if we made it this far, we can queue up a dirty region for this
-        // component to be repainted on the next tick
+        // if we made it this far, we can queue up a dirty region for this component to be
+        // repainted on the next tick
         _dirty.put(comp, new Rectangle(x, y, width, height));
     }
 
     /**
-     * Returns the root component for the supplied component or null if it
-     * is not part of a rooted hierarchy or if any parent along the way is
-     * found to be hidden or without a peer.
+     * Returns the root component for the supplied component or null if it is not part of a rooted
+     * hierarchy or if any parent along the way is found to be hidden or without a peer.
      */
     protected Component getRoot (Component comp)
     {
 	for (Component c = comp; c != null; c = c.getParent()) {
             boolean hidden = !c.isDisplayable();
-            // on the mac, the JRootPane is invalidated before it is
-            // visible and is never again invalidated or repainted, so we
-            // punt and allow all invisible components to be invalidated
-            // and revalidated
+            // on the mac, the JRootPane is invalidated before it is visible and is never again
+            // invalidated or repainted, so we punt and allow all invisible components to be
+            // invalidated and revalidated
             if (!RunAnywhere.isMacOS()) {
                 hidden |= !c.isVisible();
             }
@@ -207,10 +193,9 @@ public class ActiveRepaintManager extends RepaintManager
     public synchronized Rectangle getDirtyRegion (JComponent comp)
     {
 	Rectangle drect = (Rectangle)_dirty.get(comp);
-        // copy the rectangle if we found one, otherwise create an empty
-        // rectangle because we don't want them leaving empty handed
-        return (drect == null) ?
-            new Rectangle(0, 0, 0, 0) : new Rectangle(drect);
+        // copy the rectangle if we found one, otherwise create an empty rectangle because we don't
+        // want them leaving empty handed
+        return (drect == null) ? new Rectangle(0, 0, 0, 0) : new Rectangle(drect);
     }
 	    
     // documentation inherited
@@ -220,8 +205,7 @@ public class ActiveRepaintManager extends RepaintManager
     }
 
     /**
-     * Validates the invalid components that have been queued up since the
-     * last frame tick.
+     * Validates the invalid components that have been queued up since the last frame tick.
      */
     public void validateComponents ()
     {
@@ -268,11 +252,10 @@ public class ActiveRepaintManager extends RepaintManager
             _dirty = tmap;
         }
 
-        // scan through the list, looking for components for whom a parent
-        // component is also dirty. in such a case, the dirty rectangle
-        // for the parent component is expanded to contain the dirty
-        // rectangle of the child and the child is removed from the
-        // repaint list (painting the parent will repaint the child)
+        // scan through the list, looking for components for whom a parent component is also dirty.
+        // in such a case, the dirty rectangle for the parent component is expanded to contain the
+        // dirty rectangle of the child and the child is removed from the repaint list (painting
+        // the parent will repaint the child)
         Iterator iter = _spare.entrySet().iterator();
       PRUNE:
         while (iter.hasNext()) {
@@ -281,31 +264,26 @@ public class ActiveRepaintManager extends RepaintManager
             Rectangle drect = (Rectangle)entry.getValue();
             int x = comp.getX() + drect.x, y = comp.getY() + drect.y;
 
-            // climb up the parent hierarchy, looking for the first opaque
-            // parent as well as the root component
+            // climb up the parent hierarchy, looking for the first opaque parent as well as the
+            // root component
             for (Component c = comp.getParent(); c != null; c = c.getParent()) {
-                // stop looking for combinable parents for non-visible or
-                // non-JComponents
-                if (!c.isVisible() || !c.isDisplayable() ||
-                    !(c instanceof JComponent)) {
+                // stop looking for combinable parents for non-visible or non-JComponents
+                if (!c.isVisible() || !c.isDisplayable() || !(c instanceof JComponent)) {
                     break;
                 }
 
                 // check to see if this parent is dirty
                 Rectangle prect = (Rectangle)_spare.get(c);
                 if (prect != null) {
-                    // that we were going to merge it with its parent and
-                    // blow it away
+                    // that we were going to merge it with its parent and blow it away
                     drect.x = x;
                     drect.y = y;
 
                     if (DEBUG) {
-                        Log.info("Found dirty parent " +
-                                 "[comp=" + toString(comp) +
+                        Log.info("Found dirty parent [comp=" + toString(comp) +
                                  ", drect=" + StringUtil.toString(drect) +
-                                 ", pcomp=" + toString(c) + 
-                                 ", prect=" + StringUtil.toString(prect) +
-                                 "].");
+                                 ", pcomp=" + toString(c) +
+                                 ", prect=" + StringUtil.toString(prect) + "].");
                     }
                     prect.add(drect);
 
@@ -325,26 +303,24 @@ public class ActiveRepaintManager extends RepaintManager
             }
         }
 
-        // now paint each of the dirty components, by setting the clipping
-        // rectangle appropriately and calling paint() on the associated
-        // root component
+        // now paint each of the dirty components, by setting the clipping rectangle appropriately
+        // and calling paint() on the associated root component
         iter = _spare.entrySet().iterator();
         while (iter.hasNext()) {
             Entry entry = (Entry)iter.next();
             JComponent comp = (JComponent)entry.getKey();
             Rectangle drect = (Rectangle)entry.getValue();
 
-            // get the root component, adjust the clipping (dirty)
-            // rectangle and obtain the bounds of the client in absolute
-            // coordinates
+            // get the root component, adjust the clipping (dirty) rectangle and obtain the bounds
+            // of the client in absolute coordinates
             Component root = null, ocomp = null;
 
-            // start with the components bounds which we'll switch to the
-            // opaque parent component's bounds if and when we find one
+            // start with the components bounds which we'll switch to the opaque parent component's
+            // bounds if and when we find one
             _cbounds.setBounds(0, 0, comp.getWidth(), comp.getHeight());
 
-            // climb up the parent hierarchy, looking for the first opaque
-            // parent as well as the root component
+            // climb up the parent hierarchy, looking for the first opaque parent as well as the
+            // root component
             for (Component c = comp; c != null; c = c.getParent()) {
                 if (!c.isVisible() || !c.isDisplayable()) {
                     break;
@@ -354,16 +330,14 @@ public class ActiveRepaintManager extends RepaintManager
                     // make a note of the first opaque parent we find
                     if (ocomp == null && ((JComponent)c).isOpaque()) {
                         ocomp = c;
-                        // we need to obtain the opaque parent's coordinates
-                        // in the root coordinate system for when we repaint
-                        _cbounds.setBounds(
-                            0, 0, ocomp.getWidth(), ocomp.getHeight());
+                        // we need to obtain the opaque parent's coordinates in the root coordinate
+                        // system for when we repaint
+                        _cbounds.setBounds(0, 0, ocomp.getWidth(), ocomp.getHeight());
                     }
 
                 } else {
-                    // oh god the hackery. apparently the fscking
-                    // JEditorPane wraps a heavy weight component around
-                    // every swing component it uses when doing forms
+                    // oh god the hackery. apparently the fscking JEditorPane wraps a heavy weight
+                    // component around every swing component it uses when doing forms
                     Component tp = c.getParent();
                     if (!(tp instanceof JEditorPane)) {
                         root = c;
@@ -371,8 +345,7 @@ public class ActiveRepaintManager extends RepaintManager
                     }
                 }
 
-                // translate the coordinates into this component's
-                // coordinate system
+                // translate the coordinates into this component's coordinate system
                 drect.x += c.getX();
                 drect.y += c.getY();
                 _cbounds.x += c.getX();
@@ -383,19 +356,17 @@ public class ActiveRepaintManager extends RepaintManager
                     c.getX(), c.getY(), c.getWidth(), c.getHeight(), drect);
             }
 
-            // if we found no opaque parent, just paint the component
-            // itself (this seems to happen with the top-level layered
-            // pane)
+            // if we found no opaque parent, just paint the component itself (this seems to happen
+            // with the top-level layered pane)
             if (ocomp == null) {
                 ocomp = comp;
             }
 
-            // if this component is rooted in our frame, repaint it into
-            // the supplied graphics instance
+            // if this component is rooted in our frame, repaint it into the supplied graphics
+            // instance
             if (root == _root) {
                 if (DEBUG) {
-                    Log.info("Repainting [comp=" + toString(comp) +
-                             StringUtil.toString(_cbounds) +
+                    Log.info("Repainting [comp=" + toString(comp) + StringUtil.toString(_cbounds) +
                              ", ocomp=" + toString(ocomp) +
                              ", drect=" + StringUtil.toString(drect) + "].");
                 }
@@ -403,36 +374,30 @@ public class ActiveRepaintManager extends RepaintManager
                 g.setClip(drect);
                 g.translate(_cbounds.x, _cbounds.y);
                 try {
-                    // some components are ill-behaved and may throw an
-                    // exception while painting themselves, and so we
-                    // needs must deal with these fellows gracefully
+                    // some components are ill-behaved and may throw an exception while painting
+                    // themselves, and so we needs must deal with these fellows gracefully
                     ocomp.paint(g);
 
                 } catch (Exception e) {
-                    Log.warning("Exception while painting component " +
-                                "[comp=" + ocomp + ", e=" + e + "].");
+                    Log.warning("Exception while painting component [comp=" + ocomp + "].");
                     Log.logStackTrace(e);
                 }
                 g.translate(-_cbounds.x, -_cbounds.y);
 
-                // we also need to repaint any components in this layer
-                // that are above our freshly repainted component
+                // we also need to repaint any components in this layer that are above our freshly
+                // repainted component
                 fmgr.renderLayers((Graphics2D)g, ocomp, _cbounds, _clipped);
 
             } else if (root != null) {
                 if (DEBUG) {
-                    Log.info("Repainting old-school " +
-                             "[comp=" + toString(comp) +
-                             ", ocomp=" + toString(ocomp) +
-                             ", root=" + toString(root) +
-                             ", bounds=" + StringUtil.toString(_cbounds) +
-                             "].");
+                    Log.info("Repainting old-school [comp=" + toString(comp) +
+                             ", ocomp=" + toString(ocomp) + ", root=" + toString(root) +
+                             ", bounds=" + StringUtil.toString(_cbounds) + "].");
                     dumpHierarchy(comp);
                 }
 
                 // otherwise, repaint with standard swing double buffers
-                Image obuf = getOffscreenBuffer(
-                    ocomp, _cbounds.width, _cbounds.height);
+                Image obuf = getOffscreenBuffer(ocomp, _cbounds.width, _cbounds.height);
                 Graphics og = null, cg = null;
                 try {
                     og = obuf.getGraphics();
@@ -462,8 +427,7 @@ public class ActiveRepaintManager extends RepaintManager
      */
     protected static String toString (Component comp)
     {
-        return comp.getClass().getName() +
-            StringUtil.toString(comp.getBounds());
+        return comp.getClass().getName() + StringUtil.toString(comp.getBounds());
     }
 
     /**
@@ -486,8 +450,7 @@ public class ActiveRepaintManager extends RepaintManager
     /** A mapping of invalid rectangles for each widget that is dirty. */
     protected HashMap _dirty = new HashMap();
 
-    /** A spare hashmap that we swap in while repainting dirty components
-     * in the old hashmap. */
+    /** A spare hashmap that we swap in while repainting dirty components in the old hashmap. */
     protected HashMap _spare = new HashMap();
 
     /** Used to compute dirty components' bounds. */
@@ -496,7 +459,6 @@ public class ActiveRepaintManager extends RepaintManager
     /** Used when rendering "layered" components. */
     protected boolean[] _clipped = new boolean[] { true };
 
-    /** We debug so much that we have to make it easy to enable and
-     * disable debug logging. Yay! */
+    /** We debug so much that we have to make it easy to enable and disable debug logging. Yay! */
     protected static final boolean DEBUG = false;
 }

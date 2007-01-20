@@ -29,9 +29,8 @@ import java.util.ArrayList;
 import com.samskivert.util.StringUtil;
 
 /**
- * Manages regions (rectangles) that are invalidated in the process of
- * ticking animations and sprites and generally doing other display
- * related business.
+ * Manages regions (rectangles) that are invalidated in the process of ticking animations and
+ * sprites and generally doing other display related business.
  */
 public class RegionManager
 {
@@ -46,9 +45,8 @@ public class RegionManager
     }
 
     /**
-     * Invalidates the specified region (the supplied rectangle will be
-     * cloned as the region manager fiddles with the rectangles it uses
-     * internally).
+     * Invalidates the specified region (the supplied rectangle will be cloned as the region
+     * manager fiddles with the rectangles it uses internally).
      */
     public void invalidateRegion (Rectangle rect)
     {
@@ -58,17 +56,15 @@ public class RegionManager
     }
 
     /**
-     * Adds the supplied rectangle to the dirty regions. Control of the
-     * rectangle is given to the region manager as it may choose to bend,
-     * fold or mutilate it later. If you don't want the region manager
-     * messing with your rectangle, use {@link #invalidateRegion}.
+     * Adds the supplied rectangle to the dirty regions. Control of the rectangle is given to the
+     * region manager as it may choose to bend, fold or mutilate it later. If you don't want the
+     * region manager messing with your rectangle, use {@link #invalidateRegion}.
      */
     public void addDirtyRegion (Rectangle rect)
     {
         // make sure we're on an AWT thread
         if (!EventQueue.isDispatchThread()) {
-            Log.warning("Oi! Region dirtied on non-AWT thread " +
-                        "[rect=" + rect + "].");
+            Log.warning("Oi! Region dirtied on non-AWT thread [rect=" + rect + "].");
             Thread.dumpStack();
         }
 
@@ -81,8 +77,7 @@ public class RegionManager
 
         // more sanity checking
         long x = rect.x, y = rect.y;
-        if ((Math.abs(x) > Integer.MAX_VALUE/2) ||
-            (Math.abs(y) > Integer.MAX_VALUE/2)) {
+        if ((Math.abs(x) > Integer.MAX_VALUE/2) || (Math.abs(y) > Integer.MAX_VALUE/2)) {
             Log.warning("Requested to dirty questionable region " +
                         "[rect=" + StringUtil.toString(rect) + "].");
             if (Log.getLevel() == Log.log.DEBUG) {
@@ -107,8 +102,7 @@ public class RegionManager
             return false;
 
         } else if (width == 0 || height == 0) {
-            // no need to complain about zero sized rectangles, just
-            // ignore them
+            // no need to complain about zero sized rectangles, just ignore them
             return false;
 
         } else {
@@ -117,8 +111,8 @@ public class RegionManager
     }
 
     /**
-     * Returns true if dirty regions have been accumulated since the last
-     * call to {@link #getDirtyRegions}.
+     * Returns true if dirty regions have been accumulated since the last call to {@link
+     * #getDirtyRegions}.
      */
     public boolean haveDirtyRegions ()
     {
@@ -126,10 +120,9 @@ public class RegionManager
     }
 
     /**
-     * Merges all outstanding dirty regions into a single list of
-     * rectangles and returns that to the caller. Interally, the list of
-     * accumulated dirty regions is cleared out and prepared for the next
-     * frame.
+     * Merges all outstanding dirty regions into a single list of rectangles and returns that to
+     * the caller. Interally, the list of accumulated dirty regions is cleared out and prepared for
+     * the next frame.
      */
     public Rectangle[] getDirtyRegions ()
     {

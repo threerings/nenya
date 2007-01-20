@@ -128,6 +128,14 @@ public class MediaPanel extends JComponent
     }
 
     /**
+     * Returns a reference to the region manager used by this media panel.
+     */
+    public RegionManager getRegionManager ()
+    {
+        return _metamgr.getRegionManager();
+    }
+
+    /**
      * Pauses the sprites and animations that are currently active on this media panel. Also stops
      * listening to the frame tick while paused.
      */

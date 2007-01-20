@@ -23,8 +23,9 @@ package com.threerings.media;
 
 import java.awt.Component;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import javax.swing.JRootPane;
 
-import com.threerings.media.FrameParticipant;
 import com.threerings.media.animation.AnimationManager;
 import com.threerings.media.sprite.SpriteManager;
 
@@ -35,7 +36,7 @@ import com.threerings.media.sprite.SpriteManager;
  * it has left dirty.
  */
 public class MediaOverlay
-    implements MediaHost, FrameParticipant
+    implements MediaHost
 {
     /**
      * Returns a reference to the animation manager used by this media panel.
@@ -53,31 +54,57 @@ public class MediaOverlay
         return _metamgr.getSpriteManager();
     }
 
+    /**
+     * Called by the {@link FrameManager} to propagate our dirty regions to the active repaint
+     * manager so that it can repaint the underlying components just prior to our painting our
+     * media. This will be followe by a call to {@link paint} after the components have been
+     * repainted.
+     */
+    public void propagateDirtyRegions (ActiveRepaintManager repmgr, JRootPane root)
+    {
+        // this will clear out our region manager, so we need to keep these around for our
+        // subsequent call to paint
+        _dirty = _metamgr.getRegionManager().getDirtyRegions();
+        for (int ii = 0; ii < _dirty.length; ii++) {
+            Rectangle dirty = _dirty[ii];
+            repmgr.addDirtyRegion(root, dirty.x, dirty.y, dirty.width, dirty.height);
+        }
+    }
+
+    /**
+     * Called by the {@link FrameManager} after everything is done painting, allowing us to paint
+     * gloriously overtop of everything in the frame.
+     *
+     * @return true if we painted something, false otherwise.
+     */
+    public boolean paint (Graphics2D gfx)
+    {
+        if (_metamgr.needsPaint()) {
+            for (int ii = 0; ii < _dirty.length; ii++) {
+                gfx.setClip(_dirty[ii]);
+                _metamgr.paintMedia(gfx, MediaConstants.BACK, _dirty[ii]);
+                _metamgr.paintMedia(gfx, MediaConstants.FRONT, _dirty[ii]);
+            }
+            return true;
+        }
+        return false;
+    }
+
     // from interface MediaHost
     public Graphics2D createGraphics ()
     {
         return _metamgr.getFrameManager().createGraphics();
     }
 
-    // from interface FrameParticipant
+    /**
+     * Called by the frame manager on every tick.
+     */
     public void tick (long tickStamp)
     {
         if (!_metamgr.isPaused()) {
             // tick our meta manager which will tick our sprites and animations
             _metamgr.tick(tickStamp);
         }
-    }
-
-    // from interface FrameParticipant
-    public boolean needsPaint ()
-    {
-        return _metamgr.needsPaint();
-    }
-
-    // from interface FrameParticipant
-    public Component getComponent ()
-    {
-        return null; // TODO
     }
 
     /**
@@ -94,4 +121,7 @@ public class MediaOverlay
 
     /** Handles the heavy lifting involving media. */
     protected MetaMediaManager _metamgr;
+
+    /** A temporary list of dirty rectangles maintained during the painting process. */
+    protected Rectangle[] _dirty;
 }
