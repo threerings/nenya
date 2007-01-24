@@ -34,7 +34,7 @@ import java.util.jar.JarFile;
 import com.samskivert.util.FileUtil;
 import com.samskivert.util.StringUtil;
 
-import org.apache.commons.io.CopyUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * A resource bundle provides access to the resources in a jar file.
@@ -254,7 +254,7 @@ public class ResourceBundle
         BufferedOutputStream fout =
             new BufferedOutputStream(new FileOutputStream(tfile));
         InputStream jin = _jarSource.getInputStream(entry);
-        CopyUtils.copy(jin, fout);
+        IOUtils.copy(jin, fout);
         jin.close();
         fout.close();
 

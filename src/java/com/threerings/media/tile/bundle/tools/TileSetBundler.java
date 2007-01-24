@@ -38,7 +38,7 @@ import java.util.zip.Deflater;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.io.CopyUtils;
+import org.apache.commons.io.IOUtils;
 import org.xml.sax.SAXException;
 
 import com.samskivert.io.PersistenceException;
@@ -417,7 +417,7 @@ public class TileSetBundler
                         } else {
                             jar.putNextEntry(new JarEntry(imagePath));
                             FileInputStream imgin = new FileInputStream(ifile);
-                            CopyUtils.copy(imgin, jar);
+                            IOUtils.copy(imgin, jar);
                         }
                     } catch (Exception e) {
                         String msg = "Failure bundling image " + ifile +
