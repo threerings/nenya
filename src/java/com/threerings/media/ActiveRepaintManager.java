@@ -107,13 +107,13 @@ public class ActiveRepaintManager extends RepaintManager
 
         // make sure that the component is actually in a window or applet
         // that is showing
-	if (getRoot(vroot) == null) {
+        if (getRoot(vroot) == null) {
             if (DEBUG) {
                 Log.info("Skipping rootless component [comp=" + toString(comp) +
                          ", vroot=" + toString(vroot) + "].");
             }
-	    return;
-	}
+            return;
+        }
 
         // add the invalid component to our list and we'll validate it on the next frame
         if (!ListUtil.containsRef(_invalid, vroot)) {
@@ -142,12 +142,12 @@ public class ActiveRepaintManager extends RepaintManager
         }
 
         // if this component is already dirty, simply expand their existing dirty rectangle
-	Rectangle drect = (Rectangle)_dirty.get(comp);
-	if (drect != null) {
+        Rectangle drect = (Rectangle)_dirty.get(comp);
+        if (drect != null) {
             drect.add(x, y);
             drect.add(x+width, y+height);
-	    return;
-	}
+            return;
+        }
 
         // make sure this component has a valid root
         if (getRoot(comp) == null) {
@@ -171,7 +171,7 @@ public class ActiveRepaintManager extends RepaintManager
      */
     protected Component getRoot (Component comp)
     {
-	for (Component c = comp; c != null; c = c.getParent()) {
+        for (Component c = comp; c != null; c = c.getParent()) {
             boolean hidden = !c.isDisplayable();
             // on the mac, the JRootPane is invalidated before it is visible and is never again
             // invalidated or repainted, so we punt and allow all invisible components to be
@@ -179,25 +179,25 @@ public class ActiveRepaintManager extends RepaintManager
             if (!RunAnywhere.isMacOS()) {
                 hidden |= !c.isVisible();
             }
-	    if (hidden) {
-		return null;
-	    }
+            if (hidden) {
+                return null;
+            }
             if (c instanceof Window || c instanceof Applet) {
-		return c;
-	    }
-	}
+                return c;
+            }
+        }
         return null;
     }
 
     // documentation inherited
     public synchronized Rectangle getDirtyRegion (JComponent comp)
     {
-	Rectangle drect = (Rectangle)_dirty.get(comp);
+        Rectangle drect = (Rectangle)_dirty.get(comp);
         // copy the rectangle if we found one, otherwise create an empty rectangle because we don't
         // want them leaving empty handed
         return (drect == null) ? new Rectangle(0, 0, 0, 0) : new Rectangle(drect);
     }
-	    
+
     // documentation inherited
     public synchronized void markCompletelyClean (JComponent comp)
     {

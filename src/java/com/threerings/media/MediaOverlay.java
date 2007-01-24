@@ -135,7 +135,8 @@ public class MediaOverlay
             _dirty = _metamgr.getRegionManager().getDirtyRegions();
             for (int ii = 0; ii < _dirty.length; ii++) {
                 Rectangle dirty = _dirty[ii];
-                repmgr.addDirtyRegion(root, dirty.x, dirty.y, dirty.width, dirty.height);
+                repmgr.addDirtyRegion(root, dirty.x - root.getX(), dirty.y - root.getY(), 
+                    dirty.width, dirty.height);
             }
         }
     }
