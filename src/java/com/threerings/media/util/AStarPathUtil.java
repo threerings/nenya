@@ -1,5 +1,5 @@
 //
-// $Id: AStarPathUtil.java 3413 2005-03-18 01:13:09Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

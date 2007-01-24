@@ -1,5 +1,5 @@
 //
-// $Id: ImageUtil.java 3965 2006-03-21 02:32:27Z mthomas $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

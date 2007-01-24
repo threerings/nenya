@@ -1,5 +1,5 @@
 //
-// $Id: KeyTranslatorImpl.java 3272 2004-12-13 07:52:09Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

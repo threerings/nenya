@@ -1,5 +1,5 @@
 //
-// $Id: ButtonSprite.java 3509 2005-04-20 17:15:36Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

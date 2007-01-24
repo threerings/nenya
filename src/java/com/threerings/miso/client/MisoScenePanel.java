@@ -1,5 +1,5 @@
 //
-// $Id: MisoScenePanel.java 4007 2006-04-10 08:59:30Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

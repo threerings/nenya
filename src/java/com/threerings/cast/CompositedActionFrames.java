@@ -1,5 +1,5 @@
 //
-// $Id: CompositedActionFrames.java 3967 2006-03-22 02:41:15Z andrzej $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

@@ -1,5 +1,5 @@
 //
-// $Id: ResourceManager.java 4000 2006-04-05 19:40:12Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

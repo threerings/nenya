@@ -1,5 +1,5 @@
 //
-// $Id: BackFrameManager.java 4181 2006-06-07 21:54:12Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

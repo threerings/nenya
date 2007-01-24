@@ -1,5 +1,5 @@
 //
-// $Id: FloatingTextAnimation.java 3212 2004-11-12 00:33:38Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

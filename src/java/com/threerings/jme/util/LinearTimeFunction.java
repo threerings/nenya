@@ -1,5 +1,5 @@
 //
-// $Id: LinearTimeFunction.java 3122 2004-09-18 22:57:08Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2006 Three Rings Design, Inc., All Rights Reserved

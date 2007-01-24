@@ -1,5 +1,5 @@
 //
-// $Id: MisoUtil.java 3628 2005-06-28 17:42:55Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

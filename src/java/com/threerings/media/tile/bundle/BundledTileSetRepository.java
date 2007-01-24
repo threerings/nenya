@@ -1,5 +1,5 @@
 //
-// $Id: BundledTileSetRepository.java 3608 2005-06-20 22:59:07Z andrzej $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

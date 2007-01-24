@@ -1,5 +1,5 @@
 //
-// $Id: ObjectActionHandler.java 3917 2006-03-06 23:45:12Z mthomas $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

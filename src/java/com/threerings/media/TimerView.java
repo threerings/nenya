@@ -1,5 +1,5 @@
 //
-// $Id: HourglassView.java 18697 2005-01-19 01:18:47Z tedv $
+// $Id$
 
 package com.threerings.media;
 

@@ -1,5 +1,5 @@
 //
-// $Id: SceneParser.java 3749 2005-11-09 04:00:16Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

@@ -1,5 +1,5 @@
 //
-// $Id: LabelSprite.java 3542 2005-05-06 03:01:43Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

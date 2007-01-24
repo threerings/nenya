@@ -1,5 +1,5 @@
 //
-// $Id: Log.java 4191 2006-06-13 22:42:20Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

@@ -1,5 +1,5 @@
 //
-// $Id: LineSegmentPath.java 3880 2006-02-22 18:29:05Z mjohnson $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

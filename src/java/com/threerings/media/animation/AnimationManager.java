@@ -1,5 +1,5 @@
 //
-// $Id: AnimationManager.java 3347 2005-02-14 03:00:58Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

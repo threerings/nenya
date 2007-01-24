@@ -1,5 +1,5 @@
 //
-// $Id: FadeAnimation.java 3427 2005-03-24 04:50:52Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

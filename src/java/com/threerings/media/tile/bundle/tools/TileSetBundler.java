@@ -1,5 +1,5 @@
 //
-// $Id: TileSetBundler.java 3788 2005-12-20 02:09:18Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

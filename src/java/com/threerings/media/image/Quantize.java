@@ -1,5 +1,5 @@
 //
-// $Id: Quantize.java 4031 2006-04-18 20:35:28Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

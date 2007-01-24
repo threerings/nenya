@@ -1,5 +1,5 @@
 //
-// $Id: RecolorImage.java 3887 2006-02-24 01:24:34Z mthomas $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

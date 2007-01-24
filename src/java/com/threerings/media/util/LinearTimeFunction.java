@@ -1,5 +1,5 @@
 //
-// $Id: LinearTimeFunction.java 4191 2006-06-13 22:42:20Z ray $
+// $Id$
 
 package com.threerings.media.util;
 

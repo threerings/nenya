@@ -1,5 +1,5 @@
 //
-// $Id: FringeConfigurationParser.java 3254 2004-11-30 20:03:47Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

@@ -1,5 +1,5 @@
 //
-// $Id: ClassRuleSet.java 3729 2005-10-13 00:00:33Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

@@ -1,5 +1,5 @@
 //
-// $Id: CharacterSprite.java 3785 2005-12-15 22:14:37Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

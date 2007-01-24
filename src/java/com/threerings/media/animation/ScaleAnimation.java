@@ -1,5 +1,5 @@
 //
-// $Id: ScaleAnimation.java 3123 2004-09-18 22:58:39Z mdb $
+// $Id$
 
 package com.threerings.media.animation;
 

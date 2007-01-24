@@ -1,5 +1,5 @@
 //
-// $Id: KeyboardManager.java 4145 2006-05-24 01:24:24Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

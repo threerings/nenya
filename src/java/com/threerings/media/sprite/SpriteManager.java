@@ -1,5 +1,5 @@
 //
-// $Id: SpriteManager.java 3733 2005-10-13 19:00:08Z ray $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

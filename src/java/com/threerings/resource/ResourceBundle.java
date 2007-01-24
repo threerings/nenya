@@ -1,5 +1,5 @@
 //
-// $Id: ResourceBundle.java 3998 2006-04-04 18:46:42Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved

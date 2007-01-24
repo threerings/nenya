@@ -1,5 +1,5 @@
 //
-// $Id: CompiledConfigTask.java 3786 2005-12-19 19:09:00Z mdb $
+// $Id$
 //
 // Narya library - tools for developing networked games
 // Copyright (C) 2002-2004 Three Rings Design, Inc., All Rights Reserved
