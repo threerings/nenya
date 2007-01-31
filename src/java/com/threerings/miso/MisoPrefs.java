@@ -21,15 +21,14 @@
 
 package com.threerings.miso;
 
-import com.samskivert.util.Config;
+import com.samskivert.util.PrefsConfig;
 
 /**
- * Provides access to runtime configuration parameters for the miso
- * package and its subpackages.
+ * Provides access to runtime configuration parameters for the miso package and its subpackages.
  */
 public class MisoPrefs
 {
-    /** Used to load our preferences from a properties file and map them
-     * to the persistent Java preferences repository. */
-    public static Config config = new Config("rsrc/config/miso");
+    /** Used to load our preferences from a properties file and map them to the persistent Java
+     * preferences repository. */
+    public static PrefsConfig config = new PrefsConfig("rsrc/config/miso");
 }

@@ -101,8 +101,8 @@ import com.jmex.effects.particles.ParticleGeometry;
 
 import com.samskivert.swing.GroupLayout;
 import com.samskivert.swing.Spacer;
-import com.samskivert.util.Config;
 import com.samskivert.util.ObjectUtil;
+import com.samskivert.util.PrefsConfig;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.resource.ResourceManager;
@@ -1117,8 +1117,7 @@ public class ModelViewer extends JmeCanvasApp
     }
     
     /** The app configuration. */
-    protected static Config _config =
-        new Config("com/threerings/jme/tools/ModelViewer");
+    protected static PrefsConfig _config = new PrefsConfig("com/threerings/jme/tools/ModelViewer");
     
     /** Forces all particle systems to respawn. */
     protected static SpatialVisitor<ParticleGeometry> _respawner =
