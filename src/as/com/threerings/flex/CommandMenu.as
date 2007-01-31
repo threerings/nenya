@@ -7,12 +7,15 @@ import flash.geom.Rectangle;
 
 import mx.controls.Menu;
 import mx.core.mx_internal;
+import mx.core.Application;
 import mx.core.ScrollPolicy;
 import mx.events.MenuEvent;
 
 import com.dougmccune.controls.ScrollableArrowMenu;
 
 import com.threerings.util.CommandEvent;
+
+use namespace mx_internal;
 
 /**
  * A pretty standard menu that can submit CommandEvents if menu items
@@ -45,16 +48,15 @@ public class CommandMenu extends ScrollableArrowMenu
     /**
      * Factory method to create a command menu.
      *
-     * @param parent The parent of this menu.
      * @param items an array of menu items.
      */
-    public static function createMenu (
-        parent :DisplayObjectContainer, items :Array) :CommandMenu
+    public static function createMenu (items :Array) :CommandMenu
     {
         var menu :CommandMenu = new CommandMenu();
+        menu.owner = DisplayObjectContainer(Application.application);
         menu.tabEnabled = false;
         menu.showRoot = true;
-        Menu.popUpMenu(menu, parent, items);
+        Menu.popUpMenu(menu, null, items);
         return menu;
     }
 
@@ -72,9 +74,25 @@ public class CommandMenu extends ScrollableArrowMenu
             y = r.y - getExplicitOrMeasuredHeight();
 
         } else {
-            // simply position it below the trigger
+            // position it below the trigger
             show(r.x, r.y + r.height);
         }
+    }
+
+    /**
+     * Just like our superclass's show(), except that when invoked
+     * with no args, causes the menu to show at the current mouse location
+     * instead of the top-left corner of the application.
+     */
+    override public function show (xShow :Object = null, yShow :Object = null) :void
+    {
+        if (xShow == null) {
+            xShow = DisplayObject(Application.application).mouseX;
+        }
+        if (yShow == null) {
+            yShow = DisplayObject(Application.application).mouseY;
+        }
+        super.show(xShow, yShow);
     }
 
     /**
@@ -108,15 +126,6 @@ public class CommandMenu extends ScrollableArrowMenu
             }
         }
     }
-
-//    /**
-//     * Callback for MenuEvent.MENU_SHOW.
-//     */
-//    protected function handleMenuShown (event :MenuEvent) :void
-//    {
-//        // just ensure that every menu can scroll
-//        event.menu.verticalScrollPolicy = ScrollPolicy.ON;
-//    }
 
     /**
      * Get the command for the specified item, if any.
