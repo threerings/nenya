@@ -4,6 +4,8 @@ import flash.events.MouseEvent;
 
 import mx.controls.Button;
 
+import com.threerings.util.CommandEvent;
+
 /**
  * A command button simply dispatches a Controller command (with an optional
  * argument) when it is clicked.

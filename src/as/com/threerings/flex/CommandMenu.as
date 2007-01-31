@@ -10,6 +10,8 @@ import mx.core.mx_internal;
 import mx.core.ScrollPolicy;
 import mx.events.MenuEvent;
 
+import com.threerings.util.CommandEvent;
+
 /**
  * A pretty standard menu that can submit CommandEvents if menu items
  * have "command" and possibly "arg" properties. Commands are submitted to
