@@ -10,6 +10,8 @@ import mx.core.mx_internal;
 import mx.core.ScrollPolicy;
 import mx.events.MenuEvent;
 
+import com.dougmccune.controls.ScrollableArrowMenu;
+
 import com.threerings.util.CommandEvent;
 
 /**
@@ -30,7 +32,7 @@ import com.threerings.util.CommandEvent;
  * See "Defining menu structure and data" in the Flex manual for the
  * full list.
  */ 
-public class CommandMenu extends Menu
+public class CommandMenu extends ScrollableArrowMenu
 {
     public function CommandMenu ()
     {
