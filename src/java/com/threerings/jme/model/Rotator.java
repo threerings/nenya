@@ -37,6 +37,7 @@ import com.jme.util.export.OutputCapsule;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.Log;
+import com.threerings.jme.util.JmeUtil;
 
 /**
  * A procedural animation that rotates a node around at a constant angular
@@ -48,29 +49,8 @@ public class Rotator extends ModelController
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
-        String axisstr = props.getProperty("axis", "x"),
-            velstr = props.getProperty("velocity", "3.14");
-        if (axisstr.equalsIgnoreCase("x")) {
-            _axis = Vector3f.UNIT_X;
-        } else if (axisstr.equalsIgnoreCase("y")) {
-            _axis = Vector3f.UNIT_Y;
-        } else if (axisstr.equalsIgnoreCase("z")) {
-            _axis = Vector3f.UNIT_Z;
-        } else {
-            float[] axis = StringUtil.parseFloatArray(axisstr);
-            if (axis != null && axis.length == 3) {
-                _axis = new Vector3f(axis[0], axis[1],
-                    axis[2]).normalizeLocal();
-                    
-            } else {
-                Log.warning("Invalid rotation axis [axis=" + axisstr + "].");
-            }
-        }
-        try {
-            _velocity = Float.parseFloat(velstr);
-        } catch (NumberFormatException e) {
-            Log.warning("Invalid angular velocity [velocity=" + velstr + "].");
-        }
+        _axis = JmeUtil.parseAxis(props.getProperty("axis", "x"));
+        _velocity = Float.parseFloat(props.getProperty("velocity", "3.14"));
     }
     
     // documentation inherited

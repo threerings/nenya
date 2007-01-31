@@ -33,6 +33,7 @@ import com.jme.scene.Spatial;
 
 import com.threerings.jme.Log;
 import com.threerings.jme.model.Model;
+import com.threerings.jme.util.JmeUtil;
 
 /**
  * A basic representation for keyframe animations.
@@ -144,14 +145,7 @@ public class AnimationDef
         // create and configure the animation
         Model.Animation anim = new Model.Animation();
         anim.frameRate = frameRate;
-        String rtype = props.getProperty("repeat_type", "clamp");
-        if (rtype.equals("cycle")) {
-            anim.repeatType = Controller.RT_CYCLE;
-        } else if (rtype.equals("wrap")) {
-            anim.repeatType = Controller.RT_WRAP;
-        } else {
-            anim.repeatType = Controller.RT_CLAMP;
-        }
+        anim.repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"));
         
         // collect all transforms
         anim.transformTargets = targets.toArray(new Spatial[targets.size()]);

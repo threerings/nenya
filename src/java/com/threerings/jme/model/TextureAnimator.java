@@ -38,6 +38,8 @@ import com.jme.util.export.OutputCapsule;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.Log;
+import com.threerings.jme.util.JmeUtil;
+import com.threerings.jme.util.JmeUtil.FrameState;
 import com.threerings.jme.util.SpatialVisitor;
 
 /**
@@ -53,48 +55,20 @@ public class TextureAnimator extends TextureController
         _frameHeight = Float.valueOf(props.getProperty("frame_height", "0.5"));
         _frameCount = Integer.valueOf(props.getProperty("frame_count", "4"));
         _frameRate = Float.valueOf(props.getProperty("frame_rate", "1"));
-        String rtype = props.getProperty("repeat_type", "wrap");
-        if (rtype.equals("clamp")) {
-            _repeatType = Controller.RT_CLAMP;    
-        } else if (rtype.equals("cycle")) {
-            _repeatType = Controller.RT_CYCLE;
-        } else if (rtype.equals("wrap")) {
-            _repeatType = Controller.RT_WRAP;
-        } else {
-            Log.warning("Invalid repeat type [type=" + rtype + "].");
-            _repeatType = Controller.RT_WRAP;
-        }
-    }
-    
-    @Override // documentation inherited
-    public void resolveTextures (TextureProvider tprov)
-    {
-        super.resolveTextures(tprov);
-        
-        // compute derived values
-        _hframes = (int)Math.floor(1f / _frameWidth);
-        _vframes = (int)Math.floor(1f / _frameHeight);
-        
-        // use the same translation vector for all textures
-        _translation = new Vector3f();
-        for (Texture texture : _textures) {
-            texture.setTranslation(_translation);
-        }
+        _repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"));
     }
     
     // documentation inherited
     public void update (float time)
     {
+        super.update(time);
         if (!isActive()) {
             return;
         }
-        float spf = 1f / _frameRate;
-        for (_faccum += time; _faccum >= spf; _faccum -= spf) {
-            advanceFrame();
-        }
+        _fstate.update(time, _frameRate, _frameCount, _repeatType);
         _translation.set(
-            (_fidx % _hframes) * _frameWidth,
-            -(_fidx / _hframes) * _frameHeight,
+            (_fstate.idx % _hframes) * _frameWidth,
+            -(_fstate.idx / _hframes) * _frameHeight,
             0f);
     }
     
@@ -143,24 +117,19 @@ public class TextureAnimator extends TextureController
         capsule.write(_repeatType, "repeatType", Controller.RT_WRAP);
     }
     
-    /**
-     * Advances by one frame.
-     */
-    protected void advanceFrame ()
+    @Override // documentation inherited
+    protected void initTextures ()
     {
-        if ((_fidx += _fdir) >= _frameCount) {
-            if (_repeatType == Controller.RT_CLAMP) {
-                _fidx = _frameCount - 1;
-                _fdir = 0;
-            } else if (_repeatType == Controller.RT_WRAP) {
-                _fidx = 0;
-            } else { // repeatType == Controller.RT_CYCLE
-                _fidx = _frameCount - 2;
-                _fdir = -1;
-            }
-        } else if (_fidx < 0) {
-            _fidx = 1;
-            _fdir = +1;
+        super.initTextures();
+        
+        // compute derived values
+        _hframes = (int)Math.floor(1f / _frameWidth);
+        _vframes = (int)Math.floor(1f / _frameHeight);
+        
+        // use the same translation vector for all textures
+        _translation = new Vector3f();
+        for (Texture texture : _textures) {
+            texture.setTranslation(_translation);
         }
     }
     
@@ -182,11 +151,8 @@ public class TextureAnimator extends TextureController
     /** The number of frames on the horizontal and vertical axes. */
     protected transient int _hframes, _vframes;
     
-    /** The current animation frame and direction. */
-    protected transient int _fidx, _fdir = +1;
-    
-    /** The time accumulated towards the next frame. */
-    protected transient float _faccum;
+    /** The animation position. */
+    protected transient FrameState _fstate = new FrameState();
     
     /** The shared texture translation. */
     protected transient Vector3f _translation;

@@ -58,21 +58,10 @@ public class TextureTranslator extends TextureController
         }
     }
     
-    @Override // documentation inherited
-    public void resolveTextures (TextureProvider tprov)
-    {
-        super.resolveTextures(tprov);
-        
-        // use the same translation vector for all textures
-        _translation = new Vector3f();
-        for (Texture texture : _textures) {
-            texture.setTranslation(_translation);
-        }
-    }
-    
     // documentation inherited
     public void update (float time)
     {
+        super.update(time);
         if (!isActive()) {
             return;
         }
@@ -110,6 +99,18 @@ public class TextureTranslator extends TextureController
         super.write(ex);
         OutputCapsule capsule = ex.getCapsule(this);
         capsule.write(_velocity, "velocity", null);
+    }
+    
+    @Override // documentation inherited
+    protected void initTextures ()
+    {
+        super.initTextures();
+        
+        // use the same translation vector for all textures
+        _translation = new Vector3f();
+        for (Texture texture : _textures) {
+            texture.setTranslation(_translation);
+        }
     }
     
     /** The velocity at which to translate the texture. */
