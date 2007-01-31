@@ -94,7 +94,7 @@ public class TextureAnimator extends TextureController
         }
         _translation.set(
             (_fidx % _hframes) * _frameWidth,
-            (_vframes - 1 - (_fidx / _hframes)) * _frameHeight,
+            -(_fidx / _hframes) * _frameHeight,
             0f);
     }
     
