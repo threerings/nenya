@@ -167,8 +167,9 @@ public class ResourceManager
         // check a system property to determine if we should unpack our bundles, but don't freak
         // out if we fail to read it
         try {
-            _unpack = Boolean.getBoolean("no_unpack_resources");
+            _unpack = !Boolean.getBoolean("no_unpack_resources");
         } catch (SecurityException se) {
+            // no problem, we're in a sandbox so we definitely won't be unpacking
         }
 
         // get our resource directory from resource_dir if possible
