@@ -145,7 +145,8 @@ public class AnimationDef
         // create and configure the animation
         Model.Animation anim = new Model.Animation();
         anim.frameRate = frameRate;
-        anim.repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"));
+        anim.repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"),
+            Controller.RT_CLAMP);
         
         // collect all transforms
         anim.transformTargets = targets.toArray(new Spatial[targets.size()]);

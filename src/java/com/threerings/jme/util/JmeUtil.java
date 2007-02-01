@@ -109,19 +109,20 @@ public class JmeUtil
     
     /**
      * Attempts to parse a string describing one of the repeat types defined in {@link Controller}:
-     * "clamp", "cycle", or "wrap".  Will return {@link Controller#RT_WRAP} if the type is
+     * "clamp", "cycle", or "wrap".  Will return the specified default if the type is
      * <code>null</code> or invalid.
      */
-    public static int parseRepeatType (String type)
+    public static int parseRepeatType (String type, int defaultType)
     {
         if ("clamp".equals(type)) {
             return Controller.RT_CLAMP;
         } else if ("cycle".equals(type)) {
             return Controller.RT_CYCLE;
-        }
-        if (type != null && !"wrap".equals(type)) {
+        } else if ("wrap".equals(type)) {
+            return Controller.RT_WRAP;
+        } else if (type != null) {
             Log.warning("Invalid repeat type [type=" + type + "].");
         }
-        return Controller.RT_WRAP;   
+        return defaultType;
     }
 }

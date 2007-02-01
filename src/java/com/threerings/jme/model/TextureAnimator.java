@@ -55,7 +55,8 @@ public class TextureAnimator extends TextureController
         _frameHeight = Float.valueOf(props.getProperty("frame_height", "0.5"));
         _frameCount = Integer.valueOf(props.getProperty("frame_count", "4"));
         _frameRate = Float.valueOf(props.getProperty("frame_rate", "1"));
-        _repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"));
+        _repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"),
+            Controller.RT_WRAP);
     }
     
     // documentation inherited
