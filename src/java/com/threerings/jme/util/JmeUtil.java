@@ -88,23 +88,36 @@ public class JmeUtil
      */
     public static Vector3f parseAxis (String axis)
     {
-        if (axis == null) {
-            return null;
-        }
-        if (axis.equalsIgnoreCase("x")) {
+        if ("x".equalsIgnoreCase(axis)) {
             return Vector3f.UNIT_X;
-        } else if (axis.equalsIgnoreCase("y")) {
+        } else if ("y".equalsIgnoreCase(axis)) {
             return Vector3f.UNIT_Y;
-        } else if (axis.equalsIgnoreCase("z")) {
+        } else if ("z".equalsIgnoreCase(axis)) {
             return Vector3f.UNIT_Z;
-        }
-        float[] vals = StringUtil.parseFloatArray(axis);
-        if (vals != null && vals.length == 3) {
-            return new Vector3f(vals[0], vals[1], vals[2]).normalizeLocal();
         } else {
-            Log.warning("Invalid axis [axis=" + axis + "].");
-            return null;
+            Vector3f vector = parseVector3f(axis);
+            if (vector != null) {
+                vector.normalizeLocal();
+            }
+            return vector;
         }
+    }
+    
+    /**
+     * Attempts to parse a string containing three comma-delimited values and return a
+     * {@link Vector3f}.
+     */
+    public static Vector3f parseVector3f (String vector)
+    {
+        if (vector != null) {
+            float[] vals = StringUtil.parseFloatArray(vector);
+            if (vals != null && vals.length == 3) {
+                return new Vector3f(vals[0], vals[1], vals[2]);
+            } else {
+                Log.warning("Invalid vector [vector=" + vector + "].");
+            }
+        }
+        return null;
     }
     
     /**
