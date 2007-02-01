@@ -49,6 +49,7 @@ import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -123,7 +124,13 @@ public class ModelMesh extends TriMesh
         _filterMode = "nearest".equals(tprops.getProperty("filter")) ?
                 Texture.FM_NEAREST : Texture.FM_LINEAR;
         _mipMapMode = getMipMapMode(tprops.getProperty("mipmap"));
-        _emissiveMap = tprops.getProperty("emissive");
+        String emissive = tprops.getProperty("emissive");
+        if (Boolean.parseBoolean(emissive)) {
+            _emissive = true;
+        } else {
+            _emissiveMap = emissive;
+        }
+        _additive = Boolean.parseBoolean(tprops.getProperty("additive"));
         _solid = solid;
         _transparent = transparent;
         String threshold = tprops.getProperty("alpha_threshold");
@@ -273,6 +280,8 @@ public class ModelMesh extends TriMesh
         mstore._filterMode = _filterMode;
         mstore._mipMapMode = _mipMapMode;
         mstore._emissiveMap = _emissiveMap;
+        mstore._emissive = _emissive;
+        mstore._additive = _additive;
         mstore._solid = _solid;
         mstore._transparent = _transparent;
         mstore._alphaThreshold = _alphaThreshold;
@@ -311,6 +320,8 @@ public class ModelMesh extends TriMesh
         _filterMode = capsule.readInt("filterMode", Texture.FM_LINEAR);
         _mipMapMode = capsule.readInt("mipMapMode", Texture.MM_LINEAR_LINEAR);
         _emissiveMap = capsule.readString("emissiveMap", null);
+        _emissive = capsule.readBoolean("emissive", false);
+        _additive = capsule.readBoolean("additive", false);
         _solid = capsule.readBoolean("solid", true);
         _transparent = capsule.readBoolean("transparent", false);
         _alphaThreshold = capsule.readFloat("alphaThreshold",
@@ -343,6 +354,8 @@ public class ModelMesh extends TriMesh
         capsule.write(_filterMode, "filterMode", Texture.FM_LINEAR);
         capsule.write(_mipMapMode, "mipMapMode", Texture.MM_LINEAR_LINEAR);
         capsule.write(_emissiveMap, "emissiveMap", null);
+        capsule.write(_emissive, "emissive", false);
+        capsule.write(_additive, "additive", false);
         capsule.write(_solid, "solid", true);
         capsule.write(_transparent, "transparent", false);
         capsule.write(_alphaThreshold, "alphaThreshold",
@@ -478,10 +491,17 @@ public class ModelMesh extends TriMesh
         if (_backCull == null) {
             initSharedStates();
         }
+        if (_emissive) {
+            setRenderState(_emissiveLight);
+        }
         if (_solid) {
             setRenderState(_backCull);
         }
-        if (_transparent) {
+        if (_additive) {
+            setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+            setRenderState(_addAlpha);
+            setRenderState(_overlayZBuffer);
+        } else if (_transparent) {
             setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
             if (_translucent) {
                 setRenderState(_blendAlpha);
@@ -538,10 +558,15 @@ public class ModelMesh extends TriMesh
         _backCull.setCullMode(CullState.CS_BACK);
         _blendAlpha = renderer.createAlphaState();
         _blendAlpha.setBlendEnabled(true);
+        _addAlpha = renderer.createAlphaState();
+        _addAlpha.setBlendEnabled(true);
+        _addAlpha.setDstFunction(AlphaState.DB_ONE);
         _defaultTestAlpha = createTestAlpha(DEFAULT_ALPHA_THRESHOLD);
         _overlayZBuffer = renderer.createZBufferState();
         _overlayZBuffer.setFunction(ZBufferState.CF_LEQUAL);
         _overlayZBuffer.setWritable(false);
+        _emissiveLight = renderer.createLightState();
+        _emissiveLight.setGlobalAmbient(ColorRGBA.white);
     }
     
     /**
@@ -738,6 +763,12 @@ public class ModelMesh extends TriMesh
     /** The emissive map, if specified. */
     protected String _emissiveMap;
     
+    /** Whether or not this mesh is completely emissive. */
+    protected boolean _emissive;
+    
+    /** Whether or not this mesh should be rendered with additive blending. */
+    protected boolean _additive;
+    
     /** Whether or not this mesh can enable back-face culling. */
     protected boolean _solid;
     
@@ -774,11 +805,17 @@ public class ModelMesh extends TriMesh
     /** The shared state for alpha blending. */
     protected static AlphaState _blendAlpha;
     
+    /** The shared state for additive blending. */
+    protected static AlphaState _addAlpha;
+    
     /** The shared state for alpha testing with the default threshold. */
     protected static AlphaState _defaultTestAlpha;
     
     /** The shared state for checking, but not writing to, the z buffer. */
     protected static ZBufferState _overlayZBuffer;
+    
+    /** A light state that simulates emissivity. */
+    protected static LightState _emissiveLight;
     
     /** Work vector to store the camera direction. */
     protected static Vector3f _cdir = new Vector3f();
