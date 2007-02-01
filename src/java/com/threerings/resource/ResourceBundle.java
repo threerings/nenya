@@ -359,22 +359,24 @@ public class ResourceBundle
                 Log.info("No system defined temp directory. Faking it.");
                 tmpdir = System.getProperty("user.home");
             }
-            setCacheDir(new File(tmpdir, ".narcache"));
+            setCacheDir(new File(tmpdir));
         }
         return _tmpdir;
     }
 
     /**
-     * Specifies the directory in which our temporary resource files
-     * should be stored.
+     * Specifies the directory in which our temporary resource files should be stored.
      */
     public static void setCacheDir (File tmpdir)
     {
         String rando = Long.toHexString((long)(Math.random() * Long.MAX_VALUE));
-        _tmpdir = new File(tmpdir, rando);
+        _tmpdir = new File(tmpdir, "narcache_" + rando);
         if (!_tmpdir.exists()) {
-            Log.info("Creating narya temp cache directory '" + _tmpdir + "'.");
-            _tmpdir.mkdirs();
+            if (_tmpdir.mkdirs()) {
+                Log.info("Created narya temp cache directory '" + _tmpdir + "'.");
+            } else {
+                Log.warning("Failed to create temp cache directory '" + _tmpdir + "'.");
+            }
         }
 
         // add a hook to blow away the temp directory when we exit
