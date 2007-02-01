@@ -164,6 +164,13 @@ public class ResourceManager
         _rootPath = resourceRoot;
         _loader = loader;
 
+        // check a system property to determine if we should unpack our bundles, but don't freak
+        // out if we fail to read it
+        try {
+            _unpack = Boolean.getBoolean("no_unpack_resources");
+        } catch (SecurityException se) {
+        }
+
         // get our resource directory from resource_dir if possible
         initResourceDir(null);
     }
@@ -638,6 +645,7 @@ public class ResourceManager
             try {
                 resourceDir = System.getProperty("resource_dir");
             } catch (SecurityException se) {
+                // no problem
             }
         }
 
@@ -737,7 +745,7 @@ public class ResourceManager
     protected String _rootPath;
 
     /** Whether or not to unpack our resource bundles. */
-    protected boolean _unpack = Boolean.getBoolean("no_unpack_resources");
+    protected boolean _unpack;
 
     /** Our default resource set. */
     protected ResourceBundle[] _default = new ResourceBundle[0];
