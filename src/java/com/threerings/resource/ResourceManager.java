@@ -52,29 +52,23 @@ import com.samskivert.util.ResultListener;
 import com.samskivert.util.StringUtil;
 
 /**
- * The resource manager is responsible for maintaining a repository of
- * resources that are synchronized with a remote source. This is
- * accomplished in the form of sets of jar files (resource bundles) that
- * contain resources and that are updated from a remote resource
- * repository via HTTP.  These resource bundles are organized into
- * resource sets. A resource set contains one or more resource bundles and
- * is defined much like a classpath.
+ * The resource manager is responsible for maintaining a repository of resources that are
+ * synchronized with a remote source. This is accomplished in the form of sets of jar files
+ * (resource bundles) that contain resources and that are updated from a remote resource repository
+ * via HTTP.  These resource bundles are organized into resource sets. A resource set contains one
+ * or more resource bundles and is defined much like a classpath.
  *
- * <p> The resource manager can load resources from the default resource
- * set, and can make available named resource sets to entities that wish
- * to do their own resource loading. If the resource manager fails to
- * locate a resource in the default resource set, it falls back to loading
- * the resource via the classloader (which will search the classpath).
+ * <p> The resource manager can load resources from the default resource set, and can make
+ * available named resource sets to entities that wish to do their own resource loading. If the
+ * resource manager fails to locate a resource in the default resource set, it falls back to
+ * loading the resource via the classloader (which will search the classpath).
  *
- * <p> Applications that wish to make use of resource sets and their
- * associated bundles must call {@link #initBundles} after constructing
- * the resource manager, providing the path to a resource definition file
- * which describes these resource sets. The definition file will be loaded
- * and the resource bundles defined within will be loaded relative to the
- * resource directory.  The bundles will be cached in the user's home
- * directory and only reloaded when the source resources have been
- * updated. The resource definition file looks something like the
- * following:
+ * <p> Applications that wish to make use of resource sets and their associated bundles must call
+ * {@link #initBundles} after constructing the resource manager, providing the path to a resource
+ * definition file which describes these resource sets. The definition file will be loaded and the
+ * resource bundles defined within will be loaded relative to the resource directory.  The bundles
+ * will be cached in the user's home directory and only reloaded when the source resources have
+ * been updated. The resource definition file looks something like the following:
  *
  * <pre>
  * resource.set.default = sets/misc/config.jar: \
@@ -89,39 +83,35 @@ import com.samskivert.util.StringUtil;
  *                       /global/resources/sounds/music.jar
  * </pre>
  *
- * <p> All resource set definitions are prefixed with
- * <code>resource.set.</code> and all text following that string is
- * considered to be the name of the resource set. The resource set named
- * <code>default</code> is the default resource set and is the one that is
- * searched for resources is a call to {@link #getResource}.
+ * <p> All resource set definitions are prefixed with <code>resource.set.</code> and all text
+ * following that string is considered to be the name of the resource set. The resource set named
+ * <code>default</code> is the default resource set and is the one that is searched for resources
+ * is a call to {@link #getResource}.
  *
- * <p> When a resource is loaded from a resource set, the set is searched
- * in the order that entries are specified in the definition.
+ * <p> When a resource is loaded from a resource set, the set is searched in the order that entries
+ * are specified in the definition.
  */
 public class ResourceManager
 {
     /**
-     * Provides facilities for notifying an observer of the resource
-     * unpacking process.
+     * Provides facilities for notifying an observer of the resource unpacking process.
      */
     public interface InitObserver
     {
         /**
-         * Indicates a percent completion along with an estimated time
-         * remaining in seconds.
+         * Indicates a percent completion along with an estimated time remaining in seconds.
          */
         public void progress (int percent, long remaining);
 
         /**
-         * Indicates that there was a failure unpacking our resource
-         * bundles.
+         * Indicates that there was a failure unpacking our resource bundles.
          */
         public void initializationFailed (Exception e);
     }
 
     /**
-     * An adapter that wraps an {@link InitObserver} and routes all method
-     * invocations to the AWT thread.
+     * An adapter that wraps an {@link InitObserver} and routes all method invocations to the AWT
+     * thread.
      */
     public static class AWTInitObserver implements InitObserver
     {
@@ -149,17 +139,15 @@ public class ResourceManager
     }
 
     /**
-     * Constructs a resource manager which will load resources via the
-     * classloader, prepending <code>resourceRoot</code> to their path.
+     * Constructs a resource manager which will load resources via the classloader, prepending
+     * <code>resourceRoot</code> to their path.
      *
-     * @param resourceRoot the path to prepend to resource paths prior to
-     * attempting to load them via the classloader. When resources are
-     * bundled into the default resource bundle, they don't need this
-     * prefix, but if they're to be loaded from the classpath, it's likely
-     * that they'll live in some sort of <code>resources</code> directory
-     * to isolate them from the rest of the files in the classpath. This
-     * is not a platform dependent path (forward slash is always used to
-     * separate path elements).
+     * @param resourceRoot the path to prepend to resource paths prior to attempting to load them
+     * via the classloader. When resources are bundled into the default resource bundle, they don't
+     * need this prefix, but if they're to be loaded from the classpath, it's likely that they'll
+     * live in some sort of <code>resources</code> directory to isolate them from the rest of the
+     * files in the classpath. This is not a platform dependent path (forward slash is always used
+     * to separate path elements).
      */
     public ResourceManager (String resourceRoot)
     {
@@ -178,9 +166,16 @@ public class ResourceManager
 
         // get our resource directory from resource_dir if possible
         initResourceDir(null);
+    }
 
-        // set up a URL handler so that things can be loaded via urls
-        // with the 'resource' protocol
+    /**
+     * Registers a protocol handler with URL to handle <code>resource:</code> URLs. The URLs take
+     * the form: <pre>resource://bundle_name/resource_path</pre> Resources from the default bundle
+     * can be loaded via: <pre>resource:///resource_path</pre>
+     */
+    public void activateResourceProtocol ()
+    {
+        // set up a URL handler so that things can be loaded via urls with the 'resource' protocol
         try {
             AccessController.doPrivileged(new PrivilegedAction() {
                 public Object run () {
@@ -199,6 +194,16 @@ public class ResourceManager
     public void setLocalePrefix (String prefix)
     {
         _localePrefix = prefix;
+    }
+
+    /**
+     * Configures whether we unpack our resource bundles or not. This must be called before {@link
+     * #initBundles}. One can also pass the <code>-Dno_unpack_resources=true</code> system property
+     * to disable resource unpacking.
+     */
+    public void setUnpackResources (boolean unpackResources)
+    {
+        _unpack = unpackResources;
     }
 
     /**
@@ -221,19 +226,13 @@ public class ResourceManager
      * @exception IOException thrown if we are unable to read our resource
      * manager configuration.
      */
-    public void initBundles (
-        String resourceDir, String configPath, InitObserver initObs)
+    public void initBundles (String resourceDir, String configPath, InitObserver initObs)
         throws IOException
     {
         // reinitialize our resource dir if it was specified
         if (resourceDir != null) {
             initResourceDir(resourceDir);
         }
-
-        // check to see if we're in developer mode in which case we won't
-        // unpack our resources
-        _unpack = !"true".equalsIgnoreCase(
-            System.getProperty("no_unpack_resources"));
 
         // load up our configuration
         Properties config = new Properties();
@@ -331,8 +330,7 @@ public class ResourceManager
     public boolean checkBundle (String path)
     {
         File bfile = getResourceFile(path);
-        return (bfile == null) ? false :
-            new ResourceBundle(bfile, true, _unpack).isUnpacked();
+        return (bfile == null) ? false : new ResourceBundle(bfile, true, _unpack).isUnpacked();
     }
 
     /**
@@ -667,8 +665,7 @@ public class ResourceManager
 
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken().trim();
-            ResourceBundle bundle =
-                new ResourceBundle(getResourceFile(path), true, _unpack);
+            ResourceBundle bundle = new ResourceBundle(getResourceFile(path), true, _unpack);
             set.add(bundle);
             if (bundle.isUnpacked() && bundle.sourceIsReady()) {
                 continue;
@@ -740,7 +737,7 @@ public class ResourceManager
     protected String _rootPath;
 
     /** Whether or not to unpack our resource bundles. */
-    protected boolean _unpack;
+    protected boolean _unpack = Boolean.getBoolean("no_unpack_resources");
 
     /** Our default resource set. */
     protected ResourceBundle[] _default = new ResourceBundle[0];

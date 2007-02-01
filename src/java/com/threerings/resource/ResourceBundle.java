@@ -373,7 +373,7 @@ public class ResourceBundle
         _tmpdir = new File(tmpdir, "narcache_" + rando);
         if (!_tmpdir.exists()) {
             if (_tmpdir.mkdirs()) {
-                Log.info("Created narya temp cache directory '" + _tmpdir + "'.");
+                Log.debug("Created narya temp cache directory '" + _tmpdir + "'.");
             } else {
                 Log.warning("Failed to create temp cache directory '" + _tmpdir + "'.");
             }
