@@ -1009,7 +1009,11 @@ public class Model extends ModelNode
             _nidx = Math.max(0, Math.min(_nidx + _fdir, nframes - 1));
             
         } else if (_anim.repeatType == Controller.RT_WRAP) {
+            // % is not a modulo operator, so is not guaranteed to be positive
             _nidx = (_nidx + _fdir) % nframes;
+            if (_nidx < 0) {
+                _nidx += nframes;
+            }
             
         } else { // _anim.repeatType == Controller.RT_CYCLE
             if ((_nidx + _fdir) < 0 || (_nidx + _fdir) >= nframes) {
