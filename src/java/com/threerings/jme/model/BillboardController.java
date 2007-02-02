@@ -94,10 +94,10 @@ public class BillboardController extends ModelController
     // documentation inherited
     public void update (float time)
     {
-        if (!isActive()) {
+        Camera cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
+        if (!isActive() || cam == null) {
             return;
         }
-        Camera cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
         if (_alignment.isEyeRelativeZ()) {
             _target.getWorldTranslation().subtract(cam.getLocation(), _yvec);
         } else {
