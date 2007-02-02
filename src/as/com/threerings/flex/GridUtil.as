@@ -53,8 +53,8 @@ public class GridUtil
     }
 
     /**
-     * A convenience function to the specified component to the
-     * specified row.
+     * Add a child to the specified grid row, returning the
+     * GridItem created for containment of the child.
      */
     public static function addToRow (row :GridRow, comp :UIComponent) :GridItem
     {
