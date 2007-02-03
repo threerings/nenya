@@ -352,6 +352,29 @@ public class ColorPository implements Serializable
     }
 
     /**
+     * Looks up a colorization by class and color names.
+     */
+    public Colorization getColorization (String className, String colorName)
+    {
+        ClassRecord crec = getClassRecord(className);
+        if (crec != null) {
+            int colorId = 0;
+            try {
+                colorId = crec.getColorId(colorName);
+            } catch (ParseException pe) {
+                Log.info("Error getting colorization by name. [error=" + pe + "]");
+                return null;
+            }
+
+            ColorRecord color = (ColorRecord)crec.colors.get(colorId);
+            if (color != null) {
+                return color.getColorization();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Loads up a colorization class by name and logs a warning if it
      * doesn't exist.
      */
@@ -386,6 +409,30 @@ public class ColorPository implements Serializable
             }
             return null;
         }
+        return (ColorRecord)record.colors.get(colorId);
+    }
+
+    /**
+     * Looks up the requested color record by class & color names.
+     */
+    public ColorRecord getColorRecord (String className, String colorName)
+    {
+        ClassRecord record = getClassRecord(className);
+        if (record == null) {
+            Log.warning("Requested unknown color class " +
+                "[className=" + className + ", colorName=" + colorName + "].");
+            Thread.dumpStack();
+            return null;
+        }
+
+        int colorId = 0;
+        try {
+            colorId = record.getColorId(colorName);
+        } catch (ParseException pe) {
+            Log.info("Error getting color record by name. [error=" + pe + "]");
+            return null;
+        }
+
         return (ColorRecord)record.colors.get(colorId);
     }
 
