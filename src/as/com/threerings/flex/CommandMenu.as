@@ -40,6 +40,7 @@ public class CommandMenu extends ScrollableArrowMenu
     public function CommandMenu ()
     {
         super();
+        verticalScrollPolicy = ScrollPolicy.OFF;
 
         addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
 //        addEventListener(MenuEvent.MENU_SHOW, handleMenuShown);
