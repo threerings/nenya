@@ -43,7 +43,6 @@ public class CommandMenu extends ScrollableArrowMenu
         verticalScrollPolicy = ScrollPolicy.OFF;
 
         addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
-//        addEventListener(MenuEvent.MENU_SHOW, handleMenuShown);
     }
 
     /**
