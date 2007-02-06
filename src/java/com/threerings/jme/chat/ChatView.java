@@ -126,7 +126,7 @@ public class ChatView extends BContainer
 
         if (msg instanceof UserMessage) {
             UserMessage umsg = (UserMessage) msg;
-            if (umsg.localtype == ChatCodes.USER_CHAT_TYPE) {
+            if (ChatCodes.USER_CHAT_TYPE.equals(umsg.localtype)) {
                 append("[" + umsg.speaker + " whispers] ", ColorRGBA.green);
                 append(umsg.message + "\n");
             } else {
