@@ -57,6 +57,11 @@ public class CompiledConfigTask extends Task
         _target = target;
     }
 
+    public void setDest (File dest)
+    {
+        _dest = dest;
+    }
+
     public void addFileset (FileSet set)
     {
         _filesets.add(set);
@@ -79,20 +84,30 @@ public class CompiledConfigTask extends Task
 
         // if we have a single file and target specified, do those
         if (_configdef != null) {
-            parse(parser, _configdef, _target);
+            parse(parser, _configdef, _target == null ? getTarget(_configdef) : _target);
         }
 
         // deal with the filesets
-        for (Iterator iter = _filesets.iterator(); iter.hasNext(); ) {
-            FileSet fs = (FileSet)iter.next();
+        for (FileSet fs : _filesets) {
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             File fromDir = fs.getDir(getProject());
-            String[] srcFiles = ds.getIncludedFiles();
-            for (int ii = 0; ii < srcFiles.length; ii++) {
-                File confdef = new File(fromDir, srcFiles[ii]);
-                parse(parser, confdef, null);
+            for (String file : ds.getIncludedFiles()) {
+                File source = new File(fromDir, file);
+                parse(parser, source, getTarget(source));
             }
         }
+    }
+
+    protected File getTarget (File source)
+    {
+        if (_dest == null) {
+            return null;
+        }
+
+        String baseDir = getProject().getBaseDir().getPath();
+        File target = new File(source.getPath().replaceAll(baseDir, _dest.getPath()));
+        target = new File(FileUtil.resuffix(target, ".xml", ".dat"));
+        return target;
     }
 
     protected void parse (CompiledConfigParser parser, File confdef, File target)
@@ -109,7 +124,7 @@ public class CompiledConfigTask extends Task
             target = new File(FileUtil.resuffix(confdef, ".xml", ".dat"));
         }
 
-        System.out.println("Compiling " + confdef + "...");
+        System.out.println("Compiling " + target + "...");
         Serializable config = null;
         try {
             // parse it on up
@@ -117,6 +132,13 @@ public class CompiledConfigTask extends Task
         } catch (Exception e) {
             throw new BuildException("Failure parsing config definition", e);
         }
+
+        // create the target directory if necessary
+        File parent = target.getParentFile();
+        if (!parent.isDirectory() && !parent.mkdirs()) {
+            throw new BuildException("Failed to create parent directory '" + parent + "'.");
+        }
+
         try {
             // and write it on out
             CompiledConfig.saveConfig(target, config);
@@ -127,6 +149,7 @@ public class CompiledConfigTask extends Task
 
     protected File _configdef;
     protected File _target;
+    protected File _dest;
     protected String _parser;
-    protected ArrayList _filesets = new ArrayList();
+    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
 }

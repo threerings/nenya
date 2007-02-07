@@ -65,8 +65,7 @@ public class ConvertModelTask extends Task
 
     public void execute () throws BuildException
     {
-        for (int i = 0; i < _filesets.size(); i++) {
-            FileSet fs = (FileSet)_filesets.get(i);
+        for (FileSet fs : _filesets) {
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             File fromDir = fs.getDir(getProject());
             String[] srcFiles = ds.getIncludedFiles();
@@ -131,5 +130,5 @@ public class ConvertModelTask extends Task
     }
 
     /** A list of filesets that contain tileset bundle definitions. */
-    protected ArrayList _filesets = new ArrayList();
+    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
 }

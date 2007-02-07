@@ -35,42 +35,50 @@ import com.jme.util.LoggingSystem;
 import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;
 
 /**
- * An ant task for compiling 3D models defined in XML to fast-loading binary
- * files.
+ * An ant task for compiling 3D models defined in XML to fast-loading binary files.
  */
 public class CompileModelTask extends Task
 {
+    public void setDest (File dest)
+    {
+        _dest = dest;
+    }
+
     public void addFileset (FileSet set)
     {
         _filesets.add(set);
     }
-    
+
     public void init () throws BuildException
     {
         // create a dummy display system
         new DummyDisplaySystem();
         LoggingSystem.getLogger().setLevel(Level.WARNING);
     }
-    
+
     public void execute ()
         throws BuildException
     {
-        for (int ii = 0, nn = _filesets.size(); ii < nn; ii++) {
-            FileSet fs = _filesets.get(ii);
+        String baseDir = getProject().getBaseDir().getPath();
+        for (FileSet fs : _filesets) {
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             File fromDir = fs.getDir(getProject());
-            String[] srcFiles = ds.getIncludedFiles();
-
-            for (int f = 0; f < srcFiles.length; f++) {
-                File source = new File(fromDir, srcFiles[f]);
+            for (String file : ds.getIncludedFiles()) {
+                File source = new File(fromDir, file);
+                File destDir = (_dest == null) ? source.getParentFile() :
+                    new File(source.getParent().replaceAll(baseDir, _dest.getPath()));
                 try {
-                    CompileModel.compile(source);
+                    CompileModel.compile(source, destDir);
                 } catch (Exception e) {
                     System.err.println("Error compiling " + source + ": " + e);
                 }
             }
         }
     }
+
+    /** The directory in which we will generate our model output (in a directory tree mirroring the
+     * source files. */
+    protected File _dest;
 
     /** A list of filesets that contain XML models. */
     protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();

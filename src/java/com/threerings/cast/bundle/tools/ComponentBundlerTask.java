@@ -165,7 +165,7 @@ public class ComponentBundlerTask extends Task
             }
         };
 
-        System.out.println("Generating " + _target.getPath() + "...");
+        System.out.println("Generating " + _target + "...");
 
         try {
             // make sure we can create our bundle file

@@ -117,10 +117,9 @@ import com.threerings.jme.model.TextureProvider;
 import com.threerings.jme.util.SpatialVisitor;
 
 /**
- * A simple viewer application that allows users to examine models and their
- * animations by loading them from their uncompiled <code>.properties</code> /
- * <code>.mxml</code> representations or their compiled <code>.dat</code>
- * representations.
+ * A simple viewer application that allows users to examine models and their animations by loading
+ * them from their uncompiled <code>.properties</code> / <code>.mxml</code> representations or
+ * their compiled <code>.dat</code> representations.
  */
 public class ModelViewer extends JmeCanvasApp
 {
@@ -610,6 +609,7 @@ public class ModelViewer extends JmeCanvasApp
             setModel(model, file);
             return;
         }
+
         // if compileModel returned null, the .dat file is up-to-date
         String fpath = file.toString();
         int didx = fpath.lastIndexOf('.');
