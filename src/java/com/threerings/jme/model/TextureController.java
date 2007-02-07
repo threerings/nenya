@@ -73,7 +73,7 @@ public abstract class TextureController extends ModelController
                     Texture tex = otstate.getTexture(ii), ctex = clones.get(tex);
                     if (ctex == null) {
                         if (tex.getTextureId() == 0) {
-                            otstate.load(ii);
+                            otstate.apply(); // load before cloning
                         }
                         clones.put(tex, ctex = tex.createSimpleClone());
                     }
