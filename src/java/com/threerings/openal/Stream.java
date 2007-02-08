@@ -35,16 +35,14 @@ import org.lwjgl.openal.AL10;
 public abstract class Stream
 {
     /**
-     * Creates a new stream.  Call {@link #dispose} when finished with the
-     * stream.
+     * Creates a new stream.  Call {@link #dispose} when finished with the stream.
      *
-     * @param soundmgr a reference to the sound manager that will update the
-     * stream
+     * @param soundmgr a reference to the sound manager that will update the stream
      */
     public Stream (SoundManager soundmgr)
     {
         _soundmgr = soundmgr;
-        
+
         // create the source and buffers
         _nbuf = BufferUtils.createIntBuffer(NUM_BUFFERS);
         _nbuf.limit(1);
@@ -53,11 +51,11 @@ public abstract class Stream
         _nbuf.clear();
         AL10.alGenBuffers(_nbuf);
         _nbuf.get(_bufferIds);
-        
+
         // register with sound manager
         _soundmgr.addStream(this);
     }
-    
+
     /**
      * Sets the base gain of the stream.
      */
@@ -68,7 +66,7 @@ public abstract class Stream
             AL10.alSourcef(_sourceId, AL10.AL_GAIN, _gain);
         }
     }
-    
+
     /**
      * Sets the pitch of the stream.
      */
@@ -77,7 +75,7 @@ public abstract class Stream
         _pitch = pitch;
         AL10.alSourcef(_sourceId, AL10.AL_PITCH, _pitch);
     }
-    
+
     /**
      * Determines whether this stream is currently playing.
      */
@@ -85,7 +83,7 @@ public abstract class Stream
     {
         return _state == AL10.AL_PLAYING;
     }
-    
+
     /**
      * Starts playing this stream.
      */
@@ -102,7 +100,7 @@ public abstract class Stream
         AL10.alSourcePlay(_sourceId);
         _state = AL10.AL_PLAYING;
     }
-    
+
     /**
      * Pauses this stream.
      */
@@ -115,7 +113,7 @@ public abstract class Stream
         AL10.alSourcePause(_sourceId);
         _state = AL10.AL_PAUSED;
     }
-    
+
     /**
      * Stops this stream.
      */
@@ -128,10 +126,10 @@ public abstract class Stream
         AL10.alSourceStop(_sourceId);
         _state = AL10.AL_STOPPED;
     }
-    
+
     /**
-     * Fades this stream in over the specified interval.  If the stream isn't
-     * playing, it will be started.
+     * Fades this stream in over the specified interval.  If the stream isn't playing, it will be
+     * started.
      */
     public void fadeIn (float interval)
     {
@@ -143,7 +141,7 @@ public abstract class Stream
         _fadeInterval = interval;
         _fadeElapsed = 0f;
     }
-    
+
     /**
      * Fades this stream out over the specified interval.
      *
@@ -155,10 +153,9 @@ public abstract class Stream
         _fadeInterval = interval;
         _fadeElapsed = 0f;
     }
-    
+
     /**
-     * Releases the resources held by this stream and removes it from
-     * the manager.
+     * Releases the resources held by this stream and removes it from the manager.
      */
     public void dispose ()
     {
@@ -166,7 +163,7 @@ public abstract class Stream
         if (_state != AL10.AL_STOPPED) {
             stop();
         }
-        
+
         // delete the source and buffers
         _nbuf.clear();
         _nbuf.put(_sourceId).flip();
@@ -174,15 +171,14 @@ public abstract class Stream
         _nbuf.clear();
         _nbuf.put(_bufferIds).flip();
         AL10.alDeleteBuffers(_nbuf);
-        
+
         // remove from manager
         _soundmgr.removeStream(this);
     }
 
     /**
-     * Updates the state of this stream, loading data into buffers and
-     * adjusting gain as necessary.  Called periodically by the
-     * {@link SoundManager}.
+     * Updates the state of this stream, loading data into buffers and adjusting gain as necessary.
+     * Called periodically by the {@link SoundManager}.
      *
      * @param time the amount of time elapsed since the last update
      */
@@ -193,7 +189,7 @@ public abstract class Stream
         if (_state != AL10.AL_PLAYING) {
             return;
         }
-        
+
         // find out how many buffers have been played and unqueue them
         int played = AL10.alGetSourcei(_sourceId, AL10.AL_BUFFERS_PROCESSED);
         if (played == 0) {
@@ -207,18 +203,17 @@ public abstract class Stream
         }
         _nbuf.flip();
         AL10.alSourceUnqueueBuffers(_sourceId, _nbuf);
-        
+
         // enqueue up to the number of buffers played
         queueBuffers(played);
-        
-        // find out if we're still playing; if not and we have buffers queued,
-        // we must restart
+
+        // find out if we're still playing; if not and we have buffers queued, we must restart
         _state = AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE);
         if (_qlen > 0 && _state != AL10.AL_PLAYING) {
             play();
         }
     }
-    
+
     /**
      * Updates the gain of the stream according to the fade state.
      */
@@ -239,7 +234,7 @@ public abstract class Stream
             _fadeMode = FadeMode.NONE;
         }
     }
-    
+
     /**
      * Queues (up to) the specified number of buffers.
      */
@@ -258,13 +253,12 @@ public abstract class Stream
         _nbuf.flip();
         AL10.alSourceQueueBuffers(_sourceId, _nbuf);
     }
-    
+
     /**
      * Populates the identified buffer with as much data as it can hold.
      *
-     * @return true if data was read into the buffer and it should be enqueued,
-     * false if the end of the stream has been reached and no data was read
-     * into the buffer
+     * @return true if data was read into the buffer and it should be enqueued, false if the end of
+     * the stream has been reached and no data was read into the buffer
      */
     protected boolean populateBuffer (int bufferId)
     {
@@ -285,66 +279,65 @@ public abstract class Stream
         AL10.alBufferData(bufferId, getFormat(), _abuf, getFrequency());
         return true;
     }
-    
+
     /**
      * Returns the OpenAL audio format of the stream.
      */
     protected abstract int getFormat ();
-    
+
     /**
      * Returns the stream's playback frequency in samples per second.
      */
     protected abstract int getFrequency ();
-    
+
     /**
      * Populates the given buffer with audio data.
      *
-     * @return the total number of bytes read into the buffer, or -1 if the
-     * end of the stream has been reached
+     * @return the total number of bytes read into the buffer, or -1 if the end of the stream has
+     * been reached
      */
     protected abstract int populateBuffer (ByteBuffer buf)
         throws IOException;
-    
+
     /** The manager to which the stream was added. */
     protected SoundManager _soundmgr;
-    
+
     /** The source through which the stream plays. */
     protected int _sourceId;
-    
+
     /** The buffers through which we cycle. */
     protected int[] _bufferIds = new int[NUM_BUFFERS];
 
-    /** The starting index and length of the current queue in
-     * {@link #_bufferIds}. */
+    /** The starting index and length of the current queue in {@link #_bufferIds}. */
     protected int _qidx, _qlen;
-    
+
     /** The pitch of the stream. */
     protected float _pitch = 1f;
-    
+
     /** The gain of the stream. */
     protected float _gain = 1f;
-    
+
     /** The interval and elapsed time for fading. */
     protected float _fadeInterval, _fadeElapsed;
-    
+
     /** The type of fading being performed. */
     protected FadeMode _fadeMode = FadeMode.NONE;
-    
+
     /** The buffer used to store names. */
     protected IntBuffer _nbuf;
-    
+
     /** The buffer used to store audio data temporarily. */
     protected ByteBuffer _abuf;
-    
+
     /** The OpenAL state of the stream. */
     protected int _state = AL10.AL_INITIAL;
-    
+
     /** The size of the buffers in bytes. */
     protected static final int BUFFER_SIZE = 131072;
-    
+
     /** The number of buffers to use. */
     protected static final int NUM_BUFFERS = 4;
-    
+
     /** Fading modes. */
     protected enum FadeMode { NONE, IN, OUT, OUT_DISPOSE };
 }
