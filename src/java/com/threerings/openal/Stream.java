@@ -24,6 +24,7 @@ package com.threerings.openal;
 import java.io.IOException;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -263,7 +264,7 @@ public abstract class Stream
     protected boolean populateBuffer (int bufferId)
     {
         if (_abuf == null) {
-            _abuf = ByteBuffer.allocateDirect(BUFFER_SIZE);
+            _abuf = ByteBuffer.allocateDirect(BUFFER_SIZE).order(ByteOrder.nativeOrder());
         }
         _abuf.clear();
         int read = 0;

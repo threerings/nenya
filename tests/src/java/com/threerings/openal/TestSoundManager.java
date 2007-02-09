@@ -3,6 +3,7 @@
 
 package com.threerings.openal;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.samskivert.util.Interval;
@@ -17,7 +18,7 @@ public class TestSoundManager
     public static void main (String[] args)
     {
         if (args.length == 0) {
-            System.err.println("Usage: TestSoundManager sound.wav");
+            System.err.println("Usage: TestSoundManager sound.[wav|mp3|ogg]");
             System.exit(-1);
         }
 
@@ -31,19 +32,35 @@ public class TestSoundManager
             }
         };
 
-        SoundManager smgr = SoundManager.createSoundManager(rqueue);
+        final SoundManager smgr = SoundManager.createSoundManager(rqueue);
         ClipProvider provider = new WaveDataClipProvider();
         final SoundGroup group = smgr.createGroup(provider, 5);
         final String path = args[0];
 
-        // queue up an interval to play a sound over and over
-        Interval i = new Interval(rqueue) {
-            public void expired () {
-                Sound sound = group.getSound(path);
-                sound.play(true);
+        String lpath = path.toLowerCase();
+        if (lpath.endsWith("mp3") || lpath.endsWith(".ogg")) {
+            // play the mp3/ogg file in a loop
+            try {
+                new FileStream(smgr, new File(args[0]), true).play();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        };
-        i.schedule(100L, true);
+            Interval i = new Interval(rqueue) {
+                public void expired () {
+                    smgr.updateStreams(0.1f);
+                }
+            };
+            i.schedule(100L, true);
+        } else {
+            // queue up an interval to play a sound over and over
+            Interval i = new Interval(rqueue) {
+                public void expired () {
+                    Sound sound = group.getSound(path);
+                    sound.play(true);
+                }
+            };
+            i.schedule(100L, true);
+        }
 
         while (true) {
             Runnable r = (Runnable)_queue.get();
