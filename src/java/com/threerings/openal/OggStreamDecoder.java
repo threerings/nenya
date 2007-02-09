@@ -33,8 +33,7 @@ import com.jmex.sound.openAL.objects.util.OggInputStream;
 /**
  * Decodes Ogg Vorbis streams.
  */
-public class OggStreamDecoder
-    implements StreamDecoder
+public class OggStreamDecoder extends StreamDecoder
 {
     // documentation inherited
     public void init (InputStream in)

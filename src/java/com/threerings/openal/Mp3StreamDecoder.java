@@ -37,8 +37,7 @@ import javazoom.jl.decoder.SampleBuffer;
 /**
  * Decodes MP3 streams.
  */
-public class Mp3StreamDecoder
-    implements StreamDecoder
+public class Mp3StreamDecoder extends StreamDecoder
 {
     // documentation inherited
     public void init (InputStream in)
