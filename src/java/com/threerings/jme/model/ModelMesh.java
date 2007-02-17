@@ -49,6 +49,7 @@ import com.jme.scene.batch.GeomBatch;
 import com.jme.scene.batch.TriangleBatch;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.FogState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
@@ -78,7 +79,7 @@ public class ModelMesh extends TriMesh
     {
         super("mesh");
     }
-    
+
     /**
      * Creates a mesh with no vertex data.
      */
@@ -86,14 +87,14 @@ public class ModelMesh extends TriMesh
     {
         super(name);
     }
-    
+
     @Override // documentation inherited
     public int hashCode ()
     {
         // hash on the name rather than the identity for consistent ordering
         return getName().hashCode();
     }
-    
+
     /**
      * Reconfigures this model with a new set of (sub-)properties.  Textures
      * must be (re-)resolved after calling this method.
@@ -103,7 +104,7 @@ public class ModelMesh extends TriMesh
         configure(_solid, _textureKey, _transparent, props);
         setRenderStates();
     }
-    
+
     /**
      * Configures this mesh based on the given parameters and (sub-)properties.
      *
@@ -139,7 +140,7 @@ public class ModelMesh extends TriMesh
         _translucent = _transparent &&
             Boolean.parseBoolean(tprops.getProperty("translucent"));
     }
-    
+
     /**
      * Adjusts the vertices and the transform of the mesh so that the mesh's
      * position lies at the center of its bounding volume.
@@ -154,7 +155,7 @@ public class ModelMesh extends TriMesh
         }
         storeOriginalBuffers();
     }
-    
+
     /**
      * Adds an overlay layer to this mesh.  After the mesh is rendered with
      * its configured states, these states will be applied and the mesh will
@@ -167,7 +168,7 @@ public class ModelMesh extends TriMesh
         }
         _overlays.add(overlay);
     }
-    
+
     /**
      * Removes a layer from this mesh.
      */
@@ -180,7 +181,7 @@ public class ModelMesh extends TriMesh
             }
         }
     }
-    
+
     @Override // documentation inherited
     public void reconstruct (
         FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors,
@@ -190,14 +191,14 @@ public class ModelMesh extends TriMesh
         for (int ii = 1, nn = getTextureCount(); ii < nn; ii++) {
             setTextureBuffer(0, getTextureBuffer(0, 0), ii);
         }
-        
+
         // store any buffers that will be manipulated on a per-instance basis
         storeOriginalBuffers();
-        
+
         // initialize the model if we're displaying
         setRenderStates();
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public Spatial putClone (Spatial store, Model.CloneCreator properties)
     {
@@ -290,7 +291,7 @@ public class ModelMesh extends TriMesh
         mstore._vbuf = _vbuf;
         return mstore;
     }
-    
+
     @Override // documentation inherited
     public void updateWorldVectors ()
     {
@@ -298,7 +299,7 @@ public class ModelMesh extends TriMesh
             super.updateWorldVectors();
         }
     }
-    
+
     @Override // documentation inherited
     public void read (JMEImporter im)
         throws IOException
@@ -327,13 +328,13 @@ public class ModelMesh extends TriMesh
         _alphaThreshold = capsule.readFloat("alphaThreshold",
             DEFAULT_ALPHA_THRESHOLD);
         _translucent = capsule.readBoolean("translucent", false);
-        
+
         reconstruct(capsule.readFloatBuffer("vertexBuffer", null),
             capsule.readFloatBuffer("normalBuffer", null), null,
             capsule.readFloatBuffer("textureBuffer", null),
             capsule.readIntBuffer("indexBuffer", null));
     }
-    
+
     @Override // documentation inherited
     public void write (JMEExporter ex)
         throws IOException
@@ -360,21 +361,21 @@ public class ModelMesh extends TriMesh
         capsule.write(_transparent, "transparent", false);
         capsule.write(_alphaThreshold, "alphaThreshold",
             DEFAULT_ALPHA_THRESHOLD);
-        capsule.write(_translucent, "translucent", false);   
+        capsule.write(_translucent, "translucent", false);
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void expandModelBounds ()
     {
         // no-op
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void setReferenceTransforms ()
     {
         // no-op
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void lockStaticMeshes (
         Renderer renderer, boolean useVBOs, boolean useDisplayLists)
@@ -383,12 +384,12 @@ public class ModelMesh extends TriMesh
             VBOInfo vboinfo = new VBOInfo(true);
             vboinfo.setVBOIndexEnabled(!_translucent);
             setVBOInfo(vboinfo);
-            
+
         } else if (useDisplayLists && !_translucent) {
             lockMeshes(renderer);
         }
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void resolveTextures (TextureProvider tprov)
     {
@@ -424,25 +425,25 @@ public class ModelMesh extends TriMesh
             clearRenderState(RenderState.RS_TEXTURE);
         }
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void storeMeshFrame (int frameId, boolean blend)
     {
         // no-op
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void setMeshFrame (int frameId)
     {
         // no-op
     }
-    
+
     // documentation inherited from interface ModelSpatial
     public void blendMeshFrames (int frameId1, int frameId2, float alpha)
     {
         // no-op
     }
-    
+
     @Override // documentation inherited
     protected void setupBatchList ()
     {
@@ -451,7 +452,7 @@ public class ModelMesh extends TriMesh
         batch.setParentGeom(this);
         batchList.add(batch);
     }
-    
+
     /**
      * Returns the number of textures this mesh uses (they must all share the
      * same texture coordinates).
@@ -460,7 +461,7 @@ public class ModelMesh extends TriMesh
     {
         return (_emissiveMap == null || TextureState.getNumberOfFixedUnits() < 2) ? 1 : 2;
     }
-    
+
     /**
      * For buffers that must be manipulated in some fashion, this method stores
      * the originals.
@@ -473,12 +474,12 @@ public class ModelMesh extends TriMesh
         IntBuffer ibuf = getIndexBuffer(0);
         ibuf.rewind();
         IntBuffer.wrap(_oibuf = new int[ibuf.capacity()]).put(ibuf);
-        
+
         FloatBuffer vbuf = getVertexBuffer(0);
         vbuf.rewind();
         FloatBuffer.wrap(_vbuf = new float[vbuf.capacity()]).put(vbuf);
     }
-    
+
     /**
      * Sets the model's render states (excluding the texture state, which is
      * set by {@link #resolveTextures}) according to its configuration.
@@ -501,6 +502,7 @@ public class ModelMesh extends TriMesh
             setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
             setRenderState(_addAlpha);
             setRenderState(_overlayZBuffer);
+            setRenderState(_noFog);
         } else if (_transparent) {
             setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
             if (_translucent) {
@@ -513,7 +515,7 @@ public class ModelMesh extends TriMesh
             }
         }
     }
-    
+
     /**
      * Locks the transform and bounds of this mesh on the assumption that its
      * position will not change.
@@ -523,7 +525,7 @@ public class ModelMesh extends TriMesh
         lockBounds();
         _transformLocked = true;
     }
-    
+
     /**
      * Returns the mip-map mode corresponding to the given string
      * (defaulting to {@link Texture#MM_LINEAR_LINEAR}).
@@ -546,7 +548,7 @@ public class ModelMesh extends TriMesh
             return Texture.MM_LINEAR_LINEAR;
         }
     }
-    
+
     /**
      * Initializes the states shared between all models.  Requires an active
      * display.
@@ -567,8 +569,10 @@ public class ModelMesh extends TriMesh
         _overlayZBuffer.setWritable(false);
         _emissiveLight = renderer.createLightState();
         _emissiveLight.setGlobalAmbient(ColorRGBA.white);
+        _noFog = renderer.createFogState();
+        _noFog.setEnabled(false);
     }
-    
+
     /**
      * Creates an alpha state what will throw away fragments with alpha
      * values less than or equal to the given threshold.
@@ -583,7 +587,7 @@ public class ModelMesh extends TriMesh
         astate.setReference(threshold);
         return astate;
     }
-    
+
     /**
      * Sorts the encoded triangle index/distance pairs in {@link #_tcodes}
      * using a two-pass (16 bit) radix sort (as described by
@@ -596,7 +600,7 @@ public class ModelMesh extends TriMesh
         // initialize the offsets for the first radix (LSB) and clear
         // the counts
         initByteOffsets();
-        
+
         // sort by the first radix and get the counts for the second
         // (swapping directions in the hope of using the cache more
         // effectively)
@@ -609,7 +613,7 @@ public class ModelMesh extends TriMesh
             _stcodes[_boffsets[tcode & 0xFF]++] = tcode;
             _bcounts[(tcode >> 8) & 0xFF]++;
         }
-        
+
         // initialize offsets for the second radix, clear counts, and
         // sort by the second radix
         initByteOffsets();
@@ -618,7 +622,7 @@ public class ModelMesh extends TriMesh
             _tcodes[_boffsets[(tcode >> 8) & 0xFF]++] = tcode;
         }
     }
-    
+
     /**
      * Sets the initial byte offsets used to place bytes within the sorted
      * array using the byte counts, clearing the counts in the process.
@@ -632,7 +636,7 @@ public class ModelMesh extends TriMesh
         }
         _bcounts[255] = 0;
     }
-    
+
     /** Sorts triangles for transparent meshes and renders overlays as well as
      * the base layer. */
     protected class ModelBatch extends TriangleBatch
@@ -659,7 +663,7 @@ public class ModelMesh extends TriMesh
                 }
             }
         }
-        
+
         /**
          * Sorts the batch's triangles by their distance to the camera.
          */
@@ -686,13 +690,13 @@ public class ModelMesh extends TriMesh
             float a = _cdir.x, b = _cdir.y, c = _cdir.z,
                 d = radius - a*mc.x - b*mc.y - c*mc.z,
                 dscale = 65535f / (radius * 2);
-            
+
             // premultiply the scale and averaging factor
             a *= dscale / 3f;
             b *= dscale / 3f;
             c *= dscale / 3f;
             d *= dscale;
-            
+
             // encode the model's triangles into integers such that the
             // high 16 bits represent the original triangle index and the
             // low 16 bits represent the distance to the plane.  also
@@ -713,10 +717,10 @@ public class ModelMesh extends TriMesh
                 _tcodes[ii] = (ii << 16) | idist;
                 _bcounts[idist & 0xFF]++;
             }
-            
+
             // sort the encoded triangles by increasing distance
             sortTriangleCodes(tcount);
-            
+
             // reorder the triangles as dictated by the sorted codes, furthest
             // triangles first
             int icount = tcount * 3, idx;
@@ -729,108 +733,111 @@ public class ModelMesh extends TriMesh
                 _sibuf[sidx++] = _oibuf[idx++];
                 _sibuf[sidx++] = _oibuf[idx];
             }
-            
+
             // copy the indices to the buffer
             IntBuffer ibuf = getIndexBuffer();
             ibuf.rewind();
             ibuf.put(_sibuf, 0, icount);
         }
-        
+
         /** Temporarily stores the original states. */
         protected RenderState[] _ostates =
             new RenderState[RenderState.RS_MAX_STATE];
     }
-    
+
     /** The type of bounding volume that this mesh should use. */
     protected int _boundingType;
-    
+
     /** The name of the texture specified in the model file, which acts as a
-     * property key and a default value. */ 
+     * property key and a default value. */
     protected String _textureKey;
-    
+
     /** The name of this model's textures, or <code>null</code> for none. */
     protected String[] _textures;
-    
+
     /** Whether or not to use sphere mapping on this model's textures. */
     protected boolean _sphereMapped;
-    
+
     /** The filter mode to use on magnification. */
     protected int _filterMode;
-    
+
     /** The mipmap mode to use on minification. */
     protected int _mipMapMode;
-    
+
     /** The emissive map, if specified. */
     protected String _emissiveMap;
-    
+
     /** Whether or not this mesh is completely emissive. */
     protected boolean _emissive;
-    
+
     /** Whether or not this mesh should be rendered with additive blending. */
     protected boolean _additive;
-    
+
     /** Whether or not this mesh can enable back-face culling. */
     protected boolean _solid;
-    
+
     /** Whether or not this mesh must be rendered as transparent. */
     protected boolean _transparent;
-    
+
     /** The alpha threshold below which fragments are discarded. */
     protected float _alphaThreshold;
-    
+
     /** Whether or not the triangles of this mesh should be depth-sorted before
      * rendering. */
     protected boolean _translucent;
-    
+
     /** If non-null, additional layers to render over the base layer. */
     protected ArrayList<RenderState[]> _overlays;
-    
+
     /** For prototype meshes, the resolved texture states. */
     protected TextureState[] _tstates;
-    
+
     /** Whether or not the transform has been locked.  This operates in a
      * slightly different way than JME's locking, in that it allows applying
      * transformations to display lists. */
     protected boolean _transformLocked;
-    
+
     /** For depth-sorted and skinned meshes, the array of vertices. */
     protected float[] _vbuf;
-    
+
     /** For depth-sorted meshes, the original array of indices. */
     protected int[] _oibuf;
-    
+
     /** The shared state for back face culling. */
     protected static CullState _backCull;
-    
+
     /** The shared state for alpha blending. */
     protected static AlphaState _blendAlpha;
-    
+
     /** The shared state for additive blending. */
     protected static AlphaState _addAlpha;
-    
+
     /** The shared state for alpha testing with the default threshold. */
     protected static AlphaState _defaultTestAlpha;
-    
+
     /** The shared state for checking, but not writing to, the z buffer. */
     protected static ZBufferState _overlayZBuffer;
-    
+
     /** A light state that simulates emissivity. */
     protected static LightState _emissiveLight;
-    
+
+    /** A fog state that disables fog. */
+    protected static FogState _noFog;
+
     /** Work vector to store the camera direction. */
     protected static Vector3f _cdir = new Vector3f();
-    
+
     /** Work arrays used to sort triangles. */
     protected static int[] _tcodes, _stcodes;
-    
+
     /** Holds counts of each byte and array offsets for radix sorting. */
     protected static int[] _bcounts = new int[256], _boffsets = new int[256];
-    
+
     /** Work array used to hold indices of sorted triangles. */
     protected static int[] _sibuf;
-    
+
     /** The default alpha threshold. */
     protected static final float DEFAULT_ALPHA_THRESHOLD = 0.5f;
-    
+
     private static final long serialVersionUID = 1;
 }
