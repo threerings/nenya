@@ -705,6 +705,11 @@ public class ResourceManager
         public void run ()
         {
             try {
+                // Tell the observer were starting
+                if (_obs != null) {
+                    _obs.progress(0, 1);
+                }
+
                 int count = 0;
                 for (Iterator iter = _bundles.iterator(); iter.hasNext(); ) {
                     ResourceBundle bundle = (ResourceBundle)iter.next();
