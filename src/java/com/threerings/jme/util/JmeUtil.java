@@ -21,8 +21,15 @@
 
 package com.threerings.jme.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.system.DisplaySystem;
 
 import com.samskivert.util.StringUtil;
 
@@ -41,13 +48,13 @@ public class JmeUtil
     {
         /** The index of the current frame. */
         public int idx;
-        
+
         /** The current direction of animation. */
         public int dir = +1;
-        
+
         /** The fractional progress towards the next frame. */
         public float accum;
-        
+
         /**
          * Resets the state back to the beginning.
          */
@@ -55,7 +62,7 @@ public class JmeUtil
         {
             set(0, +1, 0f);
         }
-        
+
         /**
          * Sets the entire frame state.
          */
@@ -65,7 +72,7 @@ public class JmeUtil
             this.dir = dir;
             this.accum = accum;
         }
-        
+
         /**
          * Updates the frame state after some amount of time has elapsed.
          */
@@ -76,7 +83,7 @@ public class JmeUtil
                 advance(frameCount, repeatType);
             }
         }
-        
+
         /**
          * Advances the position by one frame.
          */
@@ -98,7 +105,7 @@ public class JmeUtil
             }
         }
     }
-    
+
     /**
      * Attempts to parse a string containing an axis: either "x", "y", or "z", or three
      * comma-delimited values representing an axis vector.  The value returned may be one of
@@ -120,7 +127,7 @@ public class JmeUtil
             return vector;
         }
     }
-    
+
     /**
      * Attempts to parse a string containing three comma-delimited values and return a
      * {@link Vector3f}.
@@ -137,7 +144,7 @@ public class JmeUtil
         }
         return null;
     }
-    
+
     /**
      * Attempts to parse a string describing one of the repeat types defined in {@link Controller}:
      * "clamp", "cycle", or "wrap".  Will return the specified default if the type is
@@ -155,5 +162,45 @@ public class JmeUtil
             Log.warning("Invalid repeat type [type=" + type + "].");
         }
         return defaultType;
+    }
+
+    /**
+     * Loads the specified shaders (prepending the supplied preprocessor definitions)
+     * and returns a GLSL shader state.  One of the supplied files may be <code>null</code>
+     * in order to use the fixed-function pipeline for that part.
+     *
+     * @param defs a number of preprocessor definitions to be #defined in both shaders
+     * (e.g., "ENABLE_FOG", "NUM_LIGHTS 2").
+     */
+    public static GLSLShaderObjectsState loadShaders (File vert, File frag, String... defs)
+    {
+        GLSLShaderObjectsState sstate =
+            DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
+        sstate.load(
+            (vert == null) ? null : readSource(vert, defs),
+            (frag == null) ? null : readSource(frag, defs));
+        return sstate;
+    }
+
+    /**
+     * Loads an entire source file as a string, prepending the supplied preprocessor definitions.
+     */
+    protected static String readSource (File file, String[] defs)
+    {
+        StringBuffer buf = new StringBuffer();
+        String ln = System.getProperty("line.separator");
+        for (String def : defs) {
+            buf.append("#define ").append(def).append(ln);
+        }
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buf.append(line).append(ln);
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return buf.toString();
     }
 }
