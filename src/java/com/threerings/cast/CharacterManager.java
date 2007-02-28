@@ -21,6 +21,8 @@
 
 package com.threerings.cast;
 
+import java.awt.Point;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -94,7 +96,7 @@ public class CharacterManager
     {
         // sanity check
         if (!CharacterSprite.class.isAssignableFrom(charClass)) {
-            String errmsg = "Requested to use character sprite class that " + 
+            String errmsg = "Requested to use character sprite class that " +
                 "does not derive from CharacterSprite " +
                 "[class=" + charClass.getName() + "].";
             throw new IllegalArgumentException(errmsg);
@@ -250,25 +252,25 @@ public class CharacterManager
         int[] cids = descrip.getComponentIds();
         int ccount = cids.length;
         Colorization[][] zations = descrip.getColorizations();
+        Point[] xlations = descrip.getTranslations();
 
         Log.debug("Compositing action [action=" + action +
                   ", descrip=" + descrip + "].");
 
         // this will be used to construct any shadow layers
-        HashMap shadows = null;
-        
+        HashMap<String, ArrayList<TranslatedComponent>> shadows = null;
+
         // maps components by class name for masks
-        HashMap ccomps = new HashMap();
-        
+        HashMap<String, ArrayList<TranslatedComponent>> ccomps =
+            new HashMap<String, ArrayList<TranslatedComponent>>();
+
         // create colorized versions of all of the source action frames
-        ArrayList sources = new ArrayList(ccount);
+        ArrayList<ComponentFrames> sources = new ArrayList<ComponentFrames>(ccount);
         for (int ii = 0; ii < ccount; ii++) {
             ComponentFrames cframes = new ComponentFrames();
             sources.add(cframes);
-            CharacterComponent ccomp =
-                (cframes.ccomp = _crepo.getComponent(cids[ii]));
-            ccomps.put(ccomp.componentClass.name, ccomp);
-            
+            CharacterComponent ccomp = (cframes.ccomp = _crepo.getComponent(cids[ii]));
+
             // load up the main component images
             ActionFrames source = ccomp.getFrames(action, null);
             if (source == null) {
@@ -277,32 +279,39 @@ public class CharacterManager
                     ", desc=" + descrip + ", comp=" + ccomp + "]";
                 throw new RuntimeException(errmsg);
             }
-            cframes.frames = (zations == null || zations[ii] == null) ?
+            source = (zations == null || zations[ii] == null) ?
                 source : source.cloneColorized(zations[ii]);
-            
+            Point xlation = (xlations == null) ? null : xlations[ii];
+            cframes.frames = (xlation == null) ?
+                source : source.cloneTranslated(xlation.x, xlation.y);
+
+            // store the component with its translation under its class for masking
+            TranslatedComponent tcomp = new TranslatedComponent(ccomp, xlation);
+            ArrayList<TranslatedComponent> tcomps = ccomps.get(ccomp.componentClass.name);
+            if (tcomps == null) {
+                ccomps.put(ccomp.componentClass.name,
+                    tcomps = new ArrayList<TranslatedComponent>());
+            }
+            tcomps.add(tcomp);
+
             // if this component has a shadow, make a note of it
             if (ccomp.componentClass.isShadowed()) {
                 if (shadows == null) {
-                    shadows = new HashMap();
+                    shadows = new HashMap<String, ArrayList<TranslatedComponent>>();
                 }
-                ArrayList shadlist = (ArrayList)
-                    shadows.get(ccomp.componentClass.shadow);
+                ArrayList<TranslatedComponent> shadlist = shadows.get(ccomp.componentClass.shadow);
                 if (shadlist == null) {
                     shadows.put(ccomp.componentClass.shadow,
-                                shadlist = new ArrayList());
+                                shadlist = new ArrayList<TranslatedComponent>());
                 }
-                shadlist.add(ccomp);
+                shadlist.add(tcomp);
             }
         }
 
         // now create any necessary shadow layers
         if (shadows != null) {
-            Iterator iter = shadows.entrySet().iterator();
-            while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry)iter.next();
-                String sclass = (String)entry.getKey();
-                ArrayList scomps = (ArrayList)entry.getValue();
-                ComponentFrames scf = compositeShadow(action, sclass, scomps);
+            for (Map.Entry<String, ArrayList<TranslatedComponent>> entry : shadows.entrySet()) {
+                ComponentFrames scf = compositeShadow(action, entry.getKey(), entry.getValue());
                 if (scf != null) {
                     sources.add(scf);
                 }
@@ -310,46 +319,21 @@ public class CharacterManager
         }
 
         // add any necessary masks
-        for (int ii = 0, nn = sources.size(); ii < nn; ii++) {
-            ComponentFrames cframes = (ComponentFrames)sources.get(ii);
-            CharacterComponent mcomp = (CharacterComponent)ccomps.get(
-                cframes.ccomp.componentClass.mask);
-            if (mcomp != null) {
-                cframes.frames = compositeMask(action, cframes.ccomp,
-                    cframes.frames, mcomp);
+        for (ComponentFrames cframes : sources) {
+            ArrayList<TranslatedComponent> mcomps = ccomps.get(cframes.ccomp.componentClass.mask);
+            if (mcomps != null) {
+                cframes.frames = compositeMask(action, cframes.ccomp, cframes.frames, mcomps);
             }
         }
-        
 
         // use those to create an entity that will lazily composite things
         // together as they are needed
-        ComponentFrames[] cfvec = (ComponentFrames[])sources.toArray(
-            new ComponentFrames[sources.size()]);
+        ComponentFrames[] cfvec = sources.toArray(new ComponentFrames[sources.size()]);
         return new CompositedActionFrames(_imgr, _frameCache, action, cfvec);
     }
 
-    protected ActionFrames compositeMask (
-        String action, CharacterComponent ccomp, ActionFrames cframes,
-        CharacterComponent mcomp)
-    {
-        ActionFrames mframes = mcomp.getFrames(action,
-            StandardActions.CROP_TYPE);
-        if (mframes == null) {
-            return cframes;
-        }
-        return new CompositedActionFrames(
-            _imgr, _frameCache, action, new ComponentFrames[] {
-                new ComponentFrames(ccomp, cframes),
-                new ComponentFrames(mcomp, mframes) }) {
-            protected CompositedMultiFrameImage createFrames (int orient) {
-                return new CompositedMaskedImage(
-                    _imgr, _sources, _action, orient);
-            }
-        };
-    }
-    
     protected ComponentFrames compositeShadow (
-        String action, String sclass, ArrayList scomps)
+        String action, String sclass, ArrayList<TranslatedComponent> scomps)
     {
         final ComponentClass cclass = _crepo.getComponentClass(sclass);
         if (cclass == null) {
@@ -363,12 +347,11 @@ public class CharacterManager
         // create a fake component for the shadow layer
         cframes.ccomp = new CharacterComponent(-1, "shadow", cclass, null);
 
-        ArrayList sources = new ArrayList();
-        for (int ii = 0, ll = scomps.size(); ii < ll; ii++) {
+        ArrayList<ComponentFrames> sources = new ArrayList<ComponentFrames>();
+        for (TranslatedComponent scomp : scomps) {
             ComponentFrames source = new ComponentFrames();
-            source.ccomp = (CharacterComponent)scomps.get(ii);
-            source.frames = source.ccomp.getFrames(
-                action, StandardActions.SHADOW_TYPE);
+            source.ccomp = scomp.ccomp;
+            source.frames = scomp.getFrames(action, StandardActions.SHADOW_TYPE);
             if (source.frames == null) {
                 // skip this shadow component
                 continue;
@@ -383,10 +366,8 @@ public class CharacterManager
 
         // create custom action frames that use a special compositing
         // multi-frame image that does the necessary shadow magic
-        ComponentFrames[] svec = (ComponentFrames[])
-            sources.toArray(new ComponentFrames[sources.size()]);
-        cframes.frames = new CompositedActionFrames(
-            _imgr, _frameCache, action, svec) {
+        ComponentFrames[] svec = sources.toArray(new ComponentFrames[sources.size()]);
+        cframes.frames = new CompositedActionFrames(_imgr, _frameCache, action, svec) {
             protected CompositedMultiFrameImage createFrames (int orient) {
                 return new CompositedShadowImage(
                     _imgr, _sources, _action, orient, cclass.shadowAlpha);
@@ -394,6 +375,49 @@ public class CharacterManager
         };
 
         return cframes;
+    }
+
+    protected ActionFrames compositeMask (
+        String action, CharacterComponent ccomp, ActionFrames cframes,
+        ArrayList<TranslatedComponent> mcomps)
+    {
+        ArrayList<ComponentFrames> sources = new ArrayList<ComponentFrames>();
+        sources.add(new ComponentFrames(ccomp, cframes));
+        for (TranslatedComponent mcomp : mcomps) {
+            ActionFrames mframes = mcomp.getFrames(action, StandardActions.CROP_TYPE);
+            if (mframes != null) {
+                sources.add(new ComponentFrames(mcomp.ccomp, mframes));
+            }
+        }
+        if (sources.size() == 1) {
+            return cframes;
+        }
+        ComponentFrames[] mvec = sources.toArray(new ComponentFrames[sources.size()]);
+        return new CompositedActionFrames(_imgr, _frameCache, action, mvec) {
+            protected CompositedMultiFrameImage createFrames (int orient) {
+                return new CompositedMaskedImage(_imgr, _sources, _action, orient);
+            }
+        };
+    }
+
+    /** Combines a component with an optional translation for shadowing or masking. */
+    protected static class TranslatedComponent
+    {
+        public CharacterComponent ccomp;
+        public Point xlation;
+
+        public TranslatedComponent (CharacterComponent ccomp, Point xlation)
+        {
+            this.ccomp = ccomp;
+            this.xlation = xlation;
+        }
+
+        public ActionFrames getFrames (String action, String type)
+        {
+            ActionFrames frames = ccomp.getFrames(action, type);
+            return (frames == null || xlation == null) ?
+                frames : frames.cloneTranslated(xlation.x, xlation.y);
+        }
     }
 
     /** The image manager with whom we interact. */

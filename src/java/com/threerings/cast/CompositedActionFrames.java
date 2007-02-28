@@ -48,13 +48,13 @@ public class CompositedActionFrames
 
         public ComponentFrames () {
         }
-        
+
         public ComponentFrames (
             CharacterComponent ccomp, ActionFrames frames) {
             this.ccomp = ccomp;
             this.frames = frames;
         }
-        
+
         public String toString () {
             return ccomp + ":" + frames;
         }
@@ -125,6 +125,17 @@ public class CompositedActionFrames
     public ActionFrames cloneColorized (Colorization[] zations)
     {
         throw new RuntimeException("What you talkin' about Willis?");
+    }
+
+    // documentation inherited from interface
+    public ActionFrames cloneTranslated (int dx, int dy)
+    {
+        ComponentFrames[] tsources = new ComponentFrames[_sources.length];
+        for (int ii = 0; ii < _sources.length; ii++) {
+            tsources[ii] = new ComponentFrames(
+                _sources[ii].ccomp, _sources[ii].frames.cloneTranslated(dx, dy));
+        }
+        return new CompositedActionFrames(_imgr, _frameCache, _action, tsources);
     }
 
     /**

@@ -129,6 +129,9 @@ public class ComponentClass implements Serializable
      * shadow for the special "shadow" component class. */
     public float shadowAlpha = 1.0f;
 
+    /** Whether or not components of this class will have translations applied. */
+    public boolean translate;
+
     /**
      * Creates an uninitialized instance suitable for unserialization or
      * population during XML parsing.
@@ -237,5 +240,5 @@ public class ComponentClass implements Serializable
 
     /** Increase this value when object's serialized state is impacted by
      * a class change (modification of fields, inheritance). */
-    private static final long serialVersionUID = 3;
+    private static final long serialVersionUID = 4;
 }

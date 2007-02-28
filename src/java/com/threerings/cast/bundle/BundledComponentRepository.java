@@ -345,9 +345,9 @@ public class BundledComponentRepository
 
                 // if that failed too, we're hosed
                 if (aset == null) {
-                    // if this is a shadow or crop image, no need to freak out 
+                    // if this is a shadow or crop image, no need to freak out
                     // as they are optional
-                    if (!StandardActions.CROP_TYPE.equals(type) && 
+                    if (!StandardActions.CROP_TYPE.equals(type) &&
                         !StandardActions.SHADOW_TYPE.equals(type)) {
                         Log.warning("Unable to locate tileset for action '" +
                                     imgpath + "' " + component + ".");
@@ -389,8 +389,19 @@ public class BundledComponentRepository
          */
         public TileSetFrameImage (TileSet set, ActionSequence actseq)
         {
+            this(set, actseq, 0, 0);
+        }
+
+        /**
+         * Constructs a tileset frame image with the specified tileset and
+         * for the specified orientation, with an optional translation.
+         */
+        public TileSetFrameImage (TileSet set, ActionSequence actseq, int dx, int dy)
+        {
             _set = set;
             _actseq = actseq;
+            _dx = dx;
+            _dy = dy;
 
             // compute these now to avoid pointless recomputation later
             _ocount = actseq.orients.length;
@@ -438,7 +449,7 @@ public class BundledComponentRepository
                 {
                     Tile tile = getTile(orient, index);
                     if (tile != null) {
-                        tile.paint(g, x, y);
+                        tile.paint(g, x + _dx, y + _dy);
                     }
                 }
 
@@ -446,7 +457,7 @@ public class BundledComponentRepository
                 public boolean hitTest (int index, int x, int y)
                 {
                     Tile tile = getTile(orient, index);
-                    return (tile != null) ? tile.hitTest(x, y) : false;
+                    return (tile != null) ? tile.hitTest(x + _dx, y + _dy) : false;
                 }
 
                 // documentation inherited from interface
@@ -459,6 +470,7 @@ public class BundledComponentRepository
                         bounds.setBounds(
                             0, 0, tile.getWidth(), tile.getHeight());
                     }
+                    bounds.translate(_dx, _dy);
                 }
             };
         }
@@ -481,6 +493,12 @@ public class BundledComponentRepository
             return new TileSetFrameImage(_set.clone(zations), _actseq);
         }
 
+        // documentation inherited from interface
+        public ActionFrames cloneTranslated (int dx, int dy)
+        {
+            return new TileSetFrameImage(_set, _actseq, dx, dy);
+        }
+
         /**
          * Fetches the requested tile.
          */
@@ -495,6 +513,9 @@ public class BundledComponentRepository
 
         /** The action sequence for which we're providing frame images. */
         protected ActionSequence _actseq;
+
+        /** A translation to apply to the images. */
+        protected int _dx, _dy;
 
         /** Frame and orientation counts. */
         protected int _fcount, _ocount;

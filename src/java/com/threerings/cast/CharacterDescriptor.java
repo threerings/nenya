@@ -21,6 +21,7 @@
 
 package com.threerings.cast;
 
+import java.awt.Point;
 import java.util.Arrays;
 import com.samskivert.util.StringUtil;
 import com.threerings.media.image.Colorization;
@@ -76,6 +77,23 @@ public class CharacterDescriptor
     }
 
     /**
+     * Returns the array of translations to be applied to the components
+     * when compositing action images.
+     */
+    public Point[] getTranslations ()
+    {
+        return _xlations;
+    }
+
+    /**
+     * Updates the translations to be used by this character descriptor.
+     */
+    public void setTranslations (Point[] xlations)
+    {
+        _xlations = xlations;
+    }
+
+    /**
      * Compute a sensible hashcode for this object.
      */
     public int hashCode ()
@@ -124,7 +142,7 @@ public class CharacterDescriptor
             }
         }
 
-        return true;
+        return Arrays.equals(_xlations, odesc._xlations);
     }
 
     /**
@@ -141,4 +159,7 @@ public class CharacterDescriptor
 
     /** The colorizations to apply when compositing this character. */
     protected Colorization[][] _zations;
+
+    /** The translations to apply when compositing this character. */
+    protected Point[] _xlations;
 }

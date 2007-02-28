@@ -45,7 +45,7 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
     {
         super(imgr, sources, action, orient);
     }
-    
+
     // documentation inherited from interface
     public int getWidth (int index) {
         return _sources[0].frames.getFrames(_orient).getWidth(index);
@@ -63,7 +63,7 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
     public int getYOrigin (int index) {
         return _sources[0].frames.getYOrigin(_orient, index);
     }
-    
+
     // documentation inherited from interface
     public void paintFrame (Graphics2D g, int index, int x, int y) {
         _images[index].paint(g, x + _images[index].getX(),
@@ -85,18 +85,18 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
     // documentation inherited
     protected CompositedMirage createCompositedMirage (int index)
     {
-        return new MaskedMirage(index);      
+        return new MaskedMirage(index);
     }
-    
+
     /**
-     * Combines the image in the first source with the mask in the second. */
+     * Combines the image in the first source with the masks in the rest. */
     protected class MaskedMirage extends CompositedMirage
     {
         public MaskedMirage (int index)
         {
             super(index);
         }
-        
+
         // documentation inherited
         protected Rectangle combineBounds (Rectangle bounds, Rectangle tbounds)
         {
@@ -107,19 +107,20 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
             }
             return bounds;
         }
-        
+
         // documentation inherited
         protected void refreshVolatileImage ()
         {
             Graphics2D g = (Graphics2D)_image.getGraphics();
             try {
-                TrimmedMultiFrameImage source =
-                    _sources[0].frames.getFrames(_orient),
-                    mask = _sources[1].frames.getFrames(_orient);
+                TrimmedMultiFrameImage source = _sources[0].frames.getFrames(_orient);
                 source.paintFrame(g, _index, -_bounds.x, -_bounds.y);
                 g.setComposite(AlphaComposite.DstIn);
-                mask.paintFrame(g, _index, -_bounds.x, -_bounds.y);
-                
+                for (int ii = 1; ii < _sources.length; ii++) {
+                    TrimmedMultiFrameImage mask = _sources[ii].frames.getFrames(_orient);
+                    mask.paintFrame(g, _index, -_bounds.x, -_bounds.y);
+                }
+
             } finally {
                 // clean up after ourselves
                 if (g != null) {

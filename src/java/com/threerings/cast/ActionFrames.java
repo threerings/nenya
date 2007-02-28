@@ -64,4 +64,10 @@ public interface ActionFrames
      * colorizations applied to the frame images.
      */
     public ActionFrames cloneColorized (Colorization[] zations);
+
+    /**
+     * Creates a clone of these action frames which will have the supplied
+     * translation applied to the frame images.
+     */
+    public ActionFrames cloneTranslated (int dx, int dy);
 }
