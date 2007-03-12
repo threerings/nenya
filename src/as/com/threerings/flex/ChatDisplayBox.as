@@ -47,6 +47,9 @@ public class ChatDisplayBox extends TextArea
         // TODO
         width = 400;
         height = 150;
+
+        addEventListener(Event.ADDED_TO_STAGE, handleAddRemove);
+        addEventListener(Event.REMOVED_FROM_STAGE, handleAddRemove);
     }
 
     // documentation inherited from interface ChatDisplay
@@ -72,12 +75,11 @@ public class ChatDisplayBox extends TextArea
         return true;
     }
 
-    override public function parentChanged (p :DisplayObjectContainer) :void
+    // handle us being added or removed from the stage
+    protected function handleAddRemove (event :Event) :void
     {
-        super.parentChanged(p);
-
         var chatdir :ChatDirector = _ctx.getChatDirector();
-        if (p != null) {
+        if (event.type == Event.ADDED_TO_STAGE) {
             chatdir.addChatDisplay(this);
         } else {
             chatdir.removeChatDisplay(this);
