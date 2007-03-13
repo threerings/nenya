@@ -13,7 +13,7 @@ import mx.events.SliderEvent;
  */
 public class LabeledSlider extends HBox
 {
-    /** The slider, all public and accessable. Don't fuck it up! */
+    /** The actual slider. */
     public var slider :Slider;
 
     /**
