@@ -44,6 +44,8 @@ import javax.swing.text.JTextComponent;
 
 import com.samskivert.util.HashIntMap;
 
+import com.threerings.crowd.chat.client.ChatCantStealFocus;
+
 /**
  * Handles dispatching special global key pressed and released events to
  * those that care to monitor and process such things.
@@ -202,9 +204,10 @@ public class KeyDispatcher
         return target.isShowing() &&
             (((target instanceof JTextComponent) &&
                 ((JTextComponent) target).isEditable()) ||
-                (target instanceof JComboBox) ||
-                (target instanceof JTable) ||
-                (target instanceof JRootPane));
+            (target instanceof JComboBox) ||
+            (target instanceof ChatCantStealFocus) ||
+            (target instanceof JTable) ||
+            (target instanceof JRootPane));
     }
 
     /**
