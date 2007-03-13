@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.swing.JComboBox;
 import javax.swing.JRootPane;
 import javax.swing.JTable;
 import javax.swing.event.AncestorEvent;
@@ -156,7 +157,7 @@ public class KeyDispatcher
                 // if the key was typed on a non-text component or one
                 // that wasn't editable...
                 if (isChatCharacter(e.getKeyChar()) &&
-                    !isTypableTarget(target)) {
+                    !isTypeableTarget(target)) {
                     // focus our grabby component, and redirect this
                     // key event there
                     _curChatGrabber.requestFocusInWindow();
@@ -196,13 +197,14 @@ public class KeyDispatcher
      * into, and thus we shouldn't steal focus away from it if the user
      * starts typing.
      */
-    protected boolean isTypableTarget (Component target)
+    protected boolean isTypeableTarget (Component target)
     {
         return target.isShowing() &&
             (((target instanceof JTextComponent) &&
-              ((JTextComponent) target).isEditable()) ||
-             (target instanceof JTable) ||
-             (target instanceof JRootPane));
+                ((JTextComponent) target).isEditable()) ||
+                (target instanceof JComboBox) ||
+                (target instanceof JTable) ||
+                (target instanceof JRootPane));
     }
 
     /**
