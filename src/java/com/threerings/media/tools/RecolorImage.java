@@ -28,6 +28,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
+import java.util.Comparator;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -55,12 +56,13 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.samskivert.util.QuickSort;
+
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.IntField;
 import com.samskivert.swing.VGroupLayout;
 import com.samskivert.swing.event.DocumentAdapter;
 import com.samskivert.swing.util.SwingUtil;
-import com.samskivert.util.Interator;
 
 import com.threerings.media.image.ColorPository;
 import com.threerings.media.image.Colorization;
@@ -115,7 +117,7 @@ public class RecolorImage extends JPanel
         JPanel colMode = new JPanel(new HGroupLayout(HGroupLayout.STRETCH));
         colMode.add(_mode = new JToggleButton("All Colorizations"));
         colMode.add(_classList = new JComboBox());
-        ActionListener al = new ActionListener () {
+        ActionListener al = new ActionListener() {
             public void actionPerformed (ActionEvent ae) {
                 convert();
             }
@@ -244,16 +246,28 @@ public class RecolorImage extends JPanel
         int classId = colClass.classId;
 
         ArrayList imgs = new ArrayList();
-        Interator iter = colClass.colors.keys();
         BufferedImage img = new BufferedImage(_image.getWidth(),
             _image.getHeight()*colClass.colors.size(),
             BufferedImage.TYPE_INT_ARGB);
         Graphics gfx = img.getGraphics();
         int y = 0;
 
-        while (iter.hasNext()) {
+        ArrayList<Integer> sortedKeys = new ArrayList<Integer>();
+        sortedKeys.addAll(colClass.colors.keySet());
+
+        QuickSort.sort(sortedKeys, new Comparator<Integer>() {
+                public int compare (Integer i1, Integer i2) {
+                    return i1 - i2;
+                }
+
+                public boolean equals (Integer i1, Integer i2) {
+                    return i1.intValue() == i2.intValue();
+                }
+            });
+
+        for (int key : sortedKeys) {
             Colorization coloriz =
-                _colRepo.getColorization(classId, iter.nextInt());
+                _colRepo.getColorization(classId, key);
             BufferedImage subImg = ImageUtil.recolorImage(
                     _image, coloriz.rootColor, coloriz.range, coloriz.offsets);
 
