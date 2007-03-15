@@ -4,7 +4,7 @@ import flash.utils.getTimer;
 
 /**
  * Tracks multiple sine waves with different periods and amplitudes, and
- * returns a
+ * returns an instantaneous additive amplitude.
  */
 public class Siner
 {
