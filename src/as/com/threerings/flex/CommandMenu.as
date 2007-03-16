@@ -32,6 +32,8 @@ import mx.core.Application;
 import mx.core.ScrollPolicy;
 import mx.events.MenuEvent;
 
+import mx.utils.ObjectUtil;
+
 import com.dougmccune.controls.ScrollableArrowMenu;
 
 import com.threerings.util.CommandEvent;
@@ -121,89 +123,35 @@ public class CommandMenu extends ScrollableArrowMenu
      */
     protected function itemClicked (event :MenuEvent) :void
     {
-        var arg :Object = getItemArgument(event.item);
-        var cmd :String = getItemCommand(event.item);
-        var fn :Function;
-        if (cmd == null) {
-            fn = getItemCallback(event.item);
+        var arg :Object = getItemProp(event.item, "arg");
+        var cmdOrFn :Object = getItemProp(event.item, "command");
+        if (cmdOrFn == null) {
+            cmdOrFn = getItemProp(event.item, "callback");
         }
-        if (cmd != null || fn != null) {
+        if (cmdOrFn != null) {
             event.stopImmediatePropagation();
-            if (cmd != null) {
-                CommandEvent.dispatch(mx_internal::parentDisplayObject, cmd, arg);
-
-            } else {
-                try {
-                    var args :Array = (arg as Array);
-                    if (args == null && arg != null) {
-                        args = [ arg ];
-                    }
-                    fn.apply(null, args);
-
-                } catch (err :Error) {
-                    Log.getLog(this).warning("Unable to call menu callback: " +
-                        event.item);
-                }
-            }
+            CommandEvent.dispatch(mx_internal::parentDisplayObject, cmdOrFn, arg)
         }
+        // else: no warning. There may be non-command menu items mixed in.
     }
 
     /**
-     * Get the command for the specified item, if any.
+     * Get the specified property for the specified item, if any.
      * Somewhat similar to bits in the DefaultDataDescriptor.
      */
-    protected function getItemCommand (item :Object) :String
+    protected function getItemProp (item :Object, prop :String) :Object
     {
         try {
             if (item is XML) {
-                return (item.@command as String);
+                return String((item as XML).attribute(prop));
 
-            } else if (item is Object) {
-                return (item.command as String);
+            } else if (prop in item) {
+                return item[prop];
             }
+
         } catch (e :Error) {
-            // fall through
+            // alas; fall through
         }
-
-        return null;
-    }
-
-    /**
-     * Get the callback function for the specified item, if any.
-     */
-    protected function getItemCallback (item :Object) :Function
-    {
-        try {
-            if (item is XML) {
-                return (item.@callback as Function);
-
-            } else if (item is Object) {
-                return (item.callback as Function);
-            }
-        } catch (e :Error) {
-            // fall through
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the command for the specified item, if any.
-     * Somewhat similar to bits in the DefaultDataDescriptor.
-     */
-    protected function getItemArgument (item :Object) :Object
-    {
-        try {
-            if (item is XML) {
-                return item.@arg;
-
-            } else if (item is Object) {
-                return item.arg;
-            }
-        } catch (e :Error) {
-            // fall through
-        }
-
         return null;
     }
 }

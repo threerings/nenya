@@ -46,7 +46,16 @@ public class CommandButton extends Button
      */
     public function setCommand (cmd :String, arg :Object = null) :void
     {
-        _cmd = cmd;
+        _cmdOrFn = cmd;
+        _arg = arg;
+    }
+
+    /**
+     * Set a function to call when the button is pressed.
+     */
+    public function setFunction (fn :Function, arg :Object = null) :void
+    {
+        _cmdOrFn = fn;
         _arg = arg;
     }
 
@@ -64,12 +73,13 @@ public class CommandButton extends Button
             if (arg == null && toggle) {
                 arg = selected;
             }
-            CommandEvent.dispatch(this, _cmd, arg);
+            CommandEvent.dispatch(this, _cmdOrFn, arg);
         }
     }
 
-    /** The command to submit when clicked. */
-    protected var _cmd :String;
+    /** The command (String) to submit, or the function (Function) to call
+     * when clicked,  */
+    protected var _cmdOrFn :Object;
 
     /** The argument that accompanies our command. */
     protected var _arg :Object;
