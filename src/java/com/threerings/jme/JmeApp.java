@@ -193,7 +193,7 @@ public class JmeApp
         }
 
         // enter the main rendering and event processing loop
-        while (!_finished && !_display.isClosing()) {
+        while (!_finished) {
             try {
                 // render the current frame
                 long frameStart = processFrame();
@@ -222,6 +222,9 @@ public class JmeApp
                 if (++_failures > MAX_SUCCESSIVE_FAILURES) {
                     stop();
                 }
+            }
+            if (_display.isClosing()) {
+                stop();
             }
         }
 
@@ -310,7 +313,7 @@ public class JmeApp
         // enable all of the "quick compares," which means that states will
         // be refreshed only when necessary
         Arrays.fill(RenderState.QUICK_COMPARE, true);
-        
+
         // set up the camera
         _camera.setFrustumPerspective(45.0f, width/(float)height, 1, 10000);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
@@ -366,7 +369,7 @@ public class JmeApp
 
         // make everything opaque by default
         _geom.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-        
+
         // set up a zbuffer
         ZBufferState zbuf = _display.getRenderer().createZBufferState();
         zbuf.setEnabled(true);
