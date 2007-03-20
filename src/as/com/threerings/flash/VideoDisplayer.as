@@ -21,6 +21,7 @@
 
 package com.threerings.flash {
 
+import flash.display.Shape;
 import flash.display.Sprite;
 
 import flash.events.AsyncErrorEvent;
@@ -57,6 +58,10 @@ public class VideoDisplayer extends Sprite
     {
         _vid = new Video();
         addChild(_vid);
+
+        _mask = new Shape();
+        this.mask = _mask;
+        addChild(_mask);
 
         addEventListener(MouseEvent.ROLL_OVER, handleRollOver);
         addEventListener(MouseEvent.ROLL_OUT, handleRollOut);
@@ -133,6 +138,16 @@ public class VideoDisplayer extends Sprite
         // set up the width/height
         _vid.width = _vid.videoWidth;
         _vid.height = _vid.videoHeight;
+
+        // set up our mask to be the size of the video so that we're
+        // guaranteed to get the mouse clicks
+        with (_mask.graphics) {
+            clear();
+            beginFill(0xFFFFFF);
+            drawRect(0, 0, _vid.videoWidth, _vid.videoHeight);
+            endFill();
+        }
+
         redrawPauser();
 
         // tell any interested parties
@@ -274,6 +289,9 @@ public class VideoDisplayer extends Sprite
     }
     
     protected var _vid :Video;
+
+    /** Our mask, also defines our boundaries for clicking. */
+    protected var _mask :Shape;
 
     protected var _paused :Boolean = false;
 
