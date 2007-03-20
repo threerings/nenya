@@ -34,7 +34,7 @@ public class MenuUtil
      * Create a menu item that will submit a controller command when selected.
      */
     public static function createControllerMenuItem (
-            caption :String, cmd :String, arg :Object = null,
+            caption :String, cmdOrFn :Object, arg :Object = null,
             separatorBefore :Boolean = false, enabled :Boolean = true,
             visible :Boolean = true) :ContextMenuItem
     {
@@ -42,7 +42,7 @@ public class MenuUtil
             new ContextMenuItem(caption, separatorBefore, enabled, visible);
         item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,
             function (event :ContextMenuEvent) :void {
-                CommandEvent.dispatch(event.mouseTarget, cmd, arg);
+                CommandEvent.dispatch(event.mouseTarget, cmdOrFn, arg);
             });
         return item;
     }
