@@ -26,10 +26,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import java.nio.IntBuffer;
+
+import org.lwjgl.opengl.ARBShaderObjects;
+
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.StringUtil;
 
@@ -167,7 +172,8 @@ public class JmeUtil
     /**
      * Loads the specified shaders (prepending the supplied preprocessor definitions)
      * and returns a GLSL shader state.  One of the supplied files may be <code>null</code>
-     * in order to use the fixed-function pipeline for that part.
+     * in order to use the fixed-function pipeline for that part.  The method returns
+     * <code>null</code> if the shaders fail to compile (JME will log an error).
      *
      * @param defs a number of preprocessor definitions to be #defined in both shaders
      * (e.g., "ENABLE_FOG", "NUM_LIGHTS 2").
@@ -179,7 +185,12 @@ public class JmeUtil
         sstate.load(
             (vert == null) ? null : readSource(vert, defs),
             (frag == null) ? null : readSource(frag, defs));
-        return sstate;
+
+        // check its link status
+        IntBuffer linked = BufferUtils.createIntBuffer(1);
+        ARBShaderObjects.glGetObjectParameterARB(sstate.getProgramID(),
+            ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB, linked);
+        return (linked.get() == 0) ? null : sstate;
     }
 
     /**
