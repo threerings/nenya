@@ -271,6 +271,7 @@ public class JmeApp
      * fill in {@link #_api} as a side-effect.
      */
     protected DisplaySystem createDisplay ()
+        throws JmeException
     {
         PropertiesIO props = new PropertiesIO(getConfigPath("jme.cfg"));
         if (!props.load()) {
