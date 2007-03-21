@@ -220,10 +220,19 @@ public class MediaContainer extends Sprite
     public function shutdown (completely :Boolean = true) :void
     {
         try {
-            // remove the mask
+            // remove the mask (but only if we added it)
             if (_media != null && _media.mask != null) {
-                removeChild(_media.mask);
-                _media.mask = null;
+                try {
+                    removeChild(_media.mask);
+                    _media.mask = null;
+
+                } catch (argErr :ArgumentError) {
+                    // If we catch this error, it was thrown in removeChild
+                    // and means that we did not add the media's mask,
+                    // and so shouldn't remove it either. The action we
+                    // take here is NOT setting _media.mask = null.
+                    // Then, we continue happily...
+                }
             }
 
             if (_media is Loader) {
@@ -436,6 +445,19 @@ public class MediaContainer extends Sprite
     {
         var mask :Shape;
         if (_media.mask != null) {
+            // see if the mask was added by us
+            try {
+                getChildIndex(_media.mask);
+
+            } catch (argErr :ArgumentError) {
+                // oy! We are not the controllers of this mask, it must
+                // have been added by someone else. This probably means
+                // that the _media is not a Loader, and so we should just
+                // leave it alone with its custom mask.
+                return;
+            }
+
+            // otherwise, it's a mask we previously configured
             mask = (_media.mask as Shape);
 
         } else {
