@@ -32,7 +32,8 @@ public class FPSDisplay extends TextField
     public function FPSDisplay (framesToTrack :int = 150)
     {
         background = true;
-        text = String(Number.MIN_VALUE);
+        text = "fps: 000.00";
+        width = textWidth + 5;
         height = textHeight + 4;
 
         _framesToTrack = framesToTrack;
@@ -55,7 +56,7 @@ public class FPSDisplay extends TextField
         // the difference between 1 frame)
         var frames :Number = _frameStamps.length - 1;
 
-        this.text = String(frames / seconds);
+        this.text = "fps: " + (frames / seconds).toFixed(2);
     }
 
     /** Timestamps of past ENTER_FRAME events. */
