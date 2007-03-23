@@ -237,6 +237,8 @@ public class MediaContainer extends Sprite
 
             if (_media is Loader) {
                 var loader :Loader = (_media as Loader);
+                var url :String = loader.contentLoaderInfo.url;
+
                 // remove any listeners
                 removeListeners(loader.contentLoaderInfo);
 
@@ -249,6 +251,7 @@ public class MediaContainer extends Sprite
                 loader.unload();
 
                 removeChild(loader);
+                log.info("Unloaded media [url=" + url + "].");
 
             } else if (_media is VideoDisplayer) {
                 var vid :VideoDisplayer = (_media as VideoDisplayer);
