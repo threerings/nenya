@@ -34,7 +34,7 @@ import mx.events.MenuEvent;
 
 import mx.utils.ObjectUtil;
 
-import com.dougmccune.controls.ScrollableArrowMenu;
+import flexlib.controls.ScrollableArrowMenu;
 
 import com.threerings.util.CommandEvent;
 
