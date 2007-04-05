@@ -39,6 +39,7 @@ public class CommandButton extends Button
     public function CommandButton (cmd :String = null, arg :Object = null)
     {
         setCommand(cmd, arg);
+        buttonMode = true;
     }
 
     /**
