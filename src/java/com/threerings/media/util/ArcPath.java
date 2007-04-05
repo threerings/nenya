@@ -96,7 +96,7 @@ public class ArcPath extends TimedPath
         int starty =
             (int)(_center.y + Math.round(Math.sin(_sangle) * _yradius));
 
-        return new ArcPath(new Point (startx + x, starty + y),
+        return new ArcPath(new Point(startx + x, starty + y),
             _xradius, _yradius, _sangle, _delta, _duration, _orient);
     }
 
@@ -112,6 +112,16 @@ public class ArcPath extends TimedPath
     public void setOrientOffset (int offset)
     {
         _orientOffset = offset;
+    }
+
+    /**
+     * Returns the position of the end of the path.
+     */
+    public Point getEndPos ()
+    {
+        return new Point(
+            (int)(_center.x + Math.round(Math.cos(_sangle + _delta) * _xradius)),
+            (int)(_center.y + Math.round(Math.sin(_sangle + _delta) * _yradius)));
     }
 
     // documentation inherited
@@ -147,7 +157,7 @@ public class ArcPath extends TimedPath
                 // adjust it appropriately
                 orient = DirectionUtil.rotateCW(orient, 2*_orientOffset);
                 break;
-                
+
             case FINE:
                 orient = DirectionUtil.getFineDirection(theta);
                 // adjust it appropriately
@@ -160,14 +170,14 @@ public class ArcPath extends TimedPath
                 pable.setOrientation(orient);
                 modified = true;
             }
-        }            
-         
+        }
+
         // update the pathable's location if it moved
         if (pable.getX() != _tpos.x || pable.getY() != _tpos.y) {
             pable.setLocation(_tpos.x, _tpos.y);
             modified = true;
         }
-                
+
         // if we completed our path, let the sprite know
         if (angle == _sangle + _delta) {
             pable.pathCompleted(timestamp);
