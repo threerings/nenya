@@ -23,6 +23,7 @@ package com.threerings.flex {
 
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
+import flash.events.IEventDispatcher;
 
 import flash.geom.Rectangle;
 
@@ -41,11 +42,10 @@ import com.threerings.util.CommandEvent;
 use namespace mx_internal;
 
 /**
- * A pretty standard menu that can submit CommandEvents if menu items
- * have "command" and possibly "arg" properties. Commands are submitted to
- * controllers for processing. Alternatively, you may specify
- * "callback" properties that specify a function closure to call, with the
- * "arg" property containing either a single arg or an array of args.
+ * A pretty standard menu that can submit CommandEvents if menu items have "command" and possibly
+ * "arg" properties. Commands are submitted to controllers for processing. Alternatively, you may
+ * specify "callback" properties that specify a function closure to call, with the "arg" property
+ * containing either a single arg or an array of args.
  *
  * Example dataProvider array:
  * [ { label: "Go home", icon: homeIconClass,
@@ -55,19 +55,10 @@ use namespace mx_internal;
  *   { label: "Other places", children: subMenuArray }
  * ];
  *
- * See "Defining menu structure and data" in the Flex manual for the
- * full list.
+ * See "Defining menu structure and data" in the Flex manual for the full list.
  */ 
 public class CommandMenu extends ScrollableArrowMenu
 {
-    public function CommandMenu ()
-    {
-        super();
-        verticalScrollPolicy = ScrollPolicy.OFF;
-
-        addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
-    }
-
     /**
      * Factory method to create a command menu.
      *
@@ -81,6 +72,22 @@ public class CommandMenu extends ScrollableArrowMenu
         menu.showRoot = true;
         Menu.popUpMenu(menu, null, items);
         return menu;
+    }
+
+    public function CommandMenu ()
+    {
+        super();
+        verticalScrollPolicy = ScrollPolicy.OFF;
+        addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
+    }
+
+    /**
+     * Configures the event dispatcher to be used when dispatching this menu's events. By default
+     * they will be dispatched on the stage.
+     */
+    public function setDispatcher (dispatcher :IEventDispatcher) :void
+    {
+        _dispatcher = dispatcher;
     }
 
     /**
@@ -103,9 +110,8 @@ public class CommandMenu extends ScrollableArrowMenu
     }
 
     /**
-     * Just like our superclass's show(), except that when invoked
-     * with no args, causes the menu to show at the current mouse location
-     * instead of the top-left corner of the application.
+     * Just like our superclass's show(), except that when invoked with no args, causes the menu to
+     * show at the current mouse location instead of the top-left corner of the application.
      */
     override public function show (xShow :Object = null, yShow :Object = null) :void
     {
@@ -130,14 +136,15 @@ public class CommandMenu extends ScrollableArrowMenu
         }
         if (cmdOrFn != null) {
             event.stopImmediatePropagation();
-            CommandEvent.dispatch(mx_internal::parentDisplayObject, cmdOrFn, arg)
+            CommandEvent.dispatch(_dispatcher == null ? mx_internal::parentDisplayObject :
+                                  _dispatcher, cmdOrFn, arg);
         }
         // else: no warning. There may be non-command menu items mixed in.
     }
 
     /**
-     * Get the specified property for the specified item, if any.
-     * Somewhat similar to bits in the DefaultDataDescriptor.
+     * Get the specified property for the specified item, if any.  Somewhat similar to bits in the
+     * DefaultDataDescriptor.
      */
     protected function getItemProp (item :Object, prop :String) :Object
     {
@@ -154,5 +161,7 @@ public class CommandMenu extends ScrollableArrowMenu
         }
         return null;
     }
+
+    protected var _dispatcher :IEventDispatcher;
 }
 }
