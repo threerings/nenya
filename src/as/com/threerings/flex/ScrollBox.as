@@ -47,6 +47,10 @@ public class ScrollBox extends Canvas
 
         opaqueBackground = 0xFFFFFF;
 
+        _mask = new Sprite();
+        rawChildren.addChild(_mask);
+        this.mask = _mask;
+
         _box = new Sprite();
         rawChildren.addChild(_box);
 
@@ -65,8 +69,14 @@ public class ScrollBox extends Canvas
         recheckBounds();
 
         graphics.clear();
-        graphics.lineStyle(1, 0);
+        graphics.lineStyle(1, 0x000000, 1.0);
         graphics.drawRect(0, 0, width, height);
+
+        var g :Graphics = _mask.graphics;
+        g.clear();
+        g.beginFill(0xffffff, 0.0);
+        g.drawRect(0, 0, width, height);
+        g.endFill();
     }
 
     protected function enterFrame (vent :Event) :void
@@ -106,8 +116,8 @@ public class ScrollBox extends Canvas
         _bounds = bounds.clone();
         _scroller = scroller;
 
-        _scale = Math.min(1,
-            Math.min(_maxWidth / _bounds.width, _maxHeight / _bounds.height));
+        _scale = Math.min(1, Math.min(_maxWidth / _bounds.width, _maxHeight / _bounds.height));
+
         width = _scale * _bounds.width;
         height = _scale * _bounds.height;
 
@@ -121,7 +131,8 @@ public class ScrollBox extends Canvas
     {
         var g :Graphics = _box.graphics;
         g.clear();
-        g.beginFill(0x0000FF);
+        g.beginFill(0xffffff, 0.3);
+        g.lineStyle(1, 0x000000, 0.3);
         g.drawRect(0, 0, ww, hh);
         g.endFill();
     }
@@ -159,6 +170,7 @@ public class ScrollBox extends Canvas
     protected var _maxHeight :int;
 
     protected var _box :Sprite;
+    protected var _mask :Sprite;
 
     protected var _scale :Number;
 
