@@ -23,6 +23,7 @@ package com.threerings.flex {
 
 import flash.display.DisplayObject;
 import flash.display.Graphics;
+import flash.display.Shape;
 import flash.display.Sprite;
 
 import flash.events.Event;
@@ -47,7 +48,7 @@ public class ScrollBox extends Canvas
 
         opaqueBackground = 0xFFFFFF;
 
-        _mask = new Sprite();
+        _mask = new Shape();
         rawChildren.addChild(_mask);
         this.mask = _mask;
 
@@ -170,7 +171,7 @@ public class ScrollBox extends Canvas
     protected var _maxHeight :int;
 
     protected var _box :Sprite;
-    protected var _mask :Sprite;
+    protected var _mask :Shape;
 
     protected var _scale :Number;
 
