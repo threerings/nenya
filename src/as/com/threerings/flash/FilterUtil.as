@@ -13,6 +13,7 @@ import flash.filters.GlowFilter;
 import flash.filters.GradientBevelFilter;
 import flash.filters.GradientGlowFilter;
 
+import com.threerings.util.ArrayUtil;
 import com.threerings.util.ClassUtil;
 
 /**
@@ -78,28 +79,53 @@ public class FilterUtil
         // when we have two filters of the same class, figure it out by hand...
         switch (c1) {
         case BevelFilter:
-            // TODO
-            return false;
+            var bf1 :BevelFilter = (f1 as BevelFilter);
+            var bf2 :BevelFilter = (f2 as BevelFilter);
+            return (bf1.angle == bf2.angle) && (bf1.blurX == bf2.blurX) &&
+                (bf1.blurY == bf2.blurY) && (bf1.distance == bf2.distance) &&
+                (bf1.highlightAlpha == bf2.highlightAlpha) &&
+                (bf1.highlightColor == bf2.highlightColor) && (bf1.knockout == bf2.knockout) &&
+                (bf1.quality == bf2.quality) && (bf1.shadowAlpha == bf2.shadowAlpha) &&
+                (bf1.shadowColor == bf2.shadowColor) && (bf1.strength == bf2.strength) &&
+                (bf1.type == bf2.type);
 
         case BlurFilter:
-            // TODO
-            return false;
+            var blur1 :BlurFilter = (f1 as BlurFilter);
+            var blur2 :BlurFilter = (f2 as BlurFilter);
+            return (blur1.blurX == blur2.blurX) && (blur1.blurY == blur2.blurY) &&
+                (blur1.quality == blur2.quality);
 
         case ColorMatrixFilter:
-            // TODO
-            return false;
+            var cmf1 :ColorMatrixFilter = (f1 as ColorMatrixFilter);
+            var cmf2 :ColorMatrixFilter = (f2 as ColorMatrixFilter);
+            return ArrayUtil.equals(cmf1.matrix, cmf2.matrix);
 
         case ConvolutionFilter:
-            // TODO
-            return false;
+            var cf1 :ConvolutionFilter = (f1 as ConvolutionFilter);
+            var cf2 :ConvolutionFilter = (f2 as ConvolutionFilter);
+            return (cf1.alpha == cf2.alpha) && (cf1.bias == cf2.bias) && (cf1.clamp == cf2.clamp) &&
+                (cf1.color == cf2.color) && (cf1.divisor == cf2.divisor) &&
+                ArrayUtil.equals(cf1.matrix, cf2.matrix) && (cf1.matrixX == cf2.matrixX) &&
+                (cf1.matrixY == cf2.matrixY) && (cf1.preserveAlpha == cf2.preserveAlpha);
 
         case DisplacementMapFilter:
-            // TODO
-            return false;
+            var dmf1 :DisplacementMapFilter = (f1 as DisplacementMapFilter);
+            var dmf2 :DisplacementMapFilter = (f2 as DisplacementMapFilter);
+            return (dmf1.alpha == dmf2.alpha) && (dmf1.color == dmf2.color) &&
+                (dmf1.componentX == dmf2.componentX) && (dmf1.componentY == dmf2.componentY) &&
+                (dmf1.mapBitmap == dmf2.mapBitmap) && dmf1.mapPoint.equals(dmf2.mapPoint) &&
+                (dmf1.mode == dmf2.mode) && (dmf1.scaleX == dmf2.scaleX) &&
+                (dmf1.scaleY == dmf2.scaleY);
 
         case DropShadowFilter:
-            // TODO
-            return false;
+            var dsf1 :DropShadowFilter = (f1 as DropShadowFilter);
+            var dsf2 :DropShadowFilter = (f2 as DropShadowFilter);
+            return (dsf1.alpha == dsf2.alpha) && (dsf1.angle = dsf2.angle) &&
+                (dsf1.blurX = dsf2.blurX) && (dsf1.blurY = dsf2.blurY) &&
+                (dsf1.color = dsf2.color) && (dsf1.distance = dsf2.distance) &&
+                (dsf1.hideObject = dsf2.hideObject) && (dsf1.inner = dsf2.inner) &&
+                (dsf1.knockout = dsf2.knockout) && (dsf1.quality = dsf2.quality) &&
+                (dsf1.strength = dsf2.strength);
 
         case GlowFilter:
             var gf1 :GlowFilter = (f1 as GlowFilter);
@@ -110,12 +136,24 @@ public class FilterUtil
                 (gf1.strength == gf2.strength);
 
         case GradientBevelFilter:
-            // TODO
-            return false;
+            var gbf1 :GradientBevelFilter = (f1 as GradientBevelFilter);
+            var gbf2 :GradientBevelFilter = (f2 as GradientBevelFilter);
+            return ArrayUtil.equals(gbf1.alphas, gbf2.alphas) && (gbf1.angle == gbf2.angle) &&
+                (gbf1.blurX == gbf2.blurX) && (gbf1.blurY == gbf2.blurY) &&
+                ArrayUtil.equals(gbf1.colors, gbf2.colors) && (gbf1.distance == gbf2.distance) &&
+                (gbf1.knockout == gbf2.knockout) && (gbf1.quality == gbf2.quality) &&
+                ArrayUtil.equals(gbf1.ratios, gbf2.ratios) && (gbf1.strength == gbf2.strength) &&
+                (gbf1.type == gbf2.type);
 
         case GradientGlowFilter:
-            // TODO
-            return false;
+            var ggf1 :GradientGlowFilter = (f1 as GradientGlowFilter);
+            var ggf2 :GradientGlowFilter = (f2 as GradientGlowFilter);
+            return ArrayUtil.equals(ggf1.alphas, ggf2.alphas) && (ggf1.angle == ggf2.angle) &&
+                (ggf1.blurX == ggf2.blurX) && (ggf1.blurY == ggf2.blurY) &&
+                ArrayUtil.equals(ggf1.colors, ggf2.colors) && (ggf1.distance == ggf2.distance) &&
+                (ggf1.knockout == ggf2.knockout) && (ggf1.quality == ggf2.quality) &&
+                ArrayUtil.equals(ggf1.ratios, ggf2.ratios) && (ggf1.strength == ggf2.strength) &&
+                (ggf1.type == ggf2.type);
 
         default:
             throw new ArgumentError("OMG! Unknown filter type: " + c1);
