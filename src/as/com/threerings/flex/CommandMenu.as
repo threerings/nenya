@@ -93,8 +93,8 @@ public class CommandMenu extends ScrollableArrowMenu
     /**
      * Actually pop up the menu. This can be used instead of show().
      */
-    public function popUp (
-        trigger :DisplayObject, popUpwards :Boolean = false) :void
+    public function popUp (trigger :DisplayObject, popUpwards :Boolean = false,
+                           popLeftwards :Boolean = false) :void
     {
         var r :Rectangle = trigger.getBounds(trigger.stage);
 
@@ -106,6 +106,11 @@ public class CommandMenu extends ScrollableArrowMenu
         } else {
             // position it below the trigger
             show(r.x, r.y + r.height);
+        }
+
+        if (popLeftwards) {
+            // reposition the x now that we know our size
+            x = r.x + r.width - getExplicitOrMeasuredWidth();
         }
     }
 
