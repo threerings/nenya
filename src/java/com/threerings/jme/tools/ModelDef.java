@@ -39,7 +39,9 @@ import java.util.Set;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.FastMath;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
+import com.jme.scene.batch.GeomBatch;
 import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.PropertiesUtil;
@@ -51,6 +53,7 @@ import com.threerings.jme.model.ModelController;
 import com.threerings.jme.model.ModelMesh;
 import com.threerings.jme.model.ModelNode;
 import com.threerings.jme.model.SkinMesh;
+import com.threerings.jme.util.SpatialVisitor;
 
 /**
  * An intermediate representation for models used to store data parsed from
@@ -63,15 +66,15 @@ public class ModelDef
     {
         /** The node's name. */
         public String name;
-        
+
         /** The name of the node's parent. */
         public String parent;
-        
+
         /** The node's transformation. */
         public float[] translation;
         public float[] rotation;
         public float[] scale;
-        
+
         /** Returns a JME node for this definition. */
         public Spatial getSpatial (Properties props)
         {
@@ -82,7 +85,7 @@ public class ModelDef
             }
             return _spatial;
         }
-        
+
         /** Sets the transform of the created node. */
         protected void setTransform ()
         {
@@ -92,10 +95,10 @@ public class ModelDef
                 rotation[2], rotation[3]);
             _spatial.getLocalScale().set(scale[0], scale[1], scale[2]);
         }
-        
+
         /** Creates a JME node for this definition. */
         public abstract Spatial createSpatial (Properties props);
-        
+
         /** Resolves any name references using the supplied map. */
         public void resolveReferences (
             HashMap<String, Spatial> nodes, HashSet<Spatial> referenced)
@@ -103,17 +106,17 @@ public class ModelDef
             Spatial pnode = nodes.get(parent);
             if (pnode instanceof ModelNode) {
                 ((ModelNode)pnode).attachChild(_spatial);
-                
+
             } else if (parent != null) {
                 Log.warning("Missing or invalid parent node [spatial=" +
                     name + ", parent=" + parent + "].");
             }
         }
-        
+
         /** The JME node created for this definition. */
         protected Spatial _spatial;
     }
-    
+
     /** A rigid triangle mesh. */
     public static class TriMeshDef extends SpatialDef
     {
@@ -121,25 +124,25 @@ public class ModelDef
         public float[] offsetTranslation;
         public float[] offsetRotation;
         public float[] offsetScale;
-        
+
         /** Whether or not the mesh allows back face culling. */
         public boolean solid;
-        
+
         /** The texture of the mesh, if any. */
         public String texture;
-        
+
         /** Whether or not the mesh is (partially) transparent. */
         public boolean transparent;
-        
+
         /** The vertices of the mesh. */
         public ArrayList<Vertex> vertices = new ArrayList<Vertex>();
-        
+
         /** The triangle indices. */
         public ArrayList<Integer> indices = new ArrayList<Integer>();
-        
+
         /** Whether or not any of the vertices have texture coordinates. */
         public boolean tcoords;
-        
+
         public void addVertex (Vertex vertex)
         {
             int idx = vertices.indexOf(vertex);
@@ -151,7 +154,7 @@ public class ModelDef
             }
             tcoords = tcoords || vertex.tcoords != null;
         }
-        
+
         // documentation inherited
         public Spatial createSpatial (Properties props)
         {
@@ -163,13 +166,13 @@ public class ModelDef
             }
             return node;
         }
-        
+
         /** Creates the mesh to attach to the node. */
         protected ModelMesh createMesh ()
         {
             return new ModelMesh("mesh");
         }
-        
+
         /** Configures the mesh. */
         protected void configureMesh (Properties props)
         {
@@ -186,17 +189,17 @@ public class ModelDef
                 _mesh.getLocalScale().set(offsetScale[0], offsetScale[1],
                     offsetScale[2]);
             }
-            
+
             // make sure texture is just a filename
             int sidx = (texture == null) ? -1 :
                 Math.max(texture.lastIndexOf('/'), texture.lastIndexOf('\\'));
             if (sidx != -1) {
                 texture = texture.substring(sidx + 1);
             }
-            
+
             // configure using properties
             _mesh.configure(solid, texture, transparent, props);
-            
+
             // set the various buffers
             int vsize = vertices.size();
             FloatBuffer vbuf = BufferUtils.createVector3Buffer(vsize),
@@ -210,19 +213,19 @@ public class ModelDef
                 ibuf.put(indices.get(ii));
             }
             _mesh.reconstruct(vbuf, nbuf, null, tbuf, ibuf);
-            
+
             _mesh.setModelBound("sphere".equals(props.getProperty("bound")) ?
                 new BoundingSphere() : new BoundingBox());
             _mesh.updateModelBound();
-            
+
             // set the mesh's origin to the center of its bounding box
             _mesh.centerVertices();
         }
-        
+
         /** The mesh that contains the actual geometry. */
         protected ModelMesh _mesh;
     }
-    
+
     /** A triangle mesh that deforms according to bone positions. */
     public static class SkinMeshDef extends TriMeshDef
     {
@@ -231,7 +234,7 @@ public class ModelDef
         {
             return new SkinMesh("mesh");
         }
-        
+
         @Override // documentation inherited
         public void resolveReferences (
             HashMap<String, Spatial> nodes, HashSet<Spatial> referenced)
@@ -240,7 +243,7 @@ public class ModelDef
             if (_mesh == null) {
                 return;
             }
-            
+
             // create and set the final weight groups
             SkinMesh.WeightGroup[] wgroups =
                 new SkinMesh.WeightGroup[_groups.size()];
@@ -268,7 +271,7 @@ public class ModelDef
             }
             ((SkinMesh)_mesh).setWeightGroups(wgroups);
         }
-        
+
         @Override // documentation inherited
         protected void configureMesh (Properties props)
         {
@@ -286,7 +289,7 @@ public class ModelDef
                     group.weights.add(svertex.boneWeights.get(bone).weight);
                 }
             }
-            
+
             // reorder the vertices by group
             ArrayList<Vertex> overts = vertices;
             vertices = new ArrayList<Vertex>();
@@ -301,14 +304,14 @@ public class ModelDef
             for (int ii = 0, nn = indices.size(); ii < nn; ii++) {
                 indices.set(ii, imap[indices.get(ii)]);
             }
-            
+
             super.configureMesh(props);
         }
-        
+
         /** The intermediate weight groups, mapped by bone names. */
         protected HashMap<Set<String>, WeightGroupDef> _groups;
     }
-    
+
     /** A generic node. */
     public static class NodeDef extends SpatialDef
     {
@@ -318,20 +321,20 @@ public class ModelDef
             return new ModelNode(name);
         }
     }
-    
+
     /** A basic vertex. */
     public static class Vertex
     {
         public float[] location;
         public float[] normal;
         public float[] tcoords;
-        
+
         public void setInBuffers (
             FloatBuffer vbuf, FloatBuffer nbuf, FloatBuffer tbuf)
         {
             vbuf.put(location);
             nbuf.put(normal);
-            
+
             if (tbuf != null) {
                 if (tcoords != null) {
                     tbuf.put(tcoords);
@@ -341,7 +344,7 @@ public class ModelDef
                 }
             }
         }
-        
+
         public boolean equals (Object obj)
         {
             Vertex overt = (Vertex)obj;
@@ -350,14 +353,14 @@ public class ModelDef
                 Arrays.equals(tcoords, overt.tcoords);
         }
     }
-    
+
     /** A vertex influenced by a number of bones. */
     public static class SkinVertex extends Vertex
     {
         /** The bones influencing the vertex, mapped by name. */
         public HashMap<String, BoneWeight> boneWeights =
             new HashMap<String, BoneWeight>();
-        
+
         public void addBoneWeight (BoneWeight weight)
         {
             if (weight.weight == 0f) {
@@ -370,7 +373,7 @@ public class ModelDef
                 boneWeights.put(weight.bone, weight);
             }
         }
-        
+
         /** Finds the bone nodes influencing this vertex. */
         public HashSet<ModelNode> getBones (HashMap<String, Spatial> nodes)
         {
@@ -386,7 +389,7 @@ public class ModelDef
             }
             return bones;
         }
-        
+
         /** Returns the weight of the given bone. */
         public float getWeight (ModelNode bone)
         {
@@ -394,13 +397,13 @@ public class ModelDef
             return (bweight == null) ? 0f : bweight.weight;
         }
     }
-    
+
     /** The influence of a bone on a vertex. */
     public static class BoneWeight
     {
         /** The name of the influencing bone. */
         public String bone;
-        
+
         /** The amount of influence. */
         public float weight;
     }
@@ -410,21 +413,21 @@ public class ModelDef
     {
         /** The indices of the affected vertex. */
         public ArrayList<Integer> indices = new ArrayList<Integer>();
-        
+
         /** The interleaved vertex weights. */
         public ArrayList<Float> weights = new ArrayList<Float>();
     }
-    
+
     /** The meshes and bones comprising the model. */
     public ArrayList<SpatialDef> spatials = new ArrayList<SpatialDef>();
-    
+
     public void addSpatial (SpatialDef spatial)
     {
         // put nodes before meshes so that bones are updated before skin
         spatials.add(spatial instanceof NodeDef ?  0 : spatials.size(),
             spatial);
     }
-    
+
     /**
      * Creates the model node defined herein.
      *
@@ -434,16 +437,13 @@ public class ModelDef
     public Model createModel (Properties props, HashMap<String, Spatial> nodes)
     {
         Model model = new Model(props.getProperty("name", "model"), props);
-        
-        // set the overall scale
-        model.setLocalScale(Float.parseFloat(props.getProperty("scale", "1")));
-        
+
         // start by creating the spatials and mapping them to their names
         for (int ii = 0, nn = spatials.size(); ii < nn; ii++) {
             Spatial spatial = spatials.get(ii).getSpatial(props);
             nodes.put(spatial.getName(), spatial);
         }
-        
+
         // then go through again, resolving any name references and attaching
         // root children
         HashSet<Spatial> referenced = new HashSet<Spatial>();
@@ -454,12 +454,12 @@ public class ModelDef
                 model.attachChild(sdef.getSpatial(props));
             }
         }
-        
+
         // create any controllers listed
         String[] controllers = StringUtil.parseStringArray(
             props.getProperty("controllers", ""));
         for (int ii = 0; ii < controllers.length; ii++) {
-            Properties subProps = 
+            Properties subProps =
                 PropertiesUtil.getSubProperties(props, controllers[ii]);
             String node = subProps.getProperty("node", controllers[ii]);
             Spatial target = node.equals(model.getName()) ?
@@ -471,15 +471,24 @@ public class ModelDef
             ModelController ctrl = createController(subProps, target);
             if (ctrl != null) {
                 model.addController(ctrl);
+                referenced.add(target);
             }
         }
-        
+
+        // in non-animated models, merge meshes with the same attributes
+        if (StringUtil.isBlank(props.getProperty("animations"))) {
+            mergeEquivalentMeshes(model, nodes, referenced);
+        }
+
         // get rid of any nodes that serve no purpose
         pruneUnusedNodes(model, nodes, referenced);
-        
+
+        // set the overall scale
+        model.setLocalScale(Float.parseFloat(props.getProperty("scale", "1")));
+
         return model;
     }
-    
+
     /** Creates, configures, and returns a model controller. */
     protected ModelController createController (
         Properties props, Spatial target)
@@ -497,7 +506,7 @@ public class ModelDef
         ctrl.configure(props, target);
         return ctrl;
     }
-    
+
     /** Recursively removes any unused nodes. */
     protected boolean pruneUnusedNodes (
         ModelNode node, HashMap<String, Spatial> nodes,
@@ -516,7 +525,66 @@ public class ModelDef
         }
         return referenced.contains(node) || hasValidChildren;
     }
-    
+
+    /** Merges meshes with the same attributes. */
+    protected void mergeEquivalentMeshes (
+        Model model, HashMap<String, Spatial> nodes, final HashSet<Spatial> referenced)
+    {
+        final HashMap<Object, ArrayList<ModelMesh>> meshes =
+            new HashMap<Object, ArrayList<ModelMesh>>();
+        new SpatialVisitor<ModelMesh>(ModelMesh.class) {
+            public void traverse (Spatial spatial) {
+                // cut out when we encounter referenced nodes
+                if (!referenced.contains(spatial)) {
+                    spatial.updateWorldVectors();
+                    super.traverse(spatial);
+                }
+            }
+            protected void visit (ModelMesh mesh) {
+                // make sure we don't try this with skinned meshes
+                if (mesh instanceof SkinMesh) {
+                    return;
+                }
+                Object key = mesh.getAttributeKey();
+                ArrayList<ModelMesh> list = meshes.get(key);
+                if (list == null) {
+                    meshes.put(key, list = new ArrayList<ModelMesh>());
+                }
+                list.add(mesh);
+            }
+        }.traverse(model);
+
+        for (ArrayList<ModelMesh> list : meshes.values()) {
+            // the first in the list becomes the base
+            ModelMesh base = list.get(0);
+            flattenTransforms(base);
+            model.attachChild(base);
+
+            // the rest are merged with it
+            for (int ii = 1, nn = list.size(); ii < nn; ii++) {
+                ModelMesh mesh = list.get(ii);
+                flattenTransforms(mesh);
+                mesh.getParent().detachChild(mesh);
+                base.merge(mesh);
+            }
+
+            // update the model bound and recenter
+            base.updateModelBound();
+            base.centerVertices();
+        }
+    }
+
+    /** Transforms the mesh's vertices and normals into model coordinates. */
+    protected static void flattenTransforms (ModelMesh mesh)
+    {
+        GeomBatch batch = mesh.getBatch(0);
+        batch.getWorldCoords(batch.getVertexBuffer());
+        batch.getWorldNormals(batch.getNormalBuffer());
+        mesh.getLocalTranslation().zero();
+        mesh.getLocalRotation().loadIdentity();
+        mesh.getLocalScale().set(Vector3f.UNIT_XYZ);
+    }
+
     /** Converts a boxed Integer list to an unboxed int array. */
     protected static int[] toArray (ArrayList<Integer> list)
     {
@@ -526,7 +594,7 @@ public class ModelDef
         }
         return array;
     }
-    
+
     /** Converts a boxed Float list to an unboxed float array. */
     protected static float[] toArray (ArrayList<Float> list)
     {
