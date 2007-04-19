@@ -57,6 +57,14 @@ import com.threerings.util.StringUtil;
 import com.threerings.util.ValueEvent;
 import com.threerings.util.Util;
 
+
+/**
+ * Dispatched when the size of the media being loaded is known.
+ *
+ * @eventType com.threerings.flash.MediaContainer.SIZE_KNOWN
+ */
+[Event(name="mediaSizeKnown", type="com.threerings.util.ValueEvent")]
+
 /**
  * A wrapper class for all media that will be placed on the screen.
  * Subject to change.
@@ -64,7 +72,10 @@ import com.threerings.util.Util;
 public class MediaContainer extends Sprite
 {
     /** A ValueEvent we dispatch when our size is known.
-     * Value: [ width, height ]. */
+     * Value: [ width, height ].
+     *
+     * @eventType mediaSizeKnown
+     */
     public static const SIZE_KNOWN :String = "mediaSizeKnown";
 
     /** A log instance that can be shared by sprites. */
