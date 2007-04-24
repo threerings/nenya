@@ -2,6 +2,8 @@ package com.threerings.flash {
 
 import flash.events.Event;
 
+import flash.filters.GlowFilter;
+
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
@@ -10,12 +12,16 @@ public class FloatingTextAnimation extends TextField
 {
     public static function create (
         text :String, duration :Number = 1000, dy :int = -10,
-        format :TextFormat = null) :FloatingTextAnimation
+        size :int = 18, font :String = "Arial", bold :Boolean = true,
+        color :uint = 0x000000, borderColor :uint = 0xFFFFFF) :FloatingTextAnimation
     {
         var fta :FloatingTextAnimation = new FloatingTextAnimation();
-        if (format != null) {
-            fta.defaultTextFormat = format;
-        }
+        var format :TextFormat = new TextFormat();
+        format.size = size;
+        format.font = font;
+        format.bold = bold;
+        format.color = color;
+        fta.defaultTextFormat = format;
         fta.autoSize = TextFieldAutoSize.CENTER;
         fta.text = text;
         fta.width = fta.textWidth + 5;
@@ -23,6 +29,9 @@ public class FloatingTextAnimation extends TextField
 
         fta.duration = duration;
         fta.dy = dy;
+
+        fta.filters = [ new GlowFilter(borderColor, 1, 2, 2, 255) ];
+
         return fta;
     }
 
@@ -45,8 +54,7 @@ public class FloatingTextAnimation extends TextField
 
     override public function set y (val :Number) :void
     {
-        _startY = val;
-        super.y = (val - height/2);
+        super.y = _startY = (val - height/2);
     }
 
     protected function enterFrame (elapsed :Number) :void
@@ -58,7 +66,7 @@ public class FloatingTextAnimation extends TextField
         }
 
         alpha = 1 - perc;
-        this.y = _startY + (dy * perc);
+        super.y = _startY + (dy * perc);
     }
 
     protected function handleAdded (... ignored) :void
