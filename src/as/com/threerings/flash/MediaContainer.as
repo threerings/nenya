@@ -119,6 +119,7 @@ public class MediaContainer extends Sprite
         }
 
         // set up the new media
+        willShowNewMedia();
         if (StringUtil.endsWith(url.toLowerCase(), ".flv")) {
             setupVideo(url);
 
@@ -145,9 +146,19 @@ public class MediaContainer extends Sprite
             shutdown(false);
         }
 
+        willShowNewMedia();
         addChild(disp);
         _media = disp;
         updateContentDimensions(disp.width, disp.height);
+    }
+
+    /**
+     * A place where subclasses can initialize things prior to showing
+     * new media.
+     */
+    protected function willShowNewMedia () :void
+    {
+        // nada in here
     }
 
     /**
