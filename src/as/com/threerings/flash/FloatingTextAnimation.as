@@ -13,7 +13,9 @@ public class FloatingTextAnimation extends TextField
         format :TextFormat = null) :FloatingTextAnimation
     {
         var fta :FloatingTextAnimation = new FloatingTextAnimation();
-        fta.defaultTextFormat = format;
+        if (format != null) {
+            fta.defaultTextFormat = format;
+        }
         fta.autoSize = TextFieldAutoSize.CENTER;
         fta.text = text;
         fta.width = fta.textWidth + 5;
