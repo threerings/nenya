@@ -9,6 +9,7 @@ import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
 
 public class FloatingTextAnimation extends TextField
+    implements Animation
 {
     public static function create (
         text :String, duration :Number = 1000, dy :int = -10,
@@ -41,10 +42,7 @@ public class FloatingTextAnimation extends TextField
 
     public function FloatingTextAnimation ()
     {
-        addEventListener(Event.ADDED_TO_STAGE, handleAdded);
-        addEventListener(Event.REMOVED_FROM_STAGE, handleRemoved);
-
-        _anim = new AnimationAdapter(enterFrame);
+        AnimationManager.addDisplayAnimation(this);
     }
 
     override public function set x (val :Number) :void
@@ -57,11 +55,12 @@ public class FloatingTextAnimation extends TextField
         super.y = _startY = (val - height/2);
     }
 
-    protected function enterFrame (elapsed :Number) :void
+    // from Animation
+    public function updateAnimation (elapsed :Number) :void
     {
         var perc :Number = elapsed / duration;
         if (perc >= 1) {
-            parent.removeChild(this);
+            AnimationManager.removeDisplayAnimation(this);
             return;
         }
 
@@ -69,18 +68,6 @@ public class FloatingTextAnimation extends TextField
         super.y = _startY + (dy * perc);
     }
 
-    protected function handleAdded (... ignored) :void
-    {
-        _anim.start();
-    }
-
-    protected function handleRemoved (... ignored) :void
-    {
-        _anim.stop();
-    }
-
     protected var _startY :Number;
-
-    protected var _anim :AnimationAdapter;
 }
 }

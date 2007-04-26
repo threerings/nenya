@@ -11,6 +11,7 @@ import flash.text.TextFormat;
 import flash.utils.getTimer; // function import
 
 public class TextCharAnimation extends Sprite
+    implements Animation
 {
     public function TextCharAnimation (text :String, fn :Function, format :TextFormat)
     {
@@ -40,8 +41,15 @@ public class TextCharAnimation extends Sprite
         alignment.y = -(h/2);
         addChild(alignment);
 
-        addEventListener(Event.ADDED_TO_STAGE, handleAdded);
-        addEventListener(Event.REMOVED_FROM_STAGE, handleRemoved);
+        AnimationManager.addDisplayAnimation(this);
+    }
+
+    // from Animation
+    public function updateAnimation (elapsed :Number) :void
+    {
+        for (var ii :int = 0; ii < _texts.length; ii++) {
+            _texts[ii].y = _fn(elapsed, ii);
+        }
     }
 
     protected function createTextField (format :TextFormat) :TextField
@@ -49,27 +57,6 @@ public class TextCharAnimation extends Sprite
         var tf :TextField = new TextField();
         tf.defaultTextFormat = format;
         return tf;
-    }
-
-    protected function handleAdded (... ignored) :void
-    {
-        // TODO: use animation stuff instead?
-        addEventListener(Event.ENTER_FRAME, handleFrame);
-        _startStamp = getTimer();
-        handleFrame(); // update immediately...
-    }
-
-    protected function handleRemoved (... ignored) :void
-    {
-        removeEventListener(Event.ENTER_FRAME, handleFrame);
-    }
-
-    protected function handleFrame (... ignored) :void
-    {
-        var elapsed :Number = getTimer() - _startStamp;
-        for (var ii :int = 0; ii < _texts.length; ii++) {
-            _texts[ii].y = _fn(elapsed, ii);
-        }
     }
 
     protected var _startStamp :Number;
