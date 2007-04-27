@@ -35,6 +35,7 @@ import java.util.Properties;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
@@ -126,6 +127,7 @@ public class ModelMesh extends TriMesh
         _filterMode = "nearest".equals(tprops.getProperty("filter")) ?
                 Texture.FM_NEAREST : Texture.FM_LINEAR;
         _mipMapMode = getMipMapMode(tprops.getProperty("mipmap"));
+        _compress = Boolean.parseBoolean(tprops.getProperty("compress", "true"));
         String emissive = tprops.getProperty("emissive");
         if (Boolean.parseBoolean(emissive)) {
             _emissive = true;
@@ -150,7 +152,7 @@ public class ModelMesh extends TriMesh
     public Object getAttributeKey ()
     {
         return new AttributeKey(_textureKey, _textures, _sphereMapped,
-            _filterMode, _mipMapMode, _emissiveMap, _emissive, _additive,
+            _filterMode, _mipMapMode, _compress, _emissiveMap, _emissive, _additive,
             _solid, _transparent, _alphaThreshold, _translucent);
     }
 
@@ -326,6 +328,7 @@ public class ModelMesh extends TriMesh
         mstore._sphereMapped = _sphereMapped;
         mstore._filterMode = _filterMode;
         mstore._mipMapMode = _mipMapMode;
+        mstore._compress = _compress;
         mstore._emissiveMap = _emissiveMap;
         mstore._emissive = _emissive;
         mstore._additive = _additive;
@@ -366,6 +369,7 @@ public class ModelMesh extends TriMesh
         _sphereMapped = capsule.readBoolean("sphereMapped", false);
         _filterMode = capsule.readInt("filterMode", Texture.FM_LINEAR);
         _mipMapMode = capsule.readInt("mipMapMode", Texture.MM_LINEAR_LINEAR);
+        _compress = capsule.readBoolean("compress", true);
         _emissiveMap = capsule.readString("emissiveMap", null);
         _emissive = capsule.readBoolean("emissive", false);
         _additive = capsule.readBoolean("additive", false);
@@ -400,6 +404,7 @@ public class ModelMesh extends TriMesh
         capsule.write(_sphereMapped, "sphereMapped", false);
         capsule.write(_filterMode, "filterMode", Texture.FM_LINEAR);
         capsule.write(_mipMapMode, "mipMapMode", Texture.MM_LINEAR_LINEAR);
+        capsule.write(_compress, "compress", true);
         capsule.write(_emissiveMap, "emissiveMap", null);
         capsule.write(_emissive, "emissive", false);
         capsule.write(_additive, "additive", false);
@@ -458,6 +463,15 @@ public class ModelMesh extends TriMesh
             }
             tex.setFilter(_filterMode);
             tex.setMipmapState(_mipMapMode);
+            if (_compress && _tstates[ii].isS3TCAvailable()) {
+                Image image = tex.getImage();
+                int type = image.getType();
+                if (type == Image.RGB888) {
+                    image.setType(Image.RGB888_DXT1);
+                } else if (type == Image.RGBA8888) {
+                    image.setType(Image.RGBA8888_DXT5);
+                }
+            }
             if (emissiveTex != null) {
                 _tstates[ii] = DisplaySystem.getDisplaySystem().
                     getRenderer().createTextureState();
@@ -844,6 +858,9 @@ public class ModelMesh extends TriMesh
 
     /** The mipmap mode to use on minification. */
     protected int _mipMapMode;
+
+    /** Whether or not to use compressed textures, if available. */
+    protected boolean _compress;
 
     /** The emissive map, if specified. */
     protected String _emissiveMap;
