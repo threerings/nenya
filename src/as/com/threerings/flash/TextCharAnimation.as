@@ -13,7 +13,7 @@ import flash.utils.getTimer; // function import
 public class TextCharAnimation extends Sprite
     implements Animation
 {
-    public function TextCharAnimation (text :String, fn :Function, format :TextFormat)
+    public function TextCharAnimation (text :String, fn :Function, textArgs :Object)
     {
         _fn = fn;
 
@@ -23,11 +23,7 @@ public class TextCharAnimation extends Sprite
         var h :Number = 0;
         var tf :TextField;
         for (var ii :int = 0; ii < text.length; ii++) {
-            tf = createTextField(format);
-            tf.autoSize = TextFieldAutoSize.CENTER;
-            tf.text = text.charAt(ii);
-            tf.width = tf.textWidth + 5;
-            tf.height = tf.textHeight + 5;
+            tf = TextFieldUtil.createField(text.charAt(ii), textArgs);
 
             tf.x = w;
             w += tf.width;
@@ -51,15 +47,6 @@ public class TextCharAnimation extends Sprite
             _texts[ii].y = _fn(elapsed, ii);
         }
     }
-
-    protected function createTextField (format :TextFormat) :TextField
-    {
-        var tf :TextField = new TextField();
-        tf.defaultTextFormat = format;
-        return tf;
-    }
-
-    protected var _startStamp :Number;
 
     protected var _texts :Array = [];
 

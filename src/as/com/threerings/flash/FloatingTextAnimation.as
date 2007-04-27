@@ -1,5 +1,7 @@
 package com.threerings.flash {
 
+import flash.display.Sprite;
+
 import flash.events.Event;
 
 import flash.filters.GlowFilter;
@@ -8,9 +10,10 @@ import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
 
-public class FloatingTextAnimation extends TextField
+public class FloatingTextAnimation extends Sprite
     implements Animation
 {
+/*
     public static function create (
         text :String, duration :Number = 1000, dy :int = -10,
         size :int = 18, font :String = "Arial", bold :Boolean = true,
@@ -35,24 +38,29 @@ public class FloatingTextAnimation extends TextField
 
         return fta;
     }
+    */
 
     public var duration :Number;
 
     public var dy :Number;
 
-    public function FloatingTextAnimation ()
+    public function FloatingTextAnimation (
+        text :String, textArgs :Object = null, duration :Number = 1000, dy :int = -10)
     {
-        AnimationManager.addDisplayAnimation(this);
-    }
+        var tf :TextField = TextFieldUtil.createField(text, textArgs);
+        tf.x = -(tf.width/2)
+        tf.y = -(tf.height/2);
+        addChild(tf);
 
-    override public function set x (val :Number) :void
-    {
-        super.x = (val - width/2);
+        this.duration = duration;
+        this.dy = dy;
+
+        AnimationManager.addDisplayAnimation(this);
     }
 
     override public function set y (val :Number) :void
     {
-        super.y = _startY = (val - height/2);
+        super.y = _startY = val;
     }
 
     // from Animation

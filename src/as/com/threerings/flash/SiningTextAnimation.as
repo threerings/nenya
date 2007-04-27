@@ -4,9 +4,9 @@ import flash.text.TextFormat;
 
 public class SiningTextAnimation extends TextCharAnimation
 {
-    public function SiningTextAnimation (text :String, format :TextFormat)
+    public function SiningTextAnimation (text :String, textArgs :Object)
     {
-        super(text, movementFn, format);
+        super(text, movementFn, textArgs);
     }
 
     protected function movementFn (elapsed :Number, index :Number) :Number
