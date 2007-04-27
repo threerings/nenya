@@ -32,7 +32,9 @@ public class AnimationManager
         // and update it immediately
         anim.updateAnimation(0);
 
-        if (!_framer) {
+        // we re-check that the anims are non-empty because the first animation
+        // to be added could be removed as a result of calling updateAnimation() on it.
+        if (!_framer && _anims.length > 0) {
             _framer = new Sprite();
             _framer.addEventListener(Event.ENTER_FRAME, frameHandler);
         }
@@ -53,7 +55,7 @@ public class AnimationManager
         _anims.splice(dex, 2);
 
         // See if we should clean up a bit
-        if (_anims.length == 0) {
+        if (_anims.length == 0 && _framer) {
             _framer.removeEventListener(Event.ENTER_FRAME, frameHandler);
             _framer = null;
         }
