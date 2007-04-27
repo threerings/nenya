@@ -24,12 +24,13 @@ public class AnimationManager
     {
         var dex :int = _anims.indexOf(anim);
         if (dex == -1) {
+            dex = _anims.length;
             _anims.push(anim);
-            _anims.push(NaN);
-
-        } else {
-            _anims[dex + 1] = NaN; // mark it as starting
         }
+        _anims[dex + 1] = getTimer(); // mark it as starting
+
+        // and update it immediately
+        anim.updateAnimation(0);
 
         if (!_framer) {
             _framer = new Sprite();
@@ -108,12 +109,7 @@ public class AnimationManager
         var anim :Animation;
         var startStamp :Number;
         for (var ii :int = _anims.length - 2; ii >= 0; ii -= 2) {
-            anim = Animation(_anims[ii]);
-            startStamp = Number(_anims[ii + 1]);
-            if (isNaN(startStamp)) {
-                _anims[ii + 1] = startStamp = now;
-            }
-            anim.updateAnimation(now - startStamp);
+            Animation(_anims[ii]).updateAnimation(now - Number(_anims[ii + 1]));
         }
     }
 
