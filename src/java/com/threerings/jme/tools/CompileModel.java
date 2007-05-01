@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
 import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;
@@ -43,6 +44,7 @@ import com.threerings.jme.model.Model;
 import com.threerings.jme.model.ModelMesh;
 import com.threerings.jme.model.ModelNode;
 import com.threerings.jme.model.SkinMesh;
+import com.threerings.jme.tools.ModelDef.TransformNode;
 import com.threerings.jme.tools.xml.AnimationParser;
 import com.threerings.jme.tools.xml.ModelParser;
 
@@ -106,18 +108,32 @@ public class CompileModel
 
         System.out.println("Compiling to " + target + "...");
 
-        // load the model content
+        // parse the model and animations
         ModelDef mdef = _mparser.parseModel(content.toString());
+        AnimationDef[] adefs = new AnimationDef[anims.length];
+        for (int ii = 0; ii < adefs.length; ii++) {
+            System.out.println("  Adding " + afiles[ii] + "...");
+            adefs[ii] = _aparser.parseAnimation(afiles[ii].toString());
+        }
+
+        // preprocess the model and animations to determine which nodes never move, which never
+        // move within an animation, and which never move with respect to others
+        HashMap<String, TransformNode> tnodes = new HashMap<String, TransformNode>();
+        Node troot = mdef.createTransformTree(props, tnodes);
+        for (AnimationDef adef : adefs) {
+            adef.filterTransforms(troot, tnodes);
+        }
+        mdef.mergeSpatials(tnodes);
+
+        // load the model content
         HashMap<String, Spatial> nodes = new HashMap<String, Spatial>();
         Model model = mdef.createModel(props, nodes);
         model.initPrototype();
 
         // load the animations, if any
         for (int ii = 0; ii < anims.length; ii++) {
-            System.out.println("  Adding " + afiles[ii] + "...");
-            AnimationDef adef = _aparser.parseAnimation(afiles[ii].toString());
-            model.addAnimation(anims[ii], adef.createAnimation(
-                PropertiesUtil.getSubProperties(props, anims[ii]), nodes));
+            model.addAnimation(anims[ii], adefs[ii].createAnimation(
+                PropertiesUtil.getSubProperties(props, anims[ii]), nodes, tnodes));
         }
 
         // write and return the model

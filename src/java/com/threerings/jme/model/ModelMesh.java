@@ -145,51 +145,6 @@ public class ModelMesh extends TriMesh
     }
 
     /**
-     * Returns an opaque object representing this mesh's attributes.  The
-     * object will implement {@link Object#hashCode} and {@link Object#equals}
-     * so that meshes with the same attributes will have identical keys.
-     */
-    public Object getAttributeKey ()
-    {
-        return new AttributeKey(_textureKey, _textures, _sphereMapped,
-            _filterMode, _mipMapMode, _compress, _emissiveMap, _emissive, _additive,
-            _solid, _transparent, _alphaThreshold, _translucent);
-    }
-
-    /**
-     * Merges another mesh into this one.  The mesh is assumed to be in the same coordinate system
-     * and have the same attributes.
-     */
-    public void merge (ModelMesh mesh)
-    {
-        TriangleBatch batch = (TriangleBatch)getBatch(0);
-        TriangleBatch mbatch = (TriangleBatch)mesh.getBatch(0);
-
-        int vcount = batch.getVertexCount();
-        batch.setVertexBuffer(concatenate(batch.getVertexBuffer(), mbatch.getVertexBuffer()));
-        batch.setNormalBuffer(concatenate(batch.getNormalBuffer(), mbatch.getNormalBuffer()));
-        if (batch.getColorBuffer() != null && mbatch.getColorBuffer() != null) {
-            batch.setColorBuffer(concatenate(batch.getColorBuffer(), mbatch.getColorBuffer()));
-        }
-        batch.setTextureBuffer(concatenate(
-            batch.getTextureBuffer(0), mbatch.getTextureBuffer(0)), 0);
-        for (int ii = 1, nn = getTextureCount(); ii < nn; ii++) {
-            batch.setTextureBuffer(batch.getTextureBuffer(0), ii);
-        }
-
-        IntBuffer ibuf = batch.getIndexBuffer(), mibuf = mbatch.getIndexBuffer();
-        IntBuffer nibuf = BufferUtils.createIntBuffer(ibuf.capacity() + mibuf.capacity());
-        ibuf.clear();
-        nibuf.put(ibuf);
-        mibuf.clear();
-        while (mibuf.hasRemaining()) {
-            nibuf.put(mibuf.get() + vcount);
-        }
-        nibuf.clear();
-        batch.setIndexBuffer(nibuf);
-    }
-
-    /**
      * Adjusts the vertices and the transform of the mesh so that the mesh's
      * position lies at the center of its bounding volume.
      */
@@ -817,30 +772,6 @@ public class ModelMesh extends TriMesh
         /** Temporarily stores the original states. */
         protected RenderState[] _ostates =
             new RenderState[RenderState.RS_MAX_STATE];
-    }
-
-    /** A wrapper around an array of attributes that uses {@link Arrays#deepHashCode} and
-     * {@link Arrays#deepEquals} for hashing/comparison. */
-    protected static class AttributeKey
-    {
-        public AttributeKey (Object... attrs)
-        {
-            _attrs = attrs;
-        }
-
-        @Override // documentation inherited
-        public int hashCode ()
-        {
-            return Arrays.deepHashCode(_attrs);
-        }
-
-        @Override // documentation inherited
-        public boolean equals (Object other)
-        {
-            return Arrays.deepEquals(_attrs, ((AttributeKey)other)._attrs);
-        }
-
-        protected Object[] _attrs;
     }
 
     /** The name of the texture specified in the model file, which acts as a

@@ -54,6 +54,7 @@ import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.HashIntMap;
 
 import com.threerings.jme.Log;
+import com.threerings.jme.util.JmeUtil;
 
 /**
  * A triangle mesh that deforms according to a bone hierarchy.
@@ -67,10 +68,10 @@ public class SkinMesh extends ModelMesh
     {
         /** The number of vertices in this weight group. */
         public int vertexCount;
-        
+
         /** The bones influencing this group. */
         public Bone[] bones;
-        
+
         /** The array of interleaved weights (of length <code>vertexCount *
          * boneIndices.length</code>): weights for first vertex, weights for
          * second, etc. */
@@ -92,13 +93,13 @@ public class SkinMesh extends ModelMesh
             wgroup.weights = weights;
             return wgroup;
         }
-        
+
         // documentation inherited
         public Class getClassTag ()
         {
             return getClass();
         }
-        
+
         // documentation inherited
         public void read (JMEImporter im)
             throws IOException
@@ -119,7 +120,7 @@ public class SkinMesh extends ModelMesh
             capsule.write(bones, "bones", null);
             capsule.write(weights, "weights", null);
         }
-    
+
         private static final long serialVersionUID = 1;
     }
 
@@ -129,24 +130,24 @@ public class SkinMesh extends ModelMesh
     {
         /** The node that defines the bone's position. */
         public ModelNode node;
-        
+
         /** The inverse of the bone's model space reference transform. */
         public transient Matrix4f invRefTransform;
-        
+
         /** The bone's current transform in model space. */
         public transient Matrix4f transform;
-        
+
         public Bone (ModelNode node)
         {
             this();
             this.node = node;
         }
-        
+
         public Bone ()
         {
             transform = new Matrix4f();
         }
-        
+
         /**
          * Rebinds this bone for a prototype instance.
          *
@@ -159,13 +160,13 @@ public class SkinMesh extends ModelMesh
             bone.transform = new Matrix4f();
             return bone;
         }
-        
+
         // documentation inherited
         public Class getClassTag ()
         {
             return getClass();
         }
-        
+
         // documentation inherited
         public void read (JMEImporter im)
             throws IOException
@@ -181,17 +182,17 @@ public class SkinMesh extends ModelMesh
             OutputCapsule capsule = ex.getCapsule(this);
             capsule.write(node, "node", null);
         }
-    
+
         private static final long serialVersionUID = 1;
     }
-    
+
     /**
      * No-arg constructor for deserialization.
      */
     public SkinMesh ()
     {
     }
-    
+
     /**
      * Creates an empty mesh.
      */
@@ -199,7 +200,7 @@ public class SkinMesh extends ModelMesh
     {
         super(name);
     }
-    
+
     /**
      * Sets the array of weight groups that determine how bones affect
      * each vertex.
@@ -207,7 +208,7 @@ public class SkinMesh extends ModelMesh
     public void setWeightGroups (WeightGroup[] weightGroups)
     {
         _weightGroups = weightGroups;
-        
+
         // compile a list of all referenced bones
         HashSet<Bone> bones = new HashSet<Bone>();
         for (WeightGroup group : weightGroups) {
@@ -215,18 +216,18 @@ public class SkinMesh extends ModelMesh
         }
         _bones = bones.toArray(new Bone[bones.size()]);
     }
-    
+
     @Override // documentation inherited
     public void reconstruct (
         FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors,
         FloatBuffer textures, IntBuffer indices)
     {
         super.reconstruct(vertices, normals, colors, textures, indices);
-        
+
         // initialize the quantized frame table
         _frames = new HashIntMap<Object>();
     }
-    
+
     @Override // documentation inherited
     public Spatial putClone (Spatial store, Model.CloneCreator properties)
     {
@@ -264,7 +265,7 @@ public class SkinMesh extends ModelMesh
         mstore._nbuf = new float[_nbuf.length];
         return mstore;
     }
-    
+
     @Override // documentation inherited
     public void read (JMEImporter im)
         throws IOException
@@ -274,7 +275,7 @@ public class SkinMesh extends ModelMesh
         setWeightGroups(ArrayUtil.copy(capsule.readSavableArray(
             "weightGroups", null), new WeightGroup[0]));
     }
-    
+
     @Override // documentation inherited
     public void write (JMEExporter ex)
         throws IOException
@@ -283,7 +284,7 @@ public class SkinMesh extends ModelMesh
         OutputCapsule capsule = ex.getCapsule(this);
         capsule.write(_weightGroups, "weightGroups", null);
     }
-    
+
     @Override // documentation inherited
     public void expandModelBounds ()
     {
@@ -292,14 +293,14 @@ public class SkinMesh extends ModelMesh
         updateModelBound();
         getBatch(0).getModelBound().mergeLocal(obound);
     }
-    
+
     @Override // documentation inherited
     public void setReferenceTransforms ()
     {
         _invRefTransform = new Matrix4f();
         if (parent instanceof ModelNode) {
             Matrix4f transform = new Matrix4f();
-            ModelNode.setTransform(getLocalTranslation(), getLocalRotation(),
+            JmeUtil.setTransform(getLocalTranslation(), getLocalRotation(),
                 getLocalScale(), transform);
             ((ModelNode)parent).getModelTransform().mult(transform,
                 _invRefTransform);
@@ -310,7 +311,7 @@ public class SkinMesh extends ModelMesh
                 _invRefTransform.mult(bone.node.getModelTransform()).invert();
         }
     }
-    
+
     @Override // documentation inherited
     public void lockStaticMeshes (
         Renderer renderer, boolean useVBOs, boolean useDisplayLists)
@@ -325,14 +326,14 @@ public class SkinMesh extends ModelMesh
         }
         _useDisplayLists = useDisplayLists && !_translucent;
     }
-    
+
     @Override // documentation inherited
     public void storeMeshFrame (int frameId, boolean blend)
     {
         _storeFrameId = frameId;
         _storeBlend = blend;
     }
-    
+
     @Override // documentation inherited
     public void setMeshFrame (int frameId)
     {
@@ -346,7 +347,7 @@ public class SkinMesh extends ModelMesh
             getBatch(0).updateRenderState();
         }
     }
-    
+
     @Override // documentation inherited
     public void blendMeshFrames (int frameId1, int frameId2, float alpha)
     {
@@ -359,7 +360,7 @@ public class SkinMesh extends ModelMesh
         nbuf.rewind();
         nbuf.put(_nbuf);
     }
-    
+
     @Override // documentation inherited
     public void updateWorldData (float time)
     {
@@ -373,7 +374,7 @@ public class SkinMesh extends ModelMesh
                 bone.transform);
             bone.transform.multLocal(bone.invRefTransform);
         }
-        
+
         // deform the mesh according to the positions of the bones (this code
         // is ugly as sin because it's optimized at a low level)
         Bone[] bones;
@@ -397,11 +398,11 @@ public class SkinMesh extends ModelMesh
                 for (kk = 0; kk < bones.length; kk++) {
                     m = bones[kk].transform;
                     weight = weights[ww++];
-                    
+
                     vx += (ovx*m.m00 + ovy*m.m01 + ovz*m.m02 + m.m03) * weight;
                     vy += (ovx*m.m10 + ovy*m.m11 + ovz*m.m12 + m.m13) * weight;
                     vz += (ovx*m.m20 + ovy*m.m21 + ovz*m.m22 + m.m23) * weight;
-                    
+
                     nx += (onx*m.m00 + ony*m.m01 + onz*m.m02) * weight;
                     ny += (onx*m.m10 + ony*m.m11 + onz*m.m12) * weight;
                     nz += (onx*m.m20 + ony*m.m21 + onz*m.m22) * weight;
@@ -414,7 +415,7 @@ public class SkinMesh extends ModelMesh
                 _nbuf[bidx++] = nz;
             }
         }
-        
+
         // if skinning in real time, copy the data from arrays to buffers;
         // otherwise, store the mesh as an animation frame
         if (_storeFrameId == 0) {
@@ -428,7 +429,7 @@ public class SkinMesh extends ModelMesh
             _storeFrameId = -1;
         }
     }
-    
+
     /**
      * Stores the current frame data for later use.
      */
@@ -465,12 +466,12 @@ public class SkinMesh extends ModelMesh
             _frames.put(_storeFrameId, tbatch);
         }
     }
-    
+
     @Override // documentation inherited
     protected void storeOriginalBuffers ()
     {
         super.storeOriginalBuffers();
-        
+
         FloatBuffer vbuf = getVertexBuffer(0), nbuf = getNormalBuffer(0);
         vbuf.rewind();
         nbuf.rewind();
@@ -479,19 +480,19 @@ public class SkinMesh extends ModelMesh
         _vbuf = new float[_ovbuf.length];
         _nbuf = new float[_onbuf.length];
     }
-    
+
     /** A stored frame used for linear blending. */
     protected static class BlendFrame
     {
         /** The skinned vertex and normal values. */
         public float[] vbuf, nbuf;
-        
+
         public BlendFrame (float[] vbuf, float[] nbuf)
         {
             this.vbuf = vbuf;
             this.nbuf = nbuf;
         }
-        
+
         public void blend (
             BlendFrame next, float alpha, float[] rvbuf, float[] rnbuf)
         {
@@ -502,26 +503,26 @@ public class SkinMesh extends ModelMesh
                 rnbuf[ii] = nbuf[ii] * ialpha + nnbuf[ii] * alpha;
             }
         }
-    } 
-    
+    }
+
     /** Pre-skinned {@link TriangleBatch}es or {@link BlendFrame}s shared
      * between all instances corresponding to frame ids from
      * {@link #storeAnimationFrame}. */
     protected HashIntMap<Object> _frames;
-    
+
     /** Whether or to use display lists if VBOs are unavailable for quantized
      * meshes. */
     protected boolean _useDisplayLists;
-    
+
     /** The inverse of the model space reference transform. */
     protected Matrix4f _invRefTransform;
-    
+
     /** The groups of vertices influenced by different sets of bones. */
     protected WeightGroup[] _weightGroups;
-    
+
     /** The bones referenced by the weight groups. */
     protected Bone[] _bones;
-    
+
     /** The original (undeformed) vertex and normal buffers and the deformed
      * versions. */
     protected float[] _onbuf, _ovbuf, _nbuf;
@@ -530,12 +531,12 @@ public class SkinMesh extends ModelMesh
      * and skin the mesh as normal.  If -1, a frame has been stored and thus
      * skinning should only take place when further frames are requested. */
     protected int _storeFrameId;
-    
+
     /** Whether or not the stored frame id will be used for blending. */
     protected boolean _storeBlend;
-    
+
     /** A dummy mesh that simply hold transformation values. */
     protected static final TriMesh DUMMY_MESH = new TriMesh();
-    
+
     private static final long serialVersionUID = 1;
 }

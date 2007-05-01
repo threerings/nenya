@@ -39,13 +39,18 @@ import java.util.Set;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.FastMath;
+import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.batch.GeomBatch;
 import com.jme.util.geom.BufferUtils;
 
+import com.samskivert.util.ObjectUtil;
 import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
+import com.samskivert.util.Tuple;
 
 import com.threerings.jme.Log;
 import com.threerings.jme.model.Model;
@@ -53,6 +58,7 @@ import com.threerings.jme.model.ModelController;
 import com.threerings.jme.model.ModelMesh;
 import com.threerings.jme.model.ModelNode;
 import com.threerings.jme.model.SkinMesh;
+import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.SpatialVisitor;
 
 /**
@@ -74,6 +80,21 @@ public class ModelDef
         public float[] translation;
         public float[] rotation;
         public float[] scale;
+
+        /**
+         * Stores the names of all bones referenced by this spatial in the supplied set.
+         */
+        public void getBoneNames (HashSet<String> bones)
+        {
+            // nothing by default
+        }
+
+        /** Checks whether it's possible (disregarding issues of transformation) to merge
+         * the specified spatial into this one. */
+        public abstract boolean canMerge (Properties props, SpatialDef other);
+
+        /** Merges another spatial into this one. */
+        public abstract void merge (SpatialDef other, Matrix4f xform);
 
         /** Returns a JME node for this definition. */
         public Spatial getSpatial (Properties props)
@@ -156,6 +177,42 @@ public class ModelDef
         }
 
         // documentation inherited
+        public boolean canMerge (Properties props, SpatialDef other)
+        {
+            if (getClass() != other.getClass()) {
+                return false; // require exact class match
+            }
+            TriMeshDef omesh = (TriMeshDef)other;
+            return solid == omesh.solid && transparent == omesh.transparent &&
+                ObjectUtil.equals(texture, omesh.texture) &&
+                PropertiesUtil.getSubProperties(props, name).equals(
+                    PropertiesUtil.getSubProperties(props, omesh.name));
+        }
+
+        // documentation inherited
+        public void merge (SpatialDef other, Matrix4f xform)
+        {
+            TriMeshDef omesh = (TriMeshDef)other;
+
+            // prepend the inverse of the offset transformation
+            xform = getOffsetTransform().invertLocal().multLocal(xform);
+
+            // and append the other's offset
+            xform.multLocal(omesh.getOffsetTransform());
+
+            // extract the rotation to transform normals
+            Quaternion xrot = xform.toRotationQuat();
+
+            // transform the vertices and add them in
+            for (Vertex vertex : omesh.vertices) {
+                vertex.transform(xform, xrot);
+            }
+            for (int idx : omesh.indices) {
+                addVertex(omesh.vertices.get(idx));
+            }
+        }
+
+        // documentation inherited
         public Spatial createSpatial (Properties props)
         {
             ModelNode node = new ModelNode(name);
@@ -165,6 +222,24 @@ public class ModelDef
                 node.attachChild(_mesh);
             }
             return node;
+        }
+
+        /** Gets the matrix representing the offset transform. */
+        protected Matrix4f getOffsetTransform ()
+        {
+            Vector3f otrans = new Vector3f(), oscale = new Vector3f(1f, 1f, 1f);
+            Quaternion orot = new Quaternion();
+            if (offsetTranslation != null) {
+                otrans.set(offsetTranslation[0], offsetTranslation[1], offsetTranslation[2]);
+            }
+            if (offsetRotation != null) {
+                orot.set(offsetRotation[0], offsetRotation[1], offsetRotation[2],
+                    offsetRotation[3]);
+            }
+            if (offsetScale != null) {
+                oscale.set(offsetScale[0], offsetScale[1], offsetScale[2]);
+            }
+            return JmeUtil.setTransform(otrans, orot, oscale, new Matrix4f());
         }
 
         /** Creates the mesh to attach to the node. */
@@ -230,6 +305,14 @@ public class ModelDef
     public static class SkinMeshDef extends TriMeshDef
     {
         @Override // documentation inherited
+        public void getBoneNames (HashSet<String> bones)
+        {
+            for (Vertex vertex : vertices) {
+                bones.addAll(((SkinVertex)vertex).boneWeights.keySet());
+            }
+        }
+
+        @Override // documentation inherited
         protected ModelMesh createMesh ()
         {
             return new SkinMesh("mesh");
@@ -250,6 +333,7 @@ public class ModelDef
             HashMap<String, SkinMesh.Bone> bones =
                 new HashMap<String, SkinMesh.Bone>();
             int ii = 0;
+            int mweights = 0, tweights = 0;
             for (Map.Entry<Set<String>, WeightGroupDef> entry :
                 _groups.entrySet()) {
                 SkinMesh.WeightGroup wgroup = new SkinMesh.WeightGroup();
@@ -267,6 +351,8 @@ public class ModelDef
                     wgroup.bones[jj++] = bone;
                 }
                 wgroup.weights = toArray(entry.getValue().weights);
+                tweights += wgroup.bones.length;
+                mweights = Math.max(wgroup.bones.length, mweights);
                 wgroups[ii++] = wgroup;
             }
             ((SkinMesh)_mesh).setWeightGroups(wgroups);
@@ -316,6 +402,18 @@ public class ModelDef
     public static class NodeDef extends SpatialDef
     {
         // documentation inherited
+        public boolean canMerge (Properties props, SpatialDef other)
+        {
+            return false;
+        }
+
+        // documentation inherited
+        public void merge (SpatialDef other, Matrix4f xform)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        // documentation inherited
         public Spatial createSpatial (Properties props)
         {
             return new ModelNode(name);
@@ -328,6 +426,21 @@ public class ModelDef
         public float[] location;
         public float[] normal;
         public float[] tcoords;
+
+        public void transform (Matrix4f xform, Quaternion xrot)
+        {
+            Vector3f xvec = new Vector3f(location[0], location[1], location[2]);
+            xform.mult(xvec, xvec);
+            location[0] = xvec.x;
+            location[1] = xvec.y;
+            location[2] = xvec.z;
+
+            xvec.set(normal[0], normal[1], normal[2]);
+            xrot.mult(xvec, xvec);
+            normal[0] = xvec.x;
+            normal[1] = xvec.y;
+            normal[2] = xvec.z;
+        }
 
         public void setInBuffers (
             FloatBuffer vbuf, FloatBuffer nbuf, FloatBuffer tbuf)
@@ -418,6 +531,99 @@ public class ModelDef
         public ArrayList<Float> weights = new ArrayList<Float>();
     }
 
+    /** Contains the transform of a node for preprocessing. */
+    public static class TransformNode extends Node
+    {
+        /** The source definition. */
+        public SpatialDef spatial;
+
+        /** If true, this node is referenced by name (as a bone or parent) and cannot be merged
+         * into another. */
+        public boolean referenced;
+
+        /** If true, this node is a controller target; nodes beneath it can only be merged with
+         * other descendants. */
+        public boolean controlled;
+
+        /** The node's current local transform. */
+        public Matrix4f localTransform = new Matrix4f();
+
+        /** The node's current world space transform. */
+        public Matrix4f worldTransform = new Matrix4f();
+
+        /** The node's local transform in the original model, or <code>null</code> if the node's
+         * transform has diverged from the original. */
+        public Matrix4f baseLocalTransform;
+
+        /** The relative transforms between this and all other loosely compatible nodes not yet
+         * eliminated.  As soon as the relative transform diverges in the course of preprocessing
+         * an animation, the node/transform pair is removed from the list. */
+        public ArrayList<Tuple<TransformNode, Matrix4f>> relativeTransforms;
+
+        public TransformNode (SpatialDef spatial)
+        {
+            super(spatial.name);
+            this.spatial = spatial;
+            setLocalTransform(spatial.translation, spatial.rotation, spatial.scale);
+        }
+
+        public void setLocalTransform (float[] translation, float[] rotation, float[] scale)
+        {
+            getLocalTranslation().set(translation[0], translation[1], translation[2]);
+            getLocalRotation().set(rotation[0], rotation[1], rotation[2], rotation[3]);
+            getLocalScale().set(scale[0], scale[1], scale[2]);
+            JmeUtil.setTransform(
+                getLocalTranslation(), getLocalRotation(), getLocalScale(), localTransform);
+        }
+
+        @Override // documentation inherited
+        public void updateWorldVectors ()
+        {
+            super.updateWorldVectors();
+            JmeUtil.setTransform(
+                getWorldTranslation(), getWorldRotation(), getWorldScale(), worldTransform);
+        }
+
+        public boolean canMerge (Properties props, TransformNode onode)
+        {
+            // nodes must have same controlled ancestor
+            return !onode.referenced && spatial.canMerge(props, onode.spatial) &&
+                getControlledAncestor() == onode.getControlledAncestor();
+        }
+
+        protected Node getControlledAncestor ()
+        {
+            Node ref = this;
+            while (ref instanceof TransformNode && !((TransformNode)ref).controlled) {
+                ref = ref.getParent();
+            }
+            return ref;
+        }
+
+        public void cullDivergentTransforms ()
+        {
+            if (baseLocalTransform != null && !epsilonEquals(localTransform, baseLocalTransform)) {
+                baseLocalTransform = null;
+            }
+            for (Iterator<Tuple<TransformNode, Matrix4f>> it = relativeTransforms.iterator();
+                    it.hasNext(); ) {
+                Tuple<TransformNode, Matrix4f> tuple = it.next();
+                if (!epsilonEquals(getRelativeTransform(tuple.left), tuple.right)) {
+                    it.remove();
+                }
+            }
+        }
+
+        public Matrix4f getRelativeTransform (TransformNode other)
+        {
+            // return the matrix that takes vertices from the space of the other node
+            // into the space of this one
+            Matrix4f inv = new Matrix4f();
+            worldTransform.invert(inv);
+            return inv.mult(other.worldTransform);
+        }
+    }
+
     /** The meshes and bones comprising the model. */
     public ArrayList<SpatialDef> spatials = new ArrayList<SpatialDef>();
 
@@ -426,6 +632,85 @@ public class ModelDef
         // put nodes before meshes so that bones are updated before skin
         spatials.add(spatial instanceof NodeDef ?  0 : spatials.size(),
             spatial);
+    }
+
+    /**
+     * Creates and returns a transform tree representing the model for preprocessing.
+     */
+    public Node createTransformTree (Properties props, HashMap<String, TransformNode> nodes)
+    {
+        // create the nodes and map them by name
+        for (SpatialDef spatial : spatials) {
+            nodes.put(spatial.name, new TransformNode(spatial));
+        }
+
+        // resolve the parents and collect the names of the bones
+        Node root = new Node("root");
+        HashSet<String> bones = new HashSet<String>();
+        for (TransformNode node : nodes.values()) {
+            if (node.spatial.parent == null) {
+                root.attachChild(node);
+            } else {
+                TransformNode pnode = nodes.get(node.spatial.parent);
+                if (pnode != null) {
+                    pnode.attachChild(node);
+                    pnode.referenced = true;
+                }
+            }
+            node.spatial.getBoneNames(bones);
+        }
+
+        // mark the bones as referenced
+        for (String name : bones) {
+            TransformNode node = nodes.get(name);
+            if (node != null) {
+                node.referenced = true;
+            }
+        }
+
+        // mark the controlled nodes
+        String[] controllers = StringUtil.parseStringArray(props.getProperty("controllers", ""));
+        for (String controller : controllers) {
+            Properties subProps = PropertiesUtil.getSubProperties(props, controller);
+            TransformNode node = nodes.get(subProps.getProperty("node", controller));
+            if (node != null) {
+                node.referenced = node.controlled = true;
+            }
+        }
+
+        // store the base transforms and relative transforms for merge candidates
+        root.updateGeometricState(0f, true);
+        for (TransformNode node : nodes.values()) {
+            node.baseLocalTransform = new Matrix4f(node.localTransform);
+            node.relativeTransforms = new ArrayList<Tuple<TransformNode, Matrix4f>>();
+            for (TransformNode onode : nodes.values()) {
+                if (node == onode || !node.canMerge(props, onode)) {
+                    continue;
+                }
+                node.relativeTransforms.add(new Tuple<TransformNode, Matrix4f>(
+                    onode, node.getRelativeTransform(onode)));
+            }
+        }
+
+        return root;
+    }
+
+    /**
+     * Merges compatible meshes that retain the same relative transform throughout all animations.
+     */
+    public void mergeSpatials (HashMap<String, TransformNode> nodes)
+    {
+        for (TransformNode node : nodes.values()) {
+            if (!spatials.contains(node.spatial)) {
+                continue;
+            }
+            for (Tuple<TransformNode, Matrix4f> tuple : node.relativeTransforms) {
+                if (spatials.contains(tuple.left.spatial)) {
+                    node.spatial.merge(tuple.left.spatial, tuple.right);
+                    spatials.remove(tuple.left.spatial);
+                }
+            }
+        }
     }
 
     /**
@@ -475,11 +760,6 @@ public class ModelDef
             }
         }
 
-        // in non-animated models, merge meshes with the same attributes
-        if (StringUtil.isBlank(props.getProperty("animations"))) {
-            mergeEquivalentMeshes(model, nodes, referenced);
-        }
-
         // get rid of any nodes that serve no purpose
         pruneUnusedNodes(model, nodes, referenced);
 
@@ -526,63 +806,17 @@ public class ModelDef
         return referenced.contains(node) || hasValidChildren;
     }
 
-    /** Merges meshes with the same attributes. */
-    protected void mergeEquivalentMeshes (
-        Model model, HashMap<String, Spatial> nodes, final HashSet<Spatial> referenced)
+    /** Determines whether a pair of matrices are "close enough" to equal. */
+    public static boolean epsilonEquals (Matrix4f m1, Matrix4f m2)
     {
-        final HashMap<Object, ArrayList<ModelMesh>> meshes =
-            new HashMap<Object, ArrayList<ModelMesh>>();
-        new SpatialVisitor<ModelMesh>(ModelMesh.class) {
-            public void traverse (Spatial spatial) {
-                // cut out when we encounter referenced nodes
-                if (!referenced.contains(spatial)) {
-                    spatial.updateWorldVectors();
-                    super.traverse(spatial);
+        for (int ii = 0; ii < 4; ii++) {
+            for (int jj = 0; jj < 4; jj++) {
+                if (FastMath.abs(m1.get(ii, jj) - m2.get(ii, jj)) > 0.0001f) {
+                    return false;
                 }
             }
-            protected void visit (ModelMesh mesh) {
-                // make sure we don't try this with skinned meshes
-                if (mesh instanceof SkinMesh) {
-                    return;
-                }
-                Object key = mesh.getAttributeKey();
-                ArrayList<ModelMesh> list = meshes.get(key);
-                if (list == null) {
-                    meshes.put(key, list = new ArrayList<ModelMesh>());
-                }
-                list.add(mesh);
-            }
-        }.traverse(model);
-
-        for (ArrayList<ModelMesh> list : meshes.values()) {
-            // the first in the list becomes the base
-            ModelMesh base = list.get(0);
-            flattenTransforms(base);
-            model.attachChild(base);
-
-            // the rest are merged with it
-            for (int ii = 1, nn = list.size(); ii < nn; ii++) {
-                ModelMesh mesh = list.get(ii);
-                flattenTransforms(mesh);
-                mesh.getParent().detachChild(mesh);
-                base.merge(mesh);
-            }
-
-            // update the model bound and recenter
-            base.updateModelBound();
-            base.centerVertices();
         }
-    }
-
-    /** Transforms the mesh's vertices and normals into model coordinates. */
-    protected static void flattenTransforms (ModelMesh mesh)
-    {
-        GeomBatch batch = mesh.getBatch(0);
-        batch.getWorldCoords(batch.getVertexBuffer());
-        batch.getWorldNormals(batch.getNormalBuffer());
-        mesh.getLocalTranslation().zero();
-        mesh.getLocalRotation().loadIdentity();
-        mesh.getLocalScale().set(Vector3f.UNIT_XYZ);
+        return true;
     }
 
     /** Converts a boxed Integer list to an unboxed int array. */

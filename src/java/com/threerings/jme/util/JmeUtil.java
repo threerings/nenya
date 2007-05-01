@@ -30,6 +30,8 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.ARBShaderObjects;
 
+import com.jme.math.Matrix4f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.state.GLSLShaderObjectsState;
@@ -109,6 +111,31 @@ public class JmeUtil
                 dir = +1;
             }
         }
+    }
+
+    /**
+     * Sets a matrix to the transform defined by the given translation,
+     * rotation, and scale values.
+     */
+    public static Matrix4f setTransform (
+        Vector3f translation, Quaternion rotation, Vector3f scale, Matrix4f result)
+    {
+        result.setRotationQuaternion(rotation);
+        result.setTranslation(translation);
+
+        result.m00 *= scale.x;
+        result.m01 *= scale.y;
+        result.m02 *= scale.z;
+
+        result.m10 *= scale.x;
+        result.m11 *= scale.y;
+        result.m12 *= scale.z;
+
+        result.m20 *= scale.x;
+        result.m21 *= scale.y;
+        result.m22 *= scale.z;
+
+        return result;
     }
 
     /**

@@ -26,14 +26,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
 
+import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
+import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 
 import com.threerings.jme.Log;
 import com.threerings.jme.model.Model;
 import com.threerings.jme.util.JmeUtil;
+
+import com.threerings.jme.tools.ModelDef.TransformNode;
 
 /**
  * A basic representation for keyframe animations.
@@ -42,35 +46,39 @@ public class AnimationDef
 {
     /** The rate of the animation in frames per second. */
     public int frameRate;
-    
+
     /** A single frame of the animation. */
     public static class FrameDef
     {
         /** Transform for affected nodes. */
         public ArrayList<TransformDef> transforms =
             new ArrayList<TransformDef>();
-        
+
         public void addTransform (TransformDef transform)
         {
             transforms.add(transform);
         }
-        
-        /** Adds all transform targets in this frame to the supplied set. */
+
+        /** Adds all transform targets in this frame to the supplied sets. */
         public void addTransformTargets (
-            HashMap<String, Spatial> nodes, HashSet<Spatial> targets)
+            HashMap<String, Spatial> nodes, HashMap<String, TransformNode> tnodes,
+            HashSet<Spatial> staticTargets, HashSet<Spatial> transformTargets)
         {
             for (int ii = 0, nn = transforms.size(); ii < nn; ii++) {
                 String name = transforms.get(ii).name;
                 Spatial target = nodes.get(name);
-                if (target != null) {
-                    targets.add(target);
+                if (target == null) {
+                    continue;
+                }
+                TransformNode tnode = tnodes.get(name);
+                if (tnode.baseLocalTransform != null) {
+                    staticTargets.add(target);
                 } else {
-                    Log.debug("Missing animation target [name=" + name +
-                        "].");
+                    transformTargets.add(target);
                 }
             }
         }
-        
+
         /** Returns the array of transforms for this frame. */
         public Model.Transform[] getTransforms (Spatial[] targets)
         {
@@ -81,7 +89,7 @@ public class AnimationDef
             }
             return mtransforms;
         }
-        
+
         /** Returns the transform for the supplied target. */
         protected Model.Transform getTransform (Spatial target)
         {
@@ -95,18 +103,18 @@ public class AnimationDef
             return null;
         }
     }
-    
+
     /** A transform for a single node. */
     public static class TransformDef
     {
         /** The name of the affected node. */
         public String name;
-        
+
         /** The transformation parameters. */
         public float[] translation;
         public float[] rotation;
         public float[] scale;
-        
+
         /** Returns the live transform object. */
         public Model.Transform getTransform ()
         {
@@ -117,15 +125,36 @@ public class AnimationDef
                 new Vector3f(scale[0], scale[1], scale[2]));
         }
     }
-    
+
     /** The individual frames of the animation. */
     public ArrayList<FrameDef> frames = new ArrayList<FrameDef>();
-    
+
     public void addFrame (FrameDef frame)
     {
         frames.add(frame);
     }
-    
+
+    /**
+     * Runs through each frame of the animation, updating the transforms of the preprocessing
+     * node to keep track of which transforms diverge from their original states.
+     */
+    public void filterTransforms (Node root, HashMap<String, TransformNode> nodes)
+    {
+        for (FrameDef frame : frames) {
+            for (TransformDef transform : frame.transforms) {
+                TransformNode node = nodes.get(transform.name);
+                if (node != null) {
+                    node.setLocalTransform(
+                        transform.translation, transform.rotation, transform.scale);
+                }
+            }
+            root.updateGeometricState(0f, true);
+            for (TransformNode node : nodes.values()) {
+                node.cullDivergentTransforms();
+            }
+        }
+    }
+
     /**
      * Creates the "live" animation object that will be serialized with the
      * object.
@@ -134,27 +163,30 @@ public class AnimationDef
      * @param nodes the nodes in the model, mapped by name
      */
     public Model.Animation createAnimation (
-        Properties props, HashMap<String, Spatial> nodes)
+        Properties props, HashMap<String, Spatial> nodes, HashMap<String, TransformNode> tnodes)
     {
         // find all affected nodes
-        HashSet<Spatial> targets = new HashSet<Spatial>();
+        HashSet<Spatial> staticTargets = new HashSet<Spatial>(),
+            transformTargets = new HashSet<Spatial>();
         for (int ii = 0, nn = frames.size(); ii < nn; ii++) {
-            frames.get(ii).addTransformTargets(nodes, targets);
+            frames.get(ii).addTransformTargets(nodes, tnodes, staticTargets, transformTargets);
         }
-        
+
         // create and configure the animation
         Model.Animation anim = new Model.Animation();
         anim.frameRate = frameRate;
         anim.repeatType = JmeUtil.parseRepeatType(props.getProperty("repeat_type"),
             Controller.RT_CLAMP);
-        
+
         // collect all transforms
-        anim.transformTargets = targets.toArray(new Spatial[targets.size()]);
-        anim.transforms = new Model.Transform[frames.size()][targets.size()];
+        anim.staticTargets = staticTargets.toArray(new Spatial[staticTargets.size()]);
+        anim.transformTargets = transformTargets.toArray(new Spatial[transformTargets.size()]);
+        anim.transforms = new Model.Transform[frames.size()][transformTargets.size()];
         for (int ii = 0; ii < anim.transforms.length; ii++) {
             anim.transforms[ii] =
                 frames.get(ii).getTransforms(anim.transformTargets);
         }
+
         return anim;
     }
 }

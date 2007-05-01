@@ -69,11 +69,11 @@ import com.threerings.jme.util.SpatialVisitor;
  */
 public class Model extends ModelNode
 {
-    /** The supported types of animation in decreasing order of complexity. */ 
+    /** The supported types of animation in decreasing order of complexity. */
     public enum AnimationMode {
         SKIN, MORPH, FLIPBOOK
     };
-    
+
     /** Lets listeners know when animations are completed (which only happens
      * for non-repeating animations) or cancelled. */
     public interface AnimationObserver
@@ -84,14 +84,14 @@ public class Model extends ModelNode
          * @return true to remain on the observer list, false to remove self
          */
         public boolean animationStarted (Model model, String anim);
-        
+
         /**
          * Called when a non-repeating animation has finished.
          *
          * @return true to remain on the observer list, false to remove self
          */
         public boolean animationCompleted (Model model, String anim);
-        
+
         /**
          * Called when an animation has been cancelled.
          *
@@ -99,30 +99,33 @@ public class Model extends ModelNode
          */
         public boolean animationCancelled (Model model, String anim);
     }
-    
+
     /** An animation for the model. */
     public static class Animation
         implements Savable
     {
         /** The rate of the animation in frames per second. */
         public int frameRate;
-        
+
         /** The animation repeat type ({@link Controller#RT_CLAMP},
          * {@link Controller#RT_CYCLE}, or {@link Controller#RT_WRAP}). */
         public int repeatType;
-        
+
+        /** Any nodes visible that never move within the model. */
+        public Spatial[] staticTargets;
+
         /** The transformation targets of the animation. */
         public Spatial[] transformTargets;
-        
+
         /** The animation transforms (one transform per target per frame). */
         public transient Transform[][] transforms;
-        
+
         /** Uniquely identifies this animation within the model. */
         public transient int animId;
-        
+
         /** For each frame, whether the frame has been stored in meshes. */
         public transient boolean[] stored;
-        
+
         /**
          * Returns this animation's duration in seconds.
          */
@@ -130,7 +133,7 @@ public class Model extends ModelNode
         {
             return (float)transforms.length / frameRate;
         }
-        
+
         /**
          * Rebinds this animation for a prototype instance.
          *
@@ -141,17 +144,14 @@ public class Model extends ModelNode
             Animation anim = new Animation();
             anim.frameRate = frameRate;
             anim.repeatType = repeatType;
+            anim.staticTargets = rebind(staticTargets, pnodes);
+            anim.transformTargets = rebind(transformTargets, pnodes);
             anim.transforms = transforms;
-            anim.transformTargets = new Spatial[transformTargets.length];
-            for (int ii = 0; ii < transformTargets.length; ii++) {
-                anim.transformTargets[ii] =
-                    (Spatial)pnodes.get(transformTargets[ii]);
-            }
             anim.animId = animId;
             anim.stored = stored;
             return anim;
         }
-        
+
         /**
          * Applies the transforms for a frame of this animation.
          */
@@ -162,7 +162,7 @@ public class Model extends ModelNode
                 xforms[ii].apply(transformTargets[ii]);
             }
         }
-        
+
         /**
          * Blends the transforms between two frames of this animation.
          */
@@ -173,13 +173,13 @@ public class Model extends ModelNode
                 xforms[ii].blend(nxforms[ii], alpha, transformTargets[ii]);
             }
         }
-        
+
         // documentation inherited
         public Class getClassTag ()
         {
             return getClass();
         }
-        
+
         // documentation inherited
         public void read (JMEImporter im)
             throws IOException
@@ -187,6 +187,8 @@ public class Model extends ModelNode
             InputCapsule capsule = im.getCapsule(this);
             frameRate = capsule.readInt("frameRate", 0);
             repeatType = capsule.readInt("repeatType", Controller.RT_CLAMP);
+            staticTargets = ArrayUtil.copy(capsule.readSavableArray(
+                "staticTargets", null), new Spatial[0]);
             transformTargets = ArrayUtil.copy(capsule.readSavableArray(
                 "transformTargets", null), new Spatial[0]);
             FloatBuffer pxforms = capsule.readFloatBuffer("transforms", null);
@@ -208,9 +210,10 @@ public class Model extends ModelNode
             OutputCapsule capsule = ex.getCapsule(this);
             capsule.write(frameRate, "frameRate", 0);
             capsule.write(repeatType, "repeatType", Controller.RT_CLAMP);
+            capsule.write(staticTargets, "staticTargets", null);
             capsule.write(transformTargets, "transformTargets", null);
-            FloatBuffer pxforms = FloatBuffer.allocate(transforms.length *
-                transformTargets.length * Transform.PACKED_SIZE);
+            FloatBuffer pxforms = FloatBuffer.allocate(
+                transforms.length * transformTargets.length * Transform.PACKED_SIZE);
             for (Transform[] frame : transforms) {
                 for (Transform xform : frame) {
                     xform.writeToBuffer(pxforms);
@@ -219,16 +222,25 @@ public class Model extends ModelNode
             pxforms.rewind();
             capsule.write(pxforms, "transforms", null);
         }
-        
+
+        protected Spatial[] rebind (Spatial[] targets, HashMap pnodes)
+        {
+            Spatial[] ntargets = new Spatial[targets.length];
+            for (int ii = 0; ii < targets.length; ii++) {
+                ntargets[ii] = (Spatial)pnodes.get(targets[ii]);
+            }
+            return ntargets;
+        }
+
         private static final long serialVersionUID = 1;
     }
-    
+
     /** A frame element that manipulates the target's transform. */
     public static final class Transform
     {
         /** The number of floats required to store a packed transform. */
         public static final int PACKED_SIZE = 3 + 4 + 3;
-        
+
         public Transform (
             Vector3f translation, Quaternion rotation, Vector3f scale)
         {
@@ -236,7 +248,7 @@ public class Model extends ModelNode
             _rotation = rotation;
             _scale = scale;
         }
-        
+
         public Transform (FloatBuffer buf)
         {
             _translation = new Vector3f(buf.get(), buf.get(), buf.get());
@@ -244,14 +256,14 @@ public class Model extends ModelNode
                 buf.get());
             _scale = new Vector3f(buf.get(), buf.get(), buf.get());
         }
-        
+
         public void apply (Spatial target)
         {
             target.getLocalTranslation().set(_translation);
             target.getLocalRotation().set(_rotation);
             target.getLocalScale().set(_scale);
         }
-        
+
         /**
          * Blends between this transform and the next, applying the result to
          * the given target.
@@ -266,7 +278,7 @@ public class Model extends ModelNode
             target.getLocalRotation().slerp(_rotation, next._rotation, alpha);
             target.getLocalScale().interpolate(_scale, next._scale, alpha);
         }
-        
+
         /**
          * Writes this transform to the current position in the supplied
          * buffer.
@@ -276,31 +288,31 @@ public class Model extends ModelNode
             buf.put(_translation.x);
             buf.put(_translation.y);
             buf.put(_translation.z);
-            
+
             buf.put(_rotation.x);
             buf.put(_rotation.y);
             buf.put(_rotation.z);
             buf.put(_rotation.w);
-            
+
             buf.put(_scale.x);
             buf.put(_scale.y);
             buf.put(_scale.z);
         }
-        
+
         /** The transform at this frame. */
         protected Vector3f _translation, _scale;
         protected Quaternion _rotation;
     }
-    
+
     /** Customized clone creator for models. */
     public static class CloneCreator
     {
         /** A shared seed used to select textures consistently. */
         public int random;
-        
+
         /** Maps original objects to their copies. */
         public HashMap originalToCopy = new HashMap();
-        
+
         public CloneCreator (Model toCopy)
         {
             _toCopy = toCopy;
@@ -314,7 +326,7 @@ public class Model extends ModelNode
             addProperty("displaylistid");
             addProperty("bound");
         }
-        
+
         /**
          * Sets the named property.
          */
@@ -322,7 +334,7 @@ public class Model extends ModelNode
         {
             _properties.add(name);
         }
-        
+
         /**
          * Clears the named property.
          */
@@ -330,7 +342,7 @@ public class Model extends ModelNode
         {
             _properties.remove(name);
         }
-        
+
         /**
          * Checks whether the named property has been set.
          */
@@ -338,7 +350,7 @@ public class Model extends ModelNode
         {
             return _properties.contains(name);
         }
-        
+
         /**
          * Creates a new copy of the target model.
          */
@@ -349,14 +361,14 @@ public class Model extends ModelNode
             originalToCopy.clear(); // make sure no references remain
             return copy;
         }
-        
+
         /** The model to copy. */
         protected Model _toCopy;
-        
+
         /** The set of added properties. */
         protected HashSet<String> _properties = new HashSet<String>();
     }
-    
+
     /**
      * Attempts to read a model from the specified file.
      */
@@ -367,20 +379,20 @@ public class Model extends ModelNode
         FileInputStream fis = new FileInputStream(file);
         Model model = (Model)BinaryImporter.getInstance().load(fis);
         fis.close();
-        
+
         // initialize the model as a prototype
         model.initPrototype();
-        
+
         return model;
     }
-    
+
     /**
      * No-arg constructor for deserialization.
      */
     public Model ()
     {
     }
-    
+
     /**
      * Standard constructor.
      */
@@ -389,7 +401,7 @@ public class Model extends ModelNode
         super(name);
         _props = props;
     }
-    
+
     /**
      * Returns a reference to the properties of the model.
      */
@@ -397,7 +409,7 @@ public class Model extends ModelNode
     {
         return _props;
     }
-    
+
     /**
      * Initializes this model as prototype.  Only necessary when the prototype
      * was not loaded through {@link #readFromFile}.
@@ -416,7 +428,7 @@ public class Model extends ModelNode
         cullInvisibleNodes();
         initInstance();
     }
-    
+
     /**
      * Returns the names of the model's variant configurations.
      */
@@ -424,7 +436,7 @@ public class Model extends ModelNode
     {
         return StringUtil.parseStringArray(_props.getProperty("variants", ""));
     }
-    
+
     /**
      * Adds an animation to the model's library.  This should only be called by
      * the model compiler.
@@ -435,7 +447,7 @@ public class Model extends ModelNode
             _anims = new HashMap<String, Animation>();
         }
         _anims.put(name, anim);
-        
+
         // store the original transforms
         Transform[] oxforms = new Transform[anim.transformTargets.length];
         for (int ii = 0; ii < anim.transformTargets.length; ii++) {
@@ -445,7 +457,7 @@ public class Model extends ModelNode
                 new Quaternion(target.getLocalRotation()),
                 new Vector3f(target.getLocalScale()));
         }
-        
+
         // run through every frame of the animation, expanding the bounding
         // volumes of any deformable meshes
         for (int ii = 0; ii < anim.transforms.length; ii++) {
@@ -455,14 +467,14 @@ public class Model extends ModelNode
             updateWorldData(0f);
             expandModelBounds();
         }
-        
+
         // restore the original transforms
         for (int ii = 0; ii < anim.transformTargets.length; ii++) {
             oxforms[ii].apply(anim.transformTargets[ii]);
         }
         updateWorldData(0f);
     }
-    
+
     /**
      * Sets the animation mode to use for this model.  This should be set
      * on the prototype before any animations are started or any instances
@@ -472,7 +484,7 @@ public class Model extends ModelNode
     {
         _animMode = mode;
     }
-    
+
     /**
      * Returns the animation mode configured for this model.
      */
@@ -480,7 +492,7 @@ public class Model extends ModelNode
     {
         return _animMode;
     }
-    
+
     /**
      * Returns the names of the model's animations.
      */
@@ -492,7 +504,7 @@ public class Model extends ModelNode
         return (_anims == null) ? new String[0] :
             _anims.keySet().toArray(new String[_anims.size()]);
     }
-    
+
     /**
      * Checks whether the unit has an animation with the given name.
      */
@@ -503,7 +515,7 @@ public class Model extends ModelNode
         }
         return (_anims == null) ? false : _anims.containsKey(name);
     }
-    
+
     /**
      * Starts the named animation.
      *
@@ -533,14 +545,16 @@ public class Model extends ModelNode
         if (_anim != null) {
             _animObservers.apply(new AnimCancelledOp(_animName));
         }
-        
-        // first cull all model nodes, then re-activate the ones in the
-        // target list
+
+        // first cull all model nodes, then re-activate the ones in the target lists
         cullModelNodes();
+        for (Spatial target : anim.staticTargets) {
+            ((ModelNode)target).updateCullMode();
+        }
         for (Spatial target : anim.transformTargets) {
             ((ModelNode)target).updateCullMode();
         }
-        
+
         _paused = false;
         _anim = anim;
         _animName = name;
@@ -552,7 +566,7 @@ public class Model extends ModelNode
         _animObservers.apply(new AnimStartedOp(_animName));
         return anim.getDuration() / _animSpeed;
     }
-    
+
     /**
      * Fast-forwards the current animation by the given number of seconds.
      */
@@ -560,7 +574,7 @@ public class Model extends ModelNode
     {
         updateAnimation(time);
     }
-    
+
     /**
      * Gets a reference to the animation with the given name.
      */
@@ -583,7 +597,7 @@ public class Model extends ModelNode
         Log.warning("Requested unknown animation [name=" + name + "].");
         return null;
     }
-    
+
     /**
      * Returns a reference to the currently running animation, or
      * <code>null</code> if no animation is running.
@@ -592,7 +606,7 @@ public class Model extends ModelNode
     {
         return _anim;
     }
-    
+
     /**
      * Stops the currently running animation.
      */
@@ -633,7 +647,7 @@ public class Model extends ModelNode
     {
         _fdir *= -1;
     }
-    
+
     /**
      * Sets the animation speed, which acts as a multiplier for the frame rate
      * of each animation.
@@ -642,7 +656,7 @@ public class Model extends ModelNode
     {
         _animSpeed = speed;
     }
-    
+
     /**
      * Returns the currently configured animation speed.
      */
@@ -650,7 +664,7 @@ public class Model extends ModelNode
     {
         return _animSpeed;
     }
-    
+
     /**
      * Adds an animation observer.
      */
@@ -658,7 +672,7 @@ public class Model extends ModelNode
     {
         _animObservers.add(obs);
     }
-    
+
     /**
      * Removes an animation observer.
      */
@@ -666,7 +680,7 @@ public class Model extends ModelNode
     {
         _animObservers.remove(obs);
     }
-    
+
     /**
      * Returns a reference to the node that contains this model's emissions
      * (in world space, so the emissions do not move with the model).  This
@@ -685,7 +699,7 @@ public class Model extends ModelNode
         }
         return _emissionNode;
     }
-    
+
     /**
      * Writes this model out to a file.
      */
@@ -697,7 +711,7 @@ public class Model extends ModelNode
         BinaryExporter.getInstance().save(this, fos);
         fos.close();
     }
-    
+
     @Override // documentation inherited
     public void read (JMEImporter im)
         throws IOException
@@ -729,7 +743,7 @@ public class Model extends ModelNode
             }
         }
     }
-    
+
     @Override // documentation inherited
     public void write (JMEExporter ex)
         throws IOException
@@ -756,7 +770,7 @@ public class Model extends ModelNode
         }
         capsule.writeSavableArrayList(getControllers(), "controllers", null);
     }
-    
+
     @Override // documentation inherited
     public void resolveTextures (TextureProvider tprov)
     {
@@ -767,7 +781,7 @@ public class Model extends ModelNode
             }
         }
     }
-    
+
     /**
      * Creates a new prototype using the given variant configuration.
      * Use {@link #createInstance} on the returned prototype to create
@@ -788,7 +802,7 @@ public class Model extends ModelNode
         }
         prototype._prototype = null;
         prototype._pnodes = null;
-        
+
         // reconfigure meshes with new variant type
         if (variant != null) {
             prototype._props = PropertiesUtil.getFilteredProperties(
@@ -802,10 +816,10 @@ public class Model extends ModelNode
         }
         return prototype;
     }
-    
+
     /**
      * Creates and returns a new instance of this model.
-     */    
+     */
     public Model createInstance ()
     {
         if (_prototype != null) {
@@ -838,7 +852,7 @@ public class Model extends ModelNode
         }
         lockInstance(targets);
     }
-    
+
     @Override // documentation inherited
     public Spatial putClone (Spatial store, CloneCreator properties)
     {
@@ -866,7 +880,7 @@ public class Model extends ModelNode
         mstore._animMode = _animMode;
         return mstore;
     }
-    
+
     @Override // documentation inherited
     public void updateGeometricState (float time, boolean initiator)
     {
@@ -875,13 +889,13 @@ public class Model extends ModelNode
         // into view
         boolean wasOutside = _outside;
         _outside = isOutsideFrustum() && worldBound != null;
-        
+
         // slow evvvverything down by the animation speed
         time *= _animSpeed;
         if (_anim != null) {
             updateAnimation(time);
         }
-        
+
         // update controllers and children with accumulated time
         _accum += time;
         if (_outside) {
@@ -894,14 +908,14 @@ public class Model extends ModelNode
             updateWorldVectors();
             worldBound = _storedBound.transform(getWorldRotation(),
                 getWorldTranslation(), getWorldScale(), worldBound);
-            
+
         } else {
             super.updateGeometricState(_shouldAccumulate ? _accum : time,
                 initiator);
             _accum = 0f;
         }
     }
-    
+
     @Override // documentation inherited
     public void onDraw (Renderer r)
     {
@@ -912,7 +926,7 @@ public class Model extends ModelNode
             updateWorldData(0f);
         }
     }
-    
+
     /**
      * Transforms the current world bound into model space and stores it for
      * when the model is offscreen.
@@ -928,10 +942,10 @@ public class Model extends ModelNode
             getChild(ii).updateGeometricState(0f, false);
         }
         updateWorldBound();
-        
+
         _storedBound = worldBound.clone(_storedBound);
     }
-    
+
     /**
      * Determines whether this node was determined to be entirely outside the
      * view frustum.
@@ -945,7 +959,7 @@ public class Model extends ModelNode
         }
         return false;
     }
-    
+
     /**
      * Initializes the per-instance state of this model.
      */
@@ -960,7 +974,7 @@ public class Model extends ModelNode
             }
         }
     }
-    
+
     /**
      * Updates the model's state according to the current animation.
      */
@@ -972,7 +986,7 @@ public class Model extends ModelNode
             _elapsed += (time * _anim.frameRate);
             return;
         }
-        
+
         // advance the frame counter if necessary
         while (_elapsed > 1f) {
             if (!_paused) {
@@ -982,13 +996,13 @@ public class Model extends ModelNode
                 _elapsed = 1f;
             }
         }
-        
+
         // update the target transforms and animation frame if not outside the
         // view frustum
         if (!_outside) {
-            updateMeshes();   
+            updateMeshes();
         }
-        
+
         // if the next index is the same as this one, we are finished
         if (_fidx == _nidx && !_paused) {
             _anim = null;
@@ -997,7 +1011,7 @@ public class Model extends ModelNode
         }
         _elapsed += (time * _anim.frameRate);
     }
-    
+
     /**
      * Advances the frame counter by one frame.
      */
@@ -1007,14 +1021,14 @@ public class Model extends ModelNode
         int nframes = _anim.transforms.length;
         if (_anim.repeatType == Controller.RT_CLAMP) {
             _nidx = Math.max(0, Math.min(_nidx + _fdir, nframes - 1));
-            
+
         } else if (_anim.repeatType == Controller.RT_WRAP) {
             // % is not a modulo operator, so is not guaranteed to be positive
             _nidx = (_nidx + _fdir) % nframes;
             if (_nidx < 0) {
                 _nidx += nframes;
             }
-            
+
         } else { // _anim.repeatType == Controller.RT_CYCLE
             if ((_nidx + _fdir) < 0 || (_nidx + _fdir) >= nframes) {
                 _fdir *= -1; // reverse direction
@@ -1022,7 +1036,7 @@ public class Model extends ModelNode
             _nidx += _fdir;
         }
     }
-    
+
     /**
      * Updates the states of the model's meshes according to the animation state.
      */
@@ -1037,7 +1051,7 @@ public class Model extends ModelNode
                 _anim.stored[_fidx] = true;
             }
             setMeshFrame(frameId);
-            
+
         } else if (_animMode == AnimationMode.MORPH) {
             int frameId1 = (_anim.animId << 16) | _fidx,
                 frameId2 = (_anim.animId << 16) | _nidx;
@@ -1055,74 +1069,74 @@ public class Model extends ModelNode
             }
             _anim.blendFrames(_fidx, _nidx, _elapsed);
             blendMeshFrames(frameId1, frameId2, _elapsed);
-            
+
         } else { // _animMode == AnimationMode.SKIN
             _anim.blendFrames(_fidx, _nidx, _elapsed);
         }
     }
-    
+
     /** A reference to the prototype, or <code>null</code> if this is a
      * prototype. */
     protected Model _prototype;
-    
+
     /** For prototype models, a customized clone creator used to generate
      * instances. */
     protected CloneCreator _ccreator;
-    
+
     /** The animation mode to use for this model. */
     protected AnimationMode _animMode;
-    
+
     /** For instances, maps prototype nodes to their corresponding instance
      * nodes. */
     protected HashMap _pnodes;
-    
+
     /** The model properties. */
     protected Properties _props;
-    
+
     /** The model animations. */
     protected HashMap<String, Animation> _anims;
-    
+
     /** The currently running animation, or <code>null</code> for none. */
     protected Animation _anim;
-    
+
     /** The name of the currently running animation, if any. */
     protected String _animName;
-    
+
     /** The current animation speed multiplier. */
     protected float _animSpeed = 1f;
-    
+
     /** The index of the current and next frames. */
     protected int _fidx, _nidx;
-    
+
     /** The direction for wrapping animations (+1 forward, -1 backward). */
     protected int _fdir;
-    
+
     /** The frame portion elapsed since the start of the current frame. */
     protected float _elapsed;
 
     /** The pause status of this model. */
     protected boolean _paused;
-    
+
     /** The amount of update time accumulated while outside of view frustum. */
     protected float _accum;
-    
+
     /** Whether or not we should accumulate update time while out of view. */
     protected boolean _shouldAccumulate;
-    
+
     /** The child node that contains the model's emissions in world space. */
     protected Node _emissionNode;
-    
+
     /** The model space bounding volume stored for use when the model is
      * offscreen. */
     protected BoundingVolume _storedBound;
-    
+
     /** Whether or not we were outside the frustum at the last update. */
     protected boolean _outside;
-    
+
     /** Animation completion listeners. */
     protected ObserverList<AnimationObserver> _animObservers =
         new ObserverList<AnimationObserver>(ObserverList.FAST_UNSAFE_NOTIFY);
-    
+
     /** Used to notify observers of animation initiation. */
     protected class AnimStartedOp
         implements ObserverList.ObserverOp<AnimationObserver>
@@ -1131,17 +1145,17 @@ public class Model extends ModelNode
         {
             _name = name;
         }
-        
+
         // documentation inherited from interface ObserverOp
         public boolean apply (AnimationObserver obs)
         {
             return obs.animationStarted(Model.this, _name);
         }
-        
+
         /** The name of the animation started. */
         protected String _name;
     }
-    
+
     /** Used to notify observers of animation completion. */
     protected class AnimCompletedOp
         implements ObserverList.ObserverOp<AnimationObserver>
@@ -1150,17 +1164,17 @@ public class Model extends ModelNode
         {
             _name = name;
         }
-        
+
         // documentation inherited from interface ObserverOp
         public boolean apply (AnimationObserver obs)
         {
             return obs.animationCompleted(Model.this, _name);
         }
-        
+
         /** The name of the animation completed. */
         protected String _name;
     }
-    
+
     /** Used to notify observers of animation cancellation. */
     protected class AnimCancelledOp
         implements ObserverList.ObserverOp<AnimationObserver>
@@ -1169,13 +1183,13 @@ public class Model extends ModelNode
         {
             _name = name;
         }
-        
+
         // documentation inherited from interface ObserverOp
         public boolean apply (AnimationObserver obs)
         {
             return obs.animationCancelled(Model.this, _name);
         }
-        
+
         /** The name of the animation cancelled. */
         protected String _name;
     }
