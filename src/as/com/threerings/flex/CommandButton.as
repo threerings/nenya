@@ -52,9 +52,9 @@ public class CommandButton extends Button
     }
 
     /**
-     * Set a function to call when the button is pressed.
+     * Set a callback function to call when the button is pressed.
      */
-    public function setFunction (fn :Function, arg :Object = null) :void
+    public function setCallback (fn :Function, arg :Object = null) :void
     {
         _cmdOrFn = fn;
         _arg = arg;
