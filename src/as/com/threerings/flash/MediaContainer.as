@@ -581,7 +581,7 @@ public class MediaContainer extends Sprite
     /** Either a Loader or a VideoDisplay. */
     protected var _media :DisplayObject;
 
-    /** If we're using a Loader, true once the INIT property has been dispatched. */
+    /** If we're using a Loader, true once the INIT event has been dispatched. */
     protected var _initialized :Boolean;
 }
 }
