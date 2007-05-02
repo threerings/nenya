@@ -24,6 +24,7 @@ package com.threerings.jme.tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
 
 import com.jme.math.Matrix4f;
@@ -32,6 +33,8 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+
+import com.samskivert.util.Tuple;
 
 import com.threerings.jme.Log;
 import com.threerings.jme.model.Model;
@@ -140,17 +143,34 @@ public class AnimationDef
      */
     public void filterTransforms (Node root, HashMap<String, TransformNode> nodes)
     {
+        // clear the nodes' transformed flags
+        for (TransformNode node : nodes.values()) {
+            node.transformed = false;
+        }
+
+        // run through all animation frames
         for (FrameDef frame : frames) {
             for (TransformDef transform : frame.transforms) {
                 TransformNode node = nodes.get(transform.name);
                 if (node != null) {
                     node.setLocalTransform(
                         transform.translation, transform.rotation, transform.scale);
+                    node.transformed = true;
                 }
             }
             root.updateGeometricState(0f, true);
             for (TransformNode node : nodes.values()) {
                 node.cullDivergentTransforms();
+            }
+        }
+
+        // remove from merge candidates any pairs where one is visible and the other isn't
+        for (TransformNode node : nodes.values()) {
+            for (Iterator<Tuple<TransformNode, Matrix4f>> it = node.relativeTransforms.iterator();
+                    it.hasNext(); ) {
+                if (it.next().left.transformed != node.transformed) {
+                    it.remove();
+                }
             }
         }
     }

@@ -560,6 +560,9 @@ public class ModelDef
          * an animation, the node/transform pair is removed from the list. */
         public ArrayList<Tuple<TransformNode, Matrix4f>> relativeTransforms;
 
+        /** Marks this node as having been transformed in the course of an animation. */
+        public boolean transformed;
+
         public TransformNode (SpatialDef spatial)
         {
             super(spatial.name);
