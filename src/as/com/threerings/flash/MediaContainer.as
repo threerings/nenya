@@ -95,6 +95,16 @@ public class MediaContainer extends Sprite
     }
 
     /**
+     * Return true if the content has been initialized.
+     * For most content, this is true if the media is non-null, but
+     * for anything loaded with a Loader, it is only true after the INIT event is dispatched.
+     */
+    public function isContentInitialized () :Boolean
+    {
+        return (_media != null) && (_initialized || !(_media is Loader));
+    }
+
+    /**
      * Get the media. If the media was loaded using a URL, this will
      * likely be the Loader object holding the real media.
      */
@@ -158,7 +168,7 @@ public class MediaContainer extends Sprite
      */
     protected function willShowNewMedia () :void
     {
-        // nada in here
+        _initialized = false;
     }
 
     /**
@@ -186,6 +196,7 @@ public class MediaContainer extends Sprite
         _media = loader;
         var info :LoaderInfo = loader.contentLoaderInfo;
         info.addEventListener(Event.COMPLETE, loadingComplete);
+        info.addEventListener(Event.INIT, handleInit);
         info.addEventListener(IOErrorEvent.IO_ERROR, loadError);
         info.addEventListener(ProgressEvent.PROGRESS, loadProgress);
 
@@ -398,6 +409,7 @@ public class MediaContainer extends Sprite
     protected function removeListeners (info :LoaderInfo) :void
     {
         info.removeEventListener(Event.COMPLETE, loadingComplete);
+        info.removeEventListener(Event.INIT, handleInit);
         info.removeEventListener(IOErrorEvent.IO_ERROR, loadError);
         info.removeEventListener(ProgressEvent.PROGRESS, loadProgress);
     }
@@ -443,6 +455,14 @@ public class MediaContainer extends Sprite
         log.warning("Error loading video [cause=" + event.value + "].");
         stoppedLoading();
         setupBrokenImage(-1, -1);
+    }
+
+    /**
+     * Handles the INIT event for content loaded with a Loader.
+     */
+    protected function handleInit (event :Event) :void
+    {
+        _initialized = true;
     }
 
     /**
@@ -560,5 +580,8 @@ public class MediaContainer extends Sprite
 
     /** Either a Loader or a VideoDisplay. */
     protected var _media :DisplayObject;
+
+    /** If we're using a Loader, true once the INIT property has been dispatched. */
+    protected var _initialized :Boolean;
 }
 }
