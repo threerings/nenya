@@ -152,7 +152,8 @@ public abstract class FrameManager
      */
     public static FrameManager newInstance (ManagedRoot root, MediaTimer timer)
     {
-        FrameManager fmgr = _useFlip.getValue() ? new FlipFrameManager() : new BackFrameManager();
+        FrameManager fmgr = (root instanceof ManagedJFrame && _useFlip.getValue()) ?
+            new FlipFrameManager() : new BackFrameManager();
         fmgr.init(root, timer);
         return fmgr;
     }
@@ -328,7 +329,7 @@ public abstract class FrameManager
         _timer = timer;
 
         // set up our custom repaint manager
-        _repainter = new ActiveRepaintManager(_window);
+        _repainter = new ActiveRepaintManager((Component)_root);
         RepaintManager.setCurrentManager(_repainter);
 
         // turn off double buffering for the whole business because we handle repaints

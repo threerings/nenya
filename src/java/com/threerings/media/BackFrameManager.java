@@ -21,6 +21,7 @@
 
 package com.threerings.media;
 
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Rectangle;
@@ -84,7 +85,7 @@ public class BackFrameManager extends FrameManager
             // we cache our frame's graphics object so that we can avoid
             // instantiating a new one on every tick
             if (_fgfx == null) {
-                _fgfx = (Graphics2D)_window.getGraphics();
+                _fgfx = (Graphics2D)((Component)_root).getGraphics();
             }
             _fgfx.drawImage(_backimg, 0, 0, null);
 

@@ -43,6 +43,7 @@ public class ManagedJApplet extends JApplet
     public void init (FrameManager fmgr)
     {
         _fmgr = fmgr;
+        setIgnoreRepaint(true);
     }
 
     // from interface FrameManager.ManagedRoot
