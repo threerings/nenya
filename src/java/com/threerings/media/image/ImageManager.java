@@ -95,21 +95,21 @@ public class ImageManager
     }
 
     /**
-     * This interface allows the image manager to create images that are in a
-     * format optimal for rendering to the screen.
+     * This interface allows the image manager to create images that are in a format optimal for
+     * rendering to the screen.
      */
     public interface OptimalImageCreator
     {
         /**
-         * Requests that a blank image be created that is in a format and of a
-         * depth that are optimal for rendering to the screen.
+         * Requests that a blank image be created that is in a format and of a depth that are
+         * optimal for rendering to the screen.
          */
         public BufferedImage createImage (int width, int height, int trans);
     }
 
     /**
-     * Construct an image manager with the specified {@link ResourceManager}
-     * from which it will obtain its data.
+     * Construct an image manager with the specified {@link ResourceManager} from which it will
+     * obtain its data.
      */
     public ImageManager (ResourceManager rmgr, OptimalImageCreator icreator)
     {
@@ -128,8 +128,8 @@ public class ImageManager
     }
 
     /**
-     * A convenience constructor that creates an {@link AWTImageCreator} for
-     * use by the image manager.
+     * A convenience constructor that creates an {@link AWTImageCreator} for use by the image
+     * manager.
      */
     public ImageManager (ResourceManager rmgr, Component context)
     {
@@ -147,8 +147,7 @@ public class ImageManager
     }
 
     /**
-     * Creates a buffered image, optimized for display on our graphics
-     * device.
+     * Creates a buffered image, optimized for display on our graphics device.
      */
     public BufferedImage createImage (int width, int height, int transparency)
     {
@@ -156,8 +155,8 @@ public class ImageManager
     }
 
     /**
-     * Loads (and caches) the specified image from the resource manager
-     * using the supplied path to identify the image.
+     * Loads (and caches) the specified image from the resource manager using the supplied path to
+     * identify the image.
      */
     public BufferedImage getImage (String path)
     {
@@ -165,8 +164,8 @@ public class ImageManager
     }
 
     /**
-     * Like {@link #getImage(String)} but the specified colorizations are
-     * applied to the image before it is returned.
+     * Like {@link #getImage(String)} but the specified colorizations are applied to the image
+     * before it is returned.
      */
     public BufferedImage getImage (String path, Colorization[] zations)
     {
@@ -174,8 +173,8 @@ public class ImageManager
     }
 
     /**
-     * Like {@link #getImage(String)} but the image is loaded from the
-     * specified resource set rathern than the default resource set.
+     * Like {@link #getImage(String)} but the image is loaded from the specified resource set
+     * rathern than the default resource set.
      */
     public BufferedImage getImage (String rset, String path)
     {
@@ -183,29 +182,25 @@ public class ImageManager
     }
 
     /**
-     * Like {@link #getImage(String,String)} but the specified
-     * colorizations are applied to the image before it is returned.
+     * Like {@link #getImage(String,String)} but the specified colorizations are applied to the
+     * image before it is returned.
      */
-    public BufferedImage getImage (String rset, String path,
-                                   Colorization[] zations)
+    public BufferedImage getImage (String rset, String path, Colorization[] zations)
     {
         if (StringUtil.isBlank(path)) {
-            String errmsg = "Invalid image path [rset=" + rset +
-                ", path=" + path + "]";
+            String errmsg = "Invalid image path [rset=" + rset + ", path=" + path + "]";
             throw new IllegalArgumentException(errmsg);
         }
-
         return getImage(getImageKey(rset, path), zations);
     }
 
     /**
-     * Loads (and caches) the specified image from the resource manager
-     * using the supplied path to identify the image.
+     * Loads (and caches) the specified image from the resource manager using the supplied path to
+     * identify the image.
      *
-     * <p> Additionally the image is optimized for display in the current
-     * graphics configuration. Consider using {@link #getMirage(ImageKey)}
-     * instead of prepared images as they (some day) will automatically
-     * use volatile images to increase performance.
+     * <p> Additionally the image is optimized for display in the current graphics
+     * configuration. Consider using {@link #getMirage(ImageKey)} instead of prepared images as
+     * they (some day) will automatically use volatile images to increase performance.
      */
     public BufferedImage getPreparedImage (String path)
     {
@@ -213,13 +208,12 @@ public class ImageManager
     }
 
     /**
-     * Loads (and caches) the specified image from the resource manager,
-     * obtaining the image from the supplied resource set.
+     * Loads (and caches) the specified image from the resource manager, obtaining the image from
+     * the supplied resource set.
      *
-     * <p> Additionally the image is optimized for display in the current
-     * graphics configuration. Consider using {@link #getMirage(ImageKey)}
-     * instead of prepared images as they (some day) will automatically
-     * use volatile images to increase performance.
+     * <p> Additionally the image is optimized for display in the current graphics
+     * configuration. Consider using {@link #getMirage(ImageKey)} instead of prepared images as
+     * they (some day) will automatically use volatile images to increase performance.
      */
     public BufferedImage getPreparedImage (String rset, String path)
     {
@@ -227,18 +221,15 @@ public class ImageManager
     }
 
     /**
-     * Loads (and caches) the specified image from the resource manager,
-     * obtaining the image from the supplied resource set and applying the
-     * using the supplied path to identify the image.
+     * Loads (and caches) the specified image from the resource manager, obtaining the image from
+     * the supplied resource set and applying the using the supplied path to identify the image.
      *
-     * <p> Additionally the image is optimized for display in the current
-     * graphics configuration. Consider using {@link
-     * #getMirage(ImageKey,Colorization[])} instead of prepared images as
-     * they (some day) will automatically use volatile images to increase
+     * <p> Additionally the image is optimized for display in the current graphics
+     * configuration. Consider using {@link #getMirage(ImageKey,Colorization[])} instead of
+     * prepared images as they (some day) will automatically use volatile images to increase
      * performance.
      */
-    public BufferedImage getPreparedImage (
-        String rset, String path, Colorization[] zations)
+    public BufferedImage getPreparedImage (String rset, String path, Colorization[] zations)
     {
         BufferedImage image = getImage(rset, path, zations);
         BufferedImage prepped = null;
@@ -253,8 +244,8 @@ public class ImageManager
     }
 
     /**
-     * Returns an image key that can be used to fetch the image identified
-     * by the specified resource set and image path.
+     * Returns an image key that can be used to fetch the image identified by the specified
+     * resource set and image path.
      */
     public ImageKey getImageKey (String rset, String path)
     {
@@ -262,8 +253,8 @@ public class ImageManager
     }
 
     /**
-     * Returns an image key that can be used to fetch the image identified
-     * by the specified data provider and image path.
+     * Returns an image key that can be used to fetch the image identified by the specified data
+     * provider and image path.
      */
     public ImageKey getImageKey (ImageDataProvider daprov, String path)
     {
@@ -271,9 +262,8 @@ public class ImageManager
     }
 
     /**
-     * Obtains the image identified by the specified key, caching if
-     * possible. The image will be recolored using the supplied
-     * colorizations if requested.
+     * Obtains the image identified by the specified key, caching if possible. The image will be
+     * recolored using the supplied colorizations if requested.
      */
     public BufferedImage getImage (ImageKey key, Colorization[] zations)
     {
@@ -312,8 +302,80 @@ public class ImageManager
     }
 
     /**
-     * Returns the data provider configured to obtain image data from the
-     * specified resource set.
+     * Creates a mirage which is an image optimized for display on our current display device and
+     * which will be stored into video memory if possible.
+     */
+    public Mirage getMirage (String rsrcPath)
+    {
+        return getMirage(getImageKey(_defaultProvider, rsrcPath), null, null);
+    }
+
+    /**
+     * Creates a mirage which is an image optimized for display on our current display device and
+     * which will be stored into video memory if possible.
+     */
+    public Mirage getMirage (ImageKey key)
+    {
+        return getMirage(key, null, null);
+    }
+
+    /**
+     * Like {@link #getMirage(ImageKey)} but that only the specified subimage of the source image
+     * is used to build the mirage.
+     */
+    public Mirage getMirage (ImageKey key, Rectangle bounds)
+    {
+        return getMirage(key, bounds, null);
+    }
+
+    /**
+     * Like {@link #getMirage(ImageKey)} but the supplied colorizations are applied to the source
+     * image before creating the mirage.
+     */
+    public Mirage getMirage (ImageKey key, Colorization[] zations)
+    {
+        return getMirage(key, null, zations);
+    }
+
+    /**
+     * Like {@link #getMirage(ImageKey,Colorization[])} except that the mirage is created using
+     * only the specified subset of the original image.
+     */
+    public Mirage getMirage (ImageKey key, Rectangle bounds, Colorization[] zations)
+    {
+        BufferedImage src = null;
+
+        if (bounds == null) {
+            // if they specified no bounds, we need to load up the raw image and determine its
+            // bounds so that we can pass those along to the created mirage
+            src = getImage(key, zations);
+            bounds = new Rectangle(0, 0, src.getWidth(), src.getHeight());
+
+        } else if (!_prepareImages.getValue()) {
+            src = getImage(key, zations);
+            src = src.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
+        if (_runBlank.getValue()) {
+            return new BlankMirage(bounds.width, bounds.height);
+        } else if (_prepareImages.getValue()) {
+            return new CachedVolatileMirage(this, key, bounds, zations);
+        } else {
+            return new BufferedMirage(src);
+        }
+    }
+
+    /**
+     * Returns the image creator that can be used to create buffered images optimized for rendering
+     * to the screen.
+     */
+    public OptimalImageCreator getImageCreator ()
+    {
+        return _icreator;
+    }
+
+    /**
+     * Returns the data provider configured to obtain image data from the specified resource set.
      */
     protected ImageDataProvider getDataProvider (final String rset)
     {
@@ -326,8 +388,7 @@ public class ImageManager
             dprov = new ImageDataProvider() {
                 public BufferedImage loadImage (String path)
                     throws IOException {
-                    // first attempt to load the image from the specified
-                    // resource set
+                    // first attempt to load the image from the specified resource set
                     try {
                         return read(_rmgr.getImageResource(rset, path));
                     } catch (FileNotFoundException fnfe) {
@@ -347,8 +408,7 @@ public class ImageManager
     }
 
     /**
-     * Loads and returns the image with the specified key from the
-     * supplied data provider.
+     * Loads and returns the image with the specified key from the supplied data provider.
      */
     protected BufferedImage loadImage (ImageKey key)
     {
@@ -398,15 +458,12 @@ public class ImageManager
         try {
             iis.close();
         } catch (IOException ioe) {
-            // jesus fucking hoppalong cassidy christ on a polyester pogo
-            // stick! ImageInputStreamImpl.close() throws a fucking
-            // IOException if it's already closed; there's no way to find
-            // out if it's already closed or not, so we have to check for
-            // their bullshit exception; as if we should just "trust"
-            // ImageIO.read() to close the fucking input stream when it's
-            // done, especially after the goddamned fiasco with
-            // PNGImageReader not closing it's fucking inflaters; for the
-            // love of humanity
+            // jesus fucking hoppalong cassidy christ on a polyester pogo stick!
+            // ImageInputStreamImpl.close() throws a fucking IOException if it's already closed;
+            // there's no way to find out if it's already closed or not, so we have to check for
+            // their bullshit exception; as if we should just "trust" ImageIO.read() to close the
+            // fucking input stream when it's done, especially after the goddamned fiasco with
+            // PNGImageReader not closing it's fucking inflaters; for the love of humanity
             if (!"closed".equals(ioe.getMessage())) {
                 Log.warning("Failure closing image input '" + iis + "'.");
                 Log.logStackTrace(ioe);
@@ -415,77 +472,8 @@ public class ImageManager
     }
 
     /**
-     * Creates a mirage which is an image optimized for display on our
-     * current display device and which will be stored into video memory
-     * if possible.
-     */
-    public Mirage getMirage (ImageKey key)
-    {
-        return getMirage(key, null, null);
-    }
-
-    /**
-     * Like {@link #getMirage(ImageKey)} but that only the specified
-     * subimage of the source image is used to build the mirage.
-     */
-    public Mirage getMirage (ImageKey key, Rectangle bounds)
-    {
-        return getMirage(key, bounds, null);
-    }
-
-    /**
-     * Like {@link #getMirage(ImageKey)} but the supplied colorizations
-     * are applied to the source image before creating the mirage.
-     */
-    public Mirage getMirage (ImageKey key, Colorization[] zations)
-    {
-        return getMirage(key, null, zations);
-    }
-
-    /**
-     * Like {@link #getMirage(ImageKey,Colorization[])} except that the
-     * mirage is created using only the specified subset of the original
-     * image.
-     */
-    public Mirage getMirage (ImageKey key, Rectangle bounds,
-                             Colorization[] zations)
-    {
-        BufferedImage src = null;
-
-        if (bounds == null) {
-            // if they specified no bounds, we need to load up the raw
-            // image and determine its bounds so that we can pass those
-            // along to the created mirage
-            src = getImage(key, zations);
-            bounds = new Rectangle(0, 0, src.getWidth(), src.getHeight());
-
-        } else if (!_prepareImages.getValue()) {
-            src = getImage(key, zations);
-            src = src.getSubimage(bounds.x, bounds.y,
-                                  bounds.width, bounds.height);
-        }
-
-        if (_runBlank.getValue()) {
-            return new BlankMirage(bounds.width, bounds.height);
-        } else if (_prepareImages.getValue()) {
-            return new CachedVolatileMirage(this, key, bounds, zations);
-        } else {
-            return new BufferedMirage(src);
-        }
-    }
-
-    /**
-     * Returns the image creator that can be used to create buffered images
-     * optimized for rendering to the screen.
-     */
-    public OptimalImageCreator getImageCreator ()
-    {
-        return _icreator;
-    }
-
-    /**
-     * Reports statistics detailing the image manager cache performance
-     * and the current size of the cached images.
+     * Reports statistics detailing the image manager cache performance and the current size of the
+     * cached images.
      */
     protected void reportCachePerformance ()
     {
@@ -505,13 +493,12 @@ public class ImageManager
             }
             eff = _ccache.getTrackedEffectiveness();
         }
-        Log.info("ImageManager LRU [mem=" + (size / 1024) + "k" +
-                 ", size=" + _ccache.size() +  ", hits=" + eff[0] +
-                 ", misses=" + eff[1] + ", totalKeys=" + _keySet.size() + "].");
+        Log.info("ImageManager LRU [mem=" + (size / 1024) + "k" + ", size=" + _ccache.size() +
+                 ", hits=" + eff[0] + ", misses=" + eff[1] +
+                 ", totalKeys=" + _keySet.size() + "].");
     }
 
-    /** Maintains a source image and a set of colorized versions in the
-     * image cache. */
+    /** Maintains a source image and a set of colorized versions in the image cache. */
     protected static class CacheRecord
     {
         public CacheRecord (ImageKey key, BufferedImage source)
@@ -530,8 +517,8 @@ public class ImageManager
                 _colorized = new ArrayList();
             }
 
-            // we search linearly through our list of colorized copies
-            // because it is not likely to be very long
+            // we search linearly through our list of colorized copies because it is not likely to
+            // be very long
             int csize = _colorized.size();
             for (int ii = 0; ii < csize; ii++) {
                 Tuple tup = (Tuple)_colorized.get(ii);
@@ -548,8 +535,7 @@ public class ImageManager
 
             } catch (Exception re) {
                 Log.warning("Failure recoloring image [source" + _key +
-                            ", zations=" + StringUtil.toString(zations) +
-                            ", error=" + re + "].");
+                            ", zations=" + StringUtil.toString(zations) + ", error=" + re + "].");
                 // return the uncolorized version
                 return _source;
             }
@@ -562,10 +548,8 @@ public class ImageManager
 
         public String toString ()
         {
-            return "[key=" + _key + ", wid=" + _source.getWidth() +
-                ", hei=" + _source.getHeight() +
-                ", ccount=" + ((_colorized == null) ? 0 : _colorized.size()) +
-                "]";
+            return "[key=" + _key + ", wid=" + _source.getWidth() + ", hei=" + _source.getHeight() +
+                ", ccount=" + ((_colorized == null) ? 0 : _colorized.size()) + "]";
         }
 
         protected ImageKey _key;
@@ -573,8 +557,7 @@ public class ImageManager
         protected ArrayList _colorized;
     }
 
-    /** A reference to the resource manager via which we load image data
-     * by default. */
+    /** A reference to the resource manager via which we load image data by default. */
     protected ResourceManager _rmgr;
 
     /** We use this to create images optimized for rendering. */
@@ -594,7 +577,6 @@ public class ImageManager
         public BufferedImage loadImage (String path) throws IOException {
             return read(_rmgr.getImageResource(path));
         }
-
         public String getIdent () {
             return "rmgr:default";
         }
@@ -603,23 +585,18 @@ public class ImageManager
     /** Data providers for different resource sets. */
     protected HashMap _providers = new HashMap();
 
-    /** Register our image cache size with the runtime adjustments
-     * framework. */
-    protected static RuntimeAdjust.IntAdjust _cacheSize =
-        new RuntimeAdjust.IntAdjust(
-            "Size (in kb of memory used) of the image manager LRU cache " +
-            "[requires restart]", "narya.media.image.cache_size",
-            MediaPrefs.config, 2048);
+    /** Register our image cache size with the runtime adjustments framework. */
+    protected static RuntimeAdjust.IntAdjust _cacheSize = new RuntimeAdjust.IntAdjust(
+        "Size (in kb of memory used) of the image manager LRU cache [requires restart]",
+        "narya.media.image.cache_size", MediaPrefs.config, 2048);
 
     /** Controls whether or not we prepare images or use raw versions. */
-    protected static RuntimeAdjust.BooleanAdjust _prepareImages =
-        new RuntimeAdjust.BooleanAdjust(
-            "Cause image manager to optimize all images for display.",
-            "narya.media.image.prep_images", MediaPrefs.config, true);
+    protected static RuntimeAdjust.BooleanAdjust _prepareImages = new RuntimeAdjust.BooleanAdjust(
+        "Cause image manager to optimize all images for display.",
+        "narya.media.image.prep_images", MediaPrefs.config, true);
 
     /** A debug toggle for running entirely without rendering images. */
-    protected static RuntimeAdjust.BooleanAdjust _runBlank =
-        new RuntimeAdjust.BooleanAdjust(
-            "Cause image manager to return blank images.",
-            "narya.media.image.run_blank", MediaPrefs.config, false);
+    protected static RuntimeAdjust.BooleanAdjust _runBlank = new RuntimeAdjust.BooleanAdjust(
+        "Cause image manager to return blank images.",
+        "narya.media.image.run_blank", MediaPrefs.config, false);
 }

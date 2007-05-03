@@ -157,7 +157,7 @@ public class MediaContainer extends Sprite
         }
 
         willShowNewMedia();
-        addChild(disp);
+        addChildAt(disp, 0);
         _media = disp;
         updateContentDimensions(disp.width, disp.height);
     }
@@ -180,7 +180,7 @@ public class MediaContainer extends Sprite
         vid.addEventListener(VideoDisplayer.SIZE_KNOWN, handleVideoSizeKnown);
         vid.addEventListener(VideoDisplayer.VIDEO_ERROR, handleVideoError);
         _media = vid;
-        addChild(vid);
+        addChildAt(vid, 0);
         vid.setup(url);
     }
 
@@ -208,7 +208,7 @@ public class MediaContainer extends Sprite
 
         // start it loading, add it as a child
         loader.load(new URLRequest(url), getContext(url));
-        addChild(loader);
+        addChildAt(loader, 0);
 
         try {
             updateContentDimensions(info.width, info.height);
@@ -508,7 +508,7 @@ public class MediaContainer extends Sprite
         } else {
             mask = new Shape();
             // the mask must be added to the display list (which is wacky)
-            addChild(mask);
+            addChildAt(mask, 0);
             _media.mask = mask;
         }
 
