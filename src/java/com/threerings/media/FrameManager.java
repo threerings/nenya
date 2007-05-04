@@ -329,7 +329,8 @@ public abstract class FrameManager
         _timer = timer;
 
         // set up our custom repaint manager
-        _repainter = new ActiveRepaintManager((Component)_root);
+        _repainter = new ActiveRepaintManager(
+            (_root instanceof Component) ? (Component)_root : _window);
         RepaintManager.setCurrentManager(_repainter);
 
         // turn off double buffering for the whole business because we handle repaints
