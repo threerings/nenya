@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -156,7 +157,7 @@ public class ModelDef
         public boolean transparent;
 
         /** The vertices of the mesh. */
-        public ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+        public HashArrayList<Vertex> vertices = new HashArrayList<Vertex>();
 
         /** The triangle indices. */
         public ArrayList<Integer> indices = new ArrayList<Integer>();
@@ -218,6 +219,7 @@ public class ModelDef
             ModelNode node = new ModelNode(name);
             if (indices.size() > 0) {
                 _mesh = createMesh();
+                optimizeVertexOrder();
                 configureMesh(props);
                 node.attachChild(_mesh);
             }
@@ -246,6 +248,90 @@ public class ModelDef
         protected ModelMesh createMesh ()
         {
             return new ModelMesh("mesh");
+        }
+
+        /** Reorders the vertices to optimize for vertex cache utilization.  Uses the algorithm
+         * described in Tom Forsyth's article
+         * <a href="http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html">
+         * Linear-Speed Vertex Cache Optimization</a>.
+         */
+        protected void optimizeVertexOrder ()
+        {
+            // start by compiling a list of triangles cross-linked with the vertices they use
+            // (we use a linked hash set to ensure consistent iteration order for serialization)
+            LinkedHashSet<Triangle> triangles = new LinkedHashSet<Triangle>();
+            for (int ii = 0, nn = indices.size(); ii < nn; ii += 3) {
+                Vertex[] tverts = new Vertex[] {
+                    vertices.get(indices.get(ii)),
+                    vertices.get(indices.get(ii + 1)),
+                    vertices.get(indices.get(ii + 2))
+                };
+                Triangle triangle = new Triangle(tverts);
+                for (Vertex tvert : tverts) {
+                    if (tvert.triangles == null) {
+                        tvert.triangles = new ArrayList<Triangle>();
+                    }
+                    tvert.triangles.add(triangle);
+                }
+                triangles.add(triangle);
+            }
+
+            // init the scores
+            for (Vertex vertex : vertices) {
+                vertex.updateScore(Integer.MAX_VALUE);
+            }
+
+            // clear the vertices and indices to prepare for readdition
+            vertices.clear();
+            indices.clear();
+
+            // while there are triangles remaining, keep adding the one with the best score
+            // (as determined by its LRU cache position and number of remaining triangles)
+            HashArrayList<Vertex> vcache = new HashArrayList<Vertex>();
+            while (!triangles.isEmpty()) {
+                // first look for triangles in the cache
+                Triangle bestTriangle = null;
+                float bestScore = -1f;
+                for (Vertex vertex : vcache) {
+                    for (Triangle triangle : vertex.triangles) {
+                        float score = triangle.getScore();
+                        if (score > bestScore) {
+                            bestTriangle = triangle;
+                            bestScore = score;
+                        }
+                    }
+                }
+
+                // if that didn't work, scan the full list
+                if (bestTriangle == null) {
+                    for (Triangle triangle : triangles) {
+                        float score = triangle.getScore();
+                        if (score > bestScore) {
+                            bestTriangle = triangle;
+                            bestScore = score;
+                        }
+                    }
+                }
+
+                // add and update the vertices from the best triangle
+                triangles.remove(bestTriangle);
+                for (Vertex vertex : bestTriangle.vertices) {
+                    addVertex(vertex);
+                    vertex.triangles.remove(bestTriangle);
+                    vcache.remove(vertex);
+                    vcache.add(0, vertex);
+                }
+
+                // update the scores of the vertices in the cache
+                for (int ii = 0, nn = vcache.size(); ii < nn; ii++) {
+                    vcache.get(ii).updateScore(ii);
+                }
+
+                // trim the excess (if any) from the end of the cache
+                while (vcache.size() > 64) {
+                    vcache.remove(vcache.size() - 1);
+                }
+            }
         }
 
         /** Configures the mesh. */
@@ -378,7 +464,7 @@ public class ModelDef
 
             // reorder the vertices by group
             ArrayList<Vertex> overts = vertices;
-            vertices = new ArrayList<Vertex>();
+            vertices = new HashArrayList<Vertex>();
             int[] imap = new int[overts.size()];
             for (Map.Entry<Set<String>, WeightGroupDef> entry :
                 _groups.entrySet()) {
@@ -420,12 +506,44 @@ public class ModelDef
         }
     }
 
+    /** Represents a triangle for processing purposes. */
+    public static class Triangle
+    {
+        public Vertex[] vertices;
+
+        public Triangle (Vertex[] vertices)
+        {
+            this.vertices = vertices;
+        }
+
+        public float getScore ()
+        {
+            return vertices[0].score + vertices[1].score + vertices[2].score;
+        }
+    }
+
     /** A basic vertex. */
     public static class Vertex
     {
         public float[] location;
         public float[] normal;
         public float[] tcoords;
+
+        public ArrayList<Triangle> triangles;
+        public float score;
+
+        public void updateScore (int cacheIdx)
+        {
+            float pscore;
+            if (cacheIdx > 63) {
+                pscore = 0f; // outside the cache
+            } else if (cacheIdx < 3) {
+                pscore = 0.75f; // the three most recent vertices
+            } else {
+                pscore = FastMath.pow((63 - cacheIdx) / 60f, 1.5f);
+            }
+            score = pscore + 2f * FastMath.pow(triangles.size(), -0.5f);
+        }
 
         public void transform (Matrix4f xform, Quaternion xrot)
         {
@@ -458,6 +576,18 @@ public class ModelDef
             }
         }
 
+        public String toString ()
+        {
+            return StringUtil.toString(location);
+        }
+
+        @Override // documentation inherited
+        public int hashCode ()
+        {
+            return Arrays.hashCode(location) ^ Arrays.hashCode(normal) ^ Arrays.hashCode(tcoords);
+        }
+
+        @Override // documentation inherited
         public boolean equals (Object obj)
         {
             Vertex overt = (Vertex)obj;
@@ -840,5 +970,76 @@ public class ModelDef
             array[ii] = list.get(ii);
         }
         return array;
+    }
+
+    /** Accelerates {@link ArrayList#indexOf}, {@link ArrayList#contains}, and
+     * {@link ArrayList#remove} using an internal hash map (assumes that all elements of the list
+     * are unique and non-null). */
+    protected static class HashArrayList<E> extends ArrayList<E>
+    {
+        @Override // documentation inherited
+        public boolean add (E element)
+        {
+            add(size(), element);
+            return true;
+        }
+
+        @Override // documentation inherited
+        public void add (int idx, E element)
+        {
+            super.add(idx, element);
+            remapFrom(idx);
+        }
+
+        @Override // documentation inherited
+        public E remove (int idx)
+        {
+            E element = super.remove(idx);
+            _indices.remove(element);
+            remapFrom(idx);
+            return element;
+        }
+
+        @Override // documentation inherited
+        public void clear ()
+        {
+            super.clear();
+            _indices.clear();
+        }
+
+        @Override // documentation inherited
+        public int indexOf (Object obj)
+        {
+            Integer idx = _indices.get(obj);
+            return (idx == null ? -1 : idx);
+        }
+
+        @Override // documentation inherited
+        public boolean contains (Object obj)
+        {
+            return _indices.containsKey(obj);
+        }
+
+        @Override // documentation inherited
+        public boolean remove (Object obj)
+        {
+            Integer idx = _indices.remove(obj);
+            if (idx != null) {
+                super.remove(idx);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        protected void remapFrom (int idx)
+        {
+            for (int ii = idx, nn = size(); ii < nn; ii++) {
+                _indices.put(get(ii), ii);
+            }
+        }
+
+        /** Maps elements to their indices in the list. */
+        protected HashMap<Object, Integer> _indices = new HashMap<Object, Integer>();
     }
 }
