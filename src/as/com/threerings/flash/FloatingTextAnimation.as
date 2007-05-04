@@ -69,6 +69,7 @@ public class FloatingTextAnimation extends Sprite
         var perc :Number = elapsed / duration;
         if (perc >= 1) {
             AnimationManager.removeDisplayAnimation(this);
+            parent.removeChild(this);
             return;
         }
 
