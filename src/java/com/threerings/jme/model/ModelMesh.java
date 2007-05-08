@@ -67,6 +67,7 @@ import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.Log;
+import com.threerings.jme.util.ShaderCache;
 
 /**
  * A {@link TriMesh} with a serialization mechanism tailored to stored models.
@@ -442,6 +443,12 @@ public class ModelMesh extends TriMesh
     }
 
     // documentation inherited from interface ModelSpatial
+    public void configureShaders (ShaderCache scache)
+    {
+        // no-op
+    }
+
+    // documentation inherited from interface ModelSpatial
     public void storeMeshFrame (int frameId, boolean blend)
     {
         // no-op
@@ -601,20 +608,6 @@ public class ModelMesh extends TriMesh
         astate.setTestFunction(AlphaState.TF_GREATER);
         astate.setReference(threshold);
         return astate;
-    }
-
-    /**
-     * Concatenates the two provided buffers.
-     */
-    protected static FloatBuffer concatenate (FloatBuffer b1, FloatBuffer b2)
-    {
-        FloatBuffer nb = BufferUtils.createFloatBuffer(b1.capacity() + b2.capacity());
-        b1.clear();
-        nb.put(b1);
-        b2.clear();
-        nb.put(b2);
-        nb.clear();
-        return nb;
     }
 
     /**

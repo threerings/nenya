@@ -22,9 +22,9 @@
 package com.threerings.jme.util;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import java.nio.IntBuffer;
 
@@ -198,14 +198,16 @@ public class JmeUtil
 
     /**
      * Loads the specified shaders (prepending the supplied preprocessor definitions)
-     * and returns a GLSL shader state.  One of the supplied files may be <code>null</code>
+     * and returns a GLSL shader state.  One of the supplied streams may be <code>null</code>
      * in order to use the fixed-function pipeline for that part.  The method returns
      * <code>null</code> if the shaders fail to compile (JME will log an error).
      *
      * @param defs a number of preprocessor definitions to be #defined in both shaders
      * (e.g., "ENABLE_FOG", "NUM_LIGHTS 2").
      */
-    public static GLSLShaderObjectsState loadShaders (File vert, File frag, String... defs)
+    public static GLSLShaderObjectsState loadShaders (
+        InputStream vert, InputStream frag, String... defs)
+        throws IOException
     {
         GLSLShaderObjectsState sstate =
             DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
@@ -223,21 +225,18 @@ public class JmeUtil
     /**
      * Loads an entire source file as a string, prepending the supplied preprocessor definitions.
      */
-    protected static String readSource (File file, String[] defs)
+    protected static String readSource (InputStream in, String[] defs)
+        throws IOException
     {
         StringBuffer buf = new StringBuffer();
         String ln = System.getProperty("line.separator");
         for (String def : defs) {
             buf.append("#define ").append(def).append(ln);
         }
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buf.append(line).append(ln);
-            }
-        } catch (IOException e) {
-            return null;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            buf.append(line).append(ln);
         }
         return buf.toString();
     }

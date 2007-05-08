@@ -114,6 +114,7 @@ import com.threerings.jme.Log;
 import com.threerings.jme.camera.CameraHandler;
 import com.threerings.jme.model.Model;
 import com.threerings.jme.model.TextureProvider;
+import com.threerings.jme.util.ShaderCache;
 import com.threerings.jme.util.SpatialVisitor;
 
 /**
@@ -142,7 +143,7 @@ public class ModelViewer extends JmeCanvasApp
         LoggingSystem.getLoggingSystem().setLevel(Level.WARNING);
         new ModelViewer(args.length > 0 ? args[0] : null);
     }
-    
+
     /**
      * Creates and initializes an instance of the model viewer application.
      *
@@ -153,17 +154,18 @@ public class ModelViewer extends JmeCanvasApp
     {
         super(1024, 768);
         _rsrcmgr = new ResourceManager("rsrc");
+        _scache = new ShaderCache(_rsrcmgr);
         _msg = new MessageManager("rsrc.i18n").getBundle("jme.viewer");
         _path = path;
-        
+
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-        
+
         _frame = new JFrame(_msg.get("m.title"));
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         JMenuBar menu = new JMenuBar();
         _frame.setJMenuBar(menu);
-        
+
         JMenu file = new JMenu(_msg.get("m.file_menu"));
         file.setMnemonic(KeyEvent.VK_F);
         menu.add(file);
@@ -176,7 +178,7 @@ public class ModelViewer extends JmeCanvasApp
         load.putValue(Action.ACCELERATOR_KEY,
             KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK));
         file.add(load);
-        
+
         Action importAction = new AbstractAction(_msg.get("m.file_import")) {
             public void actionPerformed (ActionEvent e) {
                 showImportDialog();
@@ -186,7 +188,7 @@ public class ModelViewer extends JmeCanvasApp
         importAction.putValue(Action.ACCELERATOR_KEY,
             KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_MASK));
         file.add(importAction);
-        
+
         file.addSeparator();
         Action quit = new AbstractAction(_msg.get("m.file_quit")) {
             public void actionPerformed (ActionEvent e) {
@@ -197,11 +199,11 @@ public class ModelViewer extends JmeCanvasApp
         quit.putValue(Action.ACCELERATOR_KEY,
             KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_MASK));
         file.add(quit);
-        
+
         JMenu view = new JMenu(_msg.get("m.view_menu"));
         view.setMnemonic(KeyEvent.VK_V);
         menu.add(view);
-        
+
         Action wireframe = new AbstractAction(_msg.get("m.view_wireframe")) {
             public void actionPerformed (ActionEvent e) {
                 _wfstate.setEnabled(!_wfstate.isEnabled());
@@ -212,26 +214,26 @@ public class ModelViewer extends JmeCanvasApp
             KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK));
         view.add(new JCheckBoxMenuItem(wireframe));
         view.addSeparator();
-        
+
         _pivots = new JCheckBoxMenuItem(_msg.get("m.view_pivots"));
         _pivots.setMnemonic(KeyEvent.VK_P);
         _pivots.setAccelerator(
             KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK));
         view.add(_pivots);
-        
+
         _bounds = new JCheckBoxMenuItem(_msg.get("m.view_bounds"));
         _bounds.setMnemonic(KeyEvent.VK_B);
         _bounds.setAccelerator(
             KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_MASK));
         view.add(_bounds);
-        
+
         _normals = new JCheckBoxMenuItem(_msg.get("m.view_normals"));
         _normals.setMnemonic(KeyEvent.VK_N);
         _normals.setAccelerator(
             KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK));
         view.add(_normals);
         view.addSeparator();
-        
+
         Action campos = new AbstractAction(_msg.get("m.view_campos")) {
             public void actionPerformed (ActionEvent e) {
                 _campos.setVisible(!_campos.isVisible());
@@ -242,10 +244,10 @@ public class ModelViewer extends JmeCanvasApp
             KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK));
         view.add(new JCheckBoxMenuItem(campos));
         view.addSeparator();
-        
+
         _vmenu = new JMenu(_msg.get("m.model_variant"));
         view.add(_vmenu);
-        
+
         JMenu amode = new JMenu(_msg.get("m.animation_mode"));
         final JRadioButtonMenuItem flipbook =
             new JRadioButtonMenuItem(_msg.get("m.mode_flipbook")),
@@ -268,7 +270,7 @@ public class ModelViewer extends JmeCanvasApp
                 }
             }
         };
-        
+
         mgroup.add(flipbook);
         mgroup.add(morph);
         mgroup.add(skin);
@@ -278,7 +280,7 @@ public class ModelViewer extends JmeCanvasApp
         amode.add(flipbook);
         view.add(amode);
         view.addSeparator();
-        
+
         Action rlight = new AbstractAction(_msg.get("m.view_light")) {
             public void actionPerformed (ActionEvent e) {
                 if (_rldialog == null) {
@@ -292,7 +294,7 @@ public class ModelViewer extends JmeCanvasApp
         rlight.putValue(Action.ACCELERATOR_KEY,
             KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK));
         view.add(new JMenuItem(rlight));
-        
+
         Action rcamera = new AbstractAction(_msg.get("m.view_recenter")) {
             public void actionPerformed (ActionEvent e) {
                 ((OrbitCameraHandler)_camhand).recenter();
@@ -303,12 +305,12 @@ public class ModelViewer extends JmeCanvasApp
         rcamera.putValue(Action.ACCELERATOR_KEY,
             KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK));
         view.add(new JMenuItem(rcamera));
-        
+
         _frame.getContentPane().add(getCanvas(), BorderLayout.CENTER);
-        
+
         JPanel bpanel = new JPanel(new BorderLayout());
         _frame.getContentPane().add(bpanel, BorderLayout.SOUTH);
-        
+
         _animctrls = new JPanel();
         _animctrls.setBorder(BorderFactory.createEtchedBorder());
         bpanel.add(_animctrls, BorderLayout.NORTH);
@@ -355,26 +357,26 @@ public class ModelViewer extends JmeCanvasApp
             }
         });
         _animctrls.setVisible(false);
-        
+
         JPanel spanel = new JPanel(new BorderLayout());
         bpanel.add(spanel, BorderLayout.SOUTH);
-        
+
         _status = new JLabel(" ");
         _status.setHorizontalAlignment(JLabel.LEFT);
         _status.setBorder(BorderFactory.createEtchedBorder());
         spanel.add(_status, BorderLayout.CENTER);
-        
+
         _campos = new JLabel(" ");
         _campos.setBorder(BorderFactory.createEtchedBorder());
         _campos.setVisible(false);
         spanel.add(_campos, BorderLayout.EAST);
-        
+
         _frame.pack();
         _frame.setVisible(true);
 
         run();
     }
-    
+
     @Override // documentation inherited
     public boolean init ()
     {
@@ -386,7 +388,7 @@ public class ModelViewer extends JmeCanvasApp
         }
         return true;
     }
-    
+
     @Override // documentation inherited
     protected void initDisplay ()
         throws JmeException
@@ -395,23 +397,23 @@ public class ModelViewer extends JmeCanvasApp
         _ctx.getRenderer().setBackgroundColor(ColorRGBA.gray);
         _ctx.getRenderer().getQueue().setTwoPassTransparency(false);
     }
-    
+
     @Override // documentation inherited
     protected void initInput ()
     {
         super.initInput();
-        
+
         _camhand.setTiltLimits(-FastMath.HALF_PI, FastMath.HALF_PI);
         _camhand.setZoomLimits(1f, 500f);
         _camhand.tiltCamera(-FastMath.PI * 7.0f / 16.0f);
         updateCameraPosition();
-        
+
         MouseOrbiter orbiter = new MouseOrbiter();
         _canvas.addMouseListener(orbiter);
         _canvas.addMouseMotionListener(orbiter);
         _canvas.addMouseWheelListener(orbiter);
     }
-    
+
     /**
      * Updates the camera position label.
      */
@@ -429,18 +431,18 @@ public class ModelViewer extends JmeCanvasApp
             " HP: " + CAMPOS_FORMAT.format(heading) + ", " +
             CAMPOS_FORMAT.format(pitch));
     }
-    
+
     @Override // documentation inherited
     protected CameraHandler createCameraHandler (Camera camera)
     {
         return new OrbitCameraHandler(camera);
     }
-    
+
     @Override // documentation inherited
     protected void initRoot ()
     {
         super.initRoot();
-        
+
         // set default states
         MaterialState mstate = _ctx.getRenderer().createMaterialState();
         mstate.getDiffuse().set(ColorRGBA.white);
@@ -450,7 +452,7 @@ public class ModelViewer extends JmeCanvasApp
             _wfstate = _ctx.getRenderer().createWireframeState());
         _ctx.getGeometry().setNormalsMode(Spatial.NM_GL_NORMALIZE_PROVIDED);
         _wfstate.setEnabled(false);
-        
+
         // create a grid on the XY plane to provide some reference
         Vector3f[] points = new Vector3f[GRID_SIZE*2 + GRID_SIZE*2];
         float halfLength = (GRID_SIZE - 1) * GRID_SPACING / 2;
@@ -466,7 +468,7 @@ public class ModelViewer extends JmeCanvasApp
                 -halfLength, -halfLength + yy*GRID_SPACING, 0f);
             points[idx++] = new Vector3f(
                 +halfLength, -halfLength + yy*GRID_SPACING, 0f);
-            
+
         }
         Line grid = new Line("grid", points, null, null, null);
         grid.getBatch(0).getDefaultColor().set(0.25f, 0.25f, 0.25f, 1f);
@@ -475,7 +477,7 @@ public class ModelViewer extends JmeCanvasApp
         grid.updateModelBound();
         _ctx.getGeometry().attachChild(grid);
         grid.updateRenderState();
-        
+
         // attach a dummy node to draw debugging views
         _ctx.getGeometry().attachChild(new Node("debug") {
             public void onDraw (Renderer r) {
@@ -494,7 +496,7 @@ public class ModelViewer extends JmeCanvasApp
             }
         });
     }
-    
+
     /**
      * Draws the pivot axes of the given node and its children.
      */
@@ -519,7 +521,7 @@ public class ModelViewer extends JmeCanvasApp
         _axes.getWorldTranslation().set(spatial.getWorldTranslation());
         _axes.getWorldRotation().set(spatial.getWorldRotation());
         _axes.draw(r);
-        
+
         if (spatial instanceof Node) {
             Node node = (Node)spatial;
             for (int ii = 0, nn = node.getQuantity(); ii < nn; ii++) {
@@ -527,7 +529,7 @@ public class ModelViewer extends JmeCanvasApp
             }
         }
     }
-    
+
     @Override // documentation inherited
     protected void initLighting ()
     {
@@ -535,13 +537,13 @@ public class ModelViewer extends JmeCanvasApp
         _dlight.setEnabled(true);
         _dlight.getDirection().set(-1f, 0f, -1f).normalizeLocal();
         _dlight.getAmbient().set(0.25f, 0.25f, 0.25f, 1f);
-        
+
         LightState lstate = _ctx.getRenderer().createLightState();
         lstate.attach(_dlight);
         _ctx.getGeometry().setRenderState(lstate);
         _ctx.getGeometry().setLightCombineMode(LightState.REPLACE);
     }
-    
+
     /**
      * Shows the load model dialog.
      */
@@ -573,7 +575,7 @@ public class ModelViewer extends JmeCanvasApp
         }
         _config.setValue("dir", _chooser.getCurrentDirectory().toString());
     }
-    
+
     /**
      * Attempts to load a model from the specified location.
      */
@@ -584,19 +586,19 @@ public class ModelViewer extends JmeCanvasApp
             if (fpath.endsWith(".properties")) {
                 compileModel(file);
             } else if (fpath.endsWith(".dat")) {
-                loadCompiledModel(file);        
+                loadCompiledModel(file);
             } else {
                 throw new Exception(_msg.get("m.invalid_type"));
             }
             _status.setText(_msg.get("m.loaded_model", fpath));
             _loaded = file;
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             _status.setText(_msg.get("m.load_error", fpath, e));
         }
     }
-    
+
     /**
      * Attempts to compile and load a model.
      */
@@ -616,7 +618,7 @@ public class ModelViewer extends JmeCanvasApp
         fpath = (didx == -1) ? fpath : fpath.substring(0, didx);
         loadCompiledModel(new File(fpath + ".dat"));
     }
-    
+
     /**
      * Attempts to load a model that has already been compiled.
      */
@@ -626,7 +628,7 @@ public class ModelViewer extends JmeCanvasApp
         _status.setText(_msg.get("m.loading_model", file));
         setModel(Model.readFromFile(file), file);
     }
-    
+
     /**
      * Sets the model once it's been loaded.
      *
@@ -639,16 +641,17 @@ public class ModelViewer extends JmeCanvasApp
         }
         _ctx.getGeometry().attachChild(_model = _omodel = model);
         _model.setAnimationMode(_animMode);
+        _model.configureShaders(_scache);
         _model.lockStaticMeshes(_ctx.getRenderer(), true, true);
-        
+
         // load the model's textures
         resolveModelTextures(file);
-        
+
         // recenter the camera
         _model.updateGeometricState(0f, true);
         ((OrbitCameraHandler)_camhand).recenter();
         updateCameraPosition();
-        
+
         // configure the variant menu
         _variant = null;
         _vmenu.removeAll();
@@ -685,7 +688,7 @@ public class ModelViewer extends JmeCanvasApp
         DefaultComboBoxModel abmodel = new DefaultComboBoxModel(anims);
         _animbox.setModel(abmodel);
         updateAnimationSpeed();
-        
+
         // if there are any sequences, add those as well
         String[] seqs = StringUtil.parseStringArray(
             _model.getProperties().getProperty("sequences", ""));
@@ -693,7 +696,7 @@ public class ModelViewer extends JmeCanvasApp
             abmodel.addElement(seq);
         }
     }
-    
+
     /**
      * Switches to the named variant.
      */
@@ -708,7 +711,7 @@ public class ModelViewer extends JmeCanvasApp
         resolveModelTextures(_loaded);
         _variant = variant;
     }
-    
+
     /**
      * Resolve the textures from the file's directory.
      */
@@ -744,7 +747,7 @@ public class ModelViewer extends JmeCanvasApp
         });
         _model.updateRenderState();
     }
-    
+
     /**
      * Shows the import particle system dialog.
      */
@@ -776,7 +779,7 @@ public class ModelViewer extends JmeCanvasApp
         _config.setValue("import_dir",
             _ichooser.getCurrentDirectory().toString());
     }
-    
+
     /**
      * Attempts to import the specified file as a JME binary scene.
      */
@@ -793,14 +796,14 @@ public class ModelViewer extends JmeCanvasApp
             new ImportDialog(file,
                 (Spatial)BinaryImporter.getInstance().load(
                     file)).setVisible(true);
-                
+
         } catch (Exception e) {
             e.printStackTrace();
             _status.setText(_msg.get("m.load_error", file, e));
         }
         TextureKey.setLocationOverride(null);
     }
-    
+
     /**
      * Updates the model's animation speed based on the position of the
      * animation speed slider.
@@ -810,82 +813,85 @@ public class ModelViewer extends JmeCanvasApp
         _model.setAnimationSpeed(
             FastMath.pow(2f, _animspeed.getValue() / 25f));
     }
-    
+
     /** The resource manager. */
     protected ResourceManager _rsrcmgr;
-    
+
+    /** The shader cache. */
+    protected ShaderCache _scache;
+
     /** The translation bundle. */
     protected MessageBundle _msg;
-    
+
     /** The path of the initial model to load. */
     protected String _path;
-    
+
     /** The last model successfully loaded. */
     protected File _loaded;
-    
+
     /** The viewer frame. */
     protected JFrame _frame;
-    
+
     /** The variant menu. */
     protected JMenu _vmenu;
-    
+
     /** Debug view switches. */
     protected JCheckBoxMenuItem _pivots, _bounds, _normals;
-    
+
     /** The animation controls. */
     protected JPanel _animctrls;
-    
+
     /** The animation selector. */
     protected JComboBox _animbox;
-    
+
     /** The "stop animation" button. */
     protected JButton _animstop;
-    
+
     /** The animation speed slider. */
-    protected JSlider _animspeed; 
-    
+    protected JSlider _animspeed;
+
     /** The status bar. */
     protected JLabel _status;
-    
+
     /** The camera position display. */
     protected JLabel _campos;
-    
+
     /** The model file chooser. */
     protected JFileChooser _chooser;
-    
+
     /** The import file chooser. */
     protected JFileChooser _ichooser;
-    
+
     /** The desired animation mode. */
     protected Model.AnimationMode _animMode;
-    
+
     /** The desired variant. */
     protected String _variant;
-    
+
     /** The light rotation dialog. */
     protected RotateLightDialog _rldialog;
-    
+
     /** The scene light. */
     protected DirectionalLight _dlight;
-    
+
     /** Used to toggle wireframe rendering. */
     protected WireframeState _wfstate;
-    
+
     /** The currently loaded model. */
     protected Model _model;
-    
+
     /** The original model (before switching to a variant). */
     protected Model _omodel;
-    
+
     /** Reused to draw pivot axes. */
     protected Line _axes;
-    
+
     /** The current animation sequence, if any. */
     protected String[] _sequence;
-    
+
     /** The current index in the animation sequence. */
     protected int _seqidx;
-    
+
     /** Enables and disables the stop button when animations start and stop. */
     protected Model.AnimationObserver _animobs =
         new Model.AnimationObserver() {
@@ -913,7 +919,7 @@ public class ModelViewer extends JmeCanvasApp
             return true;
         }
     };
-    
+
     /** Allows users to manipulate an imported JME file. */
     protected class ImportDialog extends JDialog
         implements ChangeListener
@@ -922,25 +928,25 @@ public class ModelViewer extends JmeCanvasApp
         {
             super(_frame, _msg.get("m.import", file), false);
             _spatial = spatial;
-            
+
             // rotate from y-up to z-up and set initial scale
             _spatial.getLocalRotation().fromAngleNormalAxis(FastMath.HALF_PI,
                 Vector3f.UNIT_X);
             _spatial.setLocalScale(0.025f);
-            
+
             JPanel cpanel = GroupLayout.makeVBox();
             getContentPane().add(cpanel, BorderLayout.CENTER);
-            
+
             JPanel spanel = new JPanel();
             spanel.add(new JLabel(_msg.get("m.scale")));
             spanel.add(_scale = new JSlider(0, 1000, 250));
             _scale.addChangeListener(this);
             cpanel.add(spanel);
-            
+
             JPanel bpanel = new JPanel();
             bpanel.add(new JButton(new AbstractAction(
                 _msg.get("m.respawn_particles")) {
-                public void actionPerformed (ActionEvent e) {   
+                public void actionPerformed (ActionEvent e) {
                     _respawner.traverse(_spatial);
                 }
             }));
@@ -952,13 +958,13 @@ public class ModelViewer extends JmeCanvasApp
             getContentPane().add(bpanel, BorderLayout.SOUTH);
             pack();
         }
-        
+
         // documentation inherited from interface ChangeListener
         public void stateChanged (ChangeEvent e)
         {
             _spatial.setLocalScale(_scale.getValue() * 0.0001f);
         }
-        
+
         @Override // documentation inherited
         public void setVisible (boolean visible)
         {
@@ -970,14 +976,14 @@ public class ModelViewer extends JmeCanvasApp
                 _ctx.getGeometry().detachChild(_spatial);
             }
         }
-        
+
         /** The imported scene. */
         protected Spatial _spatial;
-        
+
         /** The scale slider. */
         protected JSlider _scale;
     }
-    
+
     /** Allows users to move the directional light around. */
     protected class RotateLightDialog extends JDialog
         implements ChangeListener
@@ -985,22 +991,22 @@ public class ModelViewer extends JmeCanvasApp
         public RotateLightDialog ()
         {
             super(_frame, _msg.get("m.rotate_light"), false);
-            
+
             JPanel cpanel = GroupLayout.makeVBox();
             getContentPane().add(cpanel, BorderLayout.CENTER);
-            
+
             JPanel apanel = new JPanel();
             apanel.add(new JLabel(_msg.get("m.azimuth")));
             apanel.add(_azimuth = new JSlider(-180, +180, 0));
             _azimuth.addChangeListener(this);
             cpanel.add(apanel);
-            
+
             JPanel epanel = new JPanel();
             epanel.add(new JLabel(_msg.get("m.elevation")));
             epanel.add(_elevation = new JSlider(-90, +90, 45));
             _elevation.addChangeListener(this);
             cpanel.add(epanel);
-            
+
             JPanel bpanel = new JPanel();
             bpanel.add(new JButton(new AbstractAction(_msg.get("m.close")) {
                 public void actionPerformed (ActionEvent e) {
@@ -1009,7 +1015,7 @@ public class ModelViewer extends JmeCanvasApp
             }));
             getContentPane().add(bpanel, BorderLayout.SOUTH);
         }
-        
+
         // documentation inherited from interface ChangeListener
         public void stateChanged (ChangeEvent e)
         {
@@ -1020,11 +1026,11 @@ public class ModelViewer extends JmeCanvasApp
                 -FastMath.sin(az) * FastMath.cos(el),
                 -FastMath.sin(el));
         }
-        
+
         /** Azimuth and elevation sliders. */
         protected JSlider _azimuth, _elevation;
     }
-    
+
     /** Moves the camera using mouse input. */
     protected class MouseOrbiter extends MouseAdapter
         implements MouseMotionListener, MouseWheelListener
@@ -1034,12 +1040,12 @@ public class ModelViewer extends JmeCanvasApp
         {
             _mloc.setLocation(e.getX(), e.getY());
         }
-        
+
         // documentation inherited from interface MouseMotionListener
         public void mouseMoved (MouseEvent e)
         {
         }
-        
+
         // documentation inherited from interface MouseMotionListener
         public void mouseDragged (MouseEvent e)
         {
@@ -1056,18 +1062,18 @@ public class ModelViewer extends JmeCanvasApp
             }
             updateCameraPosition();
         }
-        
+
         // documentation inherited from interface MouseWheelListener
         public void mouseWheelMoved (MouseWheelEvent e)
         {
             _camhand.zoomCamera(e.getWheelRotation() * 10f);
             updateCameraPosition();
         }
-        
+
         /** The last recorded position of the mouse cursor. */
         protected Point _mloc = new Point();
     }
-    
+
     /** A camera handler that pans in directions orthogonal to the camera
      * direction. */
     protected class OrbitCameraHandler extends CameraHandler
@@ -1077,7 +1083,7 @@ public class ModelViewer extends JmeCanvasApp
             super(camera);
             _gpoint = super.getGroundPoint();
         }
-        
+
         @Override // documentation inherited
         public void panCamera (float x, float y) {
             Vector3f offset = _camera.getLeft().mult(-x).addLocal(
@@ -1086,13 +1092,13 @@ public class ModelViewer extends JmeCanvasApp
             _camera.getLocation().addLocal(offset);
             _camera.onFrameChange();
         }
-        
+
         @Override // documentation inherited
         public Vector3f getGroundPoint ()
         {
             return _gpoint;
         }
-        
+
         /**
          * Resets the ground point to the center of the grid or, if there is
          * one, the center of the model.
@@ -1111,14 +1117,14 @@ public class ModelViewer extends JmeCanvasApp
             _camera.onFrameChange();
             _gpoint.set(target);
         }
-        
+
         /** The point at which the camera is looking. */
         protected Vector3f _gpoint;
     }
-    
+
     /** The app configuration. */
     protected static PrefsConfig _config = new PrefsConfig("com/threerings/jme/tools/ModelViewer");
-    
+
     /** Forces all particle systems to respawn. */
     protected static SpatialVisitor<ParticleGeometry> _respawner =
         new SpatialVisitor<ParticleGeometry>(ParticleGeometry.class) {
@@ -1126,13 +1132,13 @@ public class ModelViewer extends JmeCanvasApp
             geom.forceRespawn();
         }
     };
-    
+
     /** The number of lines on the grid in each direction. */
     protected static final int GRID_SIZE = 32;
-    
+
     /** The spacing between lines on the grid. */
     protected static final float GRID_SPACING = 2.5f;
-    
+
     /** The number formal used for the camera position. */
     protected static final DecimalFormat CAMPOS_FORMAT =
         new DecimalFormat("+000.000;-000.000");

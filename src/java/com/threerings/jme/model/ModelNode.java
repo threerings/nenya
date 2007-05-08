@@ -42,6 +42,7 @@ import com.jme.util.export.OutputCapsule;
 
 import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
+import com.threerings.jme.util.ShaderCache;
 
 /**
  * A {@link Node} with a serialization mechanism tailored to stored models.
@@ -255,6 +256,17 @@ public class ModelNode extends Node
             Spatial child = getChild(ii);
             if (child instanceof ModelSpatial) {
                 ((ModelSpatial)child).resolveTextures(tprov);
+            }
+        }
+    }
+
+    // documentation inherited from interface ModelSpatial
+    public void configureShaders (ShaderCache scache)
+    {
+        for (int ii = 0, nn = getQuantity(); ii < nn; ii++) {
+            Spatial child = getChild(ii);
+            if (child instanceof ModelSpatial) {
+                ((ModelSpatial)child).configureShaders(scache);
             }
         }
     }

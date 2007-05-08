@@ -24,6 +24,8 @@ package com.threerings.jme.model;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 
+import com.threerings.jme.util.ShaderCache;
+
 /**
  * Contains method common to both {@link ModelNode}s and {@link ModelMesh}es.
  */
@@ -34,7 +36,7 @@ public interface ModelSpatial
      * they include the current vertex positions.
      */
     public void expandModelBounds ();
-    
+
     /**
      * Recursively sets the reference transforms for any bones in the model.
      */
@@ -50,12 +52,17 @@ public interface ModelSpatial
      */
     public void lockStaticMeshes (
         Renderer renderer, boolean useVBOs, boolean useDisplayLists);
-    
+
     /**
      * Recursively resolves texture references using the given provider.
      */
     public void resolveTextures (TextureProvider tprov);
-    
+
+    /**
+     * Recursively creates or reconfigures any shaders used by the model using the supplied cache.
+     */
+    public void configureShaders (ShaderCache scache);
+
     /**
      * Recursively requests that the current state of all skinned meshes be
      * stored as an animation frame on the next update.
@@ -67,19 +74,19 @@ public interface ModelSpatial
      * {@link #setAnimationFrames}
      */
     public void storeMeshFrame (int frameId, boolean blend);
-    
+
     /**
      * Recursively switches all skinned meshes to a stored animation frame for
      * the next update.
      */
     public void setMeshFrame (int frameId);
-    
+
     /**
      * Recursively blends all skinned meshes between two stored animation
      * frames for the next update.
      */
     public void blendMeshFrames (int frameId1, int frameId2, float alpha);
-    
+
     /**
      * Creates or populates and returns a clone of this object using the given
      * clone properties.

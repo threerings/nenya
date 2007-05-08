@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.lwjgl.opengl.GLContext;
+
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Matrix4f;
 import com.jme.math.Vector3f;
@@ -42,7 +44,10 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.batch.SharedBatch;
 import com.jme.scene.batch.TriangleBatch;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.ShaderAttribute;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.InputCapsule;
@@ -52,15 +57,23 @@ import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.HashIntMap;
+import com.samskivert.util.ListUtil;
 
 import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
+import com.threerings.jme.util.ShaderCache;
 
 /**
  * A triangle mesh that deforms according to a bone hierarchy.
  */
 public class SkinMesh extends ModelMesh
 {
+    /** The maximum number of bone matrices that we can use for hardware skinning. */
+    public static final int MAX_SHADER_BONE_COUNT = 32;
+
+    /** The maximum number of bones influencing a single vertex for hardware skinning. */
+    public static final int MAX_SHADER_BONES_PER_VERTEX = 4;
+
     /** Represents the vertex weights of a group of vertices influenced by the
      * same set of bones. */
     public static class WeightGroup
@@ -239,12 +252,26 @@ public class SkinMesh extends ModelMesh
         } else {
             mstore = (SkinMesh)store;
         }
-        properties.removeProperty("vertices");
-        properties.removeProperty("normals");
+        GLSLShaderObjectsState sstate = (GLSLShaderObjectsState)getRenderState(
+            RenderState.RS_GLSL_SHADER_OBJECTS);
+        if (sstate == null) {
+            // vertices and normals must be cloned if not using a shader
+            properties.removeProperty("vertices");
+            properties.removeProperty("normals");
+        }
         properties.removeProperty("displaylistid");
         super.putClone(mstore, properties);
-        properties.addProperty("vertices");
-        properties.addProperty("normals");
+        if (sstate == null) {
+            properties.addProperty("vertices");
+            properties.addProperty("normals");
+        } else {
+            // for the shader, we must create a separate instance with different uniforms
+            GLSLShaderObjectsState msstate =
+                DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
+            msstate.setProgramID(sstate.getProgramID());
+            msstate.attribs = sstate.attribs;
+            mstore.setRenderState(msstate);
+        }
         properties.addProperty("displaylistid");
         mstore._frames = _frames;
         mstore._useDisplayLists = _useDisplayLists;
@@ -261,8 +288,8 @@ public class SkinMesh extends ModelMesh
         }
         mstore._ovbuf = _ovbuf;
         mstore._onbuf = _onbuf;
-        mstore._vbuf = new float[_vbuf.length];
-        mstore._nbuf = new float[_nbuf.length];
+        mstore._vbuf = (sstate == null) ? _vbuf : new float[_vbuf.length];
+        mstore._nbuf = (sstate == null) ? _nbuf : new float[_nbuf.length];
         return mstore;
     }
 
@@ -323,8 +350,46 @@ public class SkinMesh extends ModelMesh
             vboinfo.setVBOTextureEnabled(true);
             vboinfo.setVBOIndexEnabled(!_translucent);
             setVBOInfo(vboinfo);
+
+            // use VBOs for shader attributes
+            GLSLShaderObjectsState sstate = (GLSLShaderObjectsState)getRenderState(
+                RenderState.RS_GLSL_SHADER_OBJECTS);
+            if (sstate != null) {
+                for (ShaderAttribute attrib : sstate.attribs.values()) {
+                    attrib.useVBO = true;
+                }
+            }
         }
         _useDisplayLists = useDisplayLists && !_translucent;
+    }
+
+    @Override // documentation inherited
+    public void configureShaders (ShaderCache scache)
+    {
+        if (_disableShaders || !GLContext.getCapabilities().GL_ARB_vertex_shader ||
+                _bones.length > MAX_SHADER_BONE_COUNT) {
+            return;
+        }
+        int bonesPerVertex = 0;
+        for (WeightGroup group : _weightGroups) {
+            bonesPerVertex = Math.max(group.bones.length, bonesPerVertex);
+        }
+        if (bonesPerVertex > MAX_SHADER_BONES_PER_VERTEX) {
+            return;
+        }
+        GLSLShaderObjectsState sstate = (GLSLShaderObjectsState)getRenderState(
+            RenderState.RS_GLSL_SHADER_OBJECTS);
+        if (sstate == null) {
+            sstate = DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
+            setShaderAttributes(sstate, bonesPerVertex);
+            setRenderState(sstate);
+        }
+        if (!scache.configureState(sstate, "media/jme/skin.vert", null,
+            "MAX_BONE_COUNT " + MAX_SHADER_BONE_COUNT, "BONES_PER_VERTEX " + bonesPerVertex)) {
+            clearRenderState(RenderState.RS_GLSL_SHADER_OBJECTS);
+            _disableShaders = true;
+            return;
+        }
     }
 
     @Override // documentation inherited
@@ -373,6 +438,16 @@ public class SkinMesh extends ModelMesh
             _invRefTransform.mult(bone.node.getModelTransform(),
                 bone.transform);
             bone.transform.multLocal(bone.invRefTransform);
+        }
+
+        // if we're using shaders, initialize the uniform variables with the bone transforms
+        GLSLShaderObjectsState sstate = (GLSLShaderObjectsState)getRenderState(
+            RenderState.RS_GLSL_SHADER_OBJECTS);
+        if (sstate != null) {
+            for (int ii = 0; ii < _bones.length; ii++) {
+                sstate.setUniform("boneTransforms[" + ii + "]", _bones[ii].transform, true);
+            }
+            return;
         }
 
         // deform the mesh according to the positions of the bones (this code
@@ -481,6 +556,35 @@ public class SkinMesh extends ModelMesh
         _nbuf = new float[_onbuf.length];
     }
 
+    /**
+     * Initializes the skin shader attributes (bone indices and weights) in the supplied state.
+     */
+    protected void setShaderAttributes (GLSLShaderObjectsState sstate, int bonesPerVertex)
+    {
+        int size = getBatch(0).getVertexCount() * bonesPerVertex;
+        ByteBuffer bibuf = BufferUtils.createByteBuffer(size);
+        FloatBuffer bwbuf = BufferUtils.createFloatBuffer(size);
+
+        for (WeightGroup group : _weightGroups) {
+            byte[] indices = new byte[bonesPerVertex];
+            for (int ii = 0; ii < indices.length; ii++) {
+                indices[ii] = (byte)((ii < group.bones.length) ?
+                    ListUtil.indexOf(_bones, group.bones[ii]) : 0);
+            }
+            for (int ii = 0, widx = 0; ii < group.vertexCount; ii++) {
+                bibuf.put(indices);
+                for (int jj = 0; jj < bonesPerVertex; jj++) {
+                    bwbuf.put((jj < group.bones.length) ? group.weights[widx++] : 0f);
+                }
+            }
+        }
+        bibuf.rewind();
+        bwbuf.rewind();
+
+        sstate.setAttributePointer("boneIndices", bonesPerVertex, false, false, 0, bibuf);
+        sstate.setAttributePointer("boneWeights", bonesPerVertex, false, 0, bwbuf);
+    }
+
     /** A stored frame used for linear blending. */
     protected static class BlendFrame
     {
@@ -534,6 +638,9 @@ public class SkinMesh extends ModelMesh
 
     /** Whether or not the stored frame id will be used for blending. */
     protected boolean _storeBlend;
+
+    /** Set if we determine that our shaders don't compile to prevent us from trying again. */
+    protected static boolean _disableShaders;
 
     /** A dummy mesh that simply hold transformation values. */
     protected static final TriMesh DUMMY_MESH = new TriMesh();
