@@ -288,8 +288,8 @@ public class SkinMesh extends ModelMesh
         }
         mstore._ovbuf = _ovbuf;
         mstore._onbuf = _onbuf;
-        mstore._vbuf = (sstate == null) ? _vbuf : new float[_vbuf.length];
-        mstore._nbuf = (sstate == null) ? _nbuf : new float[_nbuf.length];
+        mstore._vbuf = (sstate == null) ? new float[_vbuf.length] : _vbuf;
+        mstore._nbuf = (sstate == null) ? new float[_nbuf.length] : _nbuf;
         return mstore;
     }
 
