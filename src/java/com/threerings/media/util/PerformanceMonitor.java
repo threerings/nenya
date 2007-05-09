@@ -25,42 +25,36 @@ import java.util.HashMap;
 
 import com.threerings.media.Log;
 import com.threerings.media.timer.MediaTimer;
-import com.threerings.media.timer.SystemMediaTimer;
+import com.threerings.media.timer.NanoTimer;
 
 /**
- * Provides a simple mechanism for monitoring the number of times an
- * action takes place within a certain time period.
+ * Provides a simple mechanism for monitoring the number of times an action takes place within a
+ * certain time period.
  *
- * <p> The action being tracked should be registered with a suitable name
- * via {@link #register}, and {@link #tick} should be called each time the
- * action is performed.
+ * <p> The action being tracked should be registered with a suitable name via {@link #register},
+ * and {@link #tick} should be called each time the action is performed.
  *
- * <p> Whenever {@link #tick} is called and the checkpoint time interval
- * has elapsed since the last checkpoint (if any), the observer will be
- * notified to that effect by a call to {@link
+ * <p> Whenever {@link #tick} is called and the checkpoint time interval has elapsed since the last
+ * checkpoint (if any), the observer will be notified to that effect by a call to {@link
  * PerformanceObserver#checkpoint}.
  *
- * <p> Note that this is <em>not</em> intended to be used as an
- * industrial-strength profiling or performance monitoring tool.  The
- * checkpoint time interval granularity is in milliseconds, not
- * microseconds, and the observer's <code>checkpoint()</code> method will
- * never be called until/unless a subsequent call to {@link #tick} is made
- * after the requested number of milliseconds have passed since the last
- * checkpoint.
+ * <p> Note that this is <em>not</em> intended to be used as an industrial-strength profiling or
+ * performance monitoring tool.  The checkpoint time interval granularity is in milliseconds, not
+ * microseconds, and the observer's <code>checkpoint()</code> method will never be called
+ * until/unless a subsequent call to {@link #tick} is made after the requested number of
+ * milliseconds have passed since the last checkpoint.
  */
 public class PerformanceMonitor
 {
     /**
-     * Register a new action with an observer, the action name, and
-     * the milliseconds to wait between checkpointing the action's
-     * performance.
+     * Register a new action with an observer, the action name, and the milliseconds to wait
+     * between checkpointing the action's performance.
      *
      * @param obs the action observer.
      * @param name the action name.
      * @param delta the milliseconds between checkpoints.
      */
-    public static void register (PerformanceObserver obs, String name,
-                                 long delta)
+    public static void register (PerformanceObserver obs, String name, long delta)
     {
         // get the observer's action hashtable
         HashMap actions = (HashMap)_observers.get(obs);
@@ -152,7 +146,7 @@ public class PerformanceMonitor
     protected static HashMap _observers = new HashMap();
 
     /** Used to obtain high resolution time stamps. */
-    protected static MediaTimer _timer = new SystemMediaTimer();
+    protected static MediaTimer _timer = new NanoTimer();
 }
 
 /**

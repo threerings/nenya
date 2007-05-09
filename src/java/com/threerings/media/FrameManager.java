@@ -51,7 +51,7 @@ import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.media.timer.MediaTimer;
-import com.threerings.media.timer.SystemMediaTimer;
+import com.threerings.media.timer.MillisTimer;
 import com.threerings.media.util.TrailingAverage;
 import com.threerings.util.unsafe.Unsafe;
 
@@ -127,28 +127,35 @@ public abstract class FrameManager
     }
 
     /**
-     * Creates a frame manager that will use a {@link SystemMediaTimer} to obtain timing
-     * information, which is available on every platform, but returns inaccurate time stamps on
-     * many platforms.
+     * Creates a frame manager that will try to use a high resolution timer for timing but will
+     * fall back to {@link MillisTimer}, which is available on every platform, but returns
+     * inaccurate time stamps on many platforms.
      *
      * @see #newInstance(ManagedRoot, MediaTimer)
      */
     public static FrameManager newInstance (ManagedRoot root)
     {
-        // first try creating a PerfTimer which is the best if we're using JDK1.4.2
         MediaTimer timer = null;
-        try {
-            timer = (MediaTimer)Class.forName(PERF_TIMER).newInstance();
-        } catch (Throwable t) {
-            Log.info("Can't use PerfTimer (" + t + ") reverting to " +
+        for (String timerClass : PERF_TIMERS) {
+            try {
+                timer = (MediaTimer)Class.forName(timerClass).newInstance();
+                break;
+            } catch (Throwable t) {
+                t.printStackTrace(System.err);
+                // try the next one
+            }
+        }
+        if (timer == null) {
+            Log.info("Can't use high performance timer, reverting to " +
                      "System.currentTimeMillis() based timer.");
-            timer = new SystemMediaTimer();
+            timer = new MillisTimer();
         }
         return newInstance(root, timer);
     }
 
     /**
-     * Constructs a frame manager that will do its rendering to the supplied root.
+     * Constructs a frame manager that will do its rendering to the supplied root and use the
+     * supplied media timer for timing information.
      */
     public static FrameManager newInstance (ManagedRoot root, MediaTimer timer)
     {
@@ -751,5 +758,8 @@ public abstract class FrameManager
         "narya.media.fps_display", MediaPrefs.config, false);
 
     /** The name of the high-performance timer class we attempt to load. */
-    protected static final String PERF_TIMER = "com.threerings.media.timer.PerfTimer";
+    protected static final String[] PERF_TIMERS = {
+        "com.threerings.media.timer.NanoTimer",
+        "com.threerings.media.timer.PerfTimer",
+    };
 }
