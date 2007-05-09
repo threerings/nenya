@@ -343,14 +343,8 @@ public class SkinMesh extends ModelMesh
     public void lockStaticMeshes (
         Renderer renderer, boolean useVBOs, boolean useDisplayLists)
     {
-        // we can use VBOs for color, texture, and indices
+        // we can use VBOs for color, texture, and indices if not using shaders
         if (useVBOs && renderer.supportsVBO()) {
-            VBOInfo vboinfo = new VBOInfo(false);
-            vboinfo.setVBOColorEnabled(true);
-            vboinfo.setVBOTextureEnabled(true);
-            vboinfo.setVBOIndexEnabled(!_translucent);
-            setVBOInfo(vboinfo);
-
             // use VBOs for shader attributes
             GLSLShaderObjectsState sstate = (GLSLShaderObjectsState)getRenderState(
                 RenderState.RS_GLSL_SHADER_OBJECTS);
@@ -359,6 +353,14 @@ public class SkinMesh extends ModelMesh
                     attrib.useVBO = true;
                 }
             }
+
+            VBOInfo vboinfo = new VBOInfo(true);
+            if (sstate == null) {
+                vboinfo.setVBOVertexEnabled(false);
+                vboinfo.setVBONormalEnabled(false);
+            }
+            vboinfo.setVBOIndexEnabled(!_translucent);
+            setVBOInfo(vboinfo);
         }
         _useDisplayLists = useDisplayLists && !_translucent;
     }

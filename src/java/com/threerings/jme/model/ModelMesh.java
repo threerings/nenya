@@ -408,7 +408,7 @@ public class ModelMesh extends TriMesh
             TextureState tstate = tprov.getTexture(_emissiveMap);
             emissiveTex = tstate.getTexture();
             emissiveTex.setApply(Texture.AM_BLEND);
-            emissiveTex.setBlendColor(ColorRGBA.white);
+            emissiveTex.getBlendColor().set(ColorRGBA.white);
         }
         _tstates = new TextureState[_textures.length];
         for (int ii = 0; ii < _textures.length; ii++) {

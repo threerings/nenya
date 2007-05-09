@@ -49,8 +49,8 @@ void main ()
 
     // add up the vertex as transformed by each bone and scaled by each weight
     #if BONES_PER_VERTEX == 1
-        vec4 skinVertex = boneTransforms[int(boneIndices)] * gl_Vertex;
-        vec4 skinNormal = boneTransforms[int(boneIndices)] * normal4;
+        vec4 skinVertex = boneTransforms[int(boneIndices)] * gl_Vertex * boneWeights;
+        vec4 skinNormal = boneTransforms[int(boneIndices)] * normal4 * boneWeights;
     #else
         vec4 skinVertex = boneTransforms[int(boneIndices[0])] * gl_Vertex * boneWeights[0];
         vec4 skinNormal = boneTransforms[int(boneIndices[0])] * normal4 * boneWeights[0];
