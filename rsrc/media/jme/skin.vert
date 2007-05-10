@@ -47,37 +47,30 @@ void main ()
 
     // add up the vertex as transformed by each bone and scaled by each weight
     #if BONES_PER_VERTEX == 1
-        vec4 skinVertex = boneTransforms[int(boneIndices)] * gl_Vertex * boneWeights;
-        vec4 skinNormal = boneTransforms[int(boneIndices)] * normal4 * boneWeights;
+        vec4 modelVertex = boneTransforms[int(boneIndices)] * gl_Vertex * boneWeights;
+        vec4 modelNormal = boneTransforms[int(boneIndices)] * normal4 * boneWeights;
     #else
-        vec4 skinVertex = boneTransforms[int(boneIndices[0])] * gl_Vertex * boneWeights[0];
-        vec4 skinNormal = boneTransforms[int(boneIndices[0])] * normal4 * boneWeights[0];
+        vec4 modelVertex = boneTransforms[int(boneIndices[0])] * gl_Vertex * boneWeights[0];
+        vec4 modelNormal = boneTransforms[int(boneIndices[0])] * normal4 * boneWeights[0];
         for (int ii = 1; ii < BONES_PER_VERTEX; ii++) {
-            skinVertex += boneTransforms[int(boneIndices[ii])] * gl_Vertex * boneWeights[ii];
-            skinNormal += boneTransforms[int(boneIndices[ii])] * normal4 * boneWeights[ii];
+            modelVertex += boneTransforms[int(boneIndices[ii])] * gl_Vertex * boneWeights[ii];
+            modelNormal += boneTransforms[int(boneIndices[ii])] * normal4 * boneWeights[ii];
         }
     #endif
 
-    // copy the texture coordinates from attribute to varying
-    gl_TexCoord[0] = gl_MultiTexCoord0;
-    gl_TexCoord[1] = gl_MultiTexCoord1;
-
     // apply the standard transformation
-    gl_Position = gl_ModelViewProjectionMatrix * skinVertex;
+    gl_Position = gl_ModelViewProjectionMatrix * modelVertex;
+
+    // transform the vertex and normal into eye space
+    vec3 eyeVertex = vec3(gl_ModelViewMatrix * modelVertex);
+    vec3 eyeNormal = normalize(vec3(gl_ModelViewMatrixInverseTranspose * modelNormal));
 
     // eye space 'z' is the standard fog coordinate
-    gl_FogFragCoord = -dot(gl_ModelViewMatrixTranspose[2], skinVertex);
+    gl_FogFragCoord = -eyeVertex.z;
 
-    // transform the normal into eye space
-    vec3 eyeNormal = normalize(vec3(gl_ModelViewMatrixInverseTranspose * skinNormal));
+    // set gl_FrontColor based on vertex, normal and light parameters
+    SET_FRONT_COLOR
 
-    // set gl_FrontColor based on normal and light parameters
-    gl_FrontColor.rgb =
-        gl_FrontLightProduct[0].ambient.rgb +
-        gl_FrontLightProduct[0].diffuse.rgb *
-            max(dot(eyeNormal, gl_LightSource[0].position.xyz), 0.0) +
-        gl_FrontLightProduct[1].ambient.rgb +
-        gl_FrontLightProduct[1].diffuse.rgb *
-            max(dot(eyeNormal, gl_LightSource[1].position.xyz), 0.0);
-    gl_FrontColor.a = gl_FrontMaterial.diffuse.a;
+    // set the varying texture coordinates
+    SET_TEX_COORDS
 }

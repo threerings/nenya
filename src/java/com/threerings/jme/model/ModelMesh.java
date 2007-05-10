@@ -470,9 +470,17 @@ public class ModelMesh extends TriMesh
     protected void setupBatchList ()
     {
         batchList = new ArrayList<GeomBatch>(1);
-        TriangleBatch batch = new ModelBatch();
+        TriangleBatch batch = createModelBatch();
         batch.setParentGeom(this);
         batchList.add(batch);
+    }
+
+    /**
+     * Creates a batch for this mesh.
+     */
+    protected ModelBatch createModelBatch ()
+    {
+        return new ModelBatch();
     }
 
     /**
@@ -666,23 +674,52 @@ public class ModelMesh extends TriMesh
         @Override // documentation inherited
         public void draw (Renderer r)
         {
-            if (_translucent && isEnabled() && r.isProcessingQueue()) {
-                sortTriangles(r);
+            boolean drawing = (isEnabled() && r.isProcessingQueue());
+            if (drawing) {
+                if (_translucent) {
+                    sortTriangles(r);
+                }
+                preDraw();
             }
             super.draw(r);
-            if (_overlays != null && isEnabled() && r.isProcessingQueue()) {
-                for (RenderState[] overlay : _overlays) {
-                    for (RenderState rstate : overlay) {
-                        int idx = rstate.getType();
-                        _ostates[idx] = states[idx];
-                        states[idx] = rstate;
-                    }
+            if (_overlays != null && drawing) {
+                for (int ii = 0, nn = _overlays.size(); ii < nn; ii++) {
+                    preDrawOverlay(ii);
                     r.draw(this);
-                    for (RenderState rstate : overlay) {
-                        int idx = rstate.getType();
-                        states[idx] = _ostates[idx];
-                    }
+                    postDrawOverlay(ii);
                 }
+            }
+        }
+
+        /**
+         * Gives derived classes a chance to update states immediately before drawing.
+         */
+        protected void preDraw ()
+        {
+        }
+
+        /**
+         * Updates the batch's states with those of the identified overlay.
+         */
+        protected void preDrawOverlay (int oidx)
+        {
+            RenderState[] overlay = _overlays.get(oidx);
+            for (RenderState rstate : overlay) {
+                int idx = rstate.getType();
+                _ostates[idx] = states[idx];
+                states[idx] = rstate;
+            }
+        }
+
+        /**
+         * Restores the batch's original states after drawing an overlay.
+         */
+        protected void postDrawOverlay (int oidx)
+        {
+            RenderState[] overlay = _overlays.get(oidx);
+            for (RenderState rstate : overlay) {
+                int idx = rstate.getType();
+                states[idx] = _ostates[idx];
             }
         }
 
@@ -760,6 +797,15 @@ public class ModelMesh extends TriMesh
             IntBuffer ibuf = getIndexBuffer();
             ibuf.rewind();
             ibuf.put(_sibuf, 0, icount);
+        }
+
+        /**
+         * Gives derived classes a chance to update the states immediately before drawing.
+         *
+         * @param oidx the index of the overlay being rendered, or -1 for the base layer.
+         */
+        protected void processStates (int oidx)
+        {
         }
 
         /** Temporarily stores the original states. */

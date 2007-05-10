@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,7 @@ import com.samskivert.util.ListUtil;
 import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.ShaderCache;
+import com.threerings.jme.util.ShaderConfig;
 
 /**
  * A triangle mesh that deforms according to a bone hierarchy.
@@ -231,6 +233,36 @@ public class SkinMesh extends ModelMesh
     }
 
     @Override // documentation inherited
+    public void addOverlay (RenderState[] overlay)
+    {
+        // add a cloned state config (with same uniforms) for the overlay
+        super.addOverlay(overlay);
+        if (_sconfig == null) {
+            return;
+        }
+        if (_osconfigs == null) {
+            _osconfigs = new ArrayList<SkinShaderConfig>(1);
+        }
+        SkinShaderConfig osconfig = (SkinShaderConfig)_sconfig.clone();
+        osconfig.getState().uniforms = _sconfig.getState().uniforms;
+        _osconfigs.add(osconfig);
+    }
+
+    @Override // documentation inherited
+    public void removeOverlay (RenderState[] overlay)
+    {
+        // remove the corresponding state config
+        int idx = (_overlays == null) ? -1 : _overlays.indexOf(overlay);
+        super.removeOverlay(overlay);
+        if (_osconfigs != null && idx >= 0) {
+            _osconfigs.remove(idx);
+            if (_osconfigs.isEmpty()) {
+                _osconfigs = null;
+            }
+        }
+    }
+
+    @Override // documentation inherited
     public void reconstruct (
         FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors,
         FloatBuffer textures, IntBuffer indices)
@@ -264,13 +296,6 @@ public class SkinMesh extends ModelMesh
         if (sstate == null) {
             properties.addProperty("vertices");
             properties.addProperty("normals");
-        } else {
-            // for the shader, we must create a separate instance with different uniforms
-            GLSLShaderObjectsState msstate =
-                DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
-            msstate.setProgramID(sstate.getProgramID());
-            msstate.attribs = sstate.attribs;
-            mstore.setRenderState(msstate);
         }
         properties.addProperty("displaylistid");
         mstore._frames = _frames;
@@ -290,6 +315,10 @@ public class SkinMesh extends ModelMesh
         mstore._onbuf = _onbuf;
         mstore._vbuf = (sstate == null) ? new float[_vbuf.length] : _vbuf;
         mstore._nbuf = (sstate == null) ? new float[_nbuf.length] : _nbuf;
+        if (_sconfig != null) {
+            mstore._sconfig = (SkinShaderConfig)_sconfig.clone();
+            mstore.setRenderState(mstore._sconfig.getState());
+        }
         return mstore;
     }
 
@@ -379,18 +408,13 @@ public class SkinMesh extends ModelMesh
         if (bonesPerVertex > MAX_SHADER_BONES_PER_VERTEX) {
             return;
         }
-        GLSLShaderObjectsState sstate = (GLSLShaderObjectsState)getRenderState(
-            RenderState.RS_GLSL_SHADER_OBJECTS);
-        if (sstate == null) {
-            sstate = DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
-            setShaderAttributes(sstate, bonesPerVertex);
-            setRenderState(sstate);
-        }
-        if (!scache.configureState(sstate, "media/jme/skin.vert", null,
-            "MAX_BONE_COUNT " + MAX_SHADER_BONE_COUNT, "BONES_PER_VERTEX " + bonesPerVertex)) {
-            clearRenderState(RenderState.RS_GLSL_SHADER_OBJECTS);
+        _sconfig = new SkinShaderConfig(scache, bonesPerVertex);
+        if (_sconfig.update(getBatch(0).states)) {
+            setShaderAttributes();
+            setRenderState(_sconfig.getState());
+        } else {
+            _sconfig = null;
             _disableShaders = true;
-            return;
         }
     }
 
@@ -546,6 +570,36 @@ public class SkinMesh extends ModelMesh
     }
 
     @Override // documentation inherited
+    protected ModelBatch createModelBatch ()
+    {
+        // update the shader configs immediately before drawing
+        return new ModelBatch() {
+            protected void preDraw () {
+                if (_sconfig != null) {
+                    _sconfig.update(states);
+                }
+            }
+            protected void preDrawOverlay (int oidx) {
+                super.preDrawOverlay(oidx);
+                if (_osconfigs != null) {
+                    _ostates[RenderState.RS_GLSL_SHADER_OBJECTS] =
+                        states[RenderState.RS_GLSL_SHADER_OBJECTS];
+                    SkinShaderConfig osconfig = _osconfigs.get(oidx);
+                    states[RenderState.RS_GLSL_SHADER_OBJECTS] = osconfig.getState();
+                    _osconfigs.get(oidx).update(states);
+                }
+            }
+            protected void postDrawOverlay (int oidx) {
+                super.postDrawOverlay(oidx);
+                if (_osconfigs != null) {
+                    states[RenderState.RS_GLSL_SHADER_OBJECTS] =
+                        _ostates[RenderState.RS_GLSL_SHADER_OBJECTS];
+                }
+            }
+        };
+    }
+
+    @Override // documentation inherited
     protected void storeOriginalBuffers ()
     {
         super.storeOriginalBuffers();
@@ -562,8 +616,9 @@ public class SkinMesh extends ModelMesh
     /**
      * Initializes the skin shader attributes (bone indices and weights) in the supplied state.
      */
-    protected void setShaderAttributes (GLSLShaderObjectsState sstate, int bonesPerVertex)
+    protected void setShaderAttributes ()
     {
+        int bonesPerVertex = _sconfig.getBonesPerVertex();
         int size = getBatch(0).getVertexCount() * bonesPerVertex;
         ByteBuffer bibuf = BufferUtils.createByteBuffer(size);
         FloatBuffer bwbuf = BufferUtils.createFloatBuffer(size);
@@ -584,8 +639,46 @@ public class SkinMesh extends ModelMesh
         bibuf.rewind();
         bwbuf.rewind();
 
+        GLSLShaderObjectsState sstate = _sconfig.getState();
         sstate.setAttributePointer("boneIndices", bonesPerVertex, false, false, 0, bibuf);
         sstate.setAttributePointer("boneWeights", bonesPerVertex, false, 0, bwbuf);
+    }
+
+    /** Tracks the configuration of a skin shader. */
+    protected static class SkinShaderConfig extends ShaderConfig
+    {
+        public SkinShaderConfig (ShaderCache scache, int bonesPerVertex)
+        {
+            super(scache);
+            _bonesPerVertex = bonesPerVertex;
+        }
+
+        public int getBonesPerVertex ()
+        {
+            return _bonesPerVertex;
+        }
+
+        @Override // documentation inherited
+        protected String getVertexShader ()
+        {
+            return "media/jme/skin.vert";
+        }
+
+        @Override // documentation inherited
+        protected void getDefinitions (ArrayList<String> defs)
+        {
+            super.getDefinitions(defs);
+            defs.add("BONES_PER_VERTEX " + _bonesPerVertex);
+        }
+
+        @Override // documentation inherited
+        protected void getDerivedDefinitions (ArrayList<String> ddefs)
+        {
+            super.getDerivedDefinitions(ddefs);
+            ddefs.add("MAX_BONE_COUNT " + MAX_SHADER_BONE_COUNT);
+        }
+
+        protected int _bonesPerVertex;
     }
 
     /** A stored frame used for linear blending. */
@@ -633,6 +726,12 @@ public class SkinMesh extends ModelMesh
     /** The original (undeformed) vertex and normal buffers and the deformed
      * versions. */
     protected float[] _onbuf, _ovbuf, _nbuf;
+
+    /** The primary skin shader configuration. */
+    protected SkinShaderConfig _sconfig;
+
+    /** Skin shader configurations for each overlay. */
+    protected ArrayList<SkinShaderConfig> _osconfigs;
 
     /** The frame id to store on the next update.  If 0, don't store any frame
      * and skin the mesh as normal.  If -1, a frame has been stored and thus
