@@ -38,7 +38,7 @@ public class FrameSprite extends Sprite
     }
 
     /**
-     * Called to update our visual appearance prior to the flash player each frame.
+     * Called to update our visual appearance prior to each frame.
      */
     protected function handleFrame (... ignored) :void
     {
