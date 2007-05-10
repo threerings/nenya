@@ -21,22 +21,10 @@
 
 package com.threerings.jme.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import java.nio.IntBuffer;
-
-import org.lwjgl.opengl.ARBShaderObjects;
-
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
-import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.system.DisplaySystem;
-import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.StringUtil;
 
@@ -194,50 +182,5 @@ public class JmeUtil
             Log.warning("Invalid repeat type [type=" + type + "].");
         }
         return defaultType;
-    }
-
-    /**
-     * Loads the specified shaders (prepending the supplied preprocessor definitions)
-     * and returns a GLSL shader state.  One of the supplied streams may be <code>null</code>
-     * in order to use the fixed-function pipeline for that part.  The method returns
-     * <code>null</code> if the shaders fail to compile (JME will log an error).
-     *
-     * @param defs a number of preprocessor definitions to be #defined in both shaders
-     * (e.g., "ENABLE_FOG", "NUM_LIGHTS 2").
-     */
-    public static GLSLShaderObjectsState loadShaders (
-        InputStream vert, InputStream frag, String... defs)
-        throws IOException
-    {
-        GLSLShaderObjectsState sstate =
-            DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
-        sstate.load(
-            (vert == null) ? null : readSource(vert, defs),
-            (frag == null) ? null : readSource(frag, defs));
-
-        // check its link status
-        IntBuffer linked = BufferUtils.createIntBuffer(1);
-        ARBShaderObjects.glGetObjectParameterARB(sstate.getProgramID(),
-            ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB, linked);
-        return (linked.get() == 0) ? null : sstate;
-    }
-
-    /**
-     * Loads an entire source file as a string, prepending the supplied preprocessor definitions.
-     */
-    protected static String readSource (InputStream in, String[] defs)
-        throws IOException
-    {
-        StringBuffer buf = new StringBuffer();
-        String ln = System.getProperty("line.separator");
-        for (String def : defs) {
-            buf.append("#define ").append(def).append(ln);
-        }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            buf.append(line).append(ln);
-        }
-        return buf.toString();
     }
 }

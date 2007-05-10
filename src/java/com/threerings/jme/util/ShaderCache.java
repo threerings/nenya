@@ -21,16 +21,24 @@
 
 package com.threerings.jme.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import java.nio.IntBuffer;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.lwjgl.opengl.ARBShaderObjects;
+
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.ShaderAttribute;
 import com.jme.util.ShaderUniform;
+import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.ObjectUtil;
@@ -97,16 +105,7 @@ public class ShaderCache
             if (ddefs != null) {
                 defs = ArrayUtil.concatenate(defs, ddefs);
             }
-            GLSLShaderObjectsState pstate;
-            try {
-                pstate = JmeUtil.loadShaders(
-                    (vert == null) ? null : _rsrcmgr.getResource(vert),
-                    (frag == null) ? null : _rsrcmgr.getResource(frag), defs);
-            } catch (IOException e) {
-                log.warning("Failed to load shaders [vert=" + vert + ", frag=" + frag +
-                    ", error=" + e + "].");
-                return false;
-            }
+            GLSLShaderObjectsState pstate = loadShaders(vert, frag, defs);
             if (pstate == null) {
                 return false;
             }
@@ -133,6 +132,67 @@ public class ShaderCache
     public boolean isLoaded (String vert, String frag, String... defs)
     {
         return _programIds.containsKey(new ShaderKey(vert, frag, defs));
+    }
+
+    /**
+     * Loads the specified shaders (prepending the supplied preprocessor definitions)
+     * and returns a GLSL shader state.  One of the supplied names may be <code>null</code>
+     * in order to use the fixed-function pipeline for that part.  The method returns
+     * <code>null</code> if the shaders fail to compile (JME will log an error).
+     *
+     * @param defs a number of preprocessor definitions to be #defined in both shaders
+     * (e.g., "ENABLE_FOG", "NUM_LIGHTS 2").
+     */
+    protected GLSLShaderObjectsState loadShaders (String vert, String frag, String[] defs)
+    {
+        GLSLShaderObjectsState sstate =
+            DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
+        sstate.load(
+            (vert == null) ? null : getSource(vert, defs),
+            (frag == null) ? null : getSource(frag, defs));
+
+        // check its link status
+        IntBuffer linked = BufferUtils.createIntBuffer(1);
+        ARBShaderObjects.glGetObjectParameterARB(sstate.getProgramID(),
+            ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB, linked);
+        return (linked.get() == 0) ? null : sstate;
+    }
+
+    /**
+     * Retrieves the source code to a shader as a single {@link String}, either by fetching it from
+     * the cache or loading it from the resource manager (and caching it).  Returns
+     * <code>null</code> (after logging a warning) if the shader couldn't be found.
+     *
+     * @param defs an array of definitions to prepend to the result.
+     */
+    protected String getSource (String shader, String[] defs)
+    {
+        // fetch the shader source
+        String source = _sources.get(shader);
+        if (source == null) {
+            StringBuffer buf = new StringBuffer();
+            try {
+                BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(_rsrcmgr.getResource(shader)));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buf.append(line).append('\n');
+                }
+            } catch (IOException e) {
+                log.warning("Failed to load shader [name=" + shader + ", error=" + e + "].");
+                return null;
+            }
+            _sources.put(shader, (source = buf.toString()));
+        }
+
+        // prepend the definitions (the version directive comes before anything else)
+        StringBuffer buf = new StringBuffer();
+        buf.append("#version 110\n");
+        for (String def : defs) {
+            buf.append("#define ").append(def).append('\n');
+        }
+        buf.append(source);
+        return buf.toString();
     }
 
     /** Identifies a cached shader. */
@@ -178,6 +238,9 @@ public class ShaderCache
 
     /** Provides access to shader source. */
     protected ResourceManager _rsrcmgr;
+
+    /** Maps shader names to source strings. */
+    protected HashMap<String, String> _sources = new HashMap<String, String>();
 
     /** Maps shader keys to linked program ids. */
     protected HashMap<ShaderKey, Integer> _programIds = new HashMap<ShaderKey, Integer>();
