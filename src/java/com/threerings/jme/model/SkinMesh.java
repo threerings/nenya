@@ -432,7 +432,8 @@ public class SkinMesh extends ModelMesh
     public void updateWorldData (float time)
     {
         super.updateWorldData(time);
-        if (_weightGroups == null || _storeFrameId == -1 || getCullMode() == CULL_ALWAYS) {
+        if (_weightGroups == null || _storeFrameId == -1 ||
+                (_storeFrameId == 0 && getCullMode() == CULL_ALWAYS)) {
             return;
         }
         // update the bone transforms
