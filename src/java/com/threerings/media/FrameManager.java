@@ -141,7 +141,6 @@ public abstract class FrameManager
                 timer = (MediaTimer)Class.forName(timerClass).newInstance();
                 break;
             } catch (Throwable t) {
-                t.printStackTrace(System.err);
                 // try the next one
             }
         }
