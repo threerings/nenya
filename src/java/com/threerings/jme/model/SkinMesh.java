@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -621,13 +620,13 @@ public class SkinMesh extends ModelMesh
     {
         int bonesPerVertex = _sconfig.getBonesPerVertex();
         int size = getBatch(0).getVertexCount() * bonesPerVertex;
-        ShortBuffer bibuf = BufferUtils.createShortBuffer(size);
+        ByteBuffer bibuf = BufferUtils.createByteBuffer(size);
         FloatBuffer bwbuf = BufferUtils.createFloatBuffer(size);
 
         for (WeightGroup group : _weightGroups) {
-            short[] indices = new short[bonesPerVertex];
+            byte[] indices = new byte[bonesPerVertex];
             for (int ii = 0; ii < indices.length; ii++) {
-                indices[ii] = (short)((ii < group.bones.length) ?
+                indices[ii] = (byte)((ii < group.bones.length) ?
                     ListUtil.indexOf(_bones, group.bones[ii]) : 0);
             }
             for (int ii = 0, widx = 0; ii < group.vertexCount; ii++) {
