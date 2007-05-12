@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.charset.Charset;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -152,10 +154,22 @@ public class ShaderCache
             (frag == null) ? null : getSource(frag, defs));
 
         // check its link status
-        IntBuffer linked = BufferUtils.createIntBuffer(1);
+        IntBuffer ibuf = BufferUtils.createIntBuffer(1);
         ARBShaderObjects.glGetObjectParameterARB(sstate.getProgramID(),
-            ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB, linked);
-        return (linked.get() == 0) ? null : sstate;
+            ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB, ibuf);
+        if (ibuf.get(0) == 0) {
+            return null; // failed to link
+        }
+
+        // check the info log
+        ARBShaderObjects.glGetObjectParameterARB(sstate.getProgramID(),
+            ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB, ibuf);
+        ByteBuffer bbuf = BufferUtils.createByteBuffer(ibuf.get(0));
+        ARBShaderObjects.glGetInfoLogARB(sstate.getProgramID(), ibuf, bbuf);
+        String log = Charset.forName("US-ASCII").decode(bbuf).toString();
+
+        // if it runs in software mode, that counts as a failure
+        return (log.indexOf("software") == -1) ? sstate : null;
     }
 
     /**

@@ -71,7 +71,7 @@ import com.threerings.jme.util.ShaderConfig;
 public class SkinMesh extends ModelMesh
 {
     /** The maximum number of bone matrices that we can use for hardware skinning. */
-    public static final int MAX_SHADER_BONE_COUNT = 32;
+    public static final int MAX_SHADER_BONE_COUNT = 31;
 
     /** The maximum number of bones influencing a single vertex for hardware skinning. */
     public static final int MAX_SHADER_BONES_PER_VERTEX = 4;
