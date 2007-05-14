@@ -408,7 +408,7 @@ public class SkinMesh extends ModelMesh
         if (bonesPerVertex > MAX_SHADER_BONES_PER_VERTEX) {
             return;
         }
-        _sconfig = new SkinShaderConfig(scache, bonesPerVertex);
+        _sconfig = new SkinShaderConfig(scache, bonesPerVertex, _emissiveMap != null);
         if (_sconfig.update(getBatch(0).states)) {
             setShaderAttributes();
             setRenderState(_sconfig.getState());
@@ -647,10 +647,19 @@ public class SkinMesh extends ModelMesh
     /** Tracks the configuration of a skin shader. */
     protected static class SkinShaderConfig extends ShaderConfig
     {
-        public SkinShaderConfig (ShaderCache scache, int bonesPerVertex)
+        public SkinShaderConfig (ShaderCache scache, int bonesPerVertex, boolean emissiveMapped)
         {
             super(scache);
             _bonesPerVertex = bonesPerVertex;
+            _emissiveMapped = emissiveMapped;
+
+            // set bindings from texture units to samplers
+            if (emissiveMapped) {
+                _state.setUniform("diffuseMap", 1);
+                _state.setUniform("emissiveMap", 0);
+            } else {
+                _state.setUniform("diffuseMap", 0);
+            }
         }
 
         public int getBonesPerVertex ()
@@ -665,10 +674,19 @@ public class SkinMesh extends ModelMesh
         }
 
         @Override // documentation inherited
+        protected String getFragmentShader ()
+        {
+            return "media/jme/skin.frag";
+        }
+
+        @Override // documentation inherited
         protected void getDefinitions (ArrayList<String> defs)
         {
             super.getDefinitions(defs);
             defs.add("BONES_PER_VERTEX " + _bonesPerVertex);
+            if (_emissiveMapped) {
+                defs.add("EMISSIVE_MAPPED");
+            }
         }
 
         @Override // documentation inherited
@@ -679,6 +697,7 @@ public class SkinMesh extends ModelMesh
         }
 
         protected int _bonesPerVertex;
+        protected boolean _emissiveMapped;
     }
 
     /** A stored frame used for linear blending. */

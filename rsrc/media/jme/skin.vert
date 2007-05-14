@@ -38,6 +38,11 @@ attribute ATTRIB_TYPE boneIndices;
 /** The bone weights. */
 attribute ATTRIB_TYPE boneWeights;
 
+/** The amount of fog. */
+#ifdef FOG
+  varying float fogAlpha;
+#endif
+
 /**
  * Vertex shader for skinned meshes.
  */
@@ -65,12 +70,12 @@ void main ()
     vec3 eyeVertex = vec3(gl_ModelViewMatrix * modelVertex);
     vec3 eyeNormal = normalize(vec3(gl_ModelViewMatrixInverseTranspose * modelNormal));
 
-    // eye space 'z' is the standard fog coordinate
-    gl_FogFragCoord = -eyeVertex.z;
-
     // set gl_FrontColor based on vertex, normal and light parameters
     SET_FRONT_COLOR
 
     // set the varying texture coordinates
     SET_TEX_COORDS
+
+    // set the fog alpha based on the eye space vertex
+    SET_FOG_ALPHA
 }

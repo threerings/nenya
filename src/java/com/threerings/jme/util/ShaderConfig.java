@@ -25,11 +25,13 @@ import java.util.ArrayList;
 
 import com.jme.image.Texture;
 import com.jme.light.Light;
+import com.jme.scene.state.FogState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.ShaderUniform;
 
 import com.samskivert.util.StringUtil;
 
@@ -93,6 +95,9 @@ public abstract class ShaderConfig
                 DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
             other._state.setProgramID(_state.getProgramID());
             other._state.attribs = _state.attribs;
+            for (ShaderUniform uniform : _state.uniforms.values()) {
+                other._state.uniforms.put(uniform.name, (ShaderUniform)uniform.clone());
+            }
             if (_lights != null) {
                 other._lights = (LightConfig[])_lights.clone();
                 for (int ii = 0; ii < _lights.length; ii++) {
@@ -120,7 +125,8 @@ public abstract class ShaderConfig
         // this is one place where we don't want short-circuit evaluation
         boolean lchanged = updateLightConfigs((LightState)states[RenderState.RS_LIGHT]);
         boolean tchanged = updateTextureConfigs((TextureState)states[RenderState.RS_TEXTURE]);
-        return lchanged || tchanged;
+        boolean fchanged = updateFogConfig((FogState)states[RenderState.RS_FOG]);
+        return lchanged || tchanged || fchanged;
     }
 
     /**
@@ -133,7 +139,7 @@ public abstract class ShaderConfig
             _lights = null;
             return (olights != null);
         }
-        int lcount = lstate.getQuantity();
+        int lcount = Math.min(lstate.getQuantity(), MAX_LIGHTS);
         if (_lights == null || _lights.length != lcount) {
             _lights = new LightConfig[lcount];
             for (int ii = 0; ii < lcount; ii++) {
@@ -176,6 +182,17 @@ public abstract class ShaderConfig
     }
 
     /**
+     * Updates the fog configuration, returning <code>true</code> if it has changed.
+     */
+    protected boolean updateFogConfig (FogState fstate)
+    {
+        int ofunc = _fogDensityFunc;
+        _fogDensityFunc = (fstate == null || !fstate.isEnabled()) ?
+            -1 : fstate.getDensityFunction();
+        return (ofunc != _fogDensityFunc);
+    }
+
+    /**
      * Returns the resource name of the vertex shader (or <code>null</code> for none).
      */
     protected String getVertexShader ()
@@ -204,6 +221,9 @@ public abstract class ShaderConfig
         if (_textures != null) {
             defs.add("TEXTURES " + StringUtil.join(_textures, "/"));
         }
+        if (_fogDensityFunc != -1) {
+            defs.add("FOG " + _fogDensityFunc);
+        }
     }
 
     /**
@@ -212,36 +232,30 @@ public abstract class ShaderConfig
      */
     protected void getDerivedDefinitions (ArrayList<String> ddefs)
     {
+        // add the def that sets the front color based on the light types
         StringBuffer buf = new StringBuffer("SET_FRONT_COLOR ");
         if (_lights != null) {
-            buf.append("gl_FrontColor.rgb = gl_FrontLightModelProduct.sceneColor.rgb; ");
+            // start with the "scene color," which combines scene ambient, emissivity, etc.
+            buf.append("vec3 frontColor = gl_FrontLightModelProduct.sceneColor.rgb; ");
+
+            // add snippets for each of the lights
             for (int ii = 0; ii < _lights.length; ii++) {
                 LightConfig light = _lights[ii];
-                if (light.type == -1) {
-                    continue;
-                }
                 if (light.type == Light.LT_POINT) {
-                    buf.append("vec3 lvec" + ii + " = gl_LightSource[" + ii +
-                        "].position.xyz - eyeVertex;");
-                    buf.append("float ldist" + ii + " = length(lvec" + ii + ");");
-                }
-                buf.append("gl_FrontColor.rgb += (gl_FrontLightProduct[" + ii + "].ambient.rgb + ");
-                buf.append("gl_FrontLightProduct[" + ii + "].diffuse.rgb * max(dot(eyeNormal, ");
-                if (light.type == Light.LT_POINT) {
-                    buf.append("normalize(lvec" + ii + ")), 0.0)) ");
-                    buf.append("/ (gl_LightSource[" + ii + "].constantAttenuation + " +
-                        "ldist" + ii + " * gl_LightSource[" + ii + "].linearAttenuation + " +
-                        "ldist" + ii + " * ldist" + ii + " * gl_LightSource[" + ii +
-                            "].quadraticAttenuation);");
-                } else {
-                    buf.append("gl_LightSource[" + ii + "].position.xyz), 0.0));");
+                    buf.append(POINT_LIGHT_SNIPPET.replace("%", Integer.toString(ii)));
+                } else if (light.type == Light.LT_DIRECTIONAL) {
+                    buf.append(DIRECTIONAL_LIGHT_SNIPPET.replace("%", Integer.toString(ii)));
                 }
             }
-            buf.append("gl_FrontColor.a = gl_FrontMaterial.diffuse.a;");
+
+            // the alpha value comes from the diffuse color in the material
+            buf.append("gl_FrontColor = vec4(frontColor, gl_FrontMaterial.diffuse.a);");
         } else {
             buf.append("gl_FrontColor = vec4(1.0, 1.0, 1.0, 1.0);");
         }
         ddefs.add(buf.toString());
+
+        // add the def that sets the texture coordinates based on the env map modes
         buf = new StringBuffer("SET_TEX_COORDS");
         if (_textures != null) {
             for (int ii = 0; ii < _textures.length; ii++) {
@@ -256,6 +270,13 @@ public abstract class ShaderConfig
                     buf.append("gl_MultiTexCoord" + ii + ";");
                 }
             }
+        }
+        ddefs.add(buf.toString());
+
+        // add the definition that sets the fog alpha based on the density function
+        buf = new StringBuffer("SET_FOG_ALPHA");
+        if (_fogDensityFunc == FogState.DF_EXP) {
+            buf.append(" fogAlpha = exp(gl_Fog.density * eyeVertex.z);");
         }
         ddefs.add(buf.toString());
     }
@@ -335,4 +356,28 @@ public abstract class ShaderConfig
 
     /** The current texture configurations (or <code>null</code> if texturing is disabled). */
     protected TextureConfig[] _textures;
+
+    /** The density function of the fog in the scene (or -1 for none). */
+    protected int _fogDensityFunc = -1;
+
+    /** To keep things sane, let's limit the total number of lights (OpenGL allows at least
+     * eight). */
+    protected static final int MAX_LIGHTS = 4;
+
+    /** A code snippet for adding the influence of a point light. */
+    protected static final String POINT_LIGHT_SNIPPET =
+        "vec3 lvec% = gl_LightSource[%].position.xyz - eyeVertex; " +
+        "float ldist% = length(lvec%); " +
+        "frontColor += (gl_FrontLightProduct[%].ambient.rgb + " +
+            "gl_FrontLightProduct[%].diffuse.rgb * " +
+                "max(dot(eyeNormal, normalize(lvec%)), 0.0)) / " +
+            "(gl_LightSource[%].constantAttenuation + " +
+                "ldist% * gl_LightSource[%].linearAttenuation + " +
+                "ldist% * ldist% * gl_LightSource[%].quadraticAttenuation);";
+
+    /** A code snippet for adding the influence of a directional light. */
+    protected static final String DIRECTIONAL_LIGHT_SNIPPET =
+        "frontColor += gl_FrontLightProduct[%].ambient.rgb + " +
+            "gl_FrontLightProduct[%].diffuse.rgb * " +
+                "max(dot(eyeNormal, gl_LightSource[%].position.xyz), 0.0);";
 }
