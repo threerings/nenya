@@ -29,7 +29,9 @@ import java.util.List;
 import java.util.Iterator;
 
 import com.samskivert.util.Predicate;
+import com.samskivert.util.SortableArrayList;
 
+import com.threerings.media.AbstractMedia;
 import com.threerings.media.AbstractMediaManager;
 import com.threerings.media.MediaHost;
 
@@ -39,21 +41,19 @@ import com.threerings.media.MediaHost;
 public class SpriteManager extends AbstractMediaManager
 {
     /**
-     * When an animated view processes its dirty rectangles, it may
-     * require an expansion of the dirty region which may in turn
-     * require the invalidation of more sprites than were originally
-     * invalid. In such cases, the animated view can call back to the
-     * sprite manager, asking it to append the sprites that intersect
-     * a particular region to the given list.
+     * When an animated view processes its dirty rectangles, it may require an expansion of the
+     * dirty region which may in turn require the invalidation of more sprites than were originally
+     * invalid. In such cases, the animated view can call back to the sprite manager, asking it to
+     * append the sprites that intersect a particular region to the given list.
      *
      * @param list the list to fill with any intersecting sprites.
      * @param shape the shape in which we have interest.
      */
-    public void getIntersectingSprites (List list, Shape shape)
+    public void getIntersectingSprites (List<Sprite> list, Shape shape)
     {
-        int size = _media.size();
+        int size = _sprites.size();
         for (int ii = 0; ii < size; ii++) {
-            Sprite sprite = (Sprite)_media.get(ii);
+            Sprite sprite = _sprites.get(ii);
             if (sprite.intersects(shape)) {
                 list.add(sprite);
             }
@@ -61,21 +61,20 @@ public class SpriteManager extends AbstractMediaManager
     }
 
     /**
-     * When an animated view is determining what entity in its view is
-     * under the mouse pointer, it may require a list of sprites that are
-     * "hit" by a particular pixel. The sprites' bounds are first checked
-     * and sprites with bounds that contain the supplied point are further
-     * checked for a non-transparent at the specified location.
+     * When an animated view is determining what entity in its view is under the mouse pointer, it
+     * may require a list of sprites that are "hit" by a particular pixel. The sprites' bounds are
+     * first checked and sprites with bounds that contain the supplied point are further checked
+     * for a non-transparent at the specified location.
      *
-     * @param list the list to fill with any intersecting sprites, the
-     *        sprites with the highest render order provided first.
+     * @param list the list to fill with any intersecting sprites, the sprites with the highest
+     * render order provided first.
      * @param x the x (screen) coordinate to be checked.
      * @param y the y (screen) coordinate to be checked.
      */
-    public void getHitSprites (List list, int x, int y)
+    public void getHitSprites (List<Sprite> list, int x, int y)
     {
-        for (int ii = _media.size() - 1; ii >= 0; ii--) {
-            Sprite sprite = (Sprite)_media.get(ii);
+        for (int ii = _sprites.size() - 1; ii >= 0; ii--) {
+            Sprite sprite = _sprites.get(ii);
             if (sprite.hitTest(x, y)) {
                 list.add(sprite);
             }
@@ -83,8 +82,7 @@ public class SpriteManager extends AbstractMediaManager
     }
 
     /**
-     * Finds the sprite with the highest render order that hits the
-     * specified pixel.
+     * Finds the sprite with the highest render order that hits the specified pixel.
      *
      * @param x the x (screen) coordinate to be checked
      * @param y the y (screen) coordinate to be checked
@@ -93,8 +91,8 @@ public class SpriteManager extends AbstractMediaManager
     public Sprite getHighestHitSprite (int x, int y)
     {
         // since they're stored in lowest -> highest order..
-        for (int ii = _media.size() - 1; ii >= 0; ii--) {
-            Sprite sprite = (Sprite)_media.get(ii);
+        for (int ii = _sprites.size() - 1; ii >= 0; ii--) {
+            Sprite sprite = _sprites.get(ii);
             if (sprite.hitTest(x, y)) {
                 return sprite;
             }
@@ -116,27 +114,25 @@ public class SpriteManager extends AbstractMediaManager
     }
 
     /**
-     * Returns a list of all sprites registered with the sprite manager.
-     * The returned list is immutable, sprites should be added or removed
-     * using {@link #addSprite} or {@link #removeSprite}.
+     * Returns a list of all sprites registered with the sprite manager.  The returned list is
+     * immutable, sprites should be added or removed using {@link #addSprite} or {@link
+     * #removeSprite}.
      */
-    public List getSprites ()
+    public List<Sprite> getSprites ()
     {
-        return Collections.unmodifiableList(_media);
+        return Collections.unmodifiableList(_sprites);
     }
 
     /**
-     * Returns an iterator over our managed sprites. Do not call
-     * {@link Iterator#remove}.
+     * Returns an iterator over our managed sprites. Do not call {@link Iterator#remove}.
      */
-    public Iterator enumerateSprites ()
+    public Iterator<Sprite> enumerateSprites ()
     {
-        return _media.iterator();
+        return _sprites.iterator();
     }
 
     /**
-     * Removes the specified sprite from the set of sprites managed by
-     * this manager.
+     * Removes the specified sprite from the set of sprites managed by this manager.
      *
      * @param sprite the sprite to remove.
      */
@@ -151,14 +147,14 @@ public class SpriteManager extends AbstractMediaManager
     public void removeSprites (Predicate<Sprite> pred)
     {
         int idxoff = 0;
-        for (int ii = 0, ll = _media.size(); ii < ll; ii++) {
-            Sprite sprite = (Sprite)_media.get(ii-idxoff);
+        for (int ii = 0, ll = _sprites.size(); ii < ll; ii++) {
+            Sprite sprite = _sprites.get(ii-idxoff);
             if (pred.isMatch(sprite)) {
-                _media.remove(sprite);
+                _sprites.remove(sprite);
                 sprite.invalidate();
                 sprite.shutdown();
-                // we need to preserve the original "index" relative to the
-                // current tick position, so we don't decrement ii directly
+                // we need to preserve the original "index" relative to the current tick position,
+                // so we don't decrement ii directly
                 idxoff++;
                 if (ii <= _tickpos) {
                     _tickpos--;
@@ -174,8 +170,8 @@ public class SpriteManager extends AbstractMediaManager
      */
     public void renderSpritePaths (Graphics2D gfx)
     {
-        for (int ii=0, nn=_media.size(); ii < nn; ii++) {
-            Sprite sprite = (Sprite)_media.get(ii);
+        for (int ii=0, nn=_sprites.size(); ii < nn; ii++) {
+            Sprite sprite = _sprites.get(ii);
 	    sprite.paintPath(gfx);
         }
     }
@@ -192,7 +188,7 @@ public class SpriteManager extends AbstractMediaManager
 //	// gather a list of all sprite collisions
 //	int size = _sprites.size();
 //	for (int ii = 0; ii < size; ii++) {
-//            Sprite sprite = (Sprite)_sprites.get(ii);
+//          Sprite sprite = _sprites.get(ii);
 //	    checkCollisions(ii, size, sprite);
 //	}
 //    }
@@ -224,7 +220,7 @@ public class SpriteManager extends AbstractMediaManager
 //	int edgeX = bounds.x + bounds.width;
 //
 //	for (int ii = (idx + 1); ii < size; ii++) {
-//	    Sprite other = (Sprite)_sprites.get(ii);
+//	    Sprite other = _sprites.get(ii);
 //	    Rectangle obounds = other.getBounds();
 //	    if (obounds.x > edgeX) {
 //		// since sprites are stored in the list sorted by
@@ -243,13 +239,19 @@ public class SpriteManager extends AbstractMediaManager
 //    protected static final Comparator SPRITE_COMP = new SpriteComparator();
 //
 //    /** Used to sort sprites. */
-//    protected static class SpriteComparator implements Comparator
+//    protected static class SpriteComparator<Sprite> implements Comparator
 //    {
-//	public int compare (Object o1, Object o2)
+//	public int compare (Sprite s1, Sprite s2)
 //	{
-//	    Sprite s1 = (Sprite)o1;
-//	    Sprite s2 = (Sprite)o2;
 //	    return (s2.getX() - s1.getX());
 //	}
 //    }
+
+    @Override // from AbstractMediaManager
+    protected SortableArrayList<? extends AbstractMedia> createMediaList ()
+    {
+        return (_sprites = new SortableArrayList<Sprite>());
+    }
+
+    protected SortableArrayList<Sprite> _sprites;
 }
