@@ -295,7 +295,8 @@ public abstract class AbstractMediaManager
         new ArrayList<Tuple<ObserverList,ObserverOp>>();
 
     /** Our render-order sorted list of media. */
-    protected SortableArrayList<AbstractMedia> _media;
+    @SuppressWarnings("unchecked") protected SortableArrayList<AbstractMedia> _media =
+        (SortableArrayList<AbstractMedia>)createMediaList();
 
     /** The position in our media list that we're ticking (while in the middle of a call to {@link
      * #tick}) otherwise -1. */
