@@ -240,12 +240,8 @@ public abstract class ShaderConfig
 
             // add snippets for each of the lights
             for (int ii = 0; ii < _lights.length; ii++) {
-                LightConfig light = _lights[ii];
-                if (light.type == Light.LT_POINT) {
-                    buf.append(POINT_LIGHT_SNIPPET.replace("%", Integer.toString(ii)));
-                } else if (light.type == Light.LT_DIRECTIONAL) {
-                    buf.append(DIRECTIONAL_LIGHT_SNIPPET.replace("%", Integer.toString(ii)));
-                }
+                String snippet = getLightSnippet(_lights[ii].type);
+                buf.append(snippet.replace("%", Integer.toString(ii)));
             }
 
             // the alpha value comes from the diffuse color in the material
@@ -279,6 +275,21 @@ public abstract class ShaderConfig
             buf.append(" fogAlpha = exp(gl_Fog.density * eyeVertex.z);");
         }
         ddefs.add(buf.toString());
+    }
+
+    /**
+     * Returns a code snippet that adds the influence of a light of the specified type (after
+     * replacing '%' with the light index).
+     */
+    protected String getLightSnippet (int type)
+    {
+        if (type == Light.LT_POINT) {
+            return POINT_LIGHT_SNIPPET;
+        } else if (type == Light.LT_DIRECTIONAL) {
+            return DIRECTIONAL_LIGHT_SNIPPET;
+        } else {
+            return "";
+        }
     }
 
     /** The configuration of a single light in a {@link LightState}. */

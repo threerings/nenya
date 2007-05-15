@@ -19,24 +19,14 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-#if BONES_PER_VERTEX == 4
-    #define ATTRIB_TYPE vec4
-#elif BONES_PER_VERTEX == 3
-    #define ATTRIB_TYPE vec3
-#elif BONES_PER_VERTEX == 2
-    #define ATTRIB_TYPE vec2
-#else
-    #define ATTRIB_TYPE float
-#endif
-
 /** The bone transforms. */
 uniform mat4 boneTransforms[MAX_BONE_COUNT];
 
 /** The bone indices. */
-attribute ATTRIB_TYPE boneIndices;
+attribute vec4 boneIndices;
 
 /** The bone weights. */
-attribute ATTRIB_TYPE boneWeights;
+attribute vec4 boneWeights;
 
 /** The amount of fog. */
 #ifdef FOG
@@ -51,17 +41,13 @@ void main ()
     vec4 normal4 = vec4(gl_Normal, 0.0);
 
     // add up the vertex as transformed by each bone and scaled by each weight
-    #if BONES_PER_VERTEX == 1
-        vec4 modelVertex = boneTransforms[int(boneIndices)] * gl_Vertex * boneWeights;
-        vec4 modelNormal = boneTransforms[int(boneIndices)] * normal4 * boneWeights;
-    #else
-        vec4 modelVertex = boneTransforms[int(boneIndices[0])] * gl_Vertex * boneWeights[0];
-        vec4 modelNormal = boneTransforms[int(boneIndices[0])] * normal4 * boneWeights[0];
-        for (int ii = 1; ii < BONES_PER_VERTEX; ii++) {
-            modelVertex += boneTransforms[int(boneIndices[ii])] * gl_Vertex * boneWeights[ii];
-            modelNormal += boneTransforms[int(boneIndices[ii])] * normal4 * boneWeights[ii];
-        }
-    #endif
+    vec4 modelVertex = vec4(0.0, 0.0, 0.0, 0.0);
+    vec4 modelNormal = vec4(0.0, 0.0, 0.0, 0.0);
+    for (int ii = 0; ii < 4; ii++) {
+        mat4 boneTransform = boneTransforms[int(boneIndices[ii])];
+        modelVertex += boneTransform * gl_Vertex * boneWeights[ii];
+        modelNormal += boneTransform * normal4 * boneWeights[ii];
+    }
 
     // apply the standard transformation
     gl_Position = gl_ModelViewProjectionMatrix * modelVertex;

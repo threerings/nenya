@@ -408,7 +408,7 @@ public class SkinMesh extends ModelMesh
         if (bonesPerVertex > MAX_SHADER_BONES_PER_VERTEX) {
             return;
         }
-        _sconfig = new SkinShaderConfig(scache, bonesPerVertex, _emissiveMap != null);
+        _sconfig = new SkinShaderConfig(scache, _emissiveMap != null);
         if (_sconfig.update(getBatch(0).states)) {
             setShaderAttributes();
             setRenderState(_sconfig.getState());
@@ -618,20 +618,19 @@ public class SkinMesh extends ModelMesh
      */
     protected void setShaderAttributes ()
     {
-        int bonesPerVertex = _sconfig.getBonesPerVertex();
-        int size = getBatch(0).getVertexCount() * bonesPerVertex;
+        int size = getBatch(0).getVertexCount() * 4;
         ByteBuffer bibuf = BufferUtils.createByteBuffer(size);
         FloatBuffer bwbuf = BufferUtils.createFloatBuffer(size);
 
         for (WeightGroup group : _weightGroups) {
-            byte[] indices = new byte[bonesPerVertex];
-            for (int ii = 0; ii < indices.length; ii++) {
+            byte[] indices = new byte[4];
+            for (int ii = 0; ii < 4; ii++) {
                 indices[ii] = (byte)((ii < group.bones.length) ?
                     ListUtil.indexOf(_bones, group.bones[ii]) : 0);
             }
             for (int ii = 0, widx = 0; ii < group.vertexCount; ii++) {
                 bibuf.put(indices);
-                for (int jj = 0; jj < bonesPerVertex; jj++) {
+                for (int jj = 0; jj < 4; jj++) {
                     bwbuf.put((jj < group.bones.length) ? group.weights[widx++] : 0f);
                 }
             }
@@ -640,17 +639,16 @@ public class SkinMesh extends ModelMesh
         bwbuf.rewind();
 
         GLSLShaderObjectsState sstate = _sconfig.getState();
-        sstate.setAttributePointer("boneIndices", bonesPerVertex, false, false, 0, bibuf);
-        sstate.setAttributePointer("boneWeights", bonesPerVertex, false, 0, bwbuf);
+        sstate.setAttributePointer("boneIndices", 4, false, false, 0, bibuf);
+        sstate.setAttributePointer("boneWeights", 4, false, 0, bwbuf);
     }
 
     /** Tracks the configuration of a skin shader. */
     protected static class SkinShaderConfig extends ShaderConfig
     {
-        public SkinShaderConfig (ShaderCache scache, int bonesPerVertex, boolean emissiveMapped)
+        public SkinShaderConfig (ShaderCache scache, boolean emissiveMapped)
         {
             super(scache);
-            _bonesPerVertex = bonesPerVertex;
             _emissiveMapped = emissiveMapped;
 
             // set bindings from texture units to samplers
@@ -660,11 +658,6 @@ public class SkinMesh extends ModelMesh
             } else {
                 _state.setUniform("diffuseMap", 0);
             }
-        }
-
-        public int getBonesPerVertex ()
-        {
-            return _bonesPerVertex;
         }
 
         @Override // documentation inherited
@@ -683,7 +676,6 @@ public class SkinMesh extends ModelMesh
         protected void getDefinitions (ArrayList<String> defs)
         {
             super.getDefinitions(defs);
-            defs.add("BONES_PER_VERTEX " + _bonesPerVertex);
             if (_emissiveMapped) {
                 defs.add("EMISSIVE_MAPPED");
             }
@@ -696,7 +688,6 @@ public class SkinMesh extends ModelMesh
             ddefs.add("MAX_BONE_COUNT " + MAX_SHADER_BONE_COUNT);
         }
 
-        protected int _bonesPerVertex;
         protected boolean _emissiveMapped;
     }
 
