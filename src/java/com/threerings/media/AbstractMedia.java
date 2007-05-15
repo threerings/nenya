@@ -170,8 +170,7 @@ public abstract class AbstractMedia
     public int compareTo (AbstractMedia other)
     {
         int result = _renderOrder - other._renderOrder;
-        // if render order is same, use their natural order
-        return (result != 0) ? result : naturalOrder() - other.naturalOrder();
+        return (result != 0) ? result : naturalCompareTo(other);
     }
 
     /**
@@ -345,13 +344,13 @@ public abstract class AbstractMedia
     }
 
     /**
-     * Returns a value used to "naturally" order media within the same render order layer. The
-     * default behavior, for legacy reasons is {@link #hashCode} which is not consistent across
-     * sessions.
+     * "Naturally" compares this media with the specified other media (which by definition will
+     * have the same render order value). The default behavior, for legacy reasons, is to compare
+     * using {@link #hashCode} which is not consistent across VM invocations.
      */
-    protected int naturalOrder ()
+    protected int naturalCompareTo (AbstractMedia other)
     {
-        return hashCode();
+        return hashCode() - other.hashCode();
     }
 
     /**
