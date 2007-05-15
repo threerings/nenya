@@ -21,7 +21,7 @@
 
 package com.threerings.media.animation;
 
-import com.samskivert.util.SortableArrayList;
+import com.samskivert.util.ComparableArrayList;
 
 import com.threerings.media.AbstractMedia;
 import com.threerings.media.AbstractMediaManager;
@@ -71,10 +71,10 @@ public class AnimationManager extends AbstractMediaManager
     }
 
     @Override // from AbstractMediaManager
-    protected SortableArrayList<? extends AbstractMedia> createMediaList ()
+    protected ComparableArrayList<? extends AbstractMedia> createMediaList ()
     {
-        return (_anims = new SortableArrayList<Animation>());
+        return (_anims = new ComparableArrayList<Animation>());
     }
 
-    protected SortableArrayList<Animation> _anims;
+    protected ComparableArrayList<Animation> _anims;
 }

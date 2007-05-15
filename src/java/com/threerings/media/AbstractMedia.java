@@ -37,7 +37,7 @@ import com.samskivert.util.StringUtil;
  * Something that can be rendered on the media panel.
  */
 public abstract class AbstractMedia
-    implements Shape
+    implements Shape, Comparable<AbstractMedia>
 {
     /** A {@link #_renderOrder} value at or above which, indicates that this
      * media is in the HUD (heads up display) and should not scroll when the
@@ -118,52 +118,60 @@ public abstract class AbstractMedia
         return _bounds;
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public boolean contains (double x, double y)
     {
         return _bounds.contains(x, y);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public boolean contains (Point2D p)
     {
         return _bounds.contains(p);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public boolean intersects (double x, double y, double w, double h)
     {
         return _bounds.intersects(x, y, w, h);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public boolean intersects (Rectangle2D r)
     {
         return _bounds.intersects(r);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public boolean contains (double x, double y, double w, double h)
     {
         return _bounds.contains(x, y, w, h);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public boolean contains (Rectangle2D r)
     {
         return _bounds.contains(r);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public PathIterator getPathIterator (AffineTransform at)
     {
         return _bounds.getPathIterator(at);
     }
 
-    // documentation inherited from interface Shape
+    // from interface Shape
     public PathIterator getPathIterator (AffineTransform at, double flatness)
     {
         return _bounds.getPathIterator(at, flatness);
+    }
+
+    // from interface Comparable<AbstractMedia>
+    public int compareTo (AbstractMedia other)
+    {
+        int result = _renderOrder - other._renderOrder;
+        // if render order is same, use their natural order
+        return (result != 0) ? result : naturalOrder() - other.naturalOrder();
     }
 
     /**
@@ -334,6 +342,16 @@ public abstract class AbstractMedia
         if (_observers != null) {
             _observers.remove(obs);
         }
+    }
+
+    /**
+     * Returns a value used to "naturally" order media within the same render order layer. The
+     * default behavior, for legacy reasons is {@link #hashCode} which is not consistent across
+     * sessions.
+     */
+    protected int naturalOrder ()
+    {
+        return hashCode();
     }
 
     /**
