@@ -1,6 +1,12 @@
 package com.threerings.flash {
 
+import flash.events.Event;
+import flash.events.MouseEvent;
+
 import flash.filters.GlowFilter;
+
+import flash.system.Capabilities;
+import flash.system.System;
 
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
@@ -10,14 +16,21 @@ import flash.text.TextFormatAlign;
 
 public class TextFieldUtil
 {
+    /** A fudge factor that must be added to a TextField's textWidth when setting the width. */
+    public static const WIDTH_PAD :int = 5;
+
+    /** A fudge factor that must be added to a TextField's textHeight when setting the height. */
+    public static const HEIGHT_PAD :int = 4;
+
     /**
      * Create a TextField.
      *
      * args: contains properties with which to initialize the TextField
      */
-    public static function createField (text :String, args :Object = null) :TextField
+    public static function createField (
+        text :String, args :Object = null, clazz :Class = null) :TextField
     {
-        var tf :TextField = new TextField();
+        var tf :TextField = (clazz == null) ? new TextField() : TextField(new clazz());
         tf.background = getArg(args, "background", false);
         tf.border = getArg(args, "border", false);
         tf.multiline = getArg(args, "multiline", false);
@@ -61,6 +74,65 @@ public class TextFieldUtil
         return f;
     }
 
+    /**
+     * Include the specified TextField in a set of TextFields in which only
+     * one may have a selection at a time.
+     */
+    public static function trackSingleSelectable (textField :TextField) :void
+    {
+        textField.addEventListener(MouseEvent.MOUSE_MOVE, handleTrackedSelection);
+
+        // immediately put the kibosh on any selection
+        textField.setSelection(0, 0);
+    }
+
+    /**
+     * Internal method related to tracking a single selectable TextField.
+     */
+    protected static function handleTrackedSelection (event :MouseEvent) :void
+    {
+        if (event.buttonDown) {
+            var field :TextField = event.target as TextField;
+            if (field == _lastSelected) {
+                updateSelection(field);
+
+            } else if (field.selectionBeginIndex != field.selectionEndIndex) {
+                // clear the last one..
+                if (_lastSelected != null) {
+                    handleLastSelectedRemoved();
+                }
+                _lastSelected = field;
+                _lastSelected.addEventListener(Event.REMOVED_FROM_STAGE, handleLastSelectedRemoved);
+                updateSelection(field);
+            }
+        }
+    }
+
+    /**
+     * Process the selection.
+     */
+    protected static function updateSelection (field :TextField) :void
+    {
+        if (-1 != Capabilities.os.indexOf("Linux")) {
+            var str :String = field.text.substring(
+                field.selectionBeginIndex, field.selectionEndIndex);
+            System.setClipboard(str);
+        }
+    }
+
+    /**
+     * Internal method related to tracking a single selectable TextField.
+     */
+    protected static function handleLastSelectedRemoved (... ignored) :void
+    {
+        _lastSelected.setSelection(0, 0);
+        _lastSelected.removeEventListener(Event.REMOVED_FROM_STAGE, handleLastSelectedRemoved);
+        _lastSelected = null;
+    }
+
+    /**
+     * Utility function for createTextField() and createFormat().
+     */
     protected static function getArg (args :Object, name :String, defVal :* = undefined) :*
     {
         if (args != null && (name in args)) {
@@ -68,5 +140,8 @@ public class TextFieldUtil
         }
         return defVal;
     }
+
+    /** The last tracked TextField to be selected. */
+    protected static var _lastSelected :TextField;
 }
 }
