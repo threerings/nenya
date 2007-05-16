@@ -48,6 +48,7 @@ public class FloatingTextAnimation extends Sprite
         text :String, textArgs :Object = null, duration :Number = 1000, dy :int = -10)
     {
         var tf :TextField = TextFieldUtil.createField(text, textArgs);
+        tf.selectable = false;
         tf.x = -(tf.width/2)
         tf.y = -(tf.height/2);
         addChild(tf);
