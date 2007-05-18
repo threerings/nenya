@@ -21,7 +21,7 @@
 
 package com.threerings.flash {
 
-//import flash.display.Bitmap;
+import flash.display.Bitmap;
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
 import flash.display.Loader;
@@ -136,6 +136,7 @@ public class MediaContainer extends Sprite
         } else {
             setupSwfOrImage(url);
         }
+        didShowNewMedia();
     }
 
     /**
@@ -160,15 +161,23 @@ public class MediaContainer extends Sprite
         addChildAt(disp, 0);
         _media = disp;
         updateContentDimensions(disp.width, disp.height);
+        didShowNewMedia();
     }
 
     /**
-     * A place where subclasses can initialize things prior to showing
-     * new media.
+     * A place where subclasses can initialize things prior to showing new media.
      */
     protected function willShowNewMedia () :void
     {
         _initialized = false;
+    }
+
+    /**
+     * A place where subclasses can configure things after we've setup new media.
+     */
+    protected function didShowNewMedia () :void
+    {
+        // nothing right now, but call super() you overriders.
     }
 
     /**
@@ -361,6 +370,53 @@ public class MediaContainer extends Sprite
     public function containerDimensionsUpdated (newWidth :Number, newHeight :Number) :void
     {
         // do nothing in base MediaContainer 
+    }
+
+    /**
+     * Note: This method is NOT used in normal mouseOver calculations.
+     * Normal mouseOver stuff seems to be completely broken for transparent
+     * images: the transparent portion is a 'hit'. I've (Ray) tried
+     * just about everything to fix this, more than once.
+     *
+     * But if someone *does* call this method (we do, in whirled), then
+     * attempt to do the right thing.
+     */
+    override public function hitTestPoint (
+        x :Number, y :Number, shapeFlag :Boolean = false) :Boolean
+    {
+        // if we're holding a bitmap, do something smarter than the
+        // flash built-in and actually check for *GASP* transparent pixels!
+        try {
+            if (shapeFlag && _media is Loader && 
+                    // the childAllowsParent check here causes a security
+                    // violation if it doesn't. WHAT THE FLYING FUCK.
+                    Loader(_media).contentLoaderInfo.childAllowsParent &&
+                    (Loader(_media).content is Bitmap)) {
+                var b :Bitmap = Bitmap(Loader(_media).content);
+                var p :Point = b.globalToLocal(new Point(x, y));
+                // check that it's within the content bounds, and then check the bitmap directly
+                if (p.x >= 0 && p.x <= getMaxContentWidth() && p.y >= 0 &&
+                        p.y <= getMaxContentHeight() &&
+                        b.bitmapData.hitTest(new Point(0, 0), 0, p)) {
+                    return true;
+
+                } else {
+                    // the bitmap was not hit, see if other children were hit...
+                    for (var ii :int = numChildren - 1; ii >= 0; ii--) {
+                        var child :DisplayObject = getChildAt(ii);
+                        if (child != _media && child.hitTestPoint(x, y, shapeFlag)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+        } catch (err :Error) {
+            // nada
+        }
+
+        // normal hit testing
+        return super.hitTestPoint(x, y, shapeFlag);
     }
 
     override public function toString () :String
