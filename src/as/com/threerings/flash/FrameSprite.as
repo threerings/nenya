@@ -14,8 +14,14 @@ import flash.events.Event;
  */
 public class FrameSprite extends Sprite
 {
-    public function FrameSprite ()
+    /**
+     * @param renderFrameUponAdding if true, the handleFrame() method
+     *        is called whenever an ADDED_TO_STAGE event is received.
+     */
+    public function FrameSprite (renderFrameUponAdding :Boolean = true)
     {
+        _renderOnAdd = renderFrameUponAdding;
+
         addEventListener(Event.ADDED_TO_STAGE, handleAdded);
         addEventListener(Event.REMOVED_FROM_STAGE, handleRemoved);
     }
@@ -26,7 +32,9 @@ public class FrameSprite extends Sprite
     protected function handleAdded (... ignored) :void
     {
         addEventListener(Event.ENTER_FRAME, handleFrame);
-        handleFrame(); // update immediately
+        if (_renderOnAdd) {
+            handleFrame(); // update immediately
+        }
     }
 
     /**
@@ -44,6 +52,9 @@ public class FrameSprite extends Sprite
     {
         // nothing here. Override in yor subclass.
     }
+
+    /** Should we call handleFrame() when we get ADDED_TO_STAGE? */
+    protected var _renderOnAdd :Boolean;
 }
 
 }
