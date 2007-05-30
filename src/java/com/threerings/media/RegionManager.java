@@ -80,9 +80,6 @@ public class RegionManager
         if ((Math.abs(x) > Integer.MAX_VALUE/2) || (Math.abs(y) > Integer.MAX_VALUE/2)) {
             Log.warning("Requested to dirty questionable region " +
                         "[rect=" + StringUtil.toString(rect) + "].");
-            if (Log.getLevel() == Log.log.DEBUG) {
-                Thread.dumpStack();
-            }
             return; // Let's not do it!
         }
 

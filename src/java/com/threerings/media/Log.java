@@ -21,21 +21,22 @@
 
 package com.threerings.media;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * A placeholder class that contains a reference to the log object used by
  * the media services package.
  */
 public class Log
 {
-    public static final String PACKAGE = "media";
-
-    public static com.samskivert.util.Log log =
-        new com.samskivert.util.Log(PACKAGE);
+    /** We dispatch our log messages through this logger. */
+    public static Logger log = Logger.getLogger("com.threerings.media");
 
     /** Convenience function. */
     public static void debug (String message)
     {
-	log.debug(message);
+	log.fine(message);
     }
 
     /** Convenience function. */
@@ -53,11 +54,6 @@ public class Log
     /** Convenience function. */
     public static void logStackTrace (Throwable t)
     {
-	log.logStackTrace(com.samskivert.util.Log.WARNING, t);
-    }
-
-    public static int getLevel ()
-    {
-        return com.samskivert.util.Log.getLevel(PACKAGE);
+	log.log(Level.WARNING, t.getMessage(), t);
     }
 }
