@@ -38,17 +38,28 @@ public class TransformedMirage
     implements Mirage
 {
     /**
-     * Constructor.
+     * Constructor for backwards compatability that automatically repositions the
+     * transformed mirage so its new upper-left corner is still at the origin.
      */
     public TransformedMirage (Mirage base, AffineTransform transform)
+    {
+        this(base, transform, true);
+    }
+
+    /**
+     * Constructor.
+     */
+    public TransformedMirage (Mirage base, AffineTransform transform, boolean reposition)
     {
         _base = base;
 
         // clone the transform so that it doesn't get changed on us.
         _transform = (AffineTransform) transform.clone();
         computeTransformedBounds();
-        _transform.preConcatenate(
-            AffineTransform.getTranslateInstance(-_bounds.x, -_bounds.y));
+        if (reposition) {
+            _transform.preConcatenate(
+                AffineTransform.getTranslateInstance(-_bounds.x, -_bounds.y));
+        }
     }
 
     // documentation inherited from interface Mirage
