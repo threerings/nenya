@@ -53,31 +53,23 @@ public class SimpleTextButton extends SimpleButton
         label.text = text;
         label.textColor = foreground;
         label.autoSize = TextFieldAutoSize.LEFT;
+        face.addChild(label);
 
-        var w :Number = label.textWidth + 2 * padding;
-        var h :Number = label.textHeight + 2 * padding;
+        var w :Number = label.width + 2 * padding;
+        var h :Number = label.height + 2 * padding;
 
-        // create our button background (and outline)
-        var button :Shape = new Shape();
-        button.graphics.beginFill(background);
+        // draw our button background (and outline)
+        face.graphics.beginFill(background);
+        face.graphics.lineStyle(1, foreground);
         if (rounded) {
-            button.graphics.drawRoundRect(0, 0, w, h, padding, padding);
+            face.graphics.drawRoundRect(0, 0, w, h, padding, padding);
         } else {
-            button.graphics.drawRect(0, 0, w, h);
+            face.graphics.drawRect(0, 0, w, h);
         }
-        button.graphics.endFill();
-        button.graphics.lineStyle(1, foreground);
-        if (rounded) {
-            button.graphics.drawRoundRect(0, 0, w, h, padding, padding);
-        } else {
-            button.graphics.drawRect(0, 0, w, h);
-        }
-
-        face.addChild(button);
+        face.graphics.endFill();
 
         label.x = padding;
         label.y = padding;
-        face.addChild(label);
 
         return face;
     }
