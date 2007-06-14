@@ -209,12 +209,6 @@ public class MediaContainer extends Sprite
         info.addEventListener(IOErrorEvent.IO_ERROR, loadError);
         info.addEventListener(ProgressEvent.PROGRESS, loadProgress);
 
-        // create a mask to prevent the media from drawing out of bounds
-        if (getMaxContentWidth() < int.MAX_VALUE &&
-                getMaxContentHeight() < int.MAX_VALUE) {
-            configureMask(getMaxContentWidth(), getMaxContentHeight());
-        }
-
         // start it loading, add it as a child
         loader.load(new URLRequest(url), getContext(url));
         addChildAt(loader, 0);
@@ -591,11 +585,18 @@ public class MediaContainer extends Sprite
     }
 
     /**
-     * Called when we know the true size of the content.
+     * Called when we know the true size of the content. Subclasses may override and use this
+     * opportunity to do their thing, too.
      */
     protected function contentDimensionsUpdated () :void
     {
-        // nada, by default
+        // update the mask
+        var maxW :int = getMaxContentWidth();
+        var maxH :int = getMaxContentHeight();
+        if ((maxW < int.MAX_VALUE) && (maxH < int.MAX_VALUE)) {
+            // if we should do masking, then mask to the lesser of maximum and actual size
+            configureMask(Math.min(maxW, _w), Math.min(maxH, _h));
+        }
     }
 
     /**
