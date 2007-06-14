@@ -212,7 +212,7 @@ public class MediaContainer extends Sprite
         // create a mask to prevent the media from drawing out of bounds
         if (getMaxContentWidth() < int.MAX_VALUE &&
                 getMaxContentHeight() < int.MAX_VALUE) {
-            configureMask(url, getMaxContentWidth(), getMaxContentHeight());
+            configureMask(getMaxContentWidth(), getMaxContentHeight());
         }
 
         // start it loading, add it as a child
@@ -542,7 +542,7 @@ public class MediaContainer extends Sprite
     /**
      * Configure the mask for this object.
      */
-    protected function configureMask (url :String, ww :int, hh :int) :void
+    protected function configureMask (ww :int, hh :int) :void
     {
         var mask :Shape;
         if (_media.mask != null) {
