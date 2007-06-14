@@ -155,9 +155,8 @@ public class ResourceManager
     }
 
     /**
-     * Creates a resource manager with the specified class loader via
-     * which to load classes. See {@link #ResourceManager(String)} for
-     * further documentation.
+     * Creates a resource manager with the specified class loader via which to load classes. See
+     * {@link #ResourceManager(String)} for further documentation.
      */
     public ResourceManager (String resourceRoot, ClassLoader loader)
     {
@@ -215,24 +214,19 @@ public class ResourceManager
     }
 
     /**
-     * Initializes the bundle sets to be made available by this resource
-     * manager.  Applications that wish to make use of resource bundles
-     * should call this method after constructing the resource manager.
+     * Initializes the bundle sets to be made available by this resource manager.  Applications
+     * that wish to make use of resource bundles should call this method after constructing the
+     * resource manager.
      *
-     * @param resourceDir the base directory to which the paths in the
-     * supplied configuration file are relative. If this is null, the
-     * system property <code>resource_dir</code> will be used, if
-     * available.
-     * @param configPath the path (relative to the resource dir) of the
-     * resource definition file.
-     * @param initObs a bundle initialization observer to notify of
-     * unpacking progress and success or failure, or <code>null</code> if
-     * the caller doesn't care to be informed; note that in the latter
-     * case, the calling thread will block until bundle unpacking is
-     * complete.
+     * @param resourceDir the base directory to which the paths in the supplied configuration file
+     * are relative. If this is null, the system property <code>resource_dir</code> will be used,
+     * if available.
+     * @param configPath the path (relative to the resource dir) of the resource definition file.
+     * @param initObs a bundle initialization observer to notify of unpacking progress and success
+     * or failure, or <code>null</code> if the caller doesn't care to be informed; note that in the
+     * latter case, the calling thread will block until bundle unpacking is complete.
      *
-     * @exception IOException thrown if we are unable to read our resource
-     * manager configuration.
+     * @exception IOException thrown if we are unable to read our resource manager configuration.
      */
     public void initBundles (String resourceDir, String configPath, InitObserver initObs)
         throws IOException
@@ -247,8 +241,8 @@ public class ResourceManager
         try {
             config.load(new FileInputStream(new File(_rdir, configPath)));
         } catch (Exception e) {
-            String errmsg = "Unable to load resource manager config " +
-                "[rdir=" + _rdir + ", cpath=" + configPath + "]";
+            String errmsg = "Unable to load resource manager config [rdir=" + _rdir +
+                ", cpath=" + configPath + "]";
             Log.warning(errmsg + ".");
             Log.logStackTrace(e);
             throw new IOException(errmsg);
@@ -266,8 +260,7 @@ public class ResourceManager
             resolveResourceSet(setName, config.getProperty(key), dlist);
         }
 
-        // if an observer was passed in, then we do not need to block
-        // the caller
+        // if an observer was passed in, then we do not need to block the caller
         final boolean[] shouldWait = new boolean[] { false };
         if (initObs == null) {
             // if there's no observer, we'll need to block the caller
@@ -276,9 +269,8 @@ public class ResourceManager
                 public void progress (int percent, long remaining) {
                     if (percent >= 100) {
                         synchronized (this) {
-                            // turn off shouldWait, in case we reached
-                            // 100% progress before the calling thread even
-                            // gets a chance to get to the blocking code, below
+                            // turn off shouldWait, in case we reached 100% progress before the
+                            // calling thread even gets a chance to get to the blocking code, below
                             shouldWait[0] = false;
                             notify();
                         }
@@ -303,8 +295,7 @@ public class ResourceManager
                     try {
                         initObs.wait();
                     } catch (InterruptedException ie) {
-                        Log.warning("Interrupted while waiting for bundles " +
-                                    "to unpack.");
+                        Log.warning("Interrupted while waiting for bundles to unpack.");
                     }
                 }
             }
@@ -312,13 +303,12 @@ public class ResourceManager
     }
 
     /**
-     * Given a path relative to the resource directory, the path is
-     * properly jimmied (assuming we always use /) and combined with the
-     * resource directory to yield a {@link File} object that can be used
-     * to access the resource.
+     * Given a path relative to the resource directory, the path is properly jimmied (assuming we
+     * always use /) and combined with the resource directory to yield a {@link File} object that
+     * can be used to access the resource.
      *
-     * @return a file referencing the specified resource or null if the
-     * resource manager was never configured with a resource directory.
+     * @return a file referencing the specified resource or null if the resource manager was never
+     * configured with a resource directory.
      */
     public File getResourceFile (String path)
     {
@@ -332,8 +322,7 @@ public class ResourceManager
     }
 
     /**
-     * Checks to see if the specified bundle exists, is unpacked and is
-     * ready to be used.
+     * Checks to see if the specified bundle exists, is unpacked and is ready to be used.
      */
     public boolean checkBundle (String path)
     {
@@ -342,19 +331,17 @@ public class ResourceManager
     }
 
     /**
-     * Resolve the specified bundle (the bundle file must already exist in
-     * the appropriate place on the file system) and return it on the
-     * specified result listener. Note that the result listener may be
-     * notified before this method returns on the caller's thread if the
-     * bundle is already resolved, or it may be notified on a brand new
-     * thread if the bundle requires unpacking.
+     * Resolve the specified bundle (the bundle file must already exist in the appropriate place on
+     * the file system) and return it on the specified result listener. Note that the result
+     * listener may be notified before this method returns on the caller's thread if the bundle is
+     * already resolved, or it may be notified on a brand new thread if the bundle requires
+     * unpacking.
      */
     public void resolveBundle (String path, final ResultListener listener)
     {
         File bfile = getResourceFile(path);
         if (bfile == null) {
-            String errmsg = "ResourceManager not configured with " +
-                "resource directory.";
+            String errmsg = "ResourceManager not configured with resource directory.";
             listener.requestFailed(new IOException(errmsg));
             return;
         }
@@ -387,8 +374,8 @@ public class ResourceManager
     }
 
     /**
-     * Returns the class loader being used to load resources if/when there
-     * are no resource bundles from which to load them.
+     * Returns the class loader being used to load resources if/when there are no resource bundles
+     * from which to load them.
      */
     public ClassLoader getClassLoader ()
     {
@@ -396,8 +383,8 @@ public class ResourceManager
     }
 
     /**
-     * Configures the class loader this manager should use to load
-     * resources if/when there are no bundles from which to load them.
+     * Configures the class loader this manager should use to load resources if/when there are no
+     * bundles from which to load them.
      */
     public void setClassLoader (ClassLoader loader)
     {
@@ -407,11 +394,10 @@ public class ResourceManager
     /**
      * Fetches a resource from the local repository.
      *
-     * @param path the path to the resource
-     * (ie. "config/miso.properties"). This should not begin with a slash.
+     * @param path the path to the resource (ie. "config/miso.properties"). This should not begin
+     * with a slash.
      *
-     * @exception IOException thrown if a problem occurs locating or
-     * reading the resource.
+     * @exception IOException thrown if a problem occurs locating or reading the resource.
      */
     public InputStream getResource (String path)
         throws IOException
@@ -432,24 +418,21 @@ public class ResourceManager
             return new FileInputStream(file);
         }
 
-        // if we still didn't find anything, try the classloader
-
-        // First try a locale-specific file
+        // if we still didn't find anything, try the classloader; first try a locale-specific file
         if (_localePrefix != null) {
-            final String rpath = PathUtil.appendPath(_rootPath,
-                PathUtil.appendPath(_localePrefix, path));
-            in = (InputStream)AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run () {
-                        return _loader.getResourceAsStream(rpath);
-                    }
-                });
+            final String rpath = PathUtil.appendPath(
+                _rootPath, PathUtil.appendPath(_localePrefix, path));
+            in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run () {
+                    return _loader.getResourceAsStream(rpath);
+                }
+            });
             if (in != null) {
                 return in;
             }
         }
 
-        // But if we didn't find that, try locale-neutral.
+        // if we didn't find that, try locale-neutral
         final String rpath = PathUtil.appendPath(_rootPath, path);
         in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
             public Object run () {
@@ -466,15 +449,12 @@ public class ResourceManager
     }
 
     /**
-     * Fetches the specified resource as an {@link ImageInputStream} and
-     * one that takes advantage, if possible, of caching of unpacked
-     * resources on the local filesystem.
+     * Fetches the specified resource as an {@link ImageInputStream} and one that takes advantage,
+     * if possible, of caching of unpacked resources on the local filesystem.
      *
-     * @exception FileNotFoundException thrown if the resource could not
-     * be located in any of the bundles in the specified set, or if the
-     * specified set does not exist.
-     * @exception IOException thrown if a problem occurs locating or
-     * reading the resource.
+     * @exception FileNotFoundException thrown if the resource could not be located in any of the
+     * bundles in the specified set, or if the specified set does not exist.
+     * @exception IOException thrown if a problem occurs locating or reading the resource.
      */
     public ImageInputStream getImageResource (String path)
         throws IOException
@@ -493,26 +473,23 @@ public class ResourceManager
             return new FileImageInputStream(file);
         }
 
-        // First try a locale-specific file
+        // first try a locale-specific file
         if (_localePrefix != null) {
-            final String rpath = PathUtil.appendPath(_rootPath,
-                PathUtil.appendPath(_localePrefix, path));
-            InputStream in = (InputStream)AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run () {
-                        return _loader.getResourceAsStream(rpath);
-                    }
-                });
+            final String rpath = PathUtil.appendPath(
+                _rootPath, PathUtil.appendPath(_localePrefix, path));
+            InputStream in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run () {
+                    return _loader.getResourceAsStream(rpath);
+                }
+            });
             if (in != null) {
-                return new MemoryCacheImageInputStream(
-                    new BufferedInputStream(in));
+                return new MemoryCacheImageInputStream(new BufferedInputStream(in));
             }
         }
 
         // if we still didn't find anything, try the classloader
         final String rpath = PathUtil.appendPath(_rootPath, path);
-        InputStream in = (InputStream)
-            AccessController.doPrivileged(new PrivilegedAction() {
+        InputStream in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
             public Object run () {
                 return _loader.getResourceAsStream(rpath);
             }
@@ -527,18 +504,14 @@ public class ResourceManager
     }
 
     /**
-     * Returns an input stream from which the requested resource can be
-     * loaded. <em>Note:</em> this performs a linear search of all of the
-     * bundles in the set and returns the first resource found with the
-     * specified path, thus it is not extremely efficient and will behave
-     * unexpectedly if you use the same paths in different resource
-     * bundles.
+     * Returns an input stream from which the requested resource can be loaded. <em>Note:</em> this
+     * performs a linear search of all of the bundles in the set and returns the first resource
+     * found with the specified path, thus it is not extremely efficient and will behave
+     * unexpectedly if you use the same paths in different resource bundles.
      *
-     * @exception FileNotFoundException thrown if the resource could not
-     * be located in any of the bundles in the specified set, or if the
-     * specified set does not exist.
-     * @exception IOException thrown if a problem occurs locating or
-     * reading the resource.
+     * @exception FileNotFoundException thrown if the resource could not be located in any of the
+     * bundles in the specified set, or if the specified set does not exist.
+     * @exception IOException thrown if a problem occurs locating or reading the resource.
      */
     public InputStream getResource (String rset, String path)
         throws IOException
@@ -547,8 +520,7 @@ public class ResourceManager
         ResourceBundle[] bundles = getResourceSet(rset);
         if (bundles == null) {
             throw new FileNotFoundException(
-                "Unable to locate resource [set=" + rset +
-                ", path=" + path + "]");
+                "Unable to locate resource [set=" + rset + ", path=" + path + "]");
         }
 
         // look for the resource in any of the bundles
@@ -558,8 +530,7 @@ public class ResourceManager
 
             // Try a localized version first.
             if (_localePrefix != null) {
-                instr = bundles[ii].getResource(
-                    PathUtil.appendPath(_localePrefix, path));
+                instr = bundles[ii].getResource(PathUtil.appendPath(_localePrefix, path));
             }
             // If we didn't find that, try a generic.
             if (instr == null) {
@@ -578,15 +549,12 @@ public class ResourceManager
     }
 
     /**
-     * Fetches the specified resource as an {@link ImageInputStream} and
-     * one that takes advantage, if possible, of caching of unpacked
-     * resources on the local filesystem.
+     * Fetches the specified resource as an {@link ImageInputStream} and one that takes advantage,
+     * if possible, of caching of unpacked resources on the local filesystem.
      *
-     * @exception FileNotFoundException thrown if the resource could not
-     * be located in any of the bundles in the specified set, or if the
-     * specified set does not exist.
-     * @exception IOException thrown if a problem occurs locating or
-     * reading the resource.
+     * @exception FileNotFoundException thrown if the resource could not be located in any of the
+     * bundles in the specified set, or if the specified set does not exist.
+     * @exception IOException thrown if a problem occurs locating or reading the resource.
      */
     public ImageInputStream getImageResource (String rset, String path)
         throws IOException
@@ -595,21 +563,19 @@ public class ResourceManager
         ResourceBundle[] bundles = getResourceSet(rset);
         if (bundles == null) {
             throw new FileNotFoundException(
-                "Unable to locate image resource [set=" + rset +
-                ", path=" + path + "]");
+                "Unable to locate image resource [set=" + rset + ", path=" + path + "]");
         }
 
         // look for the resource in any of the bundles
         int size = bundles.length;
         for (int ii = 0; ii < size; ii++) {
             File file = null;
-            // Try a localized version first.
+            // try a localized version first
             if (_localePrefix != null) {
-                file = bundles[ii].getResourceFile(
-                    PathUtil.appendPath(_localePrefix, path));
+                file = bundles[ii].getResourceFile(PathUtil.appendPath(_localePrefix, path));
             }
 
-            // If we didn't find that, try generic.
+            // if we didn't find that, try generic
             if (file == null) {
                 file = bundles[ii].getResourceFile(path);
             }
@@ -622,17 +588,14 @@ public class ResourceManager
             }
         }
 
-        String errmsg = "Unable to locate image resource [set=" + rset +
-            ", path=" + path + "]";
+        String errmsg = "Unable to locate image resource [set=" + rset + ", path=" + path + "]";
         throw new FileNotFoundException(errmsg);
     }
 
     /**
-     * Returns a reference to the resource set with the specified name, or
-     * null if no set exists with that name. Services that wish to load
-     * their own resources can allow the resource manager to load up a
-     * resource set for them, from which they can easily load their
-     * resources.
+     * Returns a reference to the resource set with the specified name, or null if no set exists
+     * with that name. Services that wish to load their own resources can allow the resource
+     * manager to load up a resource set for them, from which they can easily load their resources.
      */
     public ResourceBundle[] getResourceSet (String name)
     {
@@ -663,15 +626,12 @@ public class ResourceManager
     }
 
     /**
-     * Loads up a resource set based on the supplied definition
-     * information.
+     * Loads up a resource set based on the supplied definition information.
      */
-    protected void resolveResourceSet (
-        String setName, String definition, List dlist)
+    protected void resolveResourceSet (String setName, String definition, List dlist)
     {
-        StringTokenizer tok = new StringTokenizer(definition, ":");
         ArrayList set = new ArrayList();
-
+        StringTokenizer tok = new StringTokenizer(definition, ":");
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken().trim();
             ResourceBundle bundle = new ResourceBundle(getResourceFile(path), true, _unpack);
@@ -714,8 +674,7 @@ public class ResourceManager
                 for (Iterator iter = _bundles.iterator(); iter.hasNext(); ) {
                     ResourceBundle bundle = (ResourceBundle)iter.next();
                     if (!bundle.sourceIsReady()) {
-                        Log.warning("Bundle failed to initialize " +
-                                    bundle + ".");
+                        Log.warning("Bundle failed to initialize " + bundle + ".");
                     }
                     if (_obs != null) {
                         int pct = count*100/_bundles.size();
@@ -746,8 +705,8 @@ public class ResourceManager
     /** The directory that contains our resource bundles. */
     protected File _rdir;
 
-    /** The prefix we prepend to resource paths before attempting to load
-     * them from the classpath. */
+    /** The prefix we prepend to resource paths before attempting to load them from the
+     * classpath. */
     protected String _rootPath;
 
     /** Whether or not to unpack our resource bundles. */
@@ -762,8 +721,7 @@ public class ResourceManager
     /** Locale to search for locale-specific resources, if any. */
     protected String _localePrefix = null;
 
-    /** The prefix of configuration entries that describe a resource
-     * set. */
+    /** The prefix of configuration entries that describe a resource set. */
     protected static final String RESOURCE_SET_PREFIX = "resource.set.";
 
     /** The name of the default resource set. */
