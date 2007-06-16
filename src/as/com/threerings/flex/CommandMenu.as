@@ -28,16 +28,28 @@ import flash.events.IEventDispatcher;
 import flash.geom.Rectangle;
 
 import mx.controls.Menu;
+import mx.controls.listClasses.BaseListData;
+import mx.controls.listClasses.IListItemRenderer;
+import mx.controls.menuClasses.IMenuItemRenderer;
+
 import mx.core.mx_internal;
 import mx.core.Application;
+import mx.core.ClassFactory;
+import mx.core.IFlexDisplayObject;
 import mx.core.ScrollPolicy;
+
 import mx.events.MenuEvent;
+
+import mx.managers.PopUpManager;
 
 import mx.utils.ObjectUtil;
 
 import flexlib.controls.ScrollableArrowMenu;
 
 import com.threerings.util.CommandEvent;
+
+import com.threerings.flex.menuClasses.CommandMenuItemRenderer;
+import com.threerings.flex.menuClasses.CommandListData;
 
 use namespace mx_internal;
 
@@ -46,6 +58,10 @@ use namespace mx_internal;
  * "arg" properties. Commands are submitted to controllers for processing. Alternatively, you may
  * specify "callback" properties that specify a function closure to call, with the "arg" property
  * containing either a single arg or an array of args.
+ *
+ * Another property now supported is "iconObject", which is an already-instantiated
+ * IFlexDisplayObject to use as the icon. This will only be applied if the "icon" property
+ * (which specifies a Class) is not used.
  *
  * Example dataProvider array:
  * [ { label: "Go home", icon: homeIconClass,
@@ -77,6 +93,10 @@ public class CommandMenu extends ScrollableArrowMenu
     public function CommandMenu ()
     {
         super();
+        variableRowHeight = true;
+
+        itemRenderer = new ClassFactory(CommandMenuItemRenderer);
+
         verticalScrollPolicy = ScrollPolicy.OFF;
         addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
     }
@@ -145,6 +165,61 @@ public class CommandMenu extends ScrollableArrowMenu
                                   _dispatcher, cmdOrFn, arg);
         }
         // else: no warning. There may be non-command menu items mixed in.
+    }
+
+    // from ScrollableArrowMenu..
+    override mx_internal function openSubMenu (row :IListItemRenderer) :void
+    {
+        supposedToLoseFocus = true;
+
+        var r :Menu = getRootMenu();
+        var menu :CommandMenu;
+
+        // check to see if the menu exists, if not create it
+        if (!IMenuItemRenderer(row).menu)
+        {
+            /* The only differences between this method and the original method in mx.controls.Menu
+             * are these few lines.
+             */
+            menu = new CommandMenu();
+            menu.maxHeight = this.maxHeight;
+            menu.verticalScrollPolicy = this.verticalScrollPolicy;
+            menu.arrowScrollPolicy = this.arrowScrollPolicy;
+
+            menu.parentMenu = this;
+            menu.owner = this;
+            menu.showRoot = showRoot;
+            menu.dataDescriptor = r.dataDescriptor;
+            menu.styleName = r;
+            menu.labelField = r.labelField;
+            menu.labelFunction = r.labelFunction;
+            menu.iconField = r.iconField;
+            menu.iconFunction = r.iconFunction;
+            menu.itemRenderer = r.itemRenderer;
+            menu.rowHeight = r.rowHeight;
+            menu.scaleY = r.scaleY;
+            menu.scaleX = r.scaleX;
+
+            // if there's data and it has children then add the items
+            if (row.data && _dataDescriptor.isBranch(row.data) &&
+                    _dataDescriptor.hasChildren(row.data)) {
+                menu.dataProvider = _dataDescriptor.getChildren(row.data);
+            }
+            menu.sourceMenuBar = sourceMenuBar;
+            menu.sourceMenuBarItem = sourceMenuBarItem;
+
+            IMenuItemRenderer(row).menu = menu;
+            PopUpManager.addPopUp(menu, r, false);
+        }
+
+        super.openSubMenu(row);
+    }
+
+    // from List
+    override protected function makeListData (data :Object, uid :String, rowNum :int) :BaseListData
+    {
+        return new CommandListData(itemToLabel(data), itemToIcon(data),
+            getItemProp(data, "iconObject") as IFlexDisplayObject, labelField, uid, this, rowNum);
     }
 
     /**
