@@ -93,7 +93,6 @@ public class CommandMenu extends ScrollableArrowMenu
     public function CommandMenu ()
     {
         super();
-        variableRowHeight = true;
 
         itemRenderer = new ClassFactory(CommandMenuItemRenderer);
 
@@ -185,6 +184,7 @@ public class CommandMenu extends ScrollableArrowMenu
             menu.maxHeight = this.maxHeight;
             menu.verticalScrollPolicy = this.verticalScrollPolicy;
             menu.arrowScrollPolicy = this.arrowScrollPolicy;
+            menu.variableRowHeight = this.variableRowHeight;
 
             menu.parentMenu = this;
             menu.owner = this;
