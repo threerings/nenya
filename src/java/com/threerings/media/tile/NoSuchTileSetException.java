@@ -29,11 +29,11 @@ public class NoSuchTileSetException extends Exception
 {
     public NoSuchTileSetException (String tileSetName)
     {
-	super("No tile set named '" + tileSetName + "'");
+        super("No tile set named '" + tileSetName + "'");
     }
 
     public NoSuchTileSetException (int tileSetId)
     {
-	super("No tile set with id '" + tileSetId + "'");
+        super("No tile set with id '" + tileSetId + "'");
     }
 }

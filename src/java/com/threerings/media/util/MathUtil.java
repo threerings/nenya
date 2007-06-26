@@ -45,7 +45,7 @@ public class MathUtil
      */
     public static int distanceSq (int x0, int y0, int x1, int y1)
     {
-	return ((x1 - x0) * (x1 - x0)) + ((y1 - y0) * (y1 - y0));
+        return ((x1 - x0) * (x1 - x0)) + ((y1 - y0) * (y1 - y0));
     }
 
     /**
@@ -53,8 +53,8 @@ public class MathUtil
      */
     public static float distance (int x0, int y0, int x1, int y1)
     {
-	return (float)Math.sqrt(((x1 - x0) * (x1 - x0)) +
-				((y1 - y0) * (y1 - y0)));
+        return (float)Math.sqrt(((x1 - x0) * (x1 - x0)) +
+                                ((y1 - y0) * (y1 - y0)));
     }
 
     /**
@@ -70,7 +70,7 @@ public class MathUtil
      */
     public static String lineToString (int x0, int y0, int x1, int y1)
     {
-	return "(" + x0 + ", " + y0 + ") -> (" + x1 + ", " + y1 + ")";
+        return "(" + x0 + ", " + y0 + ") -> (" + x1 + ", " + y1 + ")";
     }
 
     /**
@@ -78,7 +78,7 @@ public class MathUtil
      */
     public static String lineToString (Point p1, Point p2)
     {
-	return lineToString(p1.x, p1.y, p2.x, p2.y);
+        return lineToString(p1.x, p1.y, p2.x, p2.y);
     }
 
     /**

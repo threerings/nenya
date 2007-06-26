@@ -83,7 +83,7 @@ public class TrimmedTile extends Tile
     // documentation inherited
     protected void toString (StringBuilder buf)
     {
-	buf.append(", tbounds=").append(StringUtil.toString(_tbounds));
+        buf.append(", tbounds=").append(StringUtil.toString(_tbounds));
     }
 
     /** Our extra trimmed image dimension information. */

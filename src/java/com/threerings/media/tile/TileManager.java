@@ -145,7 +145,7 @@ public class TileManager
      */
     public TileSetRepository getTileSetRepository ()
     {
-	return _setrep;
+        return _setrep;
     }
 
     /**
@@ -206,7 +206,7 @@ public class TileManager
      * @see TileUtil#getFQTileId
      */
     public Tile getTile (int fqTileId)
-	throws NoSuchTileSetException
+        throws NoSuchTileSetException
     {
         return getTile(TileUtil.getTileSetId(fqTileId),
                        TileUtil.getTileIndex(fqTileId), null);
@@ -219,7 +219,7 @@ public class TileManager
      * @see TileUtil#getFQTileId
      */
     public Tile getTile (int fqTileId, TileSet.Colorizer rizer)
-	throws NoSuchTileSetException
+        throws NoSuchTileSetException
     {
         return getTile(TileUtil.getTileSetId(fqTileId),
                        TileUtil.getTileIndex(fqTileId), rizer);
@@ -235,7 +235,7 @@ public class TileManager
      * @return the tile object.
      */
     public Tile getTile (int tileSetId, int tileIndex, TileSet.Colorizer rizer)
-	throws NoSuchTileSetException
+        throws NoSuchTileSetException
     {
         TileSet set = getTileSet(tileSetId);
         return set.getTile(tileIndex, rizer);

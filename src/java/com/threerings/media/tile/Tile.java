@@ -145,9 +145,9 @@ public class Tile // implements Cloneable
      */
     public String toString ()
     {
-	StringBuilder buf = new StringBuilder("[");
+        StringBuilder buf = new StringBuilder("[");
         toString(buf);
-	return buf.append("]").toString();
+        return buf.append("]").toString();
     }
 
     /**

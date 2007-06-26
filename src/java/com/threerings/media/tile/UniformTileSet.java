@@ -88,8 +88,8 @@ public class UniformTileSet extends TileSet
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
-	buf.append(", width=").append(_width);
-	buf.append(", height=").append(_height);
+        buf.append(", width=").append(_width);
+        buf.append(", height=").append(_height);
     }
 
     /** The width (in pixels) of the tiles in this tileset. */

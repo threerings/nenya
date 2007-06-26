@@ -35,25 +35,25 @@ public class Log
     /** Convenience function. */
     public static void debug (String message)
     {
-	log.debug(message);
+        log.debug(message);
     }
 
     /** Convenience function. */
     public static void info (String message)
     {
-	log.info(message);
+        log.info(message);
     }
 
     /** Convenience function. */
     public static void warning (String message)
     {
-	log.warning(message);
+        log.warning(message);
     }
 
     /** Convenience function. */
     public static void logStackTrace (Throwable t)
     {
-	log.logStackTrace(com.samskivert.util.Log.WARNING, t);
+        log.logStackTrace(com.samskivert.util.Log.WARNING, t);
     }
 
     public static int getLevel ()

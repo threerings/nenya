@@ -311,16 +311,16 @@ public abstract class FrameManager
      */
     public static Component getRoot (Component comp, Rectangle rect)
     {
-	for (Component c = comp; c != null; c = c.getParent()) {
-	    if (!c.isVisible() || !c.isDisplayable()) {
-		return null;
-	    }
+        for (Component c = comp; c != null; c = c.getParent()) {
+            if (!c.isVisible() || !c.isDisplayable()) {
+                return null;
+            }
             if (c instanceof Window || c instanceof Applet) {
-		return c;
-	    }
+                return c;
+            }
             rect.x += c.getX();
             rect.y += c.getY();
-	}
+        }
         return null;
     }
 

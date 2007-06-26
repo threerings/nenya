@@ -43,8 +43,8 @@ public class BuilderPanel extends JPanel
     {
         setLayout(new VGroupLayout());
 
-	// give ourselves a wee bit of a border
-	setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        // give ourselves a wee bit of a border
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         HGroupLayout gl = new HGroupLayout(HGroupLayout.STRETCH);
         gl.setOffAxisPolicy(HGroupLayout.STRETCH);

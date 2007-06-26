@@ -244,7 +244,7 @@ public class GeomUtil
         int row = tileIndex / tilesPerRow;
         int col = tileIndex % tilesPerRow;
 
-	// crop the tile-sized image chunk from the full image
+        // crop the tile-sized image chunk from the full image
         return new Rectangle(
             tileWidth*col, tileHeight*row, tileWidth, tileHeight);
     }

@@ -42,7 +42,7 @@ public class SwissArmyTileSet extends TileSet
     // documentation inherited
     public int getTileCount ()
     {
-	return _numTiles;
+        return _numTiles;
     }
 
     /**
@@ -135,40 +135,40 @@ public class SwissArmyTileSet extends TileSet
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
-	buf.append(", widths=").append(StringUtil.toString(_widths));
-	buf.append(", heights=").append(StringUtil.toString(_heights));
-	buf.append(", tileCounts=").append(StringUtil.toString(_tileCounts));
-	buf.append(", offsetPos=").append(StringUtil.toString(_offsetPos));
-	buf.append(", gapSize=").append(StringUtil.toString(_gapSize));
+        buf.append(", widths=").append(StringUtil.toString(_widths));
+        buf.append(", heights=").append(StringUtil.toString(_heights));
+        buf.append(", tileCounts=").append(StringUtil.toString(_tileCounts));
+        buf.append(", offsetPos=").append(StringUtil.toString(_offsetPos));
+        buf.append(", gapSize=").append(StringUtil.toString(_gapSize));
     }
 
     // documentation inherited
     protected Rectangle computeTileBounds (int tileIndex)
     {
-	// find the row number containing the sought-after tile
-	int ridx, tcount, ty, tx;
-	ridx = tcount = 0;
+        // find the row number containing the sought-after tile
+        int ridx, tcount, ty, tx;
+        ridx = tcount = 0;
 
         // start tile image position at image start offset
         tx = _offsetPos.x;
         ty = _offsetPos.y;
 
-	while ((tcount += _tileCounts[ridx]) < tileIndex + 1) {
+        while ((tcount += _tileCounts[ridx]) < tileIndex + 1) {
             // increment tile image position by row height and gap distance
-	    ty += (_heights[ridx++] + _gapSize.height);
-	}
+            ty += (_heights[ridx++] + _gapSize.height);
+        }
 
         // determine the horizontal index of this tile in the row
-	int xidx = tileIndex - (tcount - _tileCounts[ridx]);
+        int xidx = tileIndex - (tcount - _tileCounts[ridx]);
 
         // final image x-position is based on tile width and gap distance
         tx += (xidx * (_widths[ridx] + _gapSize.width));
 
-// 	Log.info("Computed tile bounds [tileIndex=" + tileIndex +
+//         Log.info("Computed tile bounds [tileIndex=" + tileIndex +
 //                  ", ridx=" + ridx + ", xidx=" + xidx +
 //                  ", tx=" + tx + ", ty=" + ty + "].");
 
-	// crop the tile-sized image chunk from the full image
+        // crop the tile-sized image chunk from the full image
         return new Rectangle(tx, ty, _widths[ridx], _heights[ridx]);
     }
 

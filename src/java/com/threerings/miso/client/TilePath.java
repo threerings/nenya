@@ -57,17 +57,17 @@ public class TilePath extends LineSegmentPath
     public TilePath (MisoSceneMetrics metrics, Sprite sprite,
                      List tiles, int destx, int desty)
     {
-	// constrain destination pixels to fine coordinates
-	Point fpos = new Point();
-	MisoUtil.screenToFull(metrics, destx, desty, fpos);
+        // constrain destination pixels to fine coordinates
+        Point fpos = new Point();
+        MisoUtil.screenToFull(metrics, destx, desty, fpos);
 
         // add the starting path node
         int sx = sprite.getX(), sy = sprite.getY();
         Point ipos = MisoUtil.screenToTile(metrics, sx, sy, new Point());
         addNode(sx, sy, NORTH);
 
-	// TODO: make more visually appealing path segments from start to
-	// second tile, and penultimate to ultimate tile
+        // TODO: make more visually appealing path segments from start to
+        // second tile, and penultimate to ultimate tile
 
         // add all remaining path nodes excepting the last one
         Point prev = new Point(ipos.x, ipos.y);
@@ -111,8 +111,8 @@ public class TilePath extends LineSegmentPath
             dir = MisoUtil.getIsoDirection(prev.x, prev.y, tdestx, tdesty);
         }
 
-    	// add the final destination path node
-	addNode(spos.x, spos.y, dir);
+            // add the final destination path node
+        addNode(spos.x, spos.y, dir);
     }
 
     /**

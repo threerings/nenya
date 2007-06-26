@@ -197,10 +197,10 @@ public class ArcPath extends TimedPath
         gfx.setColor(Color.blue);
         gfx.drawRect(x, y, width-1, height-1);
 
-	gfx.setColor(Color.yellow);
+        gfx.setColor(Color.yellow);
         gfx.drawArc(x, y, width-1, height-1, 0, 360);
 
-	gfx.setColor(Color.red);
+        gfx.setColor(Color.red);
         gfx.drawArc(x, y, width-1, height-1, 360-sangle, -delta);
     }
 

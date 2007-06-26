@@ -113,7 +113,7 @@ public class ImageManager
      */
     public ImageManager (ResourceManager rmgr, OptimalImageCreator icreator)
     {
-	_rmgr = rmgr;
+        _rmgr = rmgr;
         _icreator = icreator;
 
         // create our image cache

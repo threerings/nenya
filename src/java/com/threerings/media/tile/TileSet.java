@@ -86,7 +86,7 @@ public abstract class TileSet
      */
     public String getName ()
     {
-	return (_name == null) ? _imagePath : _name;
+        return (_name == null) ? _imagePath : _name;
     }
 
     /**
@@ -322,7 +322,7 @@ public abstract class TileSet
     protected boolean checkTileIndex (int tileIndex)
     {
         int tcount = getTileCount();
-	if (tileIndex >= 0 && tileIndex < tcount) {
+        if (tileIndex >= 0 && tileIndex < tcount) {
             return true;
         } else {
             Log.warning("Requested invalid tile [tset=" + this +
@@ -377,9 +377,9 @@ public abstract class TileSet
      */
     public String toString ()
     {
-	StringBuilder buf = new StringBuilder("[");
+        StringBuilder buf = new StringBuilder("[");
         toString(buf);
-	return buf.append("]").toString();
+        return buf.append("]").toString();
     }
 
     /**
@@ -422,8 +422,8 @@ public abstract class TileSet
     protected void toString (StringBuilder buf)
     {
         buf.append("name=").append(_name);
-	buf.append(", path=").append(_imagePath);
-	buf.append(", tileCount=").append(getTileCount());
+        buf.append(", path=").append(_imagePath);
+        buf.append(", tileCount=").append(getTileCount());
     }
 
     /** The path to the file containing the tile images. */

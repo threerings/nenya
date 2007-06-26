@@ -204,16 +204,16 @@ public class ObjectTileSet extends SwissArmyTileSet
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
-	buf.append(", owidths=").append(StringUtil.toString(_owidths));
-	buf.append(", oheights=").append(StringUtil.toString(_oheights));
-	buf.append(", xorigins=").append(StringUtil.toString(_xorigins));
-	buf.append(", yorigins=").append(StringUtil.toString(_yorigins));
-	buf.append(", prios=").append(StringUtil.toString(_priorities));
-	buf.append(", zations=").append(StringUtil.toString(_zations));
-	buf.append(", xspots=").append(StringUtil.toString(_xspots));
-	buf.append(", yspots=").append(StringUtil.toString(_yspots));
-	buf.append(", sorients=").append(StringUtil.toString(_sorients));
-	buf.append(", constraints=").append(StringUtil.toString(_constraints));
+        buf.append(", owidths=").append(StringUtil.toString(_owidths));
+        buf.append(", oheights=").append(StringUtil.toString(_oheights));
+        buf.append(", xorigins=").append(StringUtil.toString(_xorigins));
+        buf.append(", yorigins=").append(StringUtil.toString(_yorigins));
+        buf.append(", prios=").append(StringUtil.toString(_priorities));
+        buf.append(", zations=").append(StringUtil.toString(_zations));
+        buf.append(", xspots=").append(StringUtil.toString(_xspots));
+        buf.append(", yspots=").append(StringUtil.toString(_yspots));
+        buf.append(", sorients=").append(StringUtil.toString(_sorients));
+        buf.append(", constraints=").append(StringUtil.toString(_constraints));
     }
 
     // documentation inherited

@@ -69,7 +69,7 @@ public class BaseTileSet extends SwissArmyTileSet
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
-	buf.append(", passable=").append(StringUtil.toString(_passable));
+        buf.append(", passable=").append(StringUtil.toString(_passable));
     }
 
     /** Whether each tile is passable. */

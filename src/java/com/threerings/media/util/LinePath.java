@@ -115,7 +115,7 @@ public class LinePath extends TimedPath
     // documentation inherited
     public void paint (Graphics2D gfx)
     {
-	gfx.setColor(Color.red);
+        gfx.setColor(Color.red);
         gfx.drawLine(_source.x, _source.y, _dest.x, _dest.y);
     }
 

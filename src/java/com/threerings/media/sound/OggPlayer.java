@@ -124,33 +124,33 @@ public class OggPlayer extends MusicPlayer
       //  System.out.println(ee);
       //}
       AudioFormat audioFormat = 
-	new AudioFormat((float)rate, 
-			16,
-			channels,
-			true,  // PCM_Signed
-			false  // littleEndian
-			);
+        new AudioFormat((float)rate, 
+                        16,
+                        channels,
+                        true,  // PCM_Signed
+                        false  // littleEndian
+                        );
       DataLine.Info info = 
-	new DataLine.Info(SourceDataLine.class,
-			  audioFormat, 
-			  AudioSystem.NOT_SPECIFIED);
+        new DataLine.Info(SourceDataLine.class,
+                          audioFormat, 
+                          AudioSystem.NOT_SPECIFIED);
       if (!AudioSystem.isLineSupported(info)) {
-	//System.out.println("Line " + info + " not supported.");
-	return;
+        //System.out.println("Line " + info + " not supported.");
+        return;
       }
 
       try{
-	outputLine = (SourceDataLine) AudioSystem.getLine(info);
-	//outputLine.addLineListener(this);
-	outputLine.open(audioFormat);
+        outputLine = (SourceDataLine) AudioSystem.getLine(info);
+        //outputLine.addLineListener(this);
+        outputLine.open(audioFormat);
       } 
       catch (LineUnavailableException ex) { 
-	System.out.println("Unable to open the sourceDataLine: " + ex);
+        System.out.println("Unable to open the sourceDataLine: " + ex);
         return;
       } 
       catch (IllegalArgumentException ex) { 
-	System.out.println("Illegal Argument: " + ex);
-	return;
+        System.out.println("Illegal Argument: " + ex);
+        return;
       }
 
       frameSizeInBytes = audioFormat.getFrameSize();
@@ -294,7 +294,7 @@ public class OggPlayer extends MusicPlayer
                         break; // need more data
                     }
                     if (result == -1) { // missing or corrupt data at this page position
-                    //	    System.err.println("Corrupt or missing data in bitstream; continuing...");
+                    //            System.err.println("Corrupt or missing data in bitstream; continuing...");
 
                     } else {
                         os.pagein(og);

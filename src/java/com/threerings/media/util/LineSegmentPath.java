@@ -309,16 +309,16 @@ public class LineSegmentPath
     // documentation inherited
     public void paint (Graphics2D gfx)
     {
-	gfx.setColor(Color.red);
-	Point prev = null;
-	int size = size();
-	for (int ii = 0; ii < size; ii++) {
-	    PathNode n = (PathNode)getNode(ii);
-	    if (prev != null) {
+        gfx.setColor(Color.red);
+        Point prev = null;
+        int size = size();
+        for (int ii = 0; ii < size; ii++) {
+            PathNode n = (PathNode)getNode(ii);
+            if (prev != null) {
                 gfx.drawLine(prev.x, prev.y, n.loc.x, n.loc.y);
             }
-	    prev = n.loc;
-	}
+            prev = n.loc;
+        }
     }
 
     // documentation inherited

@@ -42,9 +42,9 @@ public class ComponentPanel extends JPanel
      */
     public ComponentPanel (BuilderModel model, String cprefix)
     {
-	setLayout(new VGroupLayout(VGroupLayout.STRETCH));
-	// set up a border
-	setBorder(BorderFactory.createEtchedBorder());
+        setLayout(new VGroupLayout(VGroupLayout.STRETCH));
+        // set up a border
+        setBorder(BorderFactory.createEtchedBorder());
         // add the component editors to the panel
         addClassEditors(model, cprefix);
     }

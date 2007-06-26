@@ -163,10 +163,10 @@ public class TrimmedObjectTileSet extends TileSet
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
-	buf.append(", ometrics=").append(StringUtil.toString(_ometrics));
-	buf.append(", bounds=").append(StringUtil.toString(_bounds));
-	buf.append(", bits=").append(StringUtil.toString(_bits));
-	buf.append(", zations=").append(StringUtil.toString(_zations));
+        buf.append(", ometrics=").append(StringUtil.toString(_ometrics));
+        buf.append(", bounds=").append(StringUtil.toString(_bounds));
+        buf.append(", bits=").append(StringUtil.toString(_bits));
+        buf.append(", zations=").append(StringUtil.toString(_zations));
     }
 
     /**

@@ -63,10 +63,10 @@ public class BuilderModel
      */
     protected void notifyListeners (int event)
     {
-	int size = _listeners.size();
-	for (int ii = 0; ii < size; ii++) {
-	    ((BuilderModelListener)_listeners.get(ii)).modelChanged(event);
-	}
+        int size = _listeners.size();
+        for (int ii = 0; ii < size; ii++) {
+            ((BuilderModelListener)_listeners.get(ii)).modelChanged(event);
+        }
     }
 
     /**

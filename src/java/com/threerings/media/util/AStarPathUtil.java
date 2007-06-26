@@ -86,14 +86,14 @@ public class AStarPathUtil
          */
         public void considerSteps (int x, int y)
         {
-	    considerStep(x - 1, y - 1, DIAGONAL_COST);
-	    considerStep(x, y - 1, ADJACENT_COST);
-	    considerStep(x + 1, y - 1, DIAGONAL_COST);
-	    considerStep(x - 1, y, ADJACENT_COST);
-	    considerStep(x + 1, y, ADJACENT_COST);
-	    considerStep(x - 1, y + 1, DIAGONAL_COST);
-	    considerStep(x, y + 1, ADJACENT_COST);
-	    considerStep(x + 1, y + 1, DIAGONAL_COST);
+            considerStep(x - 1, y - 1, DIAGONAL_COST);
+            considerStep(x, y - 1, ADJACENT_COST);
+            considerStep(x + 1, y - 1, DIAGONAL_COST);
+            considerStep(x - 1, y, ADJACENT_COST);
+            considerStep(x + 1, y, ADJACENT_COST);
+            considerStep(x - 1, y + 1, DIAGONAL_COST);
+            considerStep(x, y + 1, ADJACENT_COST);
+            considerStep(x + 1, y + 1, DIAGONAL_COST);
         }
 
         protected void considerStep (int x, int y, int cost)
@@ -186,8 +186,8 @@ public class AStarPathUtil
             return getNodePath(bestpath);
         }
 
-    	// no path found
-    	return null;
+            // no path found
+            return null;
     }
 
     /**

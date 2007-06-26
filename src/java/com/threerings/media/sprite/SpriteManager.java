@@ -172,7 +172,7 @@ public class SpriteManager extends AbstractMediaManager
     {
         for (int ii=0, nn=_sprites.size(); ii < nn; ii++) {
             Sprite sprite = _sprites.get(ii);
-	    sprite.paintPath(gfx);
+            sprite.paintPath(gfx);
         }
     }
 
@@ -185,12 +185,12 @@ public class SpriteManager extends AbstractMediaManager
 //     */
 //    protected void handleCollisions ()
 //    {
-//	// gather a list of all sprite collisions
-//	int size = _sprites.size();
-//	for (int ii = 0; ii < size; ii++) {
+//        // gather a list of all sprite collisions
+//        int size = _sprites.size();
+//        for (int ii = 0; ii < size; ii++) {
 //          Sprite sprite = _sprites.get(ii);
-//	    checkCollisions(ii, size, sprite);
-//	}
+//            checkCollisions(ii, size, sprite);
+//        }
 //    }
 //
 //    /**
@@ -205,35 +205,35 @@ public class SpriteManager extends AbstractMediaManager
 //     */
 //    protected void checkCollisions (int idx, int size, Sprite sprite)
 //    {
-//	// TODO: make this handle quickly moving objects that may pass
-//	// through each other.
+//        // TODO: make this handle quickly moving objects that may pass
+//        // through each other.
 //
-//	// if we're the last sprite we know we've already handled any
-//	// collisions
-//	if (idx == (size - 1)) {
-//	    return;
-//	}
+//        // if we're the last sprite we know we've already handled any
+//        // collisions
+//        if (idx == (size - 1)) {
+//            return;
+//        }
 //
-//	// calculate the x-position of the right edge of the sprite we're
-//	// checking for collisions
-//	Rectangle bounds = sprite.getBounds();
-//	int edgeX = bounds.x + bounds.width;
+//        // calculate the x-position of the right edge of the sprite we're
+//        // checking for collisions
+//        Rectangle bounds = sprite.getBounds();
+//        int edgeX = bounds.x + bounds.width;
 //
-//	for (int ii = (idx + 1); ii < size; ii++) {
-//	    Sprite other = _sprites.get(ii);
-//	    Rectangle obounds = other.getBounds();
-//	    if (obounds.x > edgeX) {
-//		// since sprites are stored in the list sorted by
-//		// ascending x-position, we know this sprite and any
-//		// other sprites farther on in the list can't possibly
-//		// intersect with the sprite we're checking, so we're
-//		// done.
+//        for (int ii = (idx + 1); ii < size; ii++) {
+//            Sprite other = _sprites.get(ii);
+//            Rectangle obounds = other.getBounds();
+//            if (obounds.x > edgeX) {
+//                // since sprites are stored in the list sorted by
+//                // ascending x-position, we know this sprite and any
+//                // other sprites farther on in the list can't possibly
+//                // intersect with the sprite we're checking, so we're
+//                // done.
 //                return;
 //
-//	    } else if (obounds.intersects(bounds)) {
-//		sprite.notifyObservers(new CollisionEvent(sprite, other));
-//	    }
-//	}
+//            } else if (obounds.intersects(bounds)) {
+//                sprite.notifyObservers(new CollisionEvent(sprite, other));
+//            }
+//        }
 //    }
 //    /** The comparator used to sort sprites by horizontal position. */
 //    protected static final Comparator SPRITE_COMP = new SpriteComparator();
@@ -241,10 +241,10 @@ public class SpriteManager extends AbstractMediaManager
 //    /** Used to sort sprites. */
 //    protected static class SpriteComparator<Sprite> implements Comparator
 //    {
-//	public int compare (Sprite s1, Sprite s2)
-//	{
-//	    return (s2.getX() - s1.getX());
-//	}
+//        public int compare (Sprite s1, Sprite s2)
+//        {
+//            return (s2.getX() - s1.getX());
+//        }
 //    }
 
     @Override // from AbstractMediaManager
