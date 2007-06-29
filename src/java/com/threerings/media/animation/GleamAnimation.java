@@ -12,7 +12,7 @@
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public
@@ -29,6 +29,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 
+import com.threerings.media.animation.Animation.AnimCompletedOp;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LinearTimeFunction;
@@ -41,6 +42,7 @@ import com.threerings.media.util.TimeFunction;
  */
 public class GleamAnimation extends Animation
 {
+
     /**
      * Creates a gleam animation with the supplied sprite. The sprite will
      * be faded to the specified color and then back again. The sprite may
@@ -51,24 +53,51 @@ public class GleamAnimation extends Animation
      * fade up to the gleam color and the gleam color will fade out,
      * leaving just the sprite imagery.
      */
-    public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color,
-                           int upmillis, int downmillis, boolean fadeIn)
+    public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color, int upmillis,
+            int downmillis, boolean fadeIn)
+    {
+        this(spmgr, sprite, color, upmillis, downmillis, fadeIn, 750, 0);
+    }
+
+    /**
+     * Creates a gleam animation with the supplied sprite. The sprite will
+     * be faded to the specified color and then back again. The sprite may
+     * be already added to the supplied sprite manager or not, but when
+     * the animation is complete, it will have been added.
+     *
+     * @param fadeIn if true, the sprite itself will be faded in as we
+     * fade up to the gleam color and the gleam color will fade out,
+     * leaving just the sprite imagery.
+     * @param maxAlpha the maximum alpha value to scale the color to.
+     * @param millisBetweenUpdates millisecons to wait between actually updating the alpha and 
+     * redrawing
+     */
+    public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color, int upmillis,
+            int downmillis, boolean fadeIn, int maxAlpha, int millisBetweenUpdates)
     {
         super(new Rectangle(sprite.getBounds()));
         _spmgr = spmgr;
         _sprite = sprite;
         _color = color;
-        _upfunc = new LinearTimeFunction(0, 750, upmillis);
-        _downfunc = new LinearTimeFunction(750, 0, downmillis);
+        _upmillis = upmillis;
+        _downmillis = downmillis;
+        _maxAlpha = maxAlpha;
+        _upfunc = new LinearTimeFunction(0, _maxAlpha, upmillis);
+        _downfunc = new LinearTimeFunction(_maxAlpha, 0, downmillis);
         _fadeIn = fadeIn;
+        _millisBetweenUpdates = millisBetweenUpdates;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void tick (long timestamp)
     {
+        if (timestamp - _lastUpdate < _millisBetweenUpdates) {
+            return;
+        }
+        _lastUpdate = timestamp;
         int alpha;
         if (_upfunc != null) {
-            if ((alpha = _upfunc.getValue(timestamp)) == 750) {
+            if ((alpha = _upfunc.getValue(timestamp)) == _maxAlpha) {
                 _upfunc = null;
             }
         } else if (_downfunc != null) {
@@ -95,7 +124,7 @@ public class GleamAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void fastForward (long timeDelta)
     {
         if (_upfunc != null) {
@@ -105,15 +134,15 @@ public class GleamAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void paint (Graphics2D gfx)
     {
         // TODO: recreate our off image if the sprite bounds changed; we
         // also need to change the bounds of our animation which might
         // require some jockeying (especially if we shrink)
         if (_offimg == null) {
-            _offimg = gfx.getDeviceConfiguration().createCompatibleImage(
-                _bounds.width, _bounds.height, Transparency.TRANSLUCENT);
+            _offimg = gfx.getDeviceConfiguration().createCompatibleImage(_bounds.width,
+                _bounds.height, Transparency.TRANSLUCENT);
         }
 
         // create a mask image with our sprite and the appropriate color
@@ -129,8 +158,7 @@ public class GleamAnimation extends Animation
         }
 
         Composite ocomp = null;
-        Composite ncomp = AlphaComposite.getInstance(
-            AlphaComposite.SRC_OVER, _alpha/1000f);
+        Composite ncomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, _alpha / 1000f);
 
         // if we're fading the sprite in on the way up, set our alpha
         // composite before we render the sprite
@@ -153,13 +181,33 @@ public class GleamAnimation extends Animation
         gfx.setComposite(ocomp);
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     protected void willStart (long tickStamp)
     {
         super.willStart(tickStamp);
 
         // remove the sprite we're fiddling with from the manager; we'll
         // add it back when we're done
+        if (_spmgr.isManaged(_sprite)) {
+            _spmgr.removeSprite(_sprite);
+        }
+    }
+
+    @Override //documentation inherited
+    protected void shutdown ()
+    {
+        super.shutdown();
+        if (!_spmgr.isManaged(_sprite)) {
+            _spmgr.addSprite(_sprite);
+        }
+    }
+
+    @Override //documentation inherited
+    public void reset ()
+    {
+        super.reset();
+        _upfunc = new LinearTimeFunction(0, _maxAlpha, _upmillis);
+        _downfunc = new LinearTimeFunction(_maxAlpha, 0, _downmillis);
         if (_spmgr.isManaged(_sprite)) {
             _spmgr.removeSprite(_sprite);
         }
@@ -173,5 +221,10 @@ public class GleamAnimation extends Animation
 
     protected TimeFunction _upfunc;
     protected TimeFunction _downfunc;
+    protected int _upmillis;
+    protected int _downmillis;
+    protected int _maxAlpha;
     protected int _alpha = -1;
+    protected long _lastUpdate;
+    protected int _millisBetweenUpdates;
 }
