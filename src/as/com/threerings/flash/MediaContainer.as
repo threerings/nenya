@@ -49,6 +49,7 @@ import flash.text.TextFieldAutoSize;
 
 import flash.system.ApplicationDomain;
 import flash.system.LoaderContext;
+import flash.system.Security;
 import flash.system.SecurityDomain;
 
 import flash.net.URLRequest;
@@ -428,11 +429,27 @@ public class MediaContainer extends Sprite
             // load images into our domain so that we can view their pixels
             return new LoaderContext(true, 
                 new ApplicationDomain(ApplicationDomain.currentDomain),
-                SecurityDomain.currentDomain);
+                getSecurityDomain(url));
 
         } else {
             // share nothing, trust nothing
             return new LoaderContext(false, new ApplicationDomain(null), null);
+        }
+    }
+
+    /**
+     * Return the security domain to use for the specified image url.
+     */
+    protected function getSecurityDomain (imageURL :String) :SecurityDomain
+    {
+        switch (Security.sandboxType) {
+        case Security.LOCAL_WITH_FILE:
+        case Security.LOCAL_WITH_NETWORK:
+        case Security.LOCAL_TRUSTED:
+            return null;
+
+        default:
+            return SecurityDomain.currentDomain;
         }
     }
 
