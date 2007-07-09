@@ -97,16 +97,15 @@ public class GleamAnimation extends Animation
         _lastUpdate = timestamp;
         int alpha;
         if (_upfunc != null) {
-            if ((alpha = _upfunc.getValue(timestamp)) == _maxAlpha) {
+            if ((alpha = _upfunc.getValue(timestamp)) >= _maxAlpha) {
                 _upfunc = null;
             }
         } else if (_downfunc != null) {
-            if ((alpha = _downfunc.getValue(timestamp)) == 0) {
+            if ((alpha = _downfunc.getValue(timestamp)) <= _minAlpha) {
                 _downfunc = null;
             }
         } else {
             _finished = true;
-            _spmgr.addSprite(_sprite);
             return;
         }
 
@@ -202,17 +201,6 @@ public class GleamAnimation extends Animation
         }
     }
 
-    @Override //documentation inherited
-    public void reset ()
-    {
-        super.reset();
-        _upfunc = new LinearTimeFunction(0, _maxAlpha, _upmillis);
-        _downfunc = new LinearTimeFunction(_maxAlpha, 0, _downmillis);
-        if (_spmgr.isManaged(_sprite)) {
-            _spmgr.removeSprite(_sprite);
-        }
-    }
-
     protected SpriteManager _spmgr;
     protected Sprite _sprite;
     protected Color _color;
@@ -224,6 +212,7 @@ public class GleamAnimation extends Animation
     protected int _upmillis;
     protected int _downmillis;
     protected int _maxAlpha;
+    protected int _minAlpha;
     protected int _alpha = -1;
     protected long _lastUpdate;
     protected int _millisBetweenUpdates;
