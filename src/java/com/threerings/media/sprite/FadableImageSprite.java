@@ -22,8 +22,8 @@
 package com.threerings.media.sprite;
 
 import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
 import java.awt.Composite;
+import java.awt.Graphics2D;
 
 import com.threerings.media.util.Path;
 
@@ -40,6 +40,19 @@ public class FadableImageSprite extends OrientableImageSprite
         _fadeStamp = 0;
         _fadeDelay = delay;
         _fadeInDuration = duration;
+    }
+    
+    /**
+     * Fades this sprite out over the specified duration after
+     * waiting for the specified delay.
+     */
+    public void fadeOut (long delay, long duration)
+    {
+        setAlpha(1.0f);
+
+        _fadeStamp = 0;
+        _fadeDelay = delay;
+        _fadeOutDuration = duration;
     }
 
     /**
@@ -137,12 +150,33 @@ public class FadableImageSprite extends OrientableImageSprite
                 }
             }
 
-        } else if (_fadeOutDuration != -1 && _pathStamp+_pathDuration-tickStamp
-            <= _fadeOutDuration) {
-            // fading out while moving
-            float alpha = (float)(_pathStamp+_pathDuration-tickStamp)/
-                _fadeOutDuration;
-            setAlpha(alpha);
+        } else if (_fadeOutDuration != -1) {
+            if (_path != null) {
+                if (tickStamp - _pathStamp <= _fadeOutDuration) {
+                    // fading out while moving
+                    float alpha = 1f - (_pathStamp + _pathDuration - tickStamp)
+                        / _fadeOutDuration;
+                    setAlpha(alpha);
+                }
+            } else {
+                // fading out while stationary
+                if (_fadeStamp == 0) {
+                    // store the time at which fade started
+                    _fadeStamp = tickStamp;
+                }
+                if (tickStamp > _fadeStamp + _fadeDelay) {
+                    // initial delay has passed
+                    float alpha = 1f - (float)(tickStamp - _fadeStamp - _fadeDelay) / _fadeOutDuration;
+                    if (alpha <= 0.0f) {
+                        // fade-out complete
+                        setAlpha(0.0f);
+                        _fadeOutDuration = -1;
+
+                    } else {
+                        setAlpha(alpha);
+                    }
+                }
+            }
         }
     }
 
