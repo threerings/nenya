@@ -331,15 +331,13 @@ public class TileSetBundler
      * Finish the creation of a tileset bundle jar file.
      *
      * @param target the tileset bundle file that will be created.
-     * @param bundle contains the tilesets we'd like to save out to the
-     * bundle.
+     * @param bundle contains the tilesets we'd like to save out to the bundle.
      * @param improv the image provider.
      * @param imageBase the base directory for getting images for non
      * ObjectTileSet tilesets.
      */
     public static boolean createBundle (
-        File target, TileSetBundle bundle, ImageProvider improv,
-        String imageBase)
+        File target, TileSetBundle bundle, ImageProvider improv, String imageBase)
         throws IOException
     {
         // now we have to create the actual bundle file
@@ -387,20 +385,11 @@ public class TileSetBundler
                         bundle.addTileSet(tileSetId, tset);
 
                     } catch (Exception e) {
-                        System.err.println("Error adding tileset to bundle " +
-                                           "[set=" + set.getName() +
-                                           ", ipath=" + imagePath + "].");
                         e.printStackTrace(System.err);
-                        // replace the tileset with an error tileset
-                        UniformTileSet ets = new UniformTileSet();
-                        ets.setName(set.getName());
-                        ets.setWidth(50);
-                        ets.setHeight(50);
-                        ets.setImagePath(imagePath);
-                        bundle.addTileSet(tileSetId, ets);
-                        // and write an error image to the jar file
-                        ImageIO.write(ImageUtil.createErrorImage(50, 50),
-                                      "PNG", jar);
+
+                        String msg = "Error adding tileset to bundle " + imagePath + 
+                                     ", " + set.getName() + ": " + e;
+                        throw (IOException) new IOException(msg).initCause(e);
                     }
 
                 } else {
