@@ -1,5 +1,5 @@
 //
-// $Id: JmeUtil.java 229 2007-05-08 01:50:07Z andrzej $
+// $Id$
 //
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved
