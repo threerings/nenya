@@ -171,6 +171,7 @@ public class MediaContainer extends Sprite
     protected function willShowNewMedia () :void
     {
         _initialized = false;
+        _isImage = false;
     }
 
     /**
@@ -382,11 +383,12 @@ public class MediaContainer extends Sprite
         // if we're holding a bitmap, do something smarter than the
         // flash built-in and actually check for *GASP* transparent pixels!
         try {
-            if (shapeFlag && _media is Loader && 
-                    // the childAllowsParent check here causes a security
-                    // violation if it doesn't. WHAT THE FLYING FUCK.
-                    Loader(_media).contentLoaderInfo.childAllowsParent &&
-                    (Loader(_media).content is Bitmap)) {
+            // We should be able to test if the media is a Loader (we can),
+            // then test if childAllowsParent, but even CHECKING that value causes a security
+            // exception. WTF?!? That's supposed to be the value to check to AVOID getting a
+            // security exception. So instead, we track whether or not we've
+            // loaded an image and use that value.
+            if (shapeFlag && _isImage) {
                 var b :Bitmap = Bitmap(Loader(_media).content);
                 var p :Point = b.globalToLocal(new Point(x, y));
                 // check that it's within the content bounds, and then check the bitmap directly
@@ -426,6 +428,7 @@ public class MediaContainer extends Sprite
     protected function getContext (url :String) :LoaderContext
     {
         if (isImage(url)) {
+            _isImage = true;
             // load images into our domain so that we can view their pixels
             return new LoaderContext(true, 
                 new ApplicationDomain(ApplicationDomain.currentDomain),
@@ -657,5 +660,8 @@ public class MediaContainer extends Sprite
 
     /** If we're using a Loader, true once the INIT event has been dispatched. */
     protected var _initialized :Boolean;
+
+    /** Are we displaying an image? */
+    protected var _isImage :Boolean;
 }
 }
