@@ -87,8 +87,10 @@ public class FadableImageSprite extends OrientableImageSprite
 
         setAlpha(1.0f);
 
+        _fadeStamp = 0;
         _pathDuration = pathDuration;
         _fadeOutDuration = (long)(pathDuration*fadePortion);
+        _fadeDelay = _pathDuration - _fadeOutDuration;
     }
 
     /**
@@ -137,8 +139,7 @@ public class FadableImageSprite extends OrientableImageSprite
                 }
                 if (tickStamp > _fadeStamp + _fadeDelay) {
                     // initial delay has passed
-                    float alpha = (float)(tickStamp-_fadeStamp-_fadeDelay)/
-                        _fadeInDuration;
+                    float alpha = (float)(tickStamp-_fadeStamp-_fadeDelay) / _fadeInDuration;
                     if (alpha >= 1.0f) {
                         // fade-in complete
                         setAlpha(1.0f);
@@ -151,30 +152,21 @@ public class FadableImageSprite extends OrientableImageSprite
             }
 
         } else if (_fadeOutDuration != -1) {
-            if (_path != null) {
-                if (tickStamp - _pathStamp <= _fadeOutDuration) {
-                    // fading out while moving
-                    float alpha = 1f - (_pathStamp + _pathDuration - tickStamp)
-                        / _fadeOutDuration;
-                    setAlpha(alpha);
-                }
-            } else {
-                // fading out while stationary
-                if (_fadeStamp == 0) {
-                    // store the time at which fade started
-                    _fadeStamp = tickStamp;
-                }
-                if (tickStamp > _fadeStamp + _fadeDelay) {
-                    // initial delay has passed
-                    float alpha = 1f - (float)(tickStamp - _fadeStamp - _fadeDelay) / _fadeOutDuration;
-                    if (alpha <= 0.0f) {
-                        // fade-out complete
-                        setAlpha(0.0f);
-                        _fadeOutDuration = -1;
+            if (_fadeStamp == 0) {
+                // store the time at which fade started
+                _fadeStamp = tickStamp;
+            }
 
-                    } else {
-                        setAlpha(alpha);
-                    }
+            if (tickStamp > _fadeStamp + _fadeDelay) {
+                // initial delay has passed
+                float alpha = 1f - (float)(tickStamp - _fadeStamp - _fadeDelay) / _fadeOutDuration;
+                if (alpha <= 0.0f) {
+                    // fade-out complete
+                    setAlpha(0.0f);
+                    _fadeOutDuration = -1;
+
+                } else {
+                    setAlpha(alpha);
                 }
             }
         }
