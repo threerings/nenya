@@ -250,7 +250,7 @@ public class ComponentBundlerTask extends Task
 
     protected void processComponent (
         String[] info, TileSet aset, File cfile, JarOutputStream jout)
-        throws IOException
+        throws IOException, BuildException
     {
         // construct the path that'll go in the jar file
         String ipath = composePath(
@@ -272,6 +272,9 @@ public class ComponentBundlerTask extends Task
                 ", action=" + info[2] +
                 ", srcimg=" + aset.getImagePath() + "].");
             t.printStackTrace(System.err);
+
+            String errmsg = "Failure trimming tileset.";
+            throw new BuildException(errmsg, t);
         }
 
         // then write our trimmed tileset to the jar file
