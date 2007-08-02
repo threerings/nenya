@@ -66,7 +66,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
         super.addRuleInstances(digester);
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/objectWidths",
+            _path + "/objectWidths",
             new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
@@ -76,7 +76,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/objectHeights",
+            _path + "/objectHeights",
             new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
@@ -86,7 +86,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/xOrigins", new CallMethodSpecialRule() {
+            _path + "/xOrigins", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] xorigins = StringUtil.parseIntArray(bodyText);
@@ -95,7 +95,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/yOrigins", new CallMethodSpecialRule() {
+            _path + "/yOrigins", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] yorigins = StringUtil.parseIntArray(bodyText);
@@ -104,7 +104,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/priorities",
+            _path + "/priorities",
             new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
@@ -114,7 +114,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/zations", new CallMethodSpecialRule() {
+            _path + "/zations", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     String[] zations = StringUtil.parseStringArray(bodyText);
@@ -123,7 +123,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/xspots", new CallMethodSpecialRule() {
+            _path + "/xspots", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     short[] xspots = StringUtil.parseShortArray(bodyText);
@@ -132,7 +132,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/yspots", new CallMethodSpecialRule() {
+            _path + "/yspots", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     short[] yspots = StringUtil.parseShortArray(bodyText);
@@ -141,7 +141,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/sorients", new CallMethodSpecialRule() {
+            _path + "/sorients", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     ObjectTileSet set = (ObjectTileSet)target;
@@ -165,7 +165,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
     
         digester.addRule(
-            _prefix + TILESET_PATH + "/constraints",
+            _path + "/constraints",
                 new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {

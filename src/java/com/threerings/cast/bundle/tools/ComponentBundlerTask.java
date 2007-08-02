@@ -22,8 +22,6 @@
 package com.threerings.cast.bundle.tools;
 
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,38 +33,37 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import java.util.jar.JarOutputStream;
 import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import java.util.zip.Deflater;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.digester.Digester;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.FileSet;
 
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.ComparableArrayList;
 import com.samskivert.util.FileUtil;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.Tuple;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.FileSet;
-
+import com.threerings.cast.ComponentIDBroker;
+import com.threerings.cast.StandardActions;
+import com.threerings.cast.bundle.BundleUtil;
+import com.threerings.cast.tools.xml.ActionRuleSet;
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.SimpleCachingImageProvider;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TrimmedTileSet;
 import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
-
-import com.threerings.cast.ComponentIDBroker;
-import com.threerings.cast.StandardActions;
-import com.threerings.cast.bundle.BundleUtil;
-import com.threerings.cast.tools.xml.ActionRuleSet;
+import com.threerings.media.tile.tools.xml.TileSetRuleSet;
+import com.threerings.media.tile.tools.xml.UniformTileSetRuleSet;
 
 /**
  * Ant task for creating component bundles. This task must be configured
@@ -401,20 +398,26 @@ public class ComponentBundlerTask extends Task
     }
 
     /**
+     * Configures <code>ruleSet</code> and hooks it into <code>digester</code>.
+     */
+    protected static void addTileSetRuleSet (Digester digester, TileSetRuleSet ruleSet)
+    {
+        ruleSet.setPrefix("actions" + ActionRuleSet.ACTION_PATH);
+        digester.addRuleSet(ruleSet);
+        digester.addSetNext(ruleSet.getPath(), "addTileSet", TileSet.class.getName());
+    }
+
+    /**
      * Parses the action tileset definitions and puts them into a hash
      * map, keyed on action name.
      */
     protected HashMap parseActionTileSets ()
     {
         Digester digester = new Digester();
-        SwissArmyTileSetRuleSet srules = new SwissArmyTileSetRuleSet();
-        String aprefix = "actions" + ActionRuleSet.ACTION_PATH;
-        srules.setPrefix(aprefix);
-
-        digester.addRuleSet(srules);
-        digester.addSetProperties(aprefix);
-        digester.addSetNext(aprefix + SwissArmyTileSetRuleSet.TILESET_PATH,
-                            "addTileSet", TileSet.class.getName());
+        digester.addSetProperties("actions" + ActionRuleSet.ACTION_PATH);
+        addTileSetRuleSet(digester, new SwissArmyTileSetRuleSet());
+        addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
+        
 
         HashMap actsets = new ActionMap();
         digester.push(actsets);

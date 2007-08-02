@@ -75,7 +75,7 @@ public class XMLTileSetParser
 
         // add a set next rule which will put tilesets with this prefix
         // into the array list that'll be on the top of the stack
-        _digester.addRule(prefix + TileSetRuleSet.TILESET_PATH,
+        _digester.addRule(ruleset.getPath(),
                           new ValidatedSetNextRule("add", Object.class,
                                                    ruleset));
     }

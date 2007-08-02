@@ -42,16 +42,22 @@ import com.threerings.media.tile.UniformTileSet;
  */
 public class UniformTileSetRuleSet extends TileSetRuleSet
 {
+    public UniformTileSetRuleSet(){
+        this(TILESET_PATH);
+    }
+    
+    public UniformTileSetRuleSet(String tilesetPath){
+        _tilesetPath = tilesetPath;
+    }
+    
     // documentation inherited
     public void addRuleInstances (Digester digester)
     {
         super.addRuleInstances(digester);
 
-        digester.addCallMethod(
-            _prefix + TILESET_PATH + "/width", "setWidth", 0,
+        digester.addCallMethod(_path + "/width", "setWidth", 0,
             new Class[] { java.lang.Integer.TYPE });
-        digester.addCallMethod(
-            _prefix + TILESET_PATH + "/height", "setHeight", 0,
+        digester.addCallMethod(_path + "/height", "setHeight", 0,
             new Class[] { java.lang.Integer.TYPE });
     }
 

@@ -46,6 +46,13 @@ public abstract class TileSetRuleSet
     public static final String TILESET_PATH = "/tileset";
 
     /**
+     * @return The full path used to match tilesets.  Consists of the prefile plus _tilesetPath.
+     */
+    public String getPath(){
+        return _path;
+    }
+    
+    /**
      * Instructs the tileset rule set to match tilesets with the supplied
      * prefix. For example, passing a prefix of
      * <code>tilesets.objectsets</code> will match tilesets in the
@@ -65,7 +72,7 @@ public abstract class TileSetRuleSet
      */
     public void setPrefix (String prefix)
     {
-        _prefix = prefix;
+        _path =  prefix + _tilesetPath;
     }
 
     /**
@@ -79,21 +86,18 @@ public abstract class TileSetRuleSet
     {
         // this creates the appropriate instance when we encounter a
         // <tileset> tag
-        digester.addObjectCreate(_prefix + TILESET_PATH,
-                                 getTileSetClass().getName());
+        digester.addObjectCreate(_path, getTileSetClass().getName());
 
         // grab the name attribute from the <tileset> tag
-        digester.addSetProperties(_prefix + TILESET_PATH);
+        digester.addSetProperties(_path);
 
         // grab the image path from an element
-        digester.addCallMethod(
-            _prefix + TILESET_PATH + "/imagePath", "setImagePath", 0);
+        digester.addCallMethod(_path + "/imagePath", "setImagePath", 0);
     }
 
     /**
-     * The ruleset can be provided to a {@link ValidatedSetNextRule} to
-     * ensure that the tileset was fully parsed before doing something
-     * with it.
+     * The ruleset can be provided to a {@link ValidatedSetNextRule} to ensure that the tileset
+     * was fully parsed before doing something with it.
      */
     public boolean isValid (Object target)
     {
@@ -123,6 +127,9 @@ public abstract class TileSetRuleSet
      */
     protected abstract Class getTileSetClass ();
 
-    /** The prefix at which me match our tilesets. */
-    protected String _prefix;
+    /** The tileset path we append to the prefix to get the full path. */    
+    protected String _tilesetPath = TILESET_PATH;
+    
+    /** The full path at which me match our tilesets. */
+    protected String _path;
 }

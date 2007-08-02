@@ -28,30 +28,26 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import java.util.jar.JarOutputStream;
 import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 import java.util.zip.Deflater;
 
+import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-import org.apache.commons.digester.Digester;
-
 import com.samskivert.util.Tuple;
-
-import com.threerings.media.tile.TileSet;
-import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
-
 import com.threerings.cast.ActionSequence;
 import com.threerings.cast.ComponentClass;
 import com.threerings.cast.bundle.BundleUtil;
-
 import com.threerings.cast.tools.xml.ActionRuleSet;
 import com.threerings.cast.tools.xml.ClassRuleSet;
+import com.threerings.media.tile.TileSet;
+import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
+import com.threerings.media.tile.tools.xml.TileSetRuleSet;
+import com.threerings.media.tile.tools.xml.UniformTileSetRuleSet;
 
 /**
  * Ant task for creating metadata bundles, which contain action sequence
@@ -150,6 +146,16 @@ public class MetadataBundlerTask extends Task
         }
     }
 
+    /**
+     * Configures <code>ruleSet</code> and hooks it into <code>digester</code>.
+     */
+    protected static void addTileSetRuleSet (Digester digester, TileSetRuleSet ruleSet)
+    {
+        ruleSet.setPrefix("actions" + ActionRuleSet.ACTION_PATH);
+        digester.addRuleSet(ruleSet);
+        digester.addSetNext(ruleSet.getPath(), "add", Object.class.getName());
+    }
+
     protected Tuple parseActions ()
         throws BuildException
     {
@@ -158,18 +164,13 @@ public class MetadataBundlerTask extends Task
         ActionRuleSet arules = new ActionRuleSet();
         arules.setPrefix("actions");
         digester.addRuleSet(arules);
-        digester.addSetNext("actions" + ActionRuleSet.ACTION_PATH,
-                            "add", Object.class.getName());
+        digester.addSetNext("actions" + ActionRuleSet.ACTION_PATH, "add", Object.class.getName());
         ArrayList actlist = parseList(digester, _actionDef);
 
         // now go through a second time reading the tileset info
         digester = new Digester();
-        SwissArmyTileSetRuleSet srules = new SwissArmyTileSetRuleSet();
-        srules.setPrefix("actions" + ActionRuleSet.ACTION_PATH);
-        digester.addRuleSet(srules);
-        digester.addSetNext("actions" + ActionRuleSet.ACTION_PATH +
-                            SwissArmyTileSetRuleSet.TILESET_PATH, "add",
-                            Object.class.getName());
+        addTileSetRuleSet(digester, new SwissArmyTileSetRuleSet());
+        addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
         ArrayList setlist = parseList(digester, _actionDef);
 
         // sanity check

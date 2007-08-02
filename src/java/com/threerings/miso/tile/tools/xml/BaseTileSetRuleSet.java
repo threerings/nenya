@@ -45,10 +45,8 @@ public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
     {
         super.addRuleInstances(digester);
 
-        digester.addRule(
-            _prefix + TILESET_PATH + "/passable", new CallMethodSpecialRule() {
-                public void parseAndSet (String bodyText, Object target)
-                {
+        digester.addRule(_path + "/passable", new CallMethodSpecialRule() {
+                public void parseAndSet (String bodyText, Object target) {
                     int[] values = StringUtil.parseIntArray(bodyText);
                     boolean[] passable = new boolean[values.length];
                     for (int i = 0; i < values.length; i++) {

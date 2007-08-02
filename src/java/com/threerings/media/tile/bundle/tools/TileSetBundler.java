@@ -169,8 +169,7 @@ public class TileSetBundler
         for (int i = 0; i < msize; i++) {
             Mapping map = (Mapping)mappings.get(i);
             try {
-                TileSetRuleSet ruleset = (TileSetRuleSet)
-                    Class.forName(map.ruleset).newInstance();
+                TileSetRuleSet ruleset = (TileSetRuleSet)Class.forName(map.ruleset).newInstance();
 
                 // configure the ruleset
                 ruleset.setPrefix(map.path);
@@ -178,8 +177,7 @@ public class TileSetBundler
                 _digester.addRuleSet(ruleset);
                 // and add a rule to stick the parsed tilesets onto the
                 // end of an array list that we'll put on the stack
-                _digester.addSetNext(map.path + TileSetRuleSet.TILESET_PATH,
-                                     "add", "java.lang.Object");
+                _digester.addSetNext(ruleset.getPath(), "add", "java.lang.Object");
 
             } catch (Exception e) {
                 String errmsg = "Unable to create tileset rule set " +

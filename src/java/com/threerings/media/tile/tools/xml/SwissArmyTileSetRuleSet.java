@@ -60,7 +60,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
         super.addRuleInstances(digester);
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/widths", new CallMethodSpecialRule() {
+            _path + "/widths", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] widths = StringUtil.parseIntArray(bodyText);
@@ -69,7 +69,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/heights", new CallMethodSpecialRule() {
+            _path + "/heights", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] heights = StringUtil.parseIntArray(bodyText);
@@ -78,7 +78,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/tileCounts",
+            _path + "/tileCounts",
             new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
@@ -88,7 +88,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/offsetPos", new CallMethodSpecialRule() {
+            _path + "/offsetPos", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] values = StringUtil.parseIntArray(bodyText);
@@ -103,7 +103,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
             });
 
         digester.addRule(
-            _prefix + TILESET_PATH + "/gapSize", new CallMethodSpecialRule() {
+            _path + "/gapSize", new CallMethodSpecialRule() {
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] values = StringUtil.parseIntArray(bodyText);
