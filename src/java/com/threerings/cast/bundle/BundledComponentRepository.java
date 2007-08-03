@@ -39,10 +39,13 @@ import com.samskivert.util.Tuple;
 import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
 
+import com.threerings.media.image.BufferedMirage;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.FastImageIO;
 import com.threerings.media.image.ImageDataProvider;
 import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ImageUtil;
+import com.threerings.media.image.Mirage;
 
 import com.threerings.media.tile.IMImageProvider;
 import com.threerings.media.tile.Tile;
@@ -63,8 +66,7 @@ import com.threerings.cast.StandardActions;
 import com.threerings.cast.TrimmedMultiFrameImage;
 
 /**
- * A component repository implementation that obtains information from
- * resource bundles.
+ * A component repository implementation that obtains information from resource bundles.
  *
  * @see ResourceManager
  */
@@ -72,18 +74,15 @@ public class BundledComponentRepository
     implements DirectionCodes, ComponentRepository
 {
     /**
-     * Constructs a repository which will obtain its resource set from the
-     * supplied resource manager.
+     * Constructs a repository which will obtain its resource set from the supplied resource
+     * manager.
      *
-     * @param rmgr the resource manager from which to obtain our resource
-     * set.
-     * @param imgr the image manager that we'll use to decode and cache
-     * images.
-     * @param name the name of the resource set from which we will be
-     * loading our component data.
+     * @param rmgr the resource manager from which to obtain our resource set.
+     * @param imgr the image manager that we'll use to decode and cache images.
+     * @param name the name of the resource set from which we will be loading our component data.
      *
-     * @exception IOException thrown if an I/O error occurs while reading
-     * our metadata from the resource bundles.
+     * @exception IOException thrown if an I/O error occurs while reading our metadata from the
+     * resource bundles.
      */
     public BundledComponentRepository (
         ResourceManager rmgr, ImageManager imgr, String name)
@@ -92,8 +91,7 @@ public class BundledComponentRepository
         // keep this guy around
         _imgr = imgr;
 
-        // first we obtain the resource set from whence will come our
-        // bundles
+        // first we obtain the resource set from whence will come our bundles
         ResourceBundle[] rbundles = rmgr.getResourceSet(name);
 
         // look for our metadata info in each of the bundles
@@ -124,17 +122,14 @@ public class BundledComponentRepository
                 }
 
                 // create a frame provider for this bundle
-                FrameProvider fprov =
-                    new ResourceBundleProvider(_imgr, rbundles[i]);
+                FrameProvider fprov = new ResourceBundleProvider(_imgr, rbundles[i]);
 
-                // now create character component instances for each component
-                // in the serialized table
+                // now create char. component instances for each component in the serialized table
                 Iterator iter = comps.keySet().iterator();
                 while (iter.hasNext()) {
                     int componentId = ((Integer)iter.next()).intValue();
                     Tuple info = (Tuple)comps.get(componentId);
-                    createComponent(componentId, (String)info.left,
-                                    (String)info.right, fprov);
+                    createComponent(componentId, (String)info.left, (String)info.right, fprov);
                 }
             }
 
@@ -143,8 +138,8 @@ public class BundledComponentRepository
                 "Internal error unserializing metadata").initCause(cnfe);
         }
 
-        // if we failed to load our classes or actions, create empty
-        // hashtables so that we can safely enumerate our emptiness
+        // if we failed to load our classes or actions, create empty hashtables so that we can
+        // safely enumerate our emptiness
         if (_actions == null) {
             _actions = new HashMap();
         }
@@ -154,11 +149,10 @@ public class BundledComponentRepository
     }
 
     /**
-     * Configures the bundled component repository to wipe any bundles
-     * that report certain kinds of failure. In the event that an unpacked
-     * bundle becomes corrupt, this is useful in that it will force the
-     * bundle to be unpacked on the next application invocation,
-     * potentially remedying the problem of a corrupt unpacking.
+     * Configures the bundled component repository to wipe any bundles that report certain kinds of
+     * failure. In the event that an unpacked bundle becomes corrupt, this is useful in that it
+     * will force the bundle to be unpacked on the next application invocation, potentially
+     * remedying the problem of a corrupt unpacking.
      */
     public void setWipeOnFailure (boolean wipeOnFailure)
     {
@@ -169,8 +163,7 @@ public class BundledComponentRepository
     public CharacterComponent getComponent (int componentId)
         throws NoSuchComponentException
     {
-        CharacterComponent component = (CharacterComponent)
-            _components.get(componentId);
+        CharacterComponent component = (CharacterComponent)_components.get(componentId);
         if (component == null) {
             throw new NoSuchComponentException(componentId);
         }
@@ -217,14 +210,12 @@ public class BundledComponentRepository
     // documentation inherited
     public Iterator enumerateComponentIds (final ComponentClass compClass)
     {
-        Predicate<Integer> pred = new Predicate<Integer>() {
+        return new Predicate<Integer>() {
             public boolean isMatch (Integer input) {
-                CharacterComponent comp = (CharacterComponent)
-                    _components.get(input);
+                CharacterComponent comp = (CharacterComponent)_components.get(input);
                 return comp.componentClass.equals(compClass);
             }
-        };
-        return pred.filter(_components.keySet().iterator());
+        }.filter(_components.keySet().iterator());
     }
 
     /**
@@ -236,15 +227,13 @@ public class BundledComponentRepository
         // look up the component class information
         ComponentClass clazz = (ComponentClass)_classes.get(cclass);
         if (clazz == null) {
-            Log.warning("Non-existent component class " +
-                        "[class=" + cclass + ", name=" + cname +
+            Log.warning("Non-existent component class [class=" + cclass + ", name=" + cname +
                         ", id=" + componentId + "].");
             return;
         }
 
         // create the component
-        CharacterComponent component = new CharacterComponent(
-            componentId, cname, clazz, fprov);
+        CharacterComponent component = new CharacterComponent(componentId, cname, clazz, fprov);
 
         // stick it into the appropriate tables
         _components.put(componentId, component);
@@ -258,21 +247,19 @@ public class BundledComponentRepository
         if (!comps.contains(component)) {
             comps.add(component);
         } else {
-            Log.info("Requested to register the same component twice? " +
-                     "[component=" + component + "].");
+            Log.info("Requested to register the same component twice? [comp=" + component + "].");
         }
     }
 
     /**
-     * Instances of these provide images to our component action tilesets
-     * and frames to our components.
+     * Instances of these provide images to our component action tilesets and frames to our
+     * components.
      */
     protected class ResourceBundleProvider extends IMImageProvider
         implements ImageDataProvider, FrameProvider
     {
         /**
-         * Constructs an instance that will obtain image data from the
-         * specified resource bundle.
+         * Constructs an instance that will obtain image data from the specified resource bundle.
          */
         public ResourceBundleProvider (ImageManager imgr, ResourceBundle bundle)
         {
@@ -281,27 +268,25 @@ public class BundledComponentRepository
             _bundle = bundle;
         }
 
-        // documentation inherited from interface
+        // from interface ImageDataProvider
         public String getIdent ()
         {
             return "bcr:" + _bundle.getSource();
         }
 
-        // documentation inherited from interface
+        // from interface ImageDataProvider
         public BufferedImage loadImage (String path) throws IOException
         {
             return FastImageIO.read(_bundle.getResourceFile(path));
         }
 
-        // documentation inherited
-        public ActionFrames getFrames (
-            CharacterComponent component, String action, String type)
+        // from interface FrameProvider
+        public ActionFrames getFrames (CharacterComponent component, String action, String type)
         {
             // obtain the action sequence definition for this action
             ActionSequence actseq = (ActionSequence)_actions.get(action);
             if (actseq == null) {
-                Log.warning("Missing action sequence definition " +
-                            "[action=" + action +
+                Log.warning("Missing action sequence definition [action=" + action +
                             ", component=" + component + "].");
                 return null;
             }
@@ -313,13 +298,12 @@ public class BundledComponentRepository
                 dimgpath += "_" + type;
             }
 
-            String root = component.componentClass.name + "/" +
-                component.name + "/";
+            String root = component.componentClass.name + "/" + component.name + "/";
             String cpath = root + imgpath + BundleUtil.TILESET_EXTENSION;
             String dpath = root + dimgpath + BundleUtil.TILESET_EXTENSION;
 
-            // look to see if this tileset is already cached (as the
-            // custom action or the default action)
+            // look to see if this tileset is already cached (as the custom action or the default
+            // action)
             TileSet aset = (TileSet)_setcache.get(cpath);
             if (aset == null) {
                 aset = (TileSet)_setcache.get(dpath);
@@ -332,25 +316,22 @@ public class BundledComponentRepository
             try {
                 // then try loading up a tileset customized for this action
                 if (aset == null) {
-                    aset = (TileSet)BundleUtil.loadObject(
-                        _bundle, cpath, false);
+                    aset = (TileSet)BundleUtil.loadObject(_bundle, cpath, false);
                 }
 
                 // if that failed, try loading the default tileset
                 if (aset == null) {
-                    aset = (TileSet)BundleUtil.loadObject(
-                        _bundle, dpath, false);
+                    aset = (TileSet)BundleUtil.loadObject(_bundle, dpath, false);
                     _setcache.put(dpath, aset);
                 }
 
                 // if that failed too, we're hosed
                 if (aset == null) {
-                    // if this is a shadow or crop image, no need to freak out
-                    // as they are optional
+                    // if this is a shadow or crop image, no need to freak out as they are optional
                     if (!StandardActions.CROP_TYPE.equals(type) &&
                         !StandardActions.SHADOW_TYPE.equals(type)) {
-                        Log.warning("Unable to locate tileset for action '" +
-                                    imgpath + "' " + component + ".");
+                        Log.warning("Unable to locate tileset for action '" + imgpath + "' " +
+                                    component + ".");
                         if (_wipeOnFailure) {
                             _bundle.wipeBundle(false);
                         }
@@ -363,11 +344,21 @@ public class BundledComponentRepository
                 return new TileSetFrameImage(aset, actseq);
 
             } catch (Exception e) {
-                Log.warning("Error loading tileset for action '" + imgpath +
-                            "' " + component + ".");
+                Log.warning("Error loading tset for action '" + imgpath + "' " + component + ".");
                 Log.logStackTrace(e);
                 return null;
             }
+        }
+
+        @Override // from IMImageProvider
+        public Mirage getTileImage (String path, Rectangle bounds, Colorization[] zations)
+        {
+            // we don't need our images prepared for screen rendering
+            BufferedImage src = _imgr.getImage(getImageKey(path), zations);
+            if (bounds != null) {
+                src = src.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
+            }
+            return new BufferedMirage(src);
         }
 
         /** The resource bundle from which we obtain image data. */
@@ -378,14 +369,13 @@ public class BundledComponentRepository
     }
 
     /**
-     * Used to provide multiframe images using data obtained from a
-     * tileset.
+     * Used to provide multiframe images using data obtained from a tileset.
      */
     protected static class TileSetFrameImage implements ActionFrames
     {
         /**
-         * Constructs a tileset frame image with the specified tileset and
-         * for the specified orientation.
+         * Constructs a tileset frame image with the specified tileset and for the specified
+         * orientation.
          */
         public TileSetFrameImage (TileSet set, ActionSequence actseq)
         {
@@ -393,8 +383,8 @@ public class BundledComponentRepository
         }
 
         /**
-         * Constructs a tileset frame image with the specified tileset and
-         * for the specified orientation, with an optional translation.
+         * Constructs a tileset frame image with the specified tileset and for the specified
+         * orientation, with an optional translation.
          */
         public TileSetFrameImage (TileSet set, ActionSequence actseq, int dx, int dy)
         {
@@ -407,8 +397,7 @@ public class BundledComponentRepository
             _ocount = actseq.orients.length;
             _fcount = set.getTileCount() / _ocount;
 
-            // create our mapping from orientation to animation sequence
-            // index
+            // create our mapping from orientation to animation sequence index
             for (int ii = 0; ii < _ocount; ii++) {
                 _orients.put(actseq.orients[ii], ii);
             }
@@ -424,51 +413,32 @@ public class BundledComponentRepository
         public TrimmedMultiFrameImage getFrames (final int orient)
         {
             return new TrimmedMultiFrameImage() {
-                // documentation inherited
-                public int getFrameCount ()
-                {
+                public int getFrameCount () {
                     return _fcount;
                 }
 
-                // documentation inherited from interface
-                public int getWidth (int index)
-                {
-                    Tile tile = getTile(orient, index);
-                    return (tile == null) ? 0 : tile.getWidth();
+                public int getWidth (int index) {
+                    return _set.getTile(getTileIndex(orient, index)).getWidth();
                 }
 
-                // documentation inherited from interface
-                public int getHeight (int index)
-                {
-                    Tile tile = getTile(orient, index);
-                    return (tile == null) ? 0 : tile.getHeight();
+                public int getHeight (int index) {
+                    return _set.getTile(getTileIndex(orient, index)).getHeight();
                 }
 
-                // documentation inherited from interface
-                public void paintFrame (Graphics2D g, int index, int x, int y)
-                {
-                    Tile tile = getTile(orient, index);
-                    if (tile != null) {
-                        tile.paint(g, x + _dx, y + _dy);
-                    }
+                public void paintFrame (Graphics2D g, int index, int x, int y) {
+                    _set.getTile(getTileIndex(orient, index)).paint(g, x + _dx, y + _dy);
                 }
 
-                // documentation inherited from interface
-                public boolean hitTest (int index, int x, int y)
-                {
-                    Tile tile = getTile(orient, index);
-                    return (tile != null) ? tile.hitTest(x + _dx, y + _dy) : false;
+                public boolean hitTest (int index, int x, int y) {
+                    return _set.getTile(getTileIndex(orient, index)).hitTest(x + _dx, y + _dy);
                 }
 
-                // documentation inherited from interface
-                public void getTrimmedBounds (int index, Rectangle bounds)
-                {
-                    Tile tile = getTile(orient, index);
+                public void getTrimmedBounds (int index, Rectangle bounds) {
+                    Tile tile = _set.getTile(getTileIndex(orient, index));
                     if (tile instanceof TrimmedTile) {
                         ((TrimmedTile)tile).getTrimmedBounds(bounds);
                     } else {
-                        bounds.setBounds(
-                            0, 0, tile.getWidth(), tile.getHeight());
+                        bounds.setBounds(0, 0, tile.getWidth(), tile.getHeight());
                     }
                     bounds.translate(_dx, _dy);
                 }
@@ -499,13 +469,9 @@ public class BundledComponentRepository
             return new TileSetFrameImage(_set, _actseq, dx, dy);
         }
 
-        /**
-         * Fetches the requested tile.
-         */
-        protected Tile getTile (int orient, int index)
+        protected int getTileIndex (int orient, int index)
         {
-            int tileIndex = _orients.get(orient) * _fcount + index;
-            return _set.getTile(tileIndex);
+            return _orients.get(orient) * _fcount + index;
         }
 
         /** The tileset from which we obtain our frame images. */
@@ -520,8 +486,7 @@ public class BundledComponentRepository
         /** Frame and orientation counts. */
         protected int _fcount, _ocount;
 
-        /** A mapping from orientation code to animation sequence
-         * index. */
+        /** A mapping from orientation code to animation sequence index. */
         protected IntIntMap _orients = new IntIntMap();
     }
 

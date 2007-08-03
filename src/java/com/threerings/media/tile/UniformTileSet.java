@@ -27,11 +27,10 @@ import java.awt.image.BufferedImage;
 import com.threerings.geom.GeomUtil;
 
 /**
- * A uniform tileset is one that is composed of tiles that are all the
- * same width and height and are arranged into rows, with each row having
- * the same number of tiles except possibly the final row which can
- * contain the same as or less than the number of tiles contained by the
- * previous rows.
+ * A uniform tileset is one that is composed of tiles that are all the same width and height and
+ * are arranged into rows, with each row having the same number of tiles except possibly the final
+ * row which can contain the same as or less than the number of tiles contained by the previous
+ * rows.
  */
 public class UniformTileSet extends TileSet
 {
@@ -42,6 +41,14 @@ public class UniformTileSet extends TileSet
         int perRow = tsimg.getWidth() / _width;
         int perCol = tsimg.getHeight() / _height;
         return perRow * perCol;
+    }
+
+    // documentation inherited
+    public Rectangle computeTileBounds (int tileIndex, Rectangle bounds)
+    {
+        BufferedImage tsimg = getRawTileSetImage();
+        GeomUtil.getTile(tsimg.getWidth(), tsimg.getHeight(), _width, _height, tileIndex, bounds);
+        return bounds;
     }
 
     /**
@@ -74,14 +81,6 @@ public class UniformTileSet extends TileSet
     public int getHeight ()
     {
         return _height;
-    }
-
-    // documentation inherited
-    protected Rectangle computeTileBounds (int tileIndex)
-    {
-        BufferedImage tsimg = getRawTileSetImage();
-        return GeomUtil.getTile(tsimg.getWidth(), tsimg.getHeight(),
-                                _width, _height, tileIndex);
     }
 
     // documentation inherited

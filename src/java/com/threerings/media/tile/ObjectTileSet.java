@@ -35,34 +35,34 @@ import com.threerings.media.image.Colorization;
  */
 public class ObjectTileSet extends SwissArmyTileSet
     implements RecolorableTileSet
-{   
+{
     /** A constraint prefix indicating that the object must have empty space in
      * the suffixed direction (N, E, S, or W). */
     public static final String SPACE = "SPACE_";
-        
+
     /** A constraint indicating that the object is a surface (e.g., table). */
     public static final String SURFACE = "SURFACE";
-    
+
     /** A constraint indicating that the object must be placed on a surface. */
     public static final String ON_SURFACE = "ON_SURFACE";
- 
+
     /** A constraint prefix indicating that the object is a wall facing the
      * suffixed direction (N, E, S, or W). */
     public static final String WALL = "WALL_";
- 
+
     /** A constraint prefix indicating that the object must be placed on a
      * wall facing the suffixed direction (N, E, S, or W). */
     public static final String ON_WALL = "ON_WALL_";
-    
+
     /** A constraint prefix indicating that the object must be attached to a
      * wall facing the suffixed direction (N, E, S, or W). */
     public static final String ATTACH = "ATTACH_";
-    
+
     /** The low suffix for walls and attachments. Low attachments can be placed
      * on low or normal walls; normal attachments can only be placed on normal
      * walls. */
     public static final String LOW = "_LOW";
-    
+
     /**
      * Sets the widths (in unit tile count) of the objects in this
      * tileset. This must be accompanied by a call to {@link
@@ -148,7 +148,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     {
         _constraints = constraints;
     }
-    
+
     /**
      * Returns the x coordinate of the spot associated with the specified
      * tile index.
@@ -184,7 +184,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     {
         return (_constraints == null) ? null : _constraints[tileIdx];
     }
-    
+
     /**
      * Checks whether the tile at the specified index has the given constraint.
      */
@@ -193,7 +193,7 @@ public class ObjectTileSet extends SwissArmyTileSet
         return (_constraints == null) ? false :
             ListUtil.contains(_constraints[tileIdx], constraint);
     }
-    
+
     // documentation inherited from interface RecolorableTileSet
     public String[] getColorizations ()
     {
@@ -288,7 +288,7 @@ public class ObjectTileSet extends SwissArmyTileSet
 
     /** Lists of constraints associated with our tiles. */
     protected String[][] _constraints;
-    
+
     /** Increase this value when object's serialized state is impacted by
      * a class change (modification of fields, inheritance). */
     private static final long serialVersionUID = 2;

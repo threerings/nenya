@@ -54,17 +54,14 @@ public class IMImageProvider implements ImageProvider
     }
 
     // documentation inherited from interface
-    public Mirage getTileImage (String path, Rectangle bounds,
-                                Colorization[] zations)
+    public Mirage getTileImage (String path, Rectangle bounds, Colorization[] zations)
     {
         return _imgr.getMirage(getImageKey(path), bounds, zations);
     }
 
     protected final ImageManager.ImageKey getImageKey (String path)
     {
-        return (_dprov == null) ?
-            _imgr.getImageKey(_rset, path) :
-            _imgr.getImageKey(_dprov, path);
+        return (_dprov == null) ? _imgr.getImageKey(_rset, path) : _imgr.getImageKey(_dprov, path);
     }
 
     protected ImageManager _imgr;
