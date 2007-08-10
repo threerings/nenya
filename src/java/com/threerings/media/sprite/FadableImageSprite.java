@@ -30,8 +30,7 @@ import com.threerings.media.util.Path;
 public class FadableImageSprite extends OrientableImageSprite
 {
     /**
-     * Fades this sprite in over the specified duration after
-     * waiting for the specified delay.
+     * Fades this sprite in over the specified duration after waiting for the specified delay.
      */
     public void fadeIn (long delay, long duration)
     {
@@ -41,10 +40,9 @@ public class FadableImageSprite extends OrientableImageSprite
         _fadeDelay = delay;
         _fadeInDuration = duration;
     }
-    
+
     /**
-     * Fades this sprite out over the specified duration after
-     * waiting for the specified delay.
+     * Fades this sprite out over the specified duration after waiting for the specified delay.
      */
     public void fadeOut (long delay, long duration)
     {
@@ -56,12 +54,11 @@ public class FadableImageSprite extends OrientableImageSprite
     }
 
     /**
-     * Puts this sprite on the specified path and fades it in over
-     * the specified duration.
-     *
+     * Puts this sprite on the specified path and fades it in over the specified duration.
+     * 
      * @param path the path to move along
-     * @param fadePortion the portion of time to spend fading in, from 0.0f
-     * (no time) to 1.0f (the entire time)
+     * @param fadePortion the portion of time to spend fading in, from 0.0f (no time) to 1.0f (the
+     * entire time)
      */
     public void moveAndFadeIn (Path path, long pathDuration, float fadePortion)
     {
@@ -69,17 +66,16 @@ public class FadableImageSprite extends OrientableImageSprite
 
         setAlpha(0.0f);
 
-        _fadeInDuration = (long)(pathDuration*fadePortion);
+        _fadeInDuration = (long)(pathDuration * fadePortion);
     }
 
     /**
-     * Puts this sprite on the specified path and fades it out over
-     * the specified duration.
-     *
+     * Puts this sprite on the specified path and fades it out over the specified duration.
+     * 
      * @param path the path to move along
      * @param pathDuration the duration of the path
-     * @param fadePortion the portion of time to spend fading out, from 0.0f
-     * (no time) to 1.0f (the entire time)
+     * @param fadePortion the portion of time to spend fading out, from 0.0f (no time) to 1.0f
+     * (the entire time)
      */
     public void moveAndFadeOut (Path path, long pathDuration, float fadePortion)
     {
@@ -89,28 +85,27 @@ public class FadableImageSprite extends OrientableImageSprite
 
         _fadeStamp = 0;
         _pathDuration = pathDuration;
-        _fadeOutDuration = (long)(pathDuration*fadePortion);
+        _fadeOutDuration = (long)(pathDuration * fadePortion);
         _fadeDelay = _pathDuration - _fadeOutDuration;
     }
 
     /**
-     * Puts this sprite on the specified path, fading it in over the specified
-     * duration at the beginning and fading it out at the end.
-     *
+     * Puts this sprite on the specified path, fading it in over the specified duration at the
+     * beginning and fading it out at the end.
+     * 
      * @param path the path to move along
      * @param pathDuration the duration of the path
-     * @param fadePortion the portion of time to spend fading in/out, from
-     * 0.0f (no time) to 1.0f (the entire time)
+     * @param fadePortion the portion of time to spend fading in/out, from 0.0f (no time) to 1.0f
+     * (the entire time)
      */
-    public void moveAndFadeInAndOut (Path path, long pathDuration,
-        float fadePortion)
+    public void moveAndFadeInAndOut (Path path, long pathDuration, float fadePortion)
     {
         move(path);
 
         setAlpha(0.0f);
 
         _pathDuration = pathDuration;
-        _fadeInDuration = _fadeOutDuration = (long)(pathDuration*fadePortion);
+        _fadeInDuration = _fadeOutDuration = (long)(pathDuration * fadePortion);
     }
 
     // Documentation inherited.
@@ -119,14 +114,11 @@ public class FadableImageSprite extends OrientableImageSprite
         super.tick(tickStamp);
 
         if (_fadeInDuration != -1) {
-            if (_path != null && (tickStamp-_pathStamp) <= _fadeInDuration) {
+            if (_path != null && (tickStamp - _pathStamp) <= _fadeInDuration) {
                 // fading in while moving
-                float alpha = (float)(tickStamp-_pathStamp)/_fadeInDuration;
+                float alpha = (float)(tickStamp - _pathStamp) / _fadeInDuration;
                 if (alpha >= 1.0f) {
-                    // fade-in complete
-                    setAlpha(1.0f);
-                    _fadeInDuration = -1;
-
+                    completeFadeIn();
                 } else {
                     setAlpha(alpha);
                 }
@@ -139,12 +131,9 @@ public class FadableImageSprite extends OrientableImageSprite
                 }
                 if (tickStamp > _fadeStamp + _fadeDelay) {
                     // initial delay has passed
-                    float alpha = (float)(tickStamp-_fadeStamp-_fadeDelay) / _fadeInDuration;
+                    float alpha = (float)(tickStamp - _fadeStamp - _fadeDelay) / _fadeInDuration;
                     if (alpha >= 1.0f) {
-                        // fade-in complete
-                        setAlpha(1.0f);
-                        _fadeInDuration = -1;
-
+                        completeFadeIn();
                     } else {
                         setAlpha(alpha);
                     }
@@ -161,10 +150,7 @@ public class FadableImageSprite extends OrientableImageSprite
                 // initial delay has passed
                 float alpha = 1f - (float)(tickStamp - _fadeStamp - _fadeDelay) / _fadeOutDuration;
                 if (alpha <= 0.0f) {
-                    // fade-out complete
-                    setAlpha(0.0f);
-                    _fadeOutDuration = -1;
-
+                    completeFadeOut();
                 } else {
                     setAlpha(alpha);
                 }
@@ -176,15 +162,25 @@ public class FadableImageSprite extends OrientableImageSprite
     public void pathCompleted (long timestamp)
     {
         super.pathCompleted(timestamp);
-
         if (_fadeInDuration != -1) {
-            setAlpha(1.0f);
-            _fadeInDuration = -1;
-
+            completeFadeIn();
         } else if (_fadeOutDuration != -1) {
-            setAlpha(0.0f);
-            _fadeOutDuration = -1;
+            completeFadeOut();
         }
+    }
+
+    /** Completes the process of fading in. */
+    protected void completeFadeIn ()
+    {
+        setAlpha(1.0f);
+        _fadeInDuration = -1;
+    }
+
+    /** Completes the process of fading out. */
+    protected void completeFadeOut ()
+    {
+        setAlpha(0.0f);
+        _fadeOutDuration = -1;
     }
 
     // Documentation inherited.
@@ -213,8 +209,7 @@ public class FadableImageSprite extends OrientableImageSprite
             alpha = 1.0f;
         }
         if (alpha != _alphaComposite.getAlpha()) {
-            _alphaComposite =
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+            _alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
             if (_mgr != null) {
                 _mgr.getRegionManager().invalidateRegion(_bounds);
             }
