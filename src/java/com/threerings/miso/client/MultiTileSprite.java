@@ -21,6 +21,10 @@
 
 package com.threerings.miso.client;
 
+/**
+ * Implemented by any sprite that wishes to be treated as occupying a larger-than-one-tile region
+ *  by Miso's render order finding algorithms.
+ */
 public interface MultiTileSprite
 {
     /** Returns the number of tiles the sprite occupies along the x-axis.  Note that the origin is
