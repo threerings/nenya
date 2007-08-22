@@ -281,7 +281,7 @@ public class DirtyItemList
             this.oy = y;
 
             // calculate the item's leftmost and rightmost tiles; note
-            // that sprites occupy only a single tile, so leftmost and
+            // that normal (Non-MultiTile) sprites occupy only a single tile, so leftmost and
             // rightmost tiles are equivalent
             lx = rx = ox;
             ly = ry = oy;
@@ -289,6 +289,10 @@ public class DirtyItemList
                 ObjectTile tile = ((SceneObject)obj).tile;
                 lx -= (tile.getBaseWidth() - 1);
                 ry -= (tile.getBaseHeight() - 1);
+            } else if (obj instanceof MultiTileSprite) {
+                MultiTileSprite mts = (MultiTileSprite)obj;
+                lx -= (mts.getBaseWidth() - 1);
+                ry -= (mts.getBaseHeight() - 1);
             }
         }
 
@@ -457,7 +461,7 @@ public class DirtyItemList
                 }
                 return result;
             }
-            
+
             // check for partitioning objects on the x-axis
             result = comparePartitioned(X_AXIS, da, db);
             if (result != 0) {
