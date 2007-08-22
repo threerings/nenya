@@ -70,7 +70,7 @@ public class AnimationSprite extends Sprite
     // documentation inherited.
     public void setLocation (int x, int y)
     {
-        _anim.setLocation(x, y);
+        _anim.setLocation(x - _oxoff, y - _oyoff);
         super.setLocation(x, y);
     }
 
