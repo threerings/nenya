@@ -241,32 +241,25 @@ public class VirtualMediaPanel extends MediaPanel
 //                      "), d=(" + dx + ", " + dy +
 //                      "), width=" + width + ", height=" + height + "].");
 
+            _dx = dx;
+            _dy = dy;
 
-            // Mac OS X's redraw breaks on scrolling, so we repaint the
-            // entire panel 
-            if (RunAnywhere.isMacOS()) {
-                _metamgr.getRegionManager().invalidateRegion(_nx, _ny, width, height);
-            } else {
-                _dx = dx;
-                _dy = dy;
+            // these are used to prevent the vertical strip from
+            // overlapping the horizontal strip
+            int sy = _ny, shei = height;
 
-                // these are used to prevent the vertical strip from
-                // overlapping the horizontal strip
-                int sy = _ny, shei = height;
-
-                // and add invalid rectangles for the exposed areas
-                if (dy > 0) {
-                    shei = Math.max(shei - dy, 0);
-                    _metamgr.getRegionManager().invalidateRegion(_nx, _ny + height - dy, width, dy);
-                } else if (dy < 0) {
-                    sy -= dy;
-                    _metamgr.getRegionManager().invalidateRegion(_nx, _ny, width, -dy);
-                }
-                if (dx > 0) {
-                    _metamgr.getRegionManager().invalidateRegion(_nx + width - dx, sy, dx, shei);
-                } else if (dx < 0) {
-                    _metamgr.getRegionManager().invalidateRegion(_nx, sy, -dx, shei);
-                }
+            // and add invalid rectangles for the exposed areas
+            if (dy > 0) {
+                shei = Math.max(shei - dy, 0);
+                _metamgr.getRegionManager().invalidateRegion(_nx, _ny + height - dy, width, dy);
+            } else if (dy < 0) {
+                sy -= dy;
+                _metamgr.getRegionManager().invalidateRegion(_nx, _ny, width, -dy);
+            }
+            if (dx > 0) {
+                _metamgr.getRegionManager().invalidateRegion(_nx + width - dx, sy, dx, shei);
+            } else if (dx < 0) {
+                _metamgr.getRegionManager().invalidateRegion(_nx, sy, -dx, shei);
             }
 
 
