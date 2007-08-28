@@ -6,7 +6,7 @@
     <include name="commons-collections.jar"/>
     <include name="commons-digester.jar"/>
     <include name="commons-io.jar"/>
-    <include name="junit-3.7.jar"/>
+    <include name="junit4.jar"/>
     <include name="narya-base.jar"/>
     <include name="narya-distrib.jar"/>
     <include name="retroweaver-all-1.2.2.jar"/>
