@@ -624,6 +624,22 @@ public class DirtyItemList
                 }
             }
 
+            // One is a multi-tile sprite and the two overlap - use render order if it helps.
+            // Note - Ideally logic like this should probably apply regardless of the type of object
+            // BUT considering the number of things that already exist that use this code, I suspect
+            // it would break something...
+            if ((da.obj instanceof MultiTileSprite || db.obj instanceof MultiTileSprite) &&
+                (da.lx <= db.rx && da.rx >= db.lx && da.ry <= db.ly && da.ly >= db.ry)) {
+                Sprite as = (Sprite)da.obj, bs = (Sprite)db.obj;
+                // we're comparing two sprites co-existing on the same
+                // tile, first check their render order
+                int rocomp = as.getRenderOrder() - bs.getRenderOrder();
+                if (rocomp != 0) {
+                    return rocomp;
+                }
+            }
+
+
             // otherwise use a consistent ordering for non-overlappers;
             // see narya/docs/miso/render_sort_diagram.png for more info
             if (db.lx <= da.ox && db.ry <= da.oy) {
