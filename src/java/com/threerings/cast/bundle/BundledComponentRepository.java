@@ -355,10 +355,13 @@ public class BundledComponentRepository
         {
             // we don't need our images prepared for screen rendering
             BufferedImage src = _imgr.getImage(getImageKey(path), zations);
+            float percentageOfDataBuffer = 1;
             if (bounds != null) {
+                percentageOfDataBuffer = 
+                    (bounds.height * bounds.width) / (float)(src.getHeight() * src.getWidth());
                 src = src.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
             }
-            return new BufferedMirage(src);
+            return new BufferedMirage(src, percentageOfDataBuffer);
         }
 
         /** The resource bundle from which we obtain image data. */

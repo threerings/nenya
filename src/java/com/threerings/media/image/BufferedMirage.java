@@ -31,7 +31,18 @@ public class BufferedMirage implements Mirage
 {
     public BufferedMirage (BufferedImage image)
     {
+        this(image, 1);
+    }
+    
+    /**
+     * @param percentageOfDataBuffer - the percentage of image's data buffer used by image for use
+     * in getEstimatedMemory. ie if this image is a subimage of another image, and they share a
+     * data buffer, this is the percentage of the size of this image compared to the source.
+     */
+    public BufferedMirage (BufferedImage image, float percentageOfDataBuffer)
+    {
         _image = image;
+        _percentageOfDataBuffer = percentageOfDataBuffer;
     }
 
     // documentation inherited from interface
@@ -61,7 +72,8 @@ public class BufferedMirage implements Mirage
     // documentation inherited from interface
     public long getEstimatedMemoryUsage ()
     {
-        return ImageUtil.getEstimatedMemoryUsage(_image.getRaster());
+        return (long)(ImageUtil.getEstimatedMemoryUsage(_image.getRaster()) *
+                _percentageOfDataBuffer);
     }
 
     // documentation inherited from interface
@@ -69,6 +81,8 @@ public class BufferedMirage implements Mirage
     {
         return _image;
     }
+    
+    protected float _percentageOfDataBuffer;
 
     protected BufferedImage _image;
 }

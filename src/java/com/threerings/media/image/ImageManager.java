@@ -273,7 +273,7 @@ public class ImageManager
         }
         if (crec != null) {
 //             Log.info("Cache hit [key=" + key + ", crec=" + crec + "].");
-            return crec.getImage(zations);
+            return crec.getImage(zations, _ccache);
         }
 //         Log.info("Cache miss [key=" + key + ", crec=" + crec + "].");
 
@@ -298,7 +298,7 @@ public class ImageManager
         // periodically report our image cache performance
         reportCachePerformance();
 
-        return crec.getImage(zations);
+        return crec.getImage(zations, _ccache);
     }
 
     /**
@@ -345,6 +345,7 @@ public class ImageManager
     {
         BufferedImage src = null;
 
+        float percentageOfDataBuffer = 1;
         if (bounds == null) {
             // if they specified no bounds, we need to load up the raw image and determine its
             // bounds so that we can pass those along to the created mirage
@@ -353,6 +354,8 @@ public class ImageManager
 
         } else if (!_prepareImages.getValue()) {
             src = getImage(key, zations);
+            percentageOfDataBuffer =
+                (bounds.width * bounds.height)/(float)(src.getHeight() * src.getWidth());
             src = src.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
         }
 
@@ -361,7 +364,7 @@ public class ImageManager
         } else if (_prepareImages.getValue()) {
             return new CachedVolatileMirage(this, key, bounds, zations);
         } else {
-            return new BufferedMirage(src);
+            return new BufferedMirage(src, percentageOfDataBuffer);
         }
     }
 
@@ -493,9 +496,8 @@ public class ImageManager
             }
             eff = _ccache.getTrackedEffectiveness();
         }
-        Log.info("ImageManager LRU [mem=" + (size / 1024) + "k" + ", size=" + _ccache.size() +
-                 ", hits=" + eff[0] + ", misses=" + eff[1] +
-                 ", totalKeys=" + _keySet.size() + "].");
+        Log.info("ImageManager LRU [mem=" + (size / 1024) + "k, size=" + _ccache.size() +
+            ", hits=" + eff[0] + ", misses=" + eff[1] + ", totalKeys=" + _keySet.size() + "].");
     }
 
     /** Maintains a source image and a set of colorized versions in the image cache. */
@@ -507,30 +509,31 @@ public class ImageManager
             _source = source;
         }
 
-        public BufferedImage getImage (Colorization[] zations)
+        public BufferedImage getImage (Colorization[] zations, LRUHashMap cache)
         {
             if (zations == null) {
                 return _source;
             }
 
             if (_colorized == null) {
-                _colorized = new ArrayList();
+                _colorized = new ArrayList<Tuple<Colorization[], BufferedImage>>();
             }
 
             // we search linearly through our list of colorized copies because it is not likely to
             // be very long
             int csize = _colorized.size();
             for (int ii = 0; ii < csize; ii++) {
-                Tuple tup = (Tuple)_colorized.get(ii);
-                Colorization[] tzations = (Colorization[])tup.left;
+                Tuple<Colorization[], BufferedImage> tup = _colorized.get(ii);
+                Colorization[] tzations = tup.left;
                 if (Arrays.equals(zations, tzations)) {
-                    return (BufferedImage)tup.right;
+                    return tup.right;
                 }
             }
 
             try {
                 BufferedImage cimage = ImageUtil.recolorImage(_source, zations);
-                _colorized.add(new Tuple(zations, cimage));
+                _colorized.add(new Tuple<Colorization[], BufferedImage>(zations, cimage));
+                cache.adjustSize((int)ImageUtil.getEstimatedMemoryUsage(cimage));
                 return cimage;
 
             } catch (Exception re) {
@@ -543,7 +546,13 @@ public class ImageManager
 
         public long getEstimatedMemoryUsage ()
         {
-            return ImageUtil.getEstimatedMemoryUsage(_source);
+            long usage = ImageUtil.getEstimatedMemoryUsage(_source);
+            if (_colorized != null) {
+                for (Tuple<Colorization[], BufferedImage> tup : _colorized) {
+                    usage += ImageUtil.getEstimatedMemoryUsage(tup.right);
+                }
+            }
+            return usage;
         }
 
         public String toString ()
@@ -554,7 +563,7 @@ public class ImageManager
 
         protected ImageKey _key;
         protected BufferedImage _source;
-        protected ArrayList _colorized;
+        protected ArrayList<Tuple<Colorization[], BufferedImage>> _colorized;
     }
 
     /** A reference to the resource manager via which we load image data by default. */
@@ -588,7 +597,7 @@ public class ImageManager
     /** Register our image cache size with the runtime adjustments framework. */
     protected static RuntimeAdjust.IntAdjust _cacheSize = new RuntimeAdjust.IntAdjust(
         "Size (in kb of memory used) of the image manager LRU cache [requires restart]",
-        "narya.media.image.cache_size", MediaPrefs.config, 2048);
+        "narya.media.image.cache_size", MediaPrefs.config, 32768);
 
     /** Controls whether or not we prepare images or use raw versions. */
     protected static RuntimeAdjust.BooleanAdjust _prepareImages = new RuntimeAdjust.BooleanAdjust(
