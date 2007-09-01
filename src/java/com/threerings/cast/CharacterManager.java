@@ -451,5 +451,5 @@ public class CharacterManager
         new RuntimeAdjust.IntAdjust(
             "Size (in kb of memory used) of the character manager LRU " +
             "action cache [requires restart]", "narya.cast.action_cache_size",
-            CastPrefs.config, 1024);
+            CastPrefs.config, 32768);
 }
