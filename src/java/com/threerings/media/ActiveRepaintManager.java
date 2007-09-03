@@ -121,6 +121,12 @@ public class ActiveRepaintManager extends RepaintManager
                 Log.info("Invalidating " + toString(vroot) + ".");
             }
             _invalid = ListUtil.add(_invalid, vroot);
+
+            // on the mac, components frequently do not repaint themselves after being invalidated
+            // so we have to force a repaint from the validation roon on down
+            if (RunAnywhere.isMacOS() && vroot instanceof JComponent) {
+                addDirtyRegion((JComponent)vroot, 0, 0, vroot.getWidth(), vroot.getHeight());
+            }
         }
     }
 
