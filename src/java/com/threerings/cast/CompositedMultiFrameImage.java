@@ -27,6 +27,7 @@ import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
 import com.threerings.cast.bundle.BundledComponentRepository.TileSetFrameImage;
@@ -75,12 +76,12 @@ public class CompositedMultiFrameImage
 
     public int getXOrigin (int index)
     {
-        return _images[index].getX();
+        return _images[index].getXOrigin();
     }
 
     public int getYOrigin (int index)
     {
-        return _images[index].getY();
+        return _images[index].getYOrigin();
     }
 
     // documentation inherited from interface
@@ -137,21 +138,14 @@ public class CompositedMultiFrameImage
             this.y = y;
         }
 
-        public int getX ()
+        public int getXOrigin ()
         {
             return x;
         }
 
-        public int getY ()
+        public int getYOrigin ()
         {
             return y;
-        }
-
-        // documentation inherited from interface
-        public int compare (ComponentFrames cf1, ComponentFrames cf2)
-        {
-            return (cf1.ccomp.componentClass.getRenderPriority(_action, _orient) -
-                    cf2.ccomp.componentClass.getRenderPriority(_action, _orient));
         }
         
         public long getEstimatedMemoryUsage ()
@@ -214,7 +208,7 @@ public class CompositedMultiFrameImage
      * Used to create our mirage using the source action frame images.
      */
     protected class CompositedVolatileMirage extends VolatileMirage
-        implements CompositedMirage
+        implements CompositedMirage, Comparator<ComponentFrames>
     {
         public CompositedVolatileMirage (int index)
         {

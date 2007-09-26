@@ -65,26 +65,44 @@ public class CompositedShadowImage extends CompositedMultiFrameImage
     public int getYOrigin (int index) {
         return _sources[0].frames.getYOrigin(_orient, index);
     }
+    
+    @Override // documentation inherited
+    protected CompositedMirage createCompositedMirage (int index) {
+        // Always use a CompositedVolatileMirage for ShadowImage since we need to draw into it.
+        return new CompositedVolatileMirage(index);
+    }
 
     // documentation inherited from interface
     public void paintFrame (Graphics2D g, int index, int x, int y) {
         Composite ocomp = g.getComposite();
         g.setComposite(_shadowAlpha);
-        _images[index].paint(g, x + _images[index].getX(),
-                             y + _images[index].getY());
+        _images[index].paint(g, x + getX(index), y + getY(index));
         g.setComposite(ocomp);
     }
 
     // documentation inherited from interface
     public boolean hitTest (int index, int x, int y) {
-        return _images[index].hitTest(x + _images[index].getX(),
-                                      y + _images[index].getY());
+        return _images[index].hitTest(x + getX(index), y + getY(index));
     }
 
     // documentation inherited from interface TrimmedMultiFrameImage
     public void getTrimmedBounds (int index, Rectangle bounds) {
-        bounds.setBounds(_images[index].getX(), _images[index].getY(),
-                         _images[index].getWidth(), _images[index].getHeight());
+        bounds.setBounds(getX(index), getY(index), _images[index].getWidth(),
+            _images[index].getHeight());
+    }
+    
+    /**
+     * @return the x offset into the source image for the image at index
+     */
+    protected int getX (int index) {
+        return ((VolatileMirage)_images[index]).getX();
+    }
+
+    /**
+     * @return the y offset into the source image for the image at index
+     */
+    protected int getY (int index) {
+        return ((VolatileMirage)_images[index]).getY();
     }
 
     /** The alpha value at which we render our shadow. */

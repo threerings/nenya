@@ -6,16 +6,16 @@ import com.threerings.cast.CompositedActionFrames.ComponentFrames;
 import com.threerings.media.image.Mirage;
 
 public interface CompositedMirage
-    extends Mirage, Comparator<ComponentFrames>
+    extends Mirage
 {
     /**
      * Returns the x offset into our image.
      */
-    public int getX ();
+    public int getXOrigin ();
 
     /**
      * Returns the y offset into our image.
      */
-    public int getY ();
+    public int getYOrigin ();
 
 }

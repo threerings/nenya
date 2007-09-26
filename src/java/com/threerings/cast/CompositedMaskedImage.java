@@ -66,20 +66,18 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
 
     // documentation inherited from interface
     public void paintFrame (Graphics2D g, int index, int x, int y) {
-        _images[index].paint(g, x + _images[index].getX(),
-                             y + _images[index].getY());
+        _images[index].paint(g, x + getX(index), y + getY(index));
     }
 
     // documentation inherited from interface
     public boolean hitTest (int index, int x, int y) {
-        return _images[index].hitTest(x + _images[index].getX(),
-                                      y + _images[index].getY());
+        return _images[index].hitTest(x + getX(index), y + getY(index));
     }
 
     // documentation inherited from interface TrimmedMultiFrameImage
     public void getTrimmedBounds (int index, Rectangle bounds) {
-        bounds.setBounds(_images[index].getX(), _images[index].getY(),
-                         _images[index].getWidth(), _images[index].getHeight());
+        bounds.setBounds(getX(index), getY(index), _images[index].getWidth(),
+            _images[index].getHeight());
     }
 
     // documentation inherited
@@ -128,5 +126,19 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
                 }
             }
         }
+    }
+    
+    /**
+     * @return the x offset into the source image for the image at index
+     */
+    protected int getX (int index) {
+        return ((VolatileMirage)_images[index]).getX();
+    }
+
+    /**
+     * @return the y offset into the source image for the image at index
+     */
+    protected int getY (int index) {
+        return ((VolatileMirage)_images[index]).getY();
     }
 };
