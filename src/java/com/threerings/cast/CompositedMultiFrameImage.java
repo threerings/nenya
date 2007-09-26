@@ -25,16 +25,14 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Transparency;
-
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.Comparator;
 
+import com.threerings.cast.CompositedActionFrames.ComponentFrames;
+import com.threerings.cast.bundle.BundledComponentRepository.TileSetFrameImage;
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
-
-import com.threerings.cast.CompositedActionFrames.ComponentFrames;
-import com.threerings.cast.TrimmedMultiFrameImage;
 
 /**
  * Used to composite the action frames for a particular orientation of a
@@ -75,12 +73,14 @@ public class CompositedMultiFrameImage
         return _images[index].getHeight();
     }
 
-    public int getXOrigin (int index) {
-        return _images[index].getXOrigin();
+    public int getXOrigin (int index)
+    {
+        return _images[index].getX();
     }
 
-    public int getYOrigin (int index) {
-        return _images[index].getYOrigin();
+    public int getYOrigin (int index)
+    {
+        return _images[index].getY();
     }
 
     // documentation inherited from interface
@@ -115,7 +115,78 @@ public class CompositedMultiFrameImage
      */
     protected CompositedMirage createCompositedMirage (int index)
     {
-        return new CompositedMirage(index);
+        if (_sources.length == 1 && _sources[0].frames instanceof TileSetFrameImage) {
+            TileSetFrameImage frames = (TileSetFrameImage)_sources[0].frames;
+            Rectangle tbounds = new Rectangle();
+            frames.getTrimmedBounds(_orient, index, tbounds);
+            int x = frames.getXOrigin(_orient, index) - tbounds.x;
+            int y = frames.getYOrigin(_orient, index) - tbounds.y;
+            return new SubmirageForwarder(frames.getTileMirage(_orient, index), x, y);
+        }
+        return new CompositedVolatileMirage(index);
+    }
+    
+    /**
+     * A CompositedMirage that forwards all of its Mirage calls to a delegate Mirage.
+     */
+    protected class SubmirageForwarder implements CompositedMirage {
+
+        public SubmirageForwarder(Mirage m, int x, int y) {
+            delegate = m;
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX ()
+        {
+            return x;
+        }
+
+        public int getY ()
+        {
+            return y;
+        }
+
+        // documentation inherited from interface
+        public int compare (ComponentFrames cf1, ComponentFrames cf2)
+        {
+            return (cf1.ccomp.componentClass.getRenderPriority(_action, _orient) -
+                    cf2.ccomp.componentClass.getRenderPriority(_action, _orient));
+        }
+        
+        public long getEstimatedMemoryUsage ()
+        {
+            return delegate.getEstimatedMemoryUsage();
+        }
+
+        public int getHeight ()
+        {
+            return delegate.getHeight();
+        }
+
+        public BufferedImage getSnapshot ()
+        {
+            return delegate.getSnapshot();
+        }
+
+        public int getWidth ()
+        {
+            return delegate.getWidth();
+        }
+
+        public boolean hitTest (int x, int y)
+        {
+            return delegate.hitTest(x, y);
+        }
+
+        public void paint (Graphics2D gfx, int x, int y)
+        {
+            delegate.paint(gfx, x, y);
+        }
+        
+        protected int x, y;
+        
+        protected Mirage delegate;
     }
     
     // documentation inherited
@@ -142,10 +213,10 @@ public class CompositedMultiFrameImage
     /**
      * Used to create our mirage using the source action frame images.
      */
-    protected class CompositedMirage extends VolatileMirage
-        implements Comparator
+    protected class CompositedVolatileMirage extends VolatileMirage
+        implements CompositedMirage
     {
-        public CompositedMirage (int index)
+        public CompositedVolatileMirage (int index)
         {
             super(CompositedMultiFrameImage.this._imgr,
                   new Rectangle(0, 0, 0, 0));
@@ -192,14 +263,10 @@ public class CompositedMultiFrameImage
         }
 
         // documentation inherited from interface
-        public int compare (Object o1, Object o2)
+        public int compare (ComponentFrames cf1, ComponentFrames cf2)
         {
-            ComponentFrames cf1 = (ComponentFrames)o1,
-                cf2 = (ComponentFrames)o2;
-            return (cf1.ccomp.componentClass.getRenderPriority(
-                        _action, _orient) -
-                    cf2.ccomp.componentClass.getRenderPriority(
-                        _action, _orient));
+            return (cf1.ccomp.componentClass.getRenderPriority(_action, _orient) -
+                    cf2.ccomp.componentClass.getRenderPriority(_action, _orient));
         }
 
         /**

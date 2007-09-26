@@ -90,7 +90,7 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
 
     /**
      * Combines the image in the first source with the masks in the rest. */
-    protected class MaskedMirage extends CompositedMirage
+    protected class MaskedMirage extends CompositedVolatileMirage
     {
         public MaskedMirage (int index)
         {

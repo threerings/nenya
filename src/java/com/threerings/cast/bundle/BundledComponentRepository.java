@@ -374,7 +374,7 @@ public class BundledComponentRepository
     /**
      * Used to provide multiframe images using data obtained from a tileset.
      */
-    protected static class TileSetFrameImage implements ActionFrames
+    public static class TileSetFrameImage implements ActionFrames
     {
         /**
          * Constructs a tileset frame image with the specified tileset and for the specified
@@ -437,15 +437,19 @@ public class BundledComponentRepository
                 }
 
                 public void getTrimmedBounds (int index, Rectangle bounds) {
-                    Tile tile = _set.getTile(getTileIndex(orient, index));
-                    if (tile instanceof TrimmedTile) {
-                        ((TrimmedTile)tile).getTrimmedBounds(bounds);
-                    } else {
-                        bounds.setBounds(0, 0, tile.getWidth(), tile.getHeight());
-                    }
-                    bounds.translate(_dx, _dy);
+                    TileSetFrameImage.this.getTrimmedBounds(orient, index, bounds);
                 }
             };
+        }
+
+        public void getTrimmedBounds (int orient, int index, Rectangle bounds) {
+            Tile tile = getTile(orient, index);
+            if (tile instanceof TrimmedTile) {
+                ((TrimmedTile)tile).getTrimmedBounds(bounds);
+            } else {
+                bounds.setBounds(0, 0, tile.getWidth(), tile.getHeight());
+            }
+            bounds.translate(_dx, _dy);
         }
 
         // documentation inherited from interface
@@ -477,6 +481,15 @@ public class BundledComponentRepository
             return _orients.get(orient) * _fcount + index;
         }
 
+        public Tile getTile (int orient, int index)
+        {
+            return _set.getTile(getTileIndex(orient, index));
+        }
+        
+        public Mirage getTileMirage(int orient, int index) {
+            return _set.getTileMirage(getTileIndex(orient, index));
+        }
+
         /** The tileset from which we obtain our frame images. */
         protected TileSet _set;
 
@@ -491,6 +504,7 @@ public class BundledComponentRepository
 
         /** A mapping from orientation code to animation sequence index. */
         protected IntIntMap _orients = new IntIntMap();
+
     }
 
     /** We use the image manager to decode and cache images. */
