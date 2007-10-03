@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
@@ -124,7 +125,7 @@ public class ActiveRepaintManager extends RepaintManager
 
             // on the mac, components frequently do not repaint themselves after being invalidated
             // so we have to force a repaint from the validation roon on down
-            if (RunAnywhere.isMacOS() && vroot instanceof JComponent) {
+            if (RunAnywhere.isMacOS() && _macDirtyOnInvalid && vroot instanceof JComponent) {
                 addDirtyRegion((JComponent)vroot, 0, 0, vroot.getWidth(), vroot.getHeight());
             }
         }
@@ -440,6 +441,13 @@ public class ActiveRepaintManager extends RepaintManager
             comp = comp.getParent();
         }
     }
+    
+    /**
+     * Set if the Mac should dirty its validation root if a single component is invalid.
+     */
+    public static void setMacDirtyOnInvalid(boolean dirty) {
+        _macDirtyOnInvalid = dirty;
+    }
 
     /** The root of our interface. */
     protected Component _root;
@@ -461,4 +469,8 @@ public class ActiveRepaintManager extends RepaintManager
 
     /** We debug so much that we have to make it easy to enable and disable debug logging. Yay! */
     protected static final boolean DEBUG = false;
+    
+    /** If true, Macs dirty the whole screen if any component is invalid */
+    protected static boolean _macDirtyOnInvalid = true;
+
 }
