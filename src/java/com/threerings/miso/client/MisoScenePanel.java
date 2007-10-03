@@ -250,7 +250,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     /**
      * Returns an iterator over all resolved {@link SceneBlock} instances.
      */
-    public Iterator enumerateResolvedBlocks ()
+    public Iterator<SceneBlock> enumerateResolvedBlocks ()
     {
         return _blocks.values().iterator();
     }
@@ -263,7 +263,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         int bx = MathUtil.floorDiv(tx, _metrics.blockwid);
         int by = MathUtil.floorDiv(ty, _metrics.blockhei);
-        return (SceneBlock)_blocks.get(compose(bx, by));
+        return _blocks.get(compose(bx, by));
     }
 
     /**
@@ -357,8 +357,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         HashSet fringe = new HashSet();
         HashMap object = new HashMap();
         long[] usage = new long[3];
-        for (Iterator iter = _blocks.values().iterator(); iter.hasNext(); ) {
-            SceneBlock block = (SceneBlock)iter.next();
+        for (SceneBlock block : _blocks.values()) {
             block.computeMemoryUsage(base, fringe, object, usage);
         }
         Log.info("Scene tile memory usage " +
@@ -977,8 +976,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             _vbounds.width+2*_metrics.tilewid,
             _vbounds.height+2*_metrics.tilehei);
 
-        for (Iterator iter = _blocks.values().iterator(); iter.hasNext(); ) {
-            SceneBlock block = (SceneBlock)iter.next();
+        for (SceneBlock block : _blocks.values()) {
             if (!block.isResolved()) {
                 continue;
             }
@@ -1029,7 +1027,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         _tips.clear();
 
         for (int ii = 0, nn = _vizobjs.size(); ii < nn; ii++) {
-            SceneObject scobj = (SceneObject)_vizobjs.get(ii);
+            SceneObject scobj = _vizobjs.get(ii);
             String action = scobj.info.action;
 
             // if the object has no action, skip it
@@ -1134,8 +1132,7 @@ public class MisoScenePanel extends VirtualMediaPanel
      */
     protected void getHitObjects (DirtyItemList list, int x, int y)
     {
-        for (int ii = 0, ll = _vizobjs.size(); ii < ll; ii++) {
-            SceneObject scobj = (SceneObject)_vizobjs.get(ii);
+        for (SceneObject scobj : _vizobjs) {
             Rectangle pbounds = scobj.bounds;
             if (!pbounds.contains(x, y)) {
                 continue;
@@ -1272,8 +1269,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
 
         // add any objects impacted by the dirty rectangle
-        for (int ii = 0, ll = _vizobjs.size(); ii < ll; ii++) {
-            SceneObject scobj = (SceneObject)_vizobjs.get(ii);
+        for (SceneObject scobj : _vizobjs) {
             if (!scobj.bounds.intersects(clip)) {
                 continue;
             }
@@ -1627,7 +1623,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected RethinkOp _rethinkOp = new RethinkOp();
 
     /** Contains our scene blocks. See {@link #getBlock} for details. */
-    protected HashIntMap _blocks = new HashIntMap();
+    protected HashIntMap<SceneBlock> _blocks = new HashIntMap<SceneBlock>();
 
     /** A count of blocks in the process of being resolved. */
     protected int _pendingBlocks;
@@ -1640,7 +1636,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected boolean _delayRepaint = false;
 
     /** A list of the potentially visible objects in the scene. */
-    protected ArrayList _vizobjs = new ArrayList();
+    protected ArrayList<SceneObject> _vizobjs = new ArrayList<SceneObject>();
 
     /** For computing fringe tiles. */
     protected HashMap _masks = new HashMap();
