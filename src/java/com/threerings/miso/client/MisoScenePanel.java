@@ -29,27 +29,27 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Stroke;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
-import javax.swing.Icon;
-import javax.swing.JFrame;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.JFrame;
 
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.RadialMenu;
@@ -57,7 +57,6 @@ import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.swing.event.CommandEvent;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;
-
 import com.threerings.media.VirtualMediaPanel;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.tile.Tile;
@@ -66,7 +65,6 @@ import com.threerings.media.tile.TileSet;
 import com.threerings.media.util.AStarPathUtil;
 import com.threerings.media.util.MathUtil;
 import com.threerings.media.util.Path;
-
 import com.threerings.miso.Log;
 import com.threerings.miso.MisoPrefs;
 import com.threerings.miso.client.DirtyItemList.DirtyItem;
@@ -1120,8 +1118,8 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
 
         // dirty the tips associated with the hover objects
-        dirtyTip((SceneObjectTip)_tips.get(oldHover));
-        dirtyTip((SceneObjectTip)_tips.get(newHover));
+        dirtyTip(_tips.get(oldHover));
+        dirtyTip(_tips.get(newHover));
     }
 
     /**
@@ -1302,25 +1300,24 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         // make sure the tips are ready
         if (!_tipsLaidOut) {
-            ArrayList boxlist = new ArrayList();
-            for (Iterator iter = _tips.keySet().iterator(); iter.hasNext(); ) {
-                SceneObject scobj = (SceneObject)iter.next();
-                SceneObjectTip tip = (SceneObjectTip)_tips.get(scobj);
-                tip.layout(gfx, scobj, _vbounds, boxlist);
-                boxlist.add(tip.bounds);
+            List<Rectangle> boundaries = new ArrayList<Rectangle>(); 
+            for (Entry<SceneObject, SceneObjectTip> entry : _tips.entrySet()) {
+                entry.getValue().layout(gfx, entry.getKey(), _vbounds, boundaries);
+                dirtyTip(entry.getValue());
+                boundaries.add(entry.getValue().bounds);
             }
             _tipsLaidOut = true;
         }
 
         if (checkShowFlag(SHOW_TIPS)) {
             // show all the tips
-            for (Iterator iter = _tips.values().iterator(); iter.hasNext(); ) {
-                paintTip(gfx, clip, (SceneObjectTip)iter.next());
+            for (SceneObjectTip tip : _tips.values()) {
+                paintTip(gfx, clip, tip);
             }
 
         } else {
             // show maybe one tip
-            SceneObjectTip tip = (SceneObjectTip)_tips.get(_hobject);
+            SceneObjectTip tip = _tips.get(_hobject);
             if (tip != null) {
                 paintTip(gfx, clip, tip);
             }
@@ -1677,7 +1674,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected Point _hcoords = new Point();
 
     /** Our object tips, indexed by the object that they tip for. */
-    protected HashMap _tips = new HashMap();
+    protected HashMap<SceneObject, SceneObjectTip> _tips = 
+        new HashMap<SceneObject, SceneObjectTip>();
 
     /** Have the tips been laid out? */
     protected boolean _tipsLaidOut = false;

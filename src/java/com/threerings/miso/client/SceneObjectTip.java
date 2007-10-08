@@ -83,7 +83,7 @@ public class SceneObjectTip extends LabelSausage
      * @param othertips other tip boundaries that we should avoid.
      */
     public void layout (Graphics2D gfx, SceneObject tipFor, Rectangle boundary,
-                        Collection othertips)
+                        Collection<Rectangle> othertips)
     {
         layout(gfx, ICON_PAD, EXTRA_PAD);
         bounds = new Rectangle(_size);
