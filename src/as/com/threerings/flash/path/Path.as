@@ -55,26 +55,41 @@ public /*abstract*/ class Path
      * Starts this path. The path will be ticked once immediately and subsequently ticked every
      * frame.
      *
-     * @param onComplete an optional function to be called when it completes (or is aborted). The
-     * function should have the following signature: function onComplete (path :Path) :void
+     * @param onComplete an optional function to be called when it completes (or is aborted).
      * @param startOffset an optional number of milliseconds by which to adjust the time at which
      * the path believes that it was started.
      */
-    public function start (onComplete :Function = null, startOffset :int = 0) :void
+    public function start () :void
     {
-        _onComplete = onComplete;
         _target.addEventListener(Event.ENTER_FRAME, onEnterFrame);
-        willStart(getTimer(), startOffset);
+        willStart(getTimer(), 0);
     }
 
     /**
-     * Configures this path's onComplete function. This should generally only be called shortly
-     * after construction as the function will not be called if the path is already completed or
-     * aborted.
+     * Configures this path's onStart function. The function should have the following signature:
+     * <code>function (path :Path) :void</code>. This should only be called before the path is
+     * started.
+     *
+     * @return a reference to this path, for easy chaining.
      */
-    public function setOnComplete (onComplete :Function) :void
+    public function setOnStart (onStart :Function) :Path
+    {
+        _onStart = onStart;
+        return this;
+    }
+
+    /**
+     * Configures this path's onComplete function. The function should have the following
+     * signature: <code>function (path :Path) :void</code>. This should generally only be called
+     * shortly after construction as the function will not be called if the path is already
+     * completed or aborted.
+     *
+     * @return a reference to this path, for easy chaining.
+     */
+    public function setOnComplete (onComplete :Function) :Path
     {
         _onComplete = onComplete;
+        return this;
     }
 
     /**
@@ -119,6 +134,9 @@ public /*abstract*/ class Path
     protected function willStart (now :int, startOffset :int = 0) :int
     {
         _startStamp = now + startOffset;
+        if (_onStart != null) {
+            _onStart(this);
+        }
         return tick(now);
     }
 
@@ -160,16 +178,17 @@ public /*abstract*/ class Path
     // needed by CompositePath
     protected static function tickPath (path :Path, curStamp :int) :int
     {
-        return (path == null) ? 0 : path.tick(curStamp);
+        return path.tick(curStamp);
     }
 
     // needed by CompositePath
     protected static function startPath (path :Path, curStamp :int, startOffset :int) :int
     {
-        return (path == null) ? 0 : path.willStart(curStamp, startOffset);
+        return path.willStart(curStamp, startOffset);
     }
 
     protected var _target :DisplayObject;
+    protected var _onStart :Function;
     protected var _onComplete :Function;
     protected var _startStamp :int = -1;
     protected var _wasAborted :Boolean;
