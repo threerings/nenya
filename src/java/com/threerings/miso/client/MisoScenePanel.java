@@ -908,6 +908,10 @@ public class MisoScenePanel extends VirtualMediaPanel
         if (_dpanel != null) {
             _dpanel.blockCleared(block);
         }
+
+        // Clear out waiting for the block since it is no longer resolving.
+        _pendingBlocks--;
+        _visiBlocks.remove(block);
     }
 
     /**
