@@ -122,12 +122,6 @@ public class ActiveRepaintManager extends RepaintManager
                 Log.info("Invalidating " + toString(vroot) + ".");
             }
             _invalid = ListUtil.add(_invalid, vroot);
-
-            // on the mac, components frequently do not repaint themselves after being invalidated
-            // so we have to force a repaint from the validation roon on down
-            if (RunAnywhere.isMacOS() && _macDirtyOnInvalid && vroot instanceof JComponent) {
-                addDirtyRegion((JComponent)vroot, 0, 0, vroot.getWidth(), vroot.getHeight());
-            }
         }
     }
 
@@ -442,13 +436,6 @@ public class ActiveRepaintManager extends RepaintManager
         }
     }
     
-    /**
-     * Set if the Mac should dirty its validation root if a single component is invalid.
-     */
-    public static void setMacDirtyOnInvalid(boolean dirty) {
-        _macDirtyOnInvalid = dirty;
-    }
-
     /** The root of our interface. */
     protected Component _root;
 
@@ -469,8 +456,4 @@ public class ActiveRepaintManager extends RepaintManager
 
     /** We debug so much that we have to make it easy to enable and disable debug logging. Yay! */
     protected static final boolean DEBUG = false;
-    
-    /** If true, Macs dirty the whole screen if any component is invalid */
-    protected static boolean _macDirtyOnInvalid = true;
-
 }
