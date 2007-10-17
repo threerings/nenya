@@ -120,8 +120,7 @@ public class TileSetTrimmer
         // create the new tileset image
         BufferedImage image = null;
         try {
-            image = ImageUtil.createCompatibleImage(
-                (BufferedImage)source.getRawTileSetImage(), nextx, maxy);
+            image = ImageUtil.createCompatibleImage(source.getRawTileSetImage(), nextx, maxy);
 
         } catch (RasterFormatException rfe) {
             throw new IOException("Failed to create trimmed tileset image " +

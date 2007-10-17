@@ -94,8 +94,7 @@ public class LineSegmentPath
      */
     public int getFinalOrientation ()
     {
-        return (_nodes.size() == 0) ? NORTH :
-            ((PathNode)_nodes.get(_nodes.size()-1)).dir;
+        return (_nodes.size() == 0) ? NORTH : _nodes.get(_nodes.size()-1).dir;
     }
 
     /**
@@ -121,7 +120,7 @@ public class LineSegmentPath
      */
     public PathNode getNode (int idx)
     {
-        return (PathNode)_nodes.get(idx);
+        return _nodes.get(idx);
     }
 
     /**
@@ -168,11 +167,10 @@ public class LineSegmentPath
 
         // compute the total distance along our path
         float distance = 0;
-        PathNode start = (PathNode)_nodes.get(0);
+        PathNode start = _nodes.get(0);
         for (int ii = 1; ii < ncount; ii++) {
-            PathNode end = (PathNode)_nodes.get(ii);
-            distance += MathUtil.distance(
-                start.loc.x, start.loc.y, end.loc.x, end.loc.y);
+            PathNode end = _nodes.get(ii);
+            distance += MathUtil.distance(start.loc.x, start.loc.y, end.loc.x, end.loc.y);
             start = end;
         }
 
@@ -192,7 +190,7 @@ public class LineSegmentPath
             // move the pathable to the location specified by the first
             // node (assuming we have a first node)
             if (size() == 1) {
-                PathNode node = (PathNode)_nodes.get(0);
+                PathNode node = _nodes.get(0);
                 pable.setLocation(node.loc.x, node.loc.y);
             }
             // and let the pathable know that we're done
@@ -313,7 +311,7 @@ public class LineSegmentPath
         Point prev = null;
         int size = size();
         for (int ii = 0; ii < size; ii++) {
-            PathNode n = (PathNode)getNode(ii);
+            PathNode n = getNode(ii);
             if (prev != null) {
                 gfx.drawLine(prev.x, prev.y, n.loc.x, n.loc.y);
             }
@@ -354,7 +352,7 @@ public class LineSegmentPath
     }        
 
     /** The nodes that make up the path. */
-    protected ArrayList _nodes = new ArrayList();
+    protected ArrayList<PathNode> _nodes = new ArrayList<PathNode>();
 
     /** We use this when moving along this path. */
     protected Iterator _niter;

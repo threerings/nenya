@@ -141,7 +141,7 @@ public class SceneBlock
         // resolve our objects
         ObjectSet set = new ObjectSet();
         model.getObjects(_bounds, set);
-        ArrayList scobjs = new ArrayList();
+        ArrayList<SceneObject> scobjs = new ArrayList<SceneObject>();
         now = System.currentTimeMillis();
         for (int ii = 0, ll = set.size(); ii < ll; ii++) {
             SceneObject scobj = new SceneObject(_panel, set.get(ii));
@@ -163,8 +163,7 @@ public class SceneBlock
                             ", elapsed=" + elapsed + "].");
             }
         }
-        _objects = (SceneObject[])scobjs.toArray(
-            new SceneObject[scobjs.size()]);
+        _objects = scobjs.toArray(new SceneObject[scobjs.size()]);
 
         // resolve our default tileset
         int bsetid = model.getDefaultBaseTileSet();
@@ -339,8 +338,7 @@ public class SceneBlock
             }
         }
 
-        _objects = (SceneObject[])
-            ArrayUtil.append(_objects, new SceneObject(_panel, info));
+        _objects = ArrayUtil.append(_objects, new SceneObject(_panel, info));
 
         // clear out our neighbors array so that the subsequent update
         // causes us to recompute our coverage
@@ -367,7 +365,7 @@ public class SceneBlock
         if (oidx == -1) {
             return false;
         }
-        _objects = (SceneObject[])ArrayUtil.splice(_objects, oidx, 1);
+        _objects = ArrayUtil.splice(_objects, oidx, 1);
 
         // clear out our neighbors array so that the subsequent update
         // causes us to recompute our coverage

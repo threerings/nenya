@@ -607,7 +607,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             // there are any items in the array)
             int icount = _hitList.size();
             if (icount > 0) {
-                DirtyItem item = (DirtyItem)_hitList.get(icount-1);
+                DirtyItem item = _hitList.get(icount-1);
                 hobject = item.obj;
             }
 

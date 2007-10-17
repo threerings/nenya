@@ -147,7 +147,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
     public boolean addObject (ObjectInfo info)
     {
         if (info.isInteresting()) {
-            objectInfo = (ObjectInfo[])ArrayUtil.append(objectInfo, info);
+            objectInfo = ArrayUtil.append(objectInfo, info);
         } else {
             objectTileIds = ArrayUtil.append(objectTileIds, info.tileId);
             objectXs = ArrayUtil.append(objectXs, (short)info.x);
@@ -170,7 +170,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         // look for it in the interesting info array
         int oidx = ListUtil.indexOf(objectInfo, info);
         if (oidx != -1) {
-            objectInfo = (ObjectInfo[])ArrayUtil.splice(objectInfo, oidx, 1);
+            objectInfo = ArrayUtil.splice(objectInfo, oidx, 1);
             return true;
         }
 
@@ -190,11 +190,11 @@ public class SimpleMisoSceneModel extends MisoSceneModel
     public Object clone ()
     {
         SimpleMisoSceneModel model = (SimpleMisoSceneModel)super.clone();
-        model.baseTileIds = (int[])baseTileIds.clone();
-        model.objectTileIds = (int[])objectTileIds.clone();
-        model.objectXs = (short[])objectXs.clone();
-        model.objectYs = (short[])objectYs.clone();
-        model.objectInfo = (ObjectInfo[])objectInfo.clone();
+        model.baseTileIds = baseTileIds.clone();
+        model.objectTileIds = objectTileIds.clone();
+        model.objectXs = objectXs.clone();
+        model.objectYs = objectYs.clone();
+        model.objectInfo = objectInfo.clone();
         return model;
     }
 

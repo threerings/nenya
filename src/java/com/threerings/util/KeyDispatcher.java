@@ -183,7 +183,7 @@ public class KeyDispatcher
         case KeyEvent.KEY_RELEASED:
             if (lsize > 0) {
                 for (int ii = 0; ii < lsize; ii++) {
-                    ((KeyListener) _listeners.get(ii)).keyReleased(e);
+                    _listeners.get(ii).keyReleased(e);
                 }
                 // forget the key event
                 _downKeys.remove(e.getKeyCode());
@@ -195,19 +195,17 @@ public class KeyDispatcher
     }
 
     /**
-     * Returns true if the specified target component supports being typed
-     * into, and thus we shouldn't steal focus away from it if the user
-     * starts typing.
+     * Returns true if the specified target component supports being typed into, and thus we
+     * shouldn't steal focus away from it if the user starts typing.
      */
     protected boolean isTypeableTarget (Component target)
     {
         return target.isShowing() &&
-            (((target instanceof JTextComponent) &&
-                ((JTextComponent) target).isEditable()) ||
-            (target instanceof JComboBox) ||
-            (target instanceof ChatCantStealFocus) ||
-            (target instanceof JTable) ||
-            (target instanceof JRootPane));
+            (((target instanceof JTextComponent) && ((JTextComponent) target).isEditable()) ||
+             (target instanceof JComboBox) ||
+             (target instanceof ChatCantStealFocus) ||
+             (target instanceof JTable) ||
+             (target instanceof JRootPane));
     }
 
     /**

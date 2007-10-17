@@ -157,7 +157,7 @@ public class AStarPathUtil
         while (info.open.size() > 0) {
 
             // pop the best node so far from open
-            Node n = (Node)info.open.first();
+            Node n = info.open.first();
             info.open.remove(n);
 
             // if node is a goal node

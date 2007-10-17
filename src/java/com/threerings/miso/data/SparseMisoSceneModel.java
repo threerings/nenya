@@ -131,7 +131,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
             }
 
             if (info.isInteresting()) {
-                objectInfo = (ObjectInfo[])ArrayUtil.append(objectInfo, info);
+                objectInfo = ArrayUtil.append(objectInfo, info);
             } else {
                 objectTileIds = ArrayUtil.append(objectTileIds, info.tileId);
                 objectXs = ArrayUtil.append(objectXs, (short)info.x);
@@ -144,8 +144,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
             // look for it in the interesting info array
             int oidx = ListUtil.indexOf(objectInfo, info);
             if (oidx != -1) {
-                objectInfo = (ObjectInfo[])
-                    ArrayUtil.splice(objectInfo, oidx, 1);
+                objectInfo = ArrayUtil.splice(objectInfo, oidx, 1);
                 return true;
             }
 
@@ -216,11 +215,11 @@ public class SparseMisoSceneModel extends MisoSceneModel
         public Object clone () {
             try {
                 Section section = (Section)super.clone();
-                section.baseTileIds = (int[])baseTileIds.clone();
-                section.objectTileIds = (int[])objectTileIds.clone();
-                section.objectXs = (short[])objectXs.clone();
-                section.objectYs = (short[])objectYs.clone();
-                section.objectInfo = (ObjectInfo[])objectInfo.clone();
+                section.baseTileIds = baseTileIds.clone();
+                section.objectTileIds = objectTileIds.clone();
+                section.objectXs = objectXs.clone();
+                section.objectYs = objectYs.clone();
+                section.objectInfo = objectInfo.clone();
                 return section;
             } catch (CloneNotSupportedException cnse) {
                 throw new RuntimeException(cnse);
