@@ -92,7 +92,7 @@ public class NearestViz extends JPanel
         frame.getContentPane().add(new NearestViz(), BorderLayout.CENTER);
         frame.setSize(300, 300);
         SwingUtil.centerWindow(frame);
-        frame.show();
+        frame.setVisible(true);
     }
 
     protected float _theta = (float)(3 * Math.PI / 5);

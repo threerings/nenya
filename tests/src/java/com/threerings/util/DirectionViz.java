@@ -78,7 +78,7 @@ public class DirectionViz extends JPanel
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(new DirectionViz(), BorderLayout.CENTER);
         frame.setSize(300, 300);
-        frame.show();
+        frame.setVisible(true);
     }
 
     protected Point _center;

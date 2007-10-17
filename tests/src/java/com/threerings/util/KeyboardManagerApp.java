@@ -42,7 +42,7 @@ public class KeyboardManagerApp
 
     public void run ()
     {
-        _frame.show();
+        _frame.setVisible(true);
     }
 
     public static void main (String[] args)

@@ -58,7 +58,7 @@ public class TestApp
     public void run ()
     {
         _frame.pack();
-        _frame.show();
+        _frame.setVisible(true);
     }
 
     public static void main (String[] args)

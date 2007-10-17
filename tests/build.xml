@@ -94,6 +94,8 @@
       <exclude name="com/threerings/openal/**" unless="build.openal"/>
       <exclude name="com/threerings/**/tools/xml/**" unless="build.xml"/>
       <exclude name="com/threerings/miso/viewer/**" unless="build.xml"/>
+      <compilerarg value="-Xlint"/>
+      <compilerarg value="-Xlint:-serial"/>
     </javac>
   </target>
 

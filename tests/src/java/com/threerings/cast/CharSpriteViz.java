@@ -134,7 +134,7 @@ public class CharSpriteViz extends JPanel
                 BorderLayout.CENTER);
             frame.setSize(200, 200);
             SwingUtil.centerWindow(frame);
-            frame.show();
+            frame.setVisible(true);
 
         } catch (NoSuchComponentException nsce) {
             System.err.println("No component with specified class " +

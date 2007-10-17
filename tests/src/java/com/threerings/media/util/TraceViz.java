@@ -89,7 +89,7 @@ public class TraceViz
     {
         _frame.pack();
         SwingUtil.centerWindow(_frame);
-        _frame.show();
+        _frame.setVisible(true);
     }
 
     public static void main (String[] args)

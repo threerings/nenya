@@ -56,7 +56,7 @@ public class TestIconManager
             frame.getContentPane().add(panel, BorderLayout.CENTER);
             frame.pack();
             SwingUtil.centerWindow(frame);
-            frame.show();
+            frame.setVisible(true);
 
         } catch (Exception e) {
             e.printStackTrace(System.err);

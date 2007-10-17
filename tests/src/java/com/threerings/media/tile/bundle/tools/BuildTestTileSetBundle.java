@@ -52,17 +52,15 @@ public class BuildTestTileSetBundle
         }
     }
 
-    /** Dummy tileset id broker that makes up tileset ids (which are
-     * consistent in the course of execution of the application, but not
-     * between invocations). */
-    protected static class DummyTileSetIDBroker
-        extends HashMap
+    /** Dummy tileset id broker that makes up tileset ids (which are consistent in the course of
+     * execution of the application, but not between invocations). */
+    protected static class DummyTileSetIDBroker extends HashMap<String,Integer>
         implements TileSetIDBroker
     {
         public int getTileSetID (String tileSetName)
             throws PersistenceException
         {
-            Integer id = (Integer)get(tileSetName);
+            Integer id = get(tileSetName);
             if (id == null) {
                 id = new Integer(++_nextId);
                 put(tileSetName, id);
@@ -83,12 +81,7 @@ public class BuildTestTileSetBundle
         protected int _nextId;
     }
 
-    protected static final String CONFIG_PATH =
-        "rsrc/media/tile/bundle/tools/bundler-config.xml";
-
-    protected static final String BUNDLE_DESC_PATH =
-        "rsrc/media/tile/bundle/tools/bundle.xml";
-
-    protected static final String TARGET_PATH =
-        "rsrc/media/tile/bundle/tools/bundle.jar";
+    protected static final String CONFIG_PATH = "rsrc/media/tile/bundle/tools/bundler-config.xml";
+    protected static final String BUNDLE_DESC_PATH = "rsrc/media/tile/bundle/tools/bundle.xml";
+    protected static final String TARGET_PATH = "rsrc/media/tile/bundle/tools/bundle.jar";
 }
