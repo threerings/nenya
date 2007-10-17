@@ -82,8 +82,7 @@ public class SoundManager
     {
         /**
          * Construct a new SoundType.
-         * Which should be a static variable stashed somewhere for the
-         * entire application to share.
+         * Which should be a static variable stashed somewhere for the entire application to share.
          * 
          * @param strname a short string identifier, preferably without spaces.
          */
@@ -92,6 +91,7 @@ public class SoundManager
             _strname = strname;
         }
 
+        @Override // documentation inherited
         public String toString ()
         {
             return _strname;
@@ -107,10 +107,9 @@ public class SoundManager
     {
         /**
          * Stop playing or looping the sound.
-         * At present, the granularity of this command is limited to the
-         * buffer size of the line spooler, or about 8k of data. Thus,
-         * if playing an 11khz sample, it could take 8/11ths of a second
-         * for the sound to actually stop playing.
+         * At present, the granularity of this command is limited to the buffer size of the 
+         * line spooler, or about 8k of data. Thus, if playing an 11khz sample, it could take 
+         * 8/11ths of a second for the sound to actually stop playing.
          */
         public void stop ();
 
@@ -154,8 +153,7 @@ public class SoundManager
      * @param defaultClipPath The pathname of a sound clip to use as a
      * fallback if another sound clip cannot be located.
      */
-    public SoundManager (
-        ResourceManager rmgr, String defaultClipBundle, String defaultClipPath)
+    public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath)
     {
         // save things off
         _rmgr = rmgr;
@@ -182,8 +180,7 @@ public class SoundManager
     }
 
     /**
-     * Returns a string summarizing our volume settings and disabled sound
-     * types.
+     * Returns a string summarizing our volume settings and disabled sound types.
      */
     public String summarizeState ()
     {
@@ -191,7 +188,7 @@ public class SoundManager
         buf.append("clipVol=").append(_clipVol);
         buf.append(", disabled=[");
         int ii = 0;
-        for (Iterator iter = _disabledTypes.iterator(); iter.hasNext(); ) {
+        for (Iterator<SoundType> iter = _disabledTypes.iterator(); iter.hasNext(); ) {
             if (ii++ > 0) {
                 buf.append(", ");
             }
@@ -311,16 +308,14 @@ public class SoundManager
      * @param delay the delay in milliseconds.
      * @param pan a value from -1f (all left) to +1f (all right).
      */
-    public void play (
-            SoundType type, String pkgPath, String key, int delay, float pan)
+    public void play (SoundType type, String pkgPath, String key, int delay, float pan)
     {
         if (type == null) {
             type = DEFAULT; // let the lazy kids play too
         }
 
         if ((_clipVol != 0f) && isEnabled(type)) {
-            final SoundKey skey = new SoundKey(PLAY, pkgPath, key, delay,
-                _clipVol, pan);
+            final SoundKey skey = new SoundKey(PLAY, pkgPath, key, delay, _clipVol, pan);
             if (delay > 0) {
                 new Interval() {
                     public void expired () {
@@ -372,8 +367,8 @@ public class SoundManager
             }
 
         } else /* if (_verbose.getValue()) */ {
-            Log.warning("SoundManager not playing sound because " +
-                        "too many sounds in queue [key=" + skey + "].");
+            Log.warning("SoundManager not playing sound because too many sounds in queue " +
+                        "[key=" + skey + "].");
         }
     }
 
@@ -390,8 +385,7 @@ public class SoundManager
             } else {
                 _queue.appendLoud(key);
                 queued = true;
-                add = okToStartNew && (_freeSpoolers == 0) &&
-                        (_spoolerCount < MAX_SPOOLERS);
+                add = okToStartNew && (_freeSpoolers == 0) && (_spoolerCount < MAX_SPOOLERS);
                 if (add) {
                     _spoolerCount++;
                 }
@@ -422,12 +416,12 @@ public class SoundManager
                 SoundKey key;
                 synchronized (_queue) {
                     _freeSpoolers++;
-                    key = (SoundKey) _queue.get(MAX_WAIT_TIME);
+                    key = _queue.get(MAX_WAIT_TIME);
                     _freeSpoolers--;
 
                     if (key == null || key.cmd == DIE) {
                         _spoolerCount--;
-                        // if dieing and there are others to kill, do so
+                        // if dying and there are others to kill, do so
                         if (key != null && _spoolerCount > 0) {
                             _queue.appendLoud(key);
                         }
@@ -464,8 +458,7 @@ public class SoundManager
                         // copy cached to lock map
                         _lockedClips.put(key, _clipCache.get(key));
                     } catch (Exception e) {
-                        // don't whine about LOCK failures unless
-                        // we are verbosely logging
+                        // don't whine about LOCK failures unless we are verbosely logging
                         if (_verbose.getValue()) {
                             throw e;
                         }
@@ -568,34 +561,28 @@ public class SoundManager
             if (sampleSize == AudioSystem.NOT_SPECIFIED) {
                 sampleSize = 16;
             }
-            int drainTime = (int) Math.ceil(
-                (LINEBUF_SIZE * 8 * 1000) / (sampleRate * sampleSize));
+            int drainTime = (int) Math.ceil((LINEBUF_SIZE * 8 * 1000) / (sampleRate * sampleSize));
 
             // add in a fudge factor of half a second 
             drainTime += 500;
 
             try {
                 Thread.sleep(drainTime);
-            } catch (InterruptedException ie) {
-            }
+            } catch (InterruptedException ie) { }
 
         } catch (IOException ioe) {
-            Log.warning("Error loading sound file [key=" + key +
-                        ", e=" + ioe + "].");
+            Log.warning("Error loading sound file [key=" + key + ", e=" + ioe + "].");
 
         } catch (UnsupportedAudioFileException uafe) {
-            Log.warning("Unsupported sound format [key=" + key +
-                        ", e=" + uafe + "].");
+            Log.warning("Unsupported sound format [key=" + key + ", e=" + uafe + "].");
 
         } catch (LineUnavailableException lue) {
-            String err = "Line not available to play sound [key=" + key.key +
-                      ", e=" + lue + "].";
+            String err = "Line not available to play sound [key=" + key.key + ", e=" + lue + "].";
             if (_soundSeemsToWork) {
                 Log.warning(err);
             } else {
-                // this error comes every goddamned time we play a sound on
-                // someone with a misconfigured sound card, so let's just keep
-                // it to ourselves
+                // this error comes every goddamned time we play a sound on someone with a 
+                // misconfigured sound card, so let's just keep it to ourselves
                 Log.debug(err);
             }
 
@@ -616,8 +603,7 @@ public class SoundManager
     }
 
     /**
-     * Called by spooling threads, loads clip data from the resource
-     * manager or the cache.
+     * Called by spooling threads, loads clip data from the resource manager or the cache.
      */
     protected byte[] getClipData (SoundKey key)
         throws IOException, UnsupportedAudioFileException
@@ -630,13 +616,13 @@ public class SoundManager
                 _clipCache.clear();
             }
 
-            data = (byte[][]) _clipCache.get(key);
+            data = _clipCache.get(key);
 
             // see if it's in the locked cache (we first look in the regular
             // clip cache so that locked clips that are still cached continue
             // to be moved to the head of the LRU queue)
             if (data == null) {
-                data = (byte[][]) _lockedClips.get(key);
+                data = _lockedClips.get(key);
             }
 
             if (data == null) {
@@ -714,8 +700,7 @@ public class SoundManager
             try {
                 return new FileInputStream(pick);
             } catch (Exception e) {
-                Log.warning("Error reading test sound [e=" + e + ", file=" +
-                    pick + "].");
+                Log.warning("Error reading test sound [e=" + e + ", file=" + pick + "].");
             }
         }
         return null;
@@ -735,15 +720,13 @@ public class SoundManager
             try {
                 clipin = _rmgr.getResource(path);
             } catch (FileNotFoundException fnfe2) {
-                // only play the default sound if we have verbose sound
-                // debuggin turned on.
+                // only play the default sound if we have verbose sound debugging turned on.
                 if (_verbose.getValue()) {
-                    Log.warning("Could not locate sound data [bundle=" +
-                        bundle + ", path=" + path + "].");
+                    Log.warning("Could not locate sound data [bundle=" + bundle + 
+                                ", path=" + path + "].");
                     if (_defaultClipPath != null) {
                         try {
-                            clipin = _rmgr.getResource(
-                                _defaultClipBundle, _defaultClipPath);
+                            clipin = _rmgr.getResource(_defaultClipBundle, _defaultClipPath);
                         } catch (FileNotFoundException fnfe3) {
                             try {
                                 clipin = _rmgr.getResource(_defaultClipPath);
@@ -773,7 +756,7 @@ public class SoundManager
      */
     protected Config getConfig (SoundKey key)
     {
-        Config c = (Config) _configs.get(key.pkgPath);
+        Config c =  _configs.get(key.pkgPath);
         if (c == null) {
             String propPath = key.pkgPath + Sounds.PROP_NAME;
             Properties props = new Properties();
@@ -818,11 +801,9 @@ public class SoundManager
      */
     protected static void adjustVolume (Line line, float vol)
     {
-        FloatControl control = (FloatControl) 
-            line.getControl(FloatControl.Type.MASTER_GAIN);
+        FloatControl control = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
 
-        // the only problem is that gain is specified in decibals,
-        // which is a logarithmic scale.
+        // the only problem is that gain is specified in decibals, which is a logarithmic scale.
         // Since we want max volume to leave the sample unchanged, our
         // maximum volume translates into a 0db gain.
         float gain;
@@ -842,8 +823,7 @@ public class SoundManager
     protected static void adjustPan (Line line, float pan)
     {
         try {
-            FloatControl control =
-                (FloatControl) line.getControl(FloatControl.Type.PAN);
+            FloatControl control = (FloatControl) line.getControl(FloatControl.Type.PAN);
             control.setValue(pan);
         } catch (Exception e) {
             Log.debug("Cannot set pan on line: " + e);
@@ -897,8 +877,7 @@ public class SoundManager
         /**
          * Constructor for a sound effect soundkey.
          */
-        public SoundKey (byte cmd, String pkgPath, String key, int delay,
-                         float volume, float pan)
+        public SoundKey (byte cmd, String pkgPath, String key, int delay, float volume, float pan)
         {
             this(cmd, pkgPath, key);
 
@@ -950,26 +929,24 @@ public class SoundManager
             return (stamp + MAX_SOUND_DELAY < System.currentTimeMillis());
         }
 
-        // documentation inherited
+        @Override // documentation inherited
         public String toString ()
         {
-            return "SoundKey{cmd=" + cmd + ", pkgPath=" + pkgPath +
-                ", key=" + key + "}";
+            return "SoundKey{cmd=" + cmd + ", pkgPath=" + pkgPath + ", key=" + key + "}";
         }
 
-        // documentation inherited
+        @Override // documentation inherited
         public int hashCode ()
         {
             return pkgPath.hashCode() ^ key.hashCode();
         }
 
-        // documentation inherited
+        @Override // documentation inherited
         public boolean equals (Object o)
         {
             if (o instanceof SoundKey) {
                 SoundKey that = (SoundKey) o;
-                return this.pkgPath.equals(that.pkgPath) &&
-                       this.key.equals(that.key);
+                return this.pkgPath.equals(that.pkgPath) && this.key.equals(that.key);
             }
             return false;
         }
@@ -982,7 +959,7 @@ public class SoundManager
     protected ResourceManager _rmgr;
 
     /** The queue of sound clips to be played. */
-    protected Queue _queue = new Queue();
+    protected Queue<SoundKey> _queue = new Queue<SoundKey>();
 
     /** The number of currently active LineSpoolers. */
     protected int _spoolerCount, _freeSpoolers;
@@ -994,18 +971,18 @@ public class SoundManager
     protected float _clipVol = 1f;
 
     /** The cache of recent audio clips . */
-    protected LRUHashMap _clipCache = new LRUHashMap(10);
+    protected LRUHashMap<SoundKey,byte[][]> _clipCache = new LRUHashMap<SoundKey,byte[][]>(10);
 
     /** The set of locked audio clips; this is separate from the LRU so
      * that locking clips doesn't booch up an otherwise normal caching
      * agenda. */
-    protected HashMap _lockedClips = new HashMap();
+    protected HashMap<SoundKey,byte[][]> _lockedClips = new HashMap<SoundKey,byte[][]>();
 
     /** A set of soundTypes for which sound is enabled. */
-    protected HashSet _disabledTypes = new HashSet();
+    protected HashSet<SoundType> _disabledTypes = new HashSet<SoundType>();
 
     /** A cache of config objects we've created. */
-    protected LRUHashMap _configs = new LRUHashMap(5);
+    protected LRUHashMap<String,Config> _configs = new LRUHashMap<String,Config>(5);
 
     /** Soundkey command constants. */
     protected static final byte PLAY = 0;
@@ -1017,26 +994,22 @@ public class SoundManager
     /** A pref that specifies a directory for us to get test sounds from. */
     protected static RuntimeAdjust.FileAdjust _testDir =
         new RuntimeAdjust.FileAdjust(
-            "Test sound directory", "narya.media.sound.test_dir",
-            MediaPrefs.config, true, "");
+            "Test sound directory", "narya.media.sound.test_dir", MediaPrefs.config, true, "");
 
     protected static RuntimeAdjust.BooleanAdjust _verbose =
         new RuntimeAdjust.BooleanAdjust(
-            "Verbose sound event logging", "narya.media.sound.verbose",
-            MediaPrefs.config, false);
+            "Verbose sound event logging", "narya.media.sound.verbose", MediaPrefs.config, false);
 
     /** The queue size at which we start to ignore requests to play sounds. */
     protected static final int MAX_QUEUE_SIZE = 25;
 
-    /** The maximum time after which we throw away a sound rather
-     * than play it. */
+    /** The maximum time after which we throw away a sound rather than play it. */
     protected static final long MAX_SOUND_DELAY = 400L;
 
     /** The size of the line's buffer. */
     protected static final int LINEBUF_SIZE = 8 * 1024;
 
-    /** The maximum time a spooler will wait for a stream before
-     * deciding to shut down. */
+    /** The maximum time a spooler will wait for a stream before deciding to shut down. */
     protected static final long MAX_WAIT_TIME = 30000L;
 
     /** The maximum number of spoolers we'll allow. This is a lot. */

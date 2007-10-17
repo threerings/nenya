@@ -43,7 +43,7 @@ import com.threerings.media.Log;
  */
 public class Mp3Player extends MusicPlayer
 {
-    // documentation inherited
+    @Override // documentation inherited
     public void init ()
     {
         // TODO: some stuff needs to move here, like setting up the line
@@ -51,12 +51,12 @@ public class Mp3Player extends MusicPlayer
         // out (the format might always be known..).
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void shutdown ()
     {
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void start (final InputStream stream)
         throws Exception
     {
@@ -74,15 +74,12 @@ public class Mp3Player extends MusicPlayer
                 }
 
                 AudioFormat sourceFormat = inStream.getFormat();
-                AudioFormat.Encoding targetEnc =
-                    AudioFormat.Encoding.PCM_SIGNED;
+                AudioFormat.Encoding targetEnc = AudioFormat.Encoding.PCM_SIGNED;
 
-                inStream = AudioSystem.getAudioInputStream(
-                    targetEnc, inStream);
+                inStream = AudioSystem.getAudioInputStream(targetEnc, inStream);
                 AudioFormat format = inStream.getFormat();
 
-                DataLine.Info info = new DataLine.Info(
-                    SourceDataLine.class, format);
+                DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
                 try {
                     _line = (SourceDataLine) AudioSystem.getLine(info);
@@ -122,13 +119,13 @@ public class Mp3Player extends MusicPlayer
         _player.start();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void stop ()
     {
         _player = null;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void setVolume (float volume)
     {
         // TODO : line won't be null when we initialize it in the right place

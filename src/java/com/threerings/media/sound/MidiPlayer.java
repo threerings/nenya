@@ -39,7 +39,7 @@ import javax.sound.midi.Synthesizer;
 public class MidiPlayer extends MusicPlayer
     implements MetaEventListener
 {
-    // documentation inherited
+    @Override // documentation inherited
     public void init ()
         throws Exception
     {
@@ -50,13 +50,13 @@ public class MidiPlayer extends MusicPlayer
         }
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void shutdown ()
     {
         _sequencer.close();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void start (InputStream stream)
         throws Exception
     {
@@ -65,14 +65,14 @@ public class MidiPlayer extends MusicPlayer
         _sequencer.addMetaEventListener(this);
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void stop ()
     {
         _sequencer.removeMetaEventListener(this);
         _sequencer.stop();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void setVolume (float volume)
     {
         if (_channels != null) {

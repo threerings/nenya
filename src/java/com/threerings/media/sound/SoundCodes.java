@@ -29,14 +29,13 @@ import com.threerings.media.sound.SoundManager.SoundType;
 public interface SoundCodes
 {
     /**
-     * Alert sounds are the type of sounds a player would hear when
-     * getting a puzzle challenge.
+     * Alert sounds are the type of sounds a player would hear when getting a puzzle challenge.
      */
     public static final SoundType ALERT = new SoundType("alert");
 
     /**
-     * Feedback sounds are the type of sounds a player would here when
-     * clicking on buttons or performing an action.
+     * Feedback sounds are the type of sounds a player would here when clicking on buttons or 
+     * performing an action.
      */
     public static final SoundType FEEDBACK = new SoundType("feedback");
 

@@ -61,8 +61,7 @@ public class MusicManager
     }
 
     /**
-     * Returns a string summarizing our volume settings and disabled sound
-     * types.
+     * Returns a string summarizing our volume settings and disabled sound types.
      */
     public String summarizeState ()
     {
@@ -138,7 +137,7 @@ public class MusicManager
         MusicKey mkey = new MusicKey(pkgPath, key, -1);
 
         if (!_musicStack.isEmpty()) {
-            MusicKey current = (MusicKey) _musicStack.getFirst();
+            MusicKey current = _musicStack.getFirst();
 
             // if we're currently playing this song..
             if (mkey.equals(current)) {
@@ -155,7 +154,7 @@ public class MusicManager
 
             } else {
                 // we aren't currently playing this song. Simply remove.
-                for (Iterator iter=_musicStack.iterator(); iter.hasNext(); ) {
+                for (Iterator<MusicKey> iter=_musicStack.iterator(); iter.hasNext(); ) {
                     if (key.equals(iter.next())) {
                         iter.remove();
                         return;
@@ -165,8 +164,7 @@ public class MusicManager
             }
         }
 
-        Log.debug("Sequence stopped that wasn't in the stack anymore " +
-            "[key=" + mkey + "].");
+        Log.debug("Sequence stopped that wasn't in the stack anymore [key=" + mkey + "].");
     }
 
     /**
@@ -178,15 +176,14 @@ public class MusicManager
             return;
         }
 
-        // if the volume is off, we don't actually want to play anything
-        // but we want to at least decrement any loopers by one
-        // and keep them on the top of the queue
+        // if the volume is off, we don't actually want to play anything but we want to at least 
+        // decrement any loopers by one and keep them on the top of the queue
         if (_musicVol == 0f) {
             handleMusicStopped();
             return;
         }
 
-        MusicKey info = (MusicKey) _musicStack.getFirst();
+        MusicKey info = _musicStack.getFirst();
 
         Config c = _smgr.getConfig(info);
         String[] names = c.getValue(info.key, (String[])null);
@@ -208,7 +205,7 @@ public class MusicManager
         }
 
         // shutdown the old player if we're switching music types
-        if (! playerClass.isInstance(_musicPlayer)) {
+        if (!playerClass.isInstance(_musicPlayer)) {
             if (_musicPlayer != null) {
                 _musicPlayer.shutdown();
             }
@@ -219,8 +216,8 @@ public class MusicManager
                 _musicPlayer.init(_playerListener);
 
             } catch (Exception e) {
-                Log.warning("Unable to instantiate music player [class=" +
-                        playerClass + ", e=" + e + "].");
+                Log.warning("Unable to instantiate music player [class=" + playerClass + 
+                            ", e=" + e + "].");
 
                 // scrap it, try again with the next song
                 _musicPlayer = null;
@@ -271,8 +268,7 @@ public class MusicManager
     }
 
     /**
-     * Stop whatever song is currently playing and deal with the
-     * MusicKey associated with it.
+     * Stop whatever song is currently playing and deal with the MusicKey associated with it.
      */
     protected void handleMusicStopped ()
     {
@@ -281,7 +277,7 @@ public class MusicManager
         }
 
         // see what was playing
-        MusicKey current = (MusicKey) _musicStack.getFirst();
+        MusicKey current = _musicStack.getFirst();
 
         // see how many times the song was to loop and act accordingly
         switch (current.loops) {
@@ -333,7 +329,7 @@ public class MusicManager
     protected float _musicVol = 1f;
 
     /** The stack of songs that we're playing. */
-    protected LinkedList _musicStack = new LinkedList();
+    protected LinkedList<MusicKey> _musicStack = new LinkedList<MusicKey>();
 
     /** The current music player, if any. */
     protected MusicPlayer _musicPlayer;

@@ -37,7 +37,7 @@ import micromod.resamplers.LinearResampler;
  */
 public class ModPlayer extends MusicPlayer
 {
-    // documentation inherited
+    @Override // documentation inherited
     public void init ()
         throws Exception
     {
@@ -45,20 +45,19 @@ public class ModPlayer extends MusicPlayer
         _device.start();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void shutdown ()
     {
         _device.stop();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void start (InputStream stream)
         throws Exception
     {
         Module module = ModuleLoader.read(new DataInputStream(stream));
 
-        final MicroMod mod = new MicroMod(
-            module, _device, new LinearResampler());
+        final MicroMod mod = new MicroMod(module, _device, new LinearResampler());
 
         _player = new Thread("narya mod player") {
             public void run () {
@@ -86,13 +85,13 @@ public class ModPlayer extends MusicPlayer
         _player.start();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void stop ()
     {
         _player = null;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void setVolume (float vol)
     {
         _device.setVolume(vol);
@@ -110,17 +109,13 @@ public class ModPlayer extends MusicPlayer
             super(new SS16LEAudioFormatConverter(), 44100, 1000);
         }
 
-        /**
-         * Adjust the volume of the line that we're sending our mod data to.
-         */
+        @Override // documentation inherited
         public void setVolume (float vol)
         {
             SoundManager.adjustVolume(sourceDataLine, vol);
         }
 
-        /**
-         * Access the drain method of the line.
-         */
+        @Override // documentation inherited
         public void drain ()
         {
             sourceDataLine.drain();
