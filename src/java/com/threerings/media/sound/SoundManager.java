@@ -507,6 +507,16 @@ public class SoundManager
 
             // open the sound line
             AudioFormat format = stream.getFormat();
+            stream = AudioSystem.getAudioInputStream(
+                new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+                                format.getSampleRate(),
+                                16,
+                                format.getChannels(),
+                                format.getChannels() * 2,
+                                format.getSampleRate(),
+                                false), stream);
+            format = stream.getFormat();
+
             line = (SourceDataLine) AudioSystem.getLine(
                 new DataLine.Info(SourceDataLine.class, format));
             line.open(format, LINEBUF_SIZE);
@@ -1007,7 +1017,7 @@ public class SoundManager
     protected static final long MAX_SOUND_DELAY = 400L;
 
     /** The size of the line's buffer. */
-    protected static final int LINEBUF_SIZE = 8 * 1024;
+    protected static final int LINEBUF_SIZE = 32 * 1024;
 
     /** The maximum time a spooler will wait for a stream before deciding to shut down. */
     protected static final long MAX_WAIT_TIME = 30000L;
