@@ -231,7 +231,7 @@ public class ImageCache
             bufimg = _rsrcmgr.getImageResource(rsrcPath);
         } catch (Throwable t) {
             log.log(Level.WARNING, "Unable to load image resource " +
-                    "[path=" + ifile + "].", t);
+                    "[path=" + rsrcPath + "].", t);
             // cope; return an error image of abitrary size
             bufimg = ImageUtil.createErrorImage(64, 64);
         }
@@ -280,7 +280,7 @@ public class ImageCache
             if (returnNull) {
                 return null;
             }
-            log.log(Level.WARNING, "Unable to load image resource [path=" + ifile + "].", t);
+            log.log(Level.WARNING, "Unable to load image resource [path=" + rsrcPath + "].", t);
             // cope; return an error image of abitrary size
             bufimg = ImageUtil.createErrorImage(64, 64);
         }
@@ -324,7 +324,7 @@ public class ImageCache
             if (returnNull) {
                 return null;
             }
-            log.log(Level.WARNING, "Unable to load image resource [path=" + ifile + "].", t);
+            log.log(Level.WARNING, "Unable to load image resource [path=" + rsrcPath + "].", t);
             // cope; return an error image of abitrary size
             silimg = ImageUtil.createErrorImage(64, 64);
         }
@@ -362,7 +362,7 @@ public class ImageCache
         try {
             image = _rsrcmgr.getImageResource(rsrcPath);
         } catch (Throwable t) {
-            log.log(Level.WARNING, "Unable to load image resource [path=" + ifile + "].", t);
+            log.log(Level.WARNING, "Unable to load image resource [path=" + rsrcPath + "].", t);
             // cope; return an error image of abitrary size
             image = ImageUtil.createErrorImage(64, 64);
         }
