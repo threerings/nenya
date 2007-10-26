@@ -29,27 +29,24 @@ import java.io.ObjectInputStream;
 import com.samskivert.io.StreamUtil;
 
 import com.threerings.cast.Log;
+import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceBundle;
 
 /**
- * Utility functions related to creating and manipulating component
- * bundles.
+ * Utility functions related to creating and manipulating component bundles.
  */
 public class BundleUtil
 {
     /** The path in the metadata bundle to the serialized action table. */
     public static final String ACTIONS_PATH = "actions.dat";
 
-    /** The path in the metadata bundle to the serialized action tile sets
-     * table. */
+    /** The path in the metadata bundle to the serialized action tile sets table. */
     public static final String ACTION_SETS_PATH = "action_sets.dat";
 
-    /** The path in the metadata bundle to the serialized component class
-     * table. */
+    /** The path in the metadata bundle to the serialized component class table. */
     public static final String CLASSES_PATH = "classes.dat";
 
-    /** The path in the component bundle to the serialized component id to
-     * class/type mapping. */
+    /** The path in the component bundle to the serialized component id to class/type mapping. */
     public static final String COMPONENTS_PATH = "components.dat";
 
     /** The file extension of our action tile images. */
@@ -59,22 +56,19 @@ public class BundleUtil
     public static final String TILESET_EXTENSION = ".dat";
 
     /**
-     * Attempts to load an object from the supplied resource bundle with
-     * the specified path.
+     * Attempts to load an object from the supplied resource bundle with the specified path.
      *
-     * @param wipeBundleOnFailure if there is an error reading the object
-     * from the bundle and this parameter is true, we will instruct the
-     * bundle to delete its underlying jar file before propagating the
-     * exception with the expectation that it will be redownloaded and
-     * repaired the next time the application is run.
+     * @param wipeOnFailure if there is an error reading the object from the bundle and this
+     * parameter is true, we will instruct the bundle to delete its underlying jar file before
+     * propagating the exception with the expectation that it will be redownloaded and repaired the
+     * next time the application is run.
      *
      * @return the unserialized object in question.
      *
-     * @exception IOException thrown if an I/O error occurs while reading
-     * the object from the bundle.
+     * @exception IOException thrown if an I/O error occurs while reading the object from the
+     * bundle.
      */     
-    public static Object loadObject (ResourceBundle bundle, String path,
-                                     boolean wipeBundleOnFailure)
+    public static Object loadObject (ResourceBundle bundle, String path, boolean wipeOnFailure)
         throws IOException, ClassNotFoundException
     {
         InputStream bin = null;
@@ -86,20 +80,19 @@ public class BundleUtil
             return new ObjectInputStream(bin).readObject();
 
         } catch (InvalidClassException ice) {
-            Log.warning("Aiya! Serialized object is hosed " +
-                        "[bundle=" + bundle.getSource().getPath() +
-                        ", element=" + path +
-                        ", error=" + ice.getMessage() + "].");
+            Log.warning("Aiya! Serialized object is hosed [bundle=" + bundle +
+                        ", element=" + path + ", error=" + ice.getMessage() + "].");
             return null;
 
         } catch (IOException ioe) {
-            Log.warning("Error reading resource from bundle " +
-                        "[bundle=" + bundle + ", path=" + path +
-                        ", wiping?=" + wipeBundleOnFailure + "].");
-            if (wipeBundleOnFailure) {
+            Log.warning("Error reading resource from bundle [bundle=" + bundle + ", path=" + path +
+                        ", wiping?=" + wipeOnFailure + "].");
+            if (wipeOnFailure) {
                 StreamUtil.close(bin);
                 bin = null;
-                bundle.wipeBundle(false);
+                if (bundle instanceof FileResourceBundle) {
+                    ((FileResourceBundle)bundle).wipeBundle(false);
+                }
             }
             throw ioe;
 

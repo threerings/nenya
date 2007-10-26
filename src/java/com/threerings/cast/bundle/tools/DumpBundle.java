@@ -29,8 +29,9 @@ import java.util.Map;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.resource.ResourceBundle;
 import com.threerings.cast.bundle.BundleUtil;
+import com.threerings.resource.FileResourceBundle;
+import com.threerings.resource.ResourceBundle;
 
 /**
  * Dumps the contents of a component bundle to stdout.
@@ -48,7 +49,7 @@ public class DumpBundle
         for (int i = 0; i < args.length; i++) {
             File file = new File(args[i]);
             try {
-                ResourceBundle bundle = new ResourceBundle(file);
+                ResourceBundle bundle = new FileResourceBundle(file);
 
                 HashMap actions = (HashMap)BundleUtil.loadObject(
                     bundle, BundleUtil.ACTIONS_PATH, false);

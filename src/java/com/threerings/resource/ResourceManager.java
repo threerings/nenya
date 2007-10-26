@@ -248,7 +248,7 @@ public class ResourceManager
         }
 
         // resolve the configured resource sets
-        ArrayList dlist = new ArrayList();
+        List<ResourceBundle> dlist = new ArrayList<ResourceBundle>();
         Enumeration names = config.propertyNames();
         while (names.hasMoreElements()) {
             String key = (String)names.nextElement();
@@ -326,7 +326,7 @@ public class ResourceManager
     public boolean checkBundle (String path)
     {
         File bfile = getResourceFile(path);
-        return (bfile == null) ? false : new ResourceBundle(bfile, true, _unpack).isUnpacked();
+        return (bfile == null) ? false : new FileResourceBundle(bfile, true, _unpack).isUnpacked();
     }
 
     /**
@@ -345,7 +345,7 @@ public class ResourceManager
             return;
         }
 
-        final ResourceBundle bundle = new ResourceBundle(bfile, true, _unpack);
+        final FileResourceBundle bundle = new FileResourceBundle(bfile, true, _unpack);
         if (bundle.isUnpacked()) {
             if (bundle.sourceIsReady()) {
                 listener.requestCompleted(bundle);
@@ -404,8 +404,8 @@ public class ResourceManager
         InputStream in = null;
 
         // first look for this resource in our default resource bundle
-        for (int i = 0; i < _default.length; i++) {
-            in = _default[i].getResource(path);
+        for (ResourceBundle bundle : _default) {
+            in = bundle.getResource(path);
             if (in != null) {
                 return in;
             }
@@ -458,10 +458,10 @@ public class ResourceManager
         throws IOException
     {
         // first look for this resource in our default resource bundle
-        for (int i = 0; i < _default.length; i++) {
-            File file = _default[i].getResourceFile(path);
-            if (file != null) {
-                return loadImage(file);
+        for (ResourceBundle bundle : _default) {
+            BufferedImage image = bundle.getImageResource(path);
+            if (image != null) {
+                return image;
             }
         }
 
@@ -624,13 +624,15 @@ public class ResourceManager
     /**
      * Loads up a resource set based on the supplied definition information.
      */
-    protected void resolveResourceSet (String setName, String definition, List dlist)
+    protected void resolveResourceSet (
+        String setName, String definition, List<ResourceBundle> dlist)
     {
-        ArrayList set = new ArrayList();
+        List<ResourceBundle> set = new ArrayList<ResourceBundle>();
         StringTokenizer tok = new StringTokenizer(definition, ":");
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken().trim();
-            ResourceBundle bundle = new ResourceBundle(getResourceFile(path), true, _unpack);
+            FileResourceBundle bundle =
+                new FileResourceBundle(getResourceFile(path), true, _unpack);
             set.add(bundle);
             if (bundle.isUnpacked() && bundle.sourceIsReady()) {
                 continue;
@@ -639,8 +641,7 @@ public class ResourceManager
         }
 
         // convert our array list into an array and stick it in the table
-        ResourceBundle[] setvec = new ResourceBundle[set.size()];
-        set.toArray(setvec);
+        ResourceBundle[] setvec = set.toArray(new ResourceBundle[set.size()]);
         _sets.put(setName, setvec);
 
         // if this is our default resource bundle, keep a reference to it
@@ -693,7 +694,7 @@ public class ResourceManager
     /** Used to unpack bundles on a separate thread. */
     protected static class Unpacker extends Thread
     {
-        public Unpacker (List bundles, InitObserver obs)
+        public Unpacker (List<ResourceBundle> bundles, InitObserver obs)
         {
             _bundles = bundles;
             _obs = obs;
@@ -708,9 +709,9 @@ public class ResourceManager
                 }
 
                 int count = 0;
-                for (Iterator iter = _bundles.iterator(); iter.hasNext(); ) {
-                    ResourceBundle bundle = (ResourceBundle)iter.next();
-                    if (!bundle.sourceIsReady()) {
+                for (ResourceBundle bundle : _bundles) {
+                    if (bundle instanceof FileResourceBundle &&
+                        !((FileResourceBundle)bundle).sourceIsReady()) {
                         Log.warning("Bundle failed to initialize " + bundle + ".");
                     }
                     if (_obs != null) {
@@ -732,7 +733,7 @@ public class ResourceManager
             }
         }
 
-        protected List _bundles;
+        protected List<ResourceBundle> _bundles;
         protected InitObserver _obs;
     }
 

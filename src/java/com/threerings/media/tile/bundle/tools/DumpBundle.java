@@ -24,6 +24,7 @@ package com.threerings.media.tile.bundle.tools;
 import java.io.File;
 import java.util.Iterator;
 
+import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceManager;
 import com.threerings.resource.ResourceBundle;
 
@@ -63,7 +64,7 @@ public class DumpBundle
             try {
                 TileSetBundle tsb = null;
                 if (args[i].endsWith(".jar")) {
-                    ResourceBundle bundle = new ResourceBundle(file);
+                    ResourceBundle bundle = new FileResourceBundle(file);
                     tsb = BundleUtil.extractBundle(bundle);
                     tsb.init(bundle);
                 } else {

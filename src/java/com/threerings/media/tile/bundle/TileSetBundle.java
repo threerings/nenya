@@ -22,7 +22,7 @@
 package com.threerings.media.tile.bundle;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -36,28 +36,19 @@ import com.threerings.media.image.ImageDataProvider;
 import com.threerings.media.tile.TileSet;
 
 /**
- * A tileset bundle is used to load up tilesets by id from a persistent
- * bundle of tilesets stored on the local filesystem.
+ * A tileset bundle is used to load up tilesets by id from a persistent bundle of tilesets stored
+ * on the local filesystem.
  */
 public class TileSetBundle extends HashIntMap
     implements Serializable, ImageDataProvider
 {
     /**
-     * Initializes this resource bundle with a reference to the jarfile
-     * from which it was loaded and from which it can load image data. The
-     * image manager will be used to decode the images.
+     * Initializes this resource bundle with a reference to the jarfile from which it was loaded
+     * and from which it can load image data. The image manager will be used to decode the images.
      */
     public void init (ResourceBundle bundle)
     {
         _bundle = bundle;
-    }
-
-    /**
-     * Returns the bundle file from which our tiles are fetched.
-     */
-    public File getSource ()
-    {
-        return _bundle.getSource();
     }
 
     /**
@@ -95,7 +86,7 @@ public class TileSetBundle extends HashIntMap
     // documentation inherited from interface
     public String getIdent ()
     {
-        return "tsb:" + _bundle.getSource();
+        return "tsb:" + _bundle.getIdent();
     }
 
     // documentation inherited from interface
@@ -135,7 +126,7 @@ public class TileSetBundle extends HashIntMap
     /** That from which we load our tile images. */
     protected transient ResourceBundle _bundle;
 
-    /** Increase this value when object's serialized state is impacted by
-     * a class change (modification of fields, inheritance). */
+    /** Increase this value when object's serialized state is impacted by a class change
+     * (modification of fields, inheritance). */
     private static final long serialVersionUID = 2;
  }

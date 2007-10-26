@@ -36,6 +36,7 @@ import com.samskivert.util.IntIntMap;
 import com.samskivert.util.Predicate;
 import com.samskivert.util.Tuple;
 
+import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
 
@@ -270,7 +271,7 @@ public class BundledComponentRepository
         // from interface ImageDataProvider
         public String getIdent ()
         {
-            return "bcr:" + _bundle.getSource();
+            return "bcr:" + _bundle.getIdent();
         }
 
         // from interface ImageDataProvider
@@ -331,8 +332,8 @@ public class BundledComponentRepository
                         !StandardActions.SHADOW_TYPE.equals(type)) {
                         Log.warning("Unable to locate tileset for action '" + imgpath + "' " +
                                     component + ".");
-                        if (_wipeOnFailure) {
-                            _bundle.wipeBundle(false);
+                        if (_wipeOnFailure && _bundle instanceof FileResourceBundle) {
+                            ((FileResourceBundle)_bundle).wipeBundle(false);
                         }
                     }
                     return null;
