@@ -44,8 +44,8 @@ import org.xml.sax.SAXException;
 import com.samskivert.io.PersistenceException;
 
 import com.threerings.media.Log;
-import com.threerings.media.image.FastImageIO;
 import com.threerings.media.image.ImageUtil;
+import com.threerings.resource.FastImageIO;
 
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;

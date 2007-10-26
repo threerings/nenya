@@ -22,6 +22,7 @@
 package com.threerings.resource;
 
 import java.awt.EventQueue;
+import java.awt.image.BufferedImage;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -43,9 +44,7 @@ import java.util.StringTokenizer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.imageio.ImageIO;
 
 import com.samskivert.net.PathUtil;
 import com.samskivert.util.ResultListener;
@@ -449,28 +448,27 @@ public class ResourceManager
     }
 
     /**
-     * Fetches the specified resource as an {@link ImageInputStream} and one that takes advantage,
-     * if possible, of caching of unpacked resources on the local filesystem.
+     * Fetches and decodes the specified resource into a {@link BufferedImage}.
      *
      * @exception FileNotFoundException thrown if the resource could not be located in any of the
      * bundles in the specified set, or if the specified set does not exist.
      * @exception IOException thrown if a problem occurs locating or reading the resource.
      */
-    public ImageInputStream getImageResource (String path)
+    public BufferedImage getImageResource (String path)
         throws IOException
     {
         // first look for this resource in our default resource bundle
         for (int i = 0; i < _default.length; i++) {
             File file = _default[i].getResourceFile(path);
             if (file != null) {
-                return new FileImageInputStream(file);
+                return loadImage(file);
             }
         }
 
         // fallback next to an unpacked resource file
         File file = getResourceFile(path);
         if (file != null && file.exists()) {
-            return new FileImageInputStream(file);
+            return loadImage(file);
         }
 
         // first try a locale-specific file
@@ -483,7 +481,7 @@ public class ResourceManager
                 }
             });
             if (in != null) {
-                return new MemoryCacheImageInputStream(new BufferedInputStream(in));
+                return loadImage(in);
             }
         }
 
@@ -495,7 +493,7 @@ public class ResourceManager
             }
         });
         if (in != null) {
-            return new MemoryCacheImageInputStream(new BufferedInputStream(in));
+            return loadImage(in);
         }
 
         // if we still haven't found it, we throw an exception
@@ -549,14 +547,13 @@ public class ResourceManager
     }
 
     /**
-     * Fetches the specified resource as an {@link ImageInputStream} and one that takes advantage,
-     * if possible, of caching of unpacked resources on the local filesystem.
+     * Fetches and decodes the specified resource into a {@link BufferedImage}.
      *
      * @exception FileNotFoundException thrown if the resource could not be located in any of the
      * bundles in the specified set, or if the specified set does not exist.
      * @exception IOException thrown if a problem occurs locating or reading the resource.
      */
-    public ImageInputStream getImageResource (String rset, String path)
+    public BufferedImage getImageResource (String rset, String path)
         throws IOException
     {
         // grab the resource bundles in the specified resource set
@@ -569,22 +566,21 @@ public class ResourceManager
         // look for the resource in any of the bundles
         int size = bundles.length;
         for (int ii = 0; ii < size; ii++) {
-            File file = null;
+            BufferedImage image = null;
             // try a localized version first
             if (_localePrefix != null) {
-                file = bundles[ii].getResourceFile(PathUtil.appendPath(_localePrefix, path));
+                image = bundles[ii].getImageResource(PathUtil.appendPath(_localePrefix, path));
             }
 
             // if we didn't find that, try generic
-            if (file == null) {
-                file = bundles[ii].getResourceFile(path);
+            if (image == null) {
+                image = bundles[ii].getImageResource(path);
             }
 
-            if (file != null) {
+            if (image != null) {
 //                 Log.info("Found image resource [rset=" + rset +
-//                          ", bundle=" + bundles[ii].getSource() +
-//                          ", path=" + path + ", file=" + file + "].");
-                return new FileImageInputStream(file);
+//                          ", bundle=" + bundles[ii].getSource() + ", path=" + path + "].");
+                return image;
             }
         }
 
@@ -651,6 +647,47 @@ public class ResourceManager
         if (DEFAULT_RESOURCE_SET.equals(setName)) {
             _default = setvec;
         }
+    }
+
+    /**
+     * Loads an image from the supplied file. Supports {@link FastImageIO} files and formats
+     * supported by {@link ImageIO}.
+     */
+    protected static BufferedImage loadImage (File file)
+        throws IOException
+    {
+        if (file == null) {
+            return null;
+        } else if (file.getName().endsWith(FastImageIO.FILE_SUFFIX)) {
+            return FastImageIO.read(file);
+        } else {
+            return ImageIO.read(file);
+        }
+    }
+
+    /**
+     * Loads an image from the supplied input stream. Supports formats supported by {@link ImageIO}
+     * but not {@link FastImageIO}.
+     */
+    protected static BufferedImage loadImage (InputStream iis)
+        throws IOException
+    {
+        BufferedImage image = ImageIO.read(iis);
+        try {
+            iis.close();
+        } catch (IOException ioe) {
+            // jesus fucking hoppalong cassidy christ on a polyester pogo stick!
+            // ImageInputStreamImpl.close() throws a fucking IOException if it's already closed;
+            // there's no way to find out if it's already closed or not, so we have to check for
+            // their bullshit exception; as if we should just "trust" ImageIO.read() to close the
+            // fucking input stream when it's done, especially after the goddamned fiasco with
+            // PNGImageReader not closing its fucking inflaters; for the love of humanity
+            if (!"closed".equals(ioe.getMessage())) {
+                Log.warning("Failure closing image input '" + iis + "'.");
+                Log.logStackTrace(ioe);
+            }
+        }
+        return image;
     }
 
     /** Used to unpack bundles on a separate thread. */

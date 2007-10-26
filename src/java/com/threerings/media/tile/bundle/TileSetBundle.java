@@ -29,12 +29,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import javax.imageio.ImageIO;
-
 import com.samskivert.util.HashIntMap;
 import com.threerings.resource.ResourceBundle;
 
-import com.threerings.media.image.FastImageIO;
 import com.threerings.media.image.ImageDataProvider;
 import com.threerings.media.tile.TileSet;
 
@@ -105,11 +102,7 @@ public class TileSetBundle extends HashIntMap
     public BufferedImage loadImage (String path)
         throws IOException
     {
-        if (path.endsWith(FastImageIO.FILE_SUFFIX)) {
-            return FastImageIO.read(_bundle.getResourceFile(path));
-        } else {
-            return ImageIO.read(_bundle.getResourceFile(path));
-        }
+        return _bundle.getImageResource(path);
     }
 
     // custom serialization process

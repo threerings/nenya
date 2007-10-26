@@ -26,7 +26,7 @@ import javax.imageio.ImageIO;
 
 import java.io.*;
 
-import com.threerings.media.image.FastImageIO;
+import com.threerings.resource.FastImageIO;
 
 /**
  * Tests our image loading speed.

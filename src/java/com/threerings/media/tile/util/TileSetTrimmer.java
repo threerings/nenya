@@ -29,9 +29,9 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.threerings.media.image.FastImageIO;
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.tile.TileSet;
+import com.threerings.resource.FastImageIO;
 
 /**
  * Contains routines for trimming the images from an existing tileset

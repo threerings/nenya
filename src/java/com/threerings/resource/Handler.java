@@ -171,12 +171,10 @@ public class Handler extends URLStreamHandler
             throw new FileNotFoundException(path);
         }
 
-        // locate the tile image, then write that subimage back out in PNG
-        // format into memory and return an input stream for that
-        ImageInputStream stream =
-            StringUtil.isBlank(bundle) ? _rmgr.getImageResource(path)
-                                     : _rmgr.getImageResource(bundle, path);
-        BufferedImage src = ImageIO.read(stream);
+        // locate the tile image, then write that subimage back out in PNG format into memory and
+        // return an input stream for that
+        BufferedImage src = StringUtil.isBlank(bundle) ?
+            _rmgr.getImageResource(path) : _rmgr.getImageResource(bundle, path);
         Rectangle trect = GeomUtil.getTile(
             src.getWidth(), src.getHeight(), width, height, tidx);
         BufferedImage tile = src.getSubimage(

@@ -159,7 +159,7 @@ public class ViewerApp
     public void run ()
     {
         // show the window
-        _frame.show();
+        _frame.setVisible(true);
         _framemgr.start();
     }
 

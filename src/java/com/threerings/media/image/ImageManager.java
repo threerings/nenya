@@ -36,9 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
-
 import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
@@ -393,10 +390,10 @@ public class ImageManager
                     throws IOException {
                     // first attempt to load the image from the specified resource set
                     try {
-                        return read(_rmgr.getImageResource(rset, path));
+                        return _rmgr.getImageResource(rset, path);
                     } catch (FileNotFoundException fnfe) {
                         // fall back to trying the classpath
-                        return read(_rmgr.getImageResource(path));
+                        return _rmgr.getImageResource(path);
                     }
                 }
 
@@ -424,7 +421,7 @@ public class ImageManager
             Log.debug("Loading image " + key + ".");
             image = key.daprov.loadImage(key.path);
             if (image == null) {
-                Log.warning("ImageIO.read(" + key + ") returned null.");
+                Log.warning("ImageDataProvider.loadImage(" + key + ") returned null.");
             }
 
         } catch (Exception e) {
@@ -436,42 +433,6 @@ public class ImageManager
         }
 
         return image;
-    }
-
-    /**
-     * Helper function for loading images.
-     */
-    protected static BufferedImage read (ImageInputStream iis)
-        throws IOException
-    {
-        BufferedImage image = ImageIO.read(iis);
-        closeIIS(iis);
-        return image;
-    }
-
-    /**
-     * Helper function for closing image input streams.
-     */
-    protected static void closeIIS (ImageInputStream iis)
-    {
-        if (iis == null) {
-            return;
-        }
-
-        try {
-            iis.close();
-        } catch (IOException ioe) {
-            // jesus fucking hoppalong cassidy christ on a polyester pogo stick!
-            // ImageInputStreamImpl.close() throws a fucking IOException if it's already closed;
-            // there's no way to find out if it's already closed or not, so we have to check for
-            // their bullshit exception; as if we should just "trust" ImageIO.read() to close the
-            // fucking input stream when it's done, especially after the goddamned fiasco with
-            // PNGImageReader not closing it's fucking inflaters; for the love of humanity
-            if (!"closed".equals(ioe.getMessage())) {
-                Log.warning("Failure closing image input '" + iis + "'.");
-                Log.logStackTrace(ioe);
-            }
-        }
     }
 
     /**
@@ -584,7 +545,7 @@ public class ImageManager
     /** Our default data provider. */
     protected ImageDataProvider _defaultProvider = new ImageDataProvider() {
         public BufferedImage loadImage (String path) throws IOException {
-            return read(_rmgr.getImageResource(path));
+            return _rmgr.getImageResource(path);
         }
         public String getIdent () {
             return "rmgr:default";

@@ -41,7 +41,6 @@ import com.threerings.resource.ResourceManager;
 
 import com.threerings.media.image.BufferedMirage;
 import com.threerings.media.image.Colorization;
-import com.threerings.media.image.FastImageIO;
 import com.threerings.media.image.ImageDataProvider;
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.ImageUtil;
@@ -277,7 +276,7 @@ public class BundledComponentRepository
         // from interface ImageDataProvider
         public BufferedImage loadImage (String path) throws IOException
         {
-            return FastImageIO.read(_bundle.getResourceFile(path));
+            return _bundle.getImageResource(path);
         }
 
         // from interface FrameProvider

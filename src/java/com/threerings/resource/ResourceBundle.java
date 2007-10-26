@@ -21,6 +21,8 @@
 
 package com.threerings.resource;
 
+import java.awt.image.BufferedImage;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -251,14 +253,23 @@ public class ResourceBundle
         }
 
         // copy the resource into the temporary file
-        BufferedOutputStream fout =
-            new BufferedOutputStream(new FileOutputStream(tfile));
+        BufferedOutputStream fout = new BufferedOutputStream(new FileOutputStream(tfile));
         InputStream jin = _jarSource.getInputStream(entry);
         IOUtils.copy(jin, fout);
         jin.close();
         fout.close();
 
         return tfile;
+    }
+
+    /**
+     * Decodes and returns the specified image resource. Returns null if no resource exists at the
+     * specified path.
+     */
+    public BufferedImage getImageResource (String path)
+        throws IOException
+    {
+        return ResourceManager.loadImage(getResourceFile(path));
     }
 
     /**
