@@ -259,10 +259,6 @@ public class RecolorImage extends JPanel
                 public int compare (Integer i1, Integer i2) {
                     return i1 - i2;
                 }
-
-                public boolean equals (Integer i1, Integer i2) {
-                    return i1.intValue() == i2.intValue();
-                }
             });
 
         for (int key : sortedKeys) {
@@ -407,7 +403,7 @@ public class RecolorImage extends JPanel
             _slider.addChangeListener(new ChangeListener() {
                 public void stateChanged (ChangeEvent ce) {
                     _intField.setText(String.valueOf(
-                        ((float)_slider.getValue())/CONVERSION));
+                        (_slider.getValue())/CONVERSION));
 
                     convert();
                 }
