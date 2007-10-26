@@ -21,7 +21,6 @@
 
 package com.threerings.jme.util;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -38,8 +37,6 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
-
-import javax.imageio.ImageIO;
 
 import com.jme.image.Image;
 import com.jmex.bui.BImage;
@@ -230,9 +227,8 @@ public class ImageCache
 
         // load the image data from the resource manager
         BufferedImage bufimg;
-        File ifile = _rsrcmgr.getResourceFile(rsrcPath);
         try {
-            bufimg = ImageIO.read(ifile);
+            bufimg = _rsrcmgr.getImageResource(rsrcPath);
         } catch (Throwable t) {
             log.log(Level.WARNING, "Unable to load image resource " +
                     "[path=" + ifile + "].", t);
@@ -278,9 +274,8 @@ public class ImageCache
 
         // load the image data from the resource manager
         BufferedImage bufimg;
-        File ifile = _rsrcmgr.getResourceFile(rsrcPath);
         try {
-            bufimg = ImageIO.read(ifile);
+            bufimg = _rsrcmgr.getImageResource(rsrcPath);
         } catch (Throwable t) {
             if (returnNull) {
                 return null;
@@ -316,9 +311,8 @@ public class ImageCache
 
         // load the image data from the resource manager
         BufferedImage bufimg, silimg;
-        File ifile = _rsrcmgr.getResourceFile(rsrcPath);
         try {
-            bufimg = ImageIO.read(ifile);
+            bufimg = _rsrcmgr.getImageResource(rsrcPath);
 
             // now turn it into a silhouette
             silimg = new BufferedImage(bufimg.getWidth(), bufimg.getHeight(),
@@ -365,9 +359,8 @@ public class ImageCache
         }
 
         // load the image data from the resource manager
-        File ifile = _rsrcmgr.getResourceFile(rsrcPath);
         try {
-            image = ImageIO.read(ifile);
+            image = _rsrcmgr.getImageResource(rsrcPath);
         } catch (Throwable t) {
             log.log(Level.WARNING, "Unable to load image resource [path=" + ifile + "].", t);
             // cope; return an error image of abitrary size
