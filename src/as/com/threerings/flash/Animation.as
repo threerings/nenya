@@ -24,7 +24,8 @@ package com.threerings.flash {
 public interface Animation
 {
     /**
-     * The primary working method for your animation.
+     * The primary working method for your animation. The argument indicates how
+     * many milliseconds have passed since the previous update.
      */
     function updateAnimation (elapsed :Number) :void;
 }
