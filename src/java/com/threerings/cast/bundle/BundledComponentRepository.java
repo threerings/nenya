@@ -277,7 +277,7 @@ public class BundledComponentRepository
         // from interface ImageDataProvider
         public BufferedImage loadImage (String path) throws IOException
         {
-            return _bundle.getImageResource(path);
+            return _bundle.getImageResource(path, true);
         }
 
         // from interface FrameProvider
@@ -357,7 +357,7 @@ public class BundledComponentRepository
             BufferedImage src = _imgr.getImage(getImageKey(path), zations);
             float percentageOfDataBuffer = 1;
             if (bounds != null) {
-                percentageOfDataBuffer = 
+                percentageOfDataBuffer =
                     (bounds.height * bounds.width) / (float)(src.getHeight() * src.getWidth());
                 src = src.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
             }
@@ -485,7 +485,7 @@ public class BundledComponentRepository
         {
             return _set.getTile(getTileIndex(orient, index));
         }
-        
+
         public Mirage getTileMirage(int orient, int index) {
             return _set.getTileMirage(getTileIndex(orient, index));
         }

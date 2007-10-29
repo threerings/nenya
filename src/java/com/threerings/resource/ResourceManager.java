@@ -459,7 +459,7 @@ public class ResourceManager
     {
         // first look for this resource in our default resource bundle
         for (ResourceBundle bundle : _default) {
-            BufferedImage image = bundle.getImageResource(path);
+            BufferedImage image = bundle.getImageResource(path, false);
             if (image != null) {
                 return image;
             }
@@ -468,7 +468,11 @@ public class ResourceManager
         // fallback next to an unpacked resource file
         File file = getResourceFile(path);
         if (file != null && file.exists()) {
-            return loadImage(file);
+            if (path.endsWith(FastImageIO.FILE_SUFFIX)) {
+                return loadImage(file, true);
+            } else {
+                return loadImage(file, false);
+            }
         }
 
         // first try a locale-specific file
@@ -569,12 +573,13 @@ public class ResourceManager
             BufferedImage image = null;
             // try a localized version first
             if (_localePrefix != null) {
-                image = bundles[ii].getImageResource(PathUtil.appendPath(_localePrefix, path));
+                image =
+                    bundles[ii].getImageResource(PathUtil.appendPath(_localePrefix, path), false);
             }
 
             // if we didn't find that, try generic
             if (image == null) {
-                image = bundles[ii].getImageResource(path);
+                image = bundles[ii].getImageResource(path, false);
             }
 
             if (image != null) {
@@ -652,14 +657,14 @@ public class ResourceManager
 
     /**
      * Loads an image from the supplied file. Supports {@link FastImageIO} files and formats
-     * supported by {@link ImageIO}.
+     * supported by {@link ImageIO} and will load the appropriate one based on the useFastIO param.
      */
-    protected static BufferedImage loadImage (File file)
+    protected static BufferedImage loadImage (File file, boolean useFastIO)
         throws IOException
     {
         if (file == null) {
             return null;
-        } else if (file.getName().endsWith(FastImageIO.FILE_SUFFIX)) {
+        } else if (useFastIO) {
             return FastImageIO.read(file);
         } else {
             return ImageIO.read(file);

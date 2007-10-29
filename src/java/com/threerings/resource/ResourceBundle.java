@@ -54,6 +54,6 @@ public abstract class ResourceBundle
      * Decodes and returns the specified image resource. Returns null if no resource exists at the
      * specified path.
      */
-    public abstract BufferedImage getImageResource (String path)
+    public abstract BufferedImage getImageResource (String path, boolean forceFastIO)
         throws IOException;
 }
