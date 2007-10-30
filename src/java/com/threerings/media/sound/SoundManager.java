@@ -524,8 +524,10 @@ public class SoundManager
             float setPan = PAN_CENTER;
             line.start();
             _soundSeemsToWork = true;
+            long startTime = System.currentTimeMillis();
 
             byte[] buffer = new byte[LINEBUF_SIZE];
+            int totalRead = 0;
             do {
                 // play the sound
                 int count = 0;
@@ -542,6 +544,8 @@ public class SoundManager
                     }
                     try {
                         count = stream.read(buffer, 0, buffer.length);
+                        totalRead += count; // The final -1 will make us slightly off, but that's ok
+
                     } catch (IOException e) {
                         // this shouldn't ever ever happen because the stream
                         // we're given is from a reliable source
@@ -571,10 +575,14 @@ public class SoundManager
             if (sampleSize == AudioSystem.NOT_SPECIFIED) {
                 sampleSize = 16;
             }
-            int drainTime = (int) Math.ceil((LINEBUF_SIZE * 8 * 1000) / (sampleRate * sampleSize));
+
+            int drainTime = (int) Math.ceil((totalRead * 8 * 1000) / (sampleRate * sampleSize));
 
             // add in a fudge factor of half a second 
             drainTime += 500;
+
+            // subtract out time we've already spent doing things.
+            drainTime -= (System.currentTimeMillis() - startTime) / 1000;
 
             try {
                 Thread.sleep(drainTime);
