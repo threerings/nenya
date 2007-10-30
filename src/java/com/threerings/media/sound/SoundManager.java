@@ -582,7 +582,7 @@ public class SoundManager
             drainTime += 500;
 
             // subtract out time we've already spent doing things.
-            drainTime -= (System.currentTimeMillis() - startTime) / 1000;
+            drainTime -= System.currentTimeMillis() - startTime;
 
             try {
                 Thread.sleep(drainTime);
