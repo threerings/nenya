@@ -476,6 +476,29 @@ public class SoundManager
     }
 
     /**
+     * Sets up an audio stream from the given byte array, and gets it to convert itself to PCM
+     * data for writing to our output line (if it isn't already that)
+     */
+    protected AudioInputStream setupAudioStream (byte[] data)
+        throws UnsupportedAudioFileException, IOException
+    {
+        AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
+        AudioFormat format = stream.getFormat();
+        if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
+            stream = AudioSystem.getAudioInputStream(
+                new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+                                format.getSampleRate(),
+                                16,
+                                format.getChannels(),
+                                format.getChannels() * 2,
+                                format.getSampleRate(),
+                                false), stream);
+        }
+
+        return stream;
+    }
+
+    /**
      * On a spooling thread, 
      */
     protected void playSound (SoundKey key)
@@ -499,30 +522,21 @@ public class SoundManager
 
             }
 
-            AudioInputStream stream = AudioSystem.getAudioInputStream(
-                new ByteArrayInputStream(data));
-            if (key.cmd == LOOP) {
+            AudioInputStream stream = setupAudioStream(data);
+
+            if (key.cmd == LOOP && stream.markSupported()) {
                 stream.mark(data.length);
             }
 
             // open the sound line
             AudioFormat format = stream.getFormat();
-            stream = AudioSystem.getAudioInputStream(
-                new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                format.getSampleRate(),
-                                16,
-                                format.getChannels(),
-                                format.getChannels() * 2,
-                                format.getSampleRate(),
-                                false), stream);
-            format = stream.getFormat();
-
             line = (SourceDataLine) AudioSystem.getLine(
                 new DataLine.Info(SourceDataLine.class, format));
             line.open(format, LINEBUF_SIZE);
             float setVolume = 1;
             float setPan = PAN_CENTER;
             line.start();
+
             _soundSeemsToWork = true;
             long startTime = System.currentTimeMillis();
 
@@ -558,9 +572,14 @@ public class SoundManager
                     }
                 }
 
-                // if we're going to loop, reset the stream to the beginning
                 if (key.cmd == LOOP) {
-                    stream.reset();
+                    // if we're going to loop, reset the stream to the beginning if we can, 
+                    // otherwise just remake the stream
+                    if (stream.markSupported()) {
+                        stream.reset();
+                    } else {
+                        stream = setupAudioStream(data);
+                    }
                 }
             } while (key.cmd == LOOP && key.running);
 
