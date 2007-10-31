@@ -93,10 +93,10 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     @Override // from ResourceBundle
-    public BufferedImage getImageResource (String path, boolean forceFastIO)
+    public BufferedImage getImageResource (String path, boolean useFastIO)
         throws IOException
     {
-        return ResourceManager.loadImage(getResourceFile(path), forceFastIO);
+        return ResourceManager.loadImage(getResourceFile(path), useFastIO);
     }
 
     /**
