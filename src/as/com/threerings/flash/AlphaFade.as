@@ -63,6 +63,5 @@ public class AlphaFade extends AnimationImpl
     protected var _to :Number;
     protected var _duration :Number;
     protected var _done :Function;
-    
 }
 }

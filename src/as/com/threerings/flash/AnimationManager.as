@@ -83,6 +83,14 @@ public class AnimationManager
     }
 
     /**
+     * Test to see if the specified animation has been started and not stopped.
+     */
+    public static function isPlaying (anim :Animation) :Boolean
+    {
+        return _anims.indexOf(anim) >= 0;
+    }
+
+    /**
      * Track a DisplayObject that is also an Animation- it will
      * automatically be started when added to the stage and 
      * stopped when removed.
