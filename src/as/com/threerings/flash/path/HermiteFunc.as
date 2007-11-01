@@ -23,32 +23,46 @@ package com.threerings.flash.path {
 
 /**
  * Interpolates cubically between two values, with beginning and end derivates set
- * to zero. TODO: Add support for specifying derivate values as well.
+ * to zero. See http://en.wikipedia.org/wiki/Cubic_Hermite_spline for details.
  */
 public class HermiteFunc extends InterpFunc
 {
-    public function HermiteFunc (start :int, end :int)
+    public function HermiteFunc (start :int, end :int, startSlope :Number = 0, endSlope :Number = 0)
     {
-        _start = start;
-        _end = end;
+        _p0 = start;
+        _p1 = end;
+        _m0 = startSlope;
+        _m1 = endSlope;
     }
 
     // from InterpFunc
     override public function getValue (t :Number) :int
     {
         if (t >= 1) {
-            return _end;
+            return _p1;
         } else if (t < 0) { // cope with a funny startOffset
-            return _start;
+            return _p0;
         } else {
-            var h00 :Number = 2*t*t*t - 3*t*t + 1;
-            var h01 :Number = -2*t*t*t + 3*t*t;
+            var tt :Number = t*t;
+            var ttt :Number = t2 * t;
 
-            return int(_start * h00 + _end * h01);
+            return int(_p0 * (2*ttt - 3*tt + 1) +
+                       _m0 * (ttt - 2*tt + t) +
+                       _p1 * (-2*ttt + 3*tt) +
+                       _m1 * (ttt - tt));
         }
     }
 
-    protected var _start :int;
-    protected var _end :int;
+    /** The coefficient for the spline that interpolates the beginning point value. */
+    protected var _p0 :Number;
+
+    /** The coefficient for the spline that interpolates the end point value. */
+    protected var _p1 :Number;
+
+    /** The coefficient for the spline that interpolates the beginning point derivate. */
+    protected var _m0 :Number;
+
+    /** The coefficient for the spline that interpolates the end point derivate. */
+    protected var _m1 :Number;
 }
 }
