@@ -6,7 +6,7 @@ package com.threerings.flash.path {
 import flash.display.DisplayObject;
 
 /**
- * Moves a display object along a straight line path in a specified amount of time.
+ * Moves a display object along a line path in a specified amount of time.
  */
 public class LinePath extends Path
 {
