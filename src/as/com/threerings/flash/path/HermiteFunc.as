@@ -44,7 +44,7 @@ public class HermiteFunc extends InterpFunc
             return _p0;
         } else {
             var tt :Number = t*t;
-            var ttt :Number = t2 * t;
+            var ttt :Number = tt * t;
 
             return int(_p0 * (2*ttt - 3*tt + 1) +
                        _m0 * (ttt - 2*tt + t) +
