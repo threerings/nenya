@@ -1044,7 +1044,7 @@ public class SoundManager
     protected static final long MAX_SOUND_DELAY = 400L;
 
     /** The size of the line's buffer. */
-    protected static final int LINEBUF_SIZE = 32 * 1024;
+    protected static final int LINEBUF_SIZE = 16 * 1024;
 
     /** The maximum time a spooler will wait for a stream before deciding to shut down. */
     protected static final long MAX_WAIT_TIME = 30000L;
