@@ -597,11 +597,13 @@ public class SoundManager
 
             int drainTime = (int) Math.ceil((totalRead * 8 * 1000) / (sampleRate * sampleSize));
 
-            // add in a fudge factor of half a second 
-            drainTime += 500;
-
             // subtract out time we've already spent doing things.
             drainTime -= System.currentTimeMillis() - startTime;
+            
+            drainTime = Math.max(0, drainTime);
+            
+            // add in a fudge factor of half a second 
+            drainTime += 500;
 
             try {
                 Thread.sleep(drainTime);
