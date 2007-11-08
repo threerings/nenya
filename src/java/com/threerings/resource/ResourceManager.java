@@ -45,7 +45,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 
+import com.samskivert.io.StreamUtil;
 import com.samskivert.net.PathUtil;
 import com.samskivert.util.ResultListener;
 import com.samskivert.util.StringUtil;
@@ -678,21 +681,34 @@ public class ResourceManager
     protected static BufferedImage loadImage (InputStream iis)
         throws IOException
     {
-        BufferedImage image = ImageIO.read(iis);
-        try {
-            iis.close();
-        } catch (IOException ioe) {
-            // jesus fucking hoppalong cassidy christ on a polyester pogo stick!
-            // ImageInputStreamImpl.close() throws a fucking IOException if it's already closed;
-            // there's no way to find out if it's already closed or not, so we have to check for
-            // their bullshit exception; as if we should just "trust" ImageIO.read() to close the
-            // fucking input stream when it's done, especially after the goddamned fiasco with
-            // PNGImageReader not closing its fucking inflaters; for the love of humanity
-            if (!"closed".equals(ioe.getMessage())) {
-                Log.warning("Failure closing image input '" + iis + "'.");
-                Log.logStackTrace(ioe);
+        BufferedImage image;
+
+        if (iis instanceof ImageInputStream) {
+            image = ImageIO.read(iis);
+
+        } else {
+            // if we don't already have an image input stream, create a memory cache image input
+            // stream to avoid causing freakout if we're used in a sandbox because ImageIO
+            // otherwise use FileCacheImageInputStream which tries to create a temp file
+            MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(iis);
+            image = ImageIO.read(mciis);
+            try {
+                // this doesn't close the underlying stream
+                mciis.close();
+            } catch (IOException ioe) {
+                // ImageInputStreamImpl.close() throws an IOException if it's already closed;
+                // there's no way to find out if it's already closed or not, so we have to check
+                // the exception message to determine if this is actually warning worthy
+                if (!"closed".equals(ioe.getMessage())) {
+                    Log.warning("Failure closing image input '" + iis + "'.");
+                    Log.logStackTrace(ioe);
+                }
             }
         }
+
+        // finally close our input stream
+        StreamUtil.close(iis);
+
         return image;
     }
 
