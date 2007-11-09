@@ -96,6 +96,14 @@ public class ChatControl extends HBox
         _chatDtr = (chatDtr == null) ? _ctx.getChatDirector() : chatDtr;
     }
 
+    /**
+     * Configures the background color of the text entry area.
+     */
+    public function setChatColor (color :int) :void
+    {
+        _txt.setStyle("backgroundColor", color);
+    }
+
     override public function parentChanged (p :DisplayObjectContainer) :void
     {
         super.parentChanged(p);
