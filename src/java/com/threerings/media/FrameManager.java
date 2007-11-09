@@ -233,6 +233,14 @@ public abstract class FrameManager
     }
 
     /**
+     * Returns the managed root on which this frame manager is operating.
+     */
+    public ManagedRoot getManagedRoot ()
+    {
+        return _root;
+    }
+
+    /**
      * Clears out any media overlay that is in use.
      */
     public void clearMediaOverlay ()
