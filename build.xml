@@ -81,10 +81,10 @@
 
   <!-- installs the pre-built native libraries -->
   <target name="ninstall" depends="prepare">
-    <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" executable="make">
       <arg line="install"/>
     </exec>
+    <echo level="info" message="Installing native libraries for ${os.name}..."/>
     <exec dir="src/java/com/threerings/util/unsafe/${os.name}" executable="make">
       <arg line="install"/>
     </exec>
