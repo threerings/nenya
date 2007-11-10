@@ -28,7 +28,7 @@ TARGET=libunsafe.so
 
 all: ${TARGET}
 
-install: ${TARGET}
+install:
 	@${MKDIR} -p ${INSTALL_PATH}
 	cp ${TARGET} ${INSTALL_PATH}
 

@@ -80,7 +80,7 @@
   </target>
 
   <!-- build the native libraries -->
-  <target name="ncompile" depends="prepare">
+  <target name="ninstall" depends="prepare">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" 
      executable="make"><arg line="install"/></exec>
@@ -122,11 +122,10 @@
   </target>
 
   <!-- a target for rebuilding everything -->
-  <target name="all"
-          depends="clean,prepare,compile,ncompile,javadoc,tests,dist"/>
+  <target name="all" depends="clean,prepare,compile,ninstall,javadoc,tests,dist"/>
 
   <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,compile,ncompile,tests">
+  <target name="dist" depends="prepare,compile,ninstall,tests">
     <!-- build our various jar files -->
     <jar destfile="${deploy.dir}/${app.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
