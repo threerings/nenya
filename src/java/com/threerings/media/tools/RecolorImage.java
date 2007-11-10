@@ -59,9 +59,7 @@ import javax.swing.event.ChangeListener;
 import com.samskivert.util.QuickSort;
 
 import com.samskivert.swing.HGroupLayout;
-import com.samskivert.swing.IntField;
 import com.samskivert.swing.VGroupLayout;
-import com.samskivert.swing.event.DocumentAdapter;
 import com.samskivert.swing.util.SwingUtil;
 
 import com.threerings.media.image.ColorPository;
@@ -245,7 +243,6 @@ public class RecolorImage extends JPanel
             _colRepo.getClassRecord((String)_classList.getSelectedItem());
         int classId = colClass.classId;
 
-        ArrayList imgs = new ArrayList();
         BufferedImage img = new BufferedImage(_image.getWidth(),
             _image.getHeight()*colClass.colors.size(),
             BufferedImage.TYPE_INT_ARGB);

@@ -23,16 +23,12 @@ package com.threerings.media;
 
 import java.awt.Component;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 
 import javax.swing.JComponent;
-import javax.swing.event.AncestorEvent;
-
-import com.samskivert.swing.event.AncestorAdapter;
 import com.samskivert.util.ResultListener;
 
 /**
