@@ -82,10 +82,12 @@
   <!-- installs the pre-built native libraries -->
   <target name="ninstall" depends="prepare">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
-    <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" 
-     executable="make"><arg line="install"/></exec>
-    <exec dir="src/java/com/threerings/util/unsafe/${os.name}" 
-     executable="make"><arg line="install"/></exec>
+    <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" executable="make">
+      <arg line="install"/>
+    </exec>
+    <exec dir="src/java/com/threerings/util/unsafe/${os.name}" executable="make">
+      <arg line="install"/>
+    </exec>
   </target>
 
   <!-- build the javadoc documentation -->
