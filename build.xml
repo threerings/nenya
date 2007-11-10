@@ -79,7 +79,7 @@
     </javac>
   </target>
 
-  <!-- build the native libraries -->
+  <!-- installs the pre-built native libraries -->
   <target name="ninstall" depends="prepare">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" 
