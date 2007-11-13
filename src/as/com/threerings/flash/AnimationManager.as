@@ -28,6 +28,8 @@ import flash.events.Event;
 
 import flash.utils.getTimer; // func import
 
+import com.threerings.util.Log;
+
 /**
  * Manages animations.
  */

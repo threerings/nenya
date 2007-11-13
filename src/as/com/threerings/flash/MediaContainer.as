@@ -54,6 +54,7 @@ import flash.system.SecurityDomain;
 
 import flash.net.URLRequest;
 
+import com.threerings.util.Log;
 import com.threerings.util.StringUtil;
 import com.threerings.util.ValueEvent;
 import com.threerings.util.Util;
