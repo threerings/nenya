@@ -74,9 +74,9 @@ public class Keyboard
                 log.info("Native keyboard library initialization failed.");
             }
 
-        } catch (UnsatisfiedLinkError e) {
+        } catch (Throwable t) {
             log.warning("Failed to load native keyboard library " +
-                        "[e=" + e + "].");
+                        "[cause=" + t + "].");
             _haveLib = false;
         }
     }
