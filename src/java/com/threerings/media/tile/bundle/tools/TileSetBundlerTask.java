@@ -22,6 +22,7 @@
 package com.threerings.media.tile.bundle.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.tools.ant.BuildException;
@@ -76,7 +77,7 @@ public class TileSetBundlerTask extends Task
         File cfile = null;
         try {
             // create a tileset bundler
-            TileSetBundler bundler = new TileSetBundler(_config);
+            TileSetBundler bundler = createBundler();
 
             // create our tileset id broker
             MapFileTileSetIDBroker broker =
@@ -102,8 +103,7 @@ public class TileSetBundlerTask extends Task
                                            "Config file should end with .xml.");
                         continue;
                     }
-                    String bpath =
-                        cpath.substring(0, cpath.length()-4) + ".jar";
+                    String bpath = getTargetPath(fromDir, cpath);
                     File bfile = new File(bpath);
 
                     // create the bundle
@@ -125,6 +125,23 @@ public class TileSetBundlerTask extends Task
                 "]: " + e.getMessage();
             throw new BuildException(errmsg, e);
         }
+    }
+
+    /**
+     * Create the bundler to use during creation.
+     */
+    protected TileSetBundler createBundler ()
+        throws IOException
+    {
+        return new TileSetBundler(_config);
+    }
+
+    /**
+     * Returns the target path in which our bundler will write the tile set.
+     */
+    protected String getTargetPath (File fromDir, String path)
+    {
+        return path.substring(0, path.length()-4) + ".jar";
     }
 
     protected void ensureSet (Object value, String errmsg)

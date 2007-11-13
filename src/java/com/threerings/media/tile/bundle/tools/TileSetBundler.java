@@ -310,7 +310,7 @@ public class TileSetBundler
         }
 
         // see if our newest file is newer than the tileset bundle
-        if (newest < target.lastModified()) {
+        if (newest < target.lastModified() && maySkipIfNewer()) {
             return false;
         }
 
@@ -326,6 +326,14 @@ public class TileSetBundler
     }
 
     /**
+     * Whether we're allowed to skip creation of the bundle if we're not out of date.
+     */
+    protected boolean maySkipIfNewer ()
+    {
+        return true;
+    }
+
+    /**
      * Finish the creation of a tileset bundle jar file.
      *
      * @param target the tileset bundle file that will be created.
@@ -334,7 +342,23 @@ public class TileSetBundler
      * @param imageBase the base directory for getting images for non
      * ObjectTileSet tilesets.
      */
-    public static boolean createBundle (
+    public boolean createBundle (
+        File target, TileSetBundle bundle, ImageProvider improv, String imageBase)
+        throws IOException
+    {
+        return createBundleJar(target, bundle, improv, imageBase);
+    }
+
+    /**
+     * Create a tileset bundle jar file.
+     *
+     * @param target the tileset bundle file that will be created.
+     * @param bundle contains the tilesets we'd like to save out to the bundle.
+     * @param improv the image provider.
+     * @param imageBase the base directory for getting images for non
+     * ObjectTileSet tilesets.
+     */
+    public static boolean createBundleJar (
         File target, TileSetBundle bundle, ImageProvider improv, String imageBase)
         throws IOException
     {
@@ -385,7 +409,7 @@ public class TileSetBundler
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
 
-                        String msg = "Error adding tileset to bundle " + imagePath + 
+                        String msg = "Error adding tileset to bundle " + imagePath +
                                      ", " + set.getName() + ": " + e;
                         throw (IOException) new IOException(msg).initCause(e);
                     }

@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
@@ -92,9 +93,8 @@ public class MetadataBundlerTask extends Task
                   "file via the 'target' attribute.");
 
         // make sure we can write to the target bundle file
-        FileOutputStream fout = null;
+        OutputStream fout = null;
         try {
-            fout = new FileOutputStream(_target);
 
             // parse our metadata
             Tuple tuple = parseActions();
@@ -102,33 +102,28 @@ public class MetadataBundlerTask extends Task
             HashMap actionSets = (HashMap)tuple.right;
             HashMap classes = parseClasses();
 
-            // and create the bundle file
-            JarOutputStream jout = new JarOutputStream(fout);
-            jout.setLevel(Deflater.BEST_COMPRESSION);
+            fout = createOutputStream(_target);
 
             // throw the serialized actions table in there
-            JarEntry aentry = new JarEntry(BundleUtil.ACTIONS_PATH);
-            jout.putNextEntry(aentry);
-            ObjectOutputStream oout = new ObjectOutputStream(jout);
+            fout = nextEntry(fout, BundleUtil.ACTIONS_PATH);
+            ObjectOutputStream oout = new ObjectOutputStream(fout);
             oout.writeObject(actions);
             oout.flush();
 
             // throw the serialized action tilesets table in there
-            JarEntry sentry = new JarEntry(BundleUtil.ACTION_SETS_PATH);
-            jout.putNextEntry(sentry);
-            oout = new ObjectOutputStream(jout);
+            fout = nextEntry(fout, BundleUtil.ACTION_SETS_PATH);
+            oout = new ObjectOutputStream(fout);
             oout.writeObject(actionSets);
             oout.flush();
 
             // throw the serialized classes table in there
-            JarEntry centry = new JarEntry(BundleUtil.CLASSES_PATH);
-            jout.putNextEntry(centry);
-            oout = new ObjectOutputStream(jout);
+            fout =  nextEntry(fout, BundleUtil.CLASSES_PATH);
+            oout = new ObjectOutputStream(fout);
             oout.writeObject(classes);
             oout.flush();
 
             // close it up and we're done
-            jout.close();
+            fout.close();
 
         } catch (IOException ioe) {
             String errmsg = "Unable to output to target bundle " +
@@ -144,6 +139,28 @@ public class MetadataBundlerTask extends Task
                 }
             }
         }
+    }
+
+    /**
+     * Creates the base output stream to which to write our bundle's files.
+     */
+    protected OutputStream createOutputStream (File target)
+        throws IOException
+    {
+        JarOutputStream jout = new JarOutputStream(new FileOutputStream(target));
+        jout.setLevel(Deflater.BEST_COMPRESSION);
+        return jout;
+    }
+
+    /**
+     * Advances to the next named entry in the bundle and returns the stream to which to write
+     *  that entry.
+     */
+    protected OutputStream nextEntry (OutputStream lastEntry, String path)
+        throws IOException
+    {
+        ((JarOutputStream)lastEntry).putNextEntry(new JarEntry(path));
+        return lastEntry;
     }
 
     /**

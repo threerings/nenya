@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -166,9 +167,7 @@ public class ComponentBundlerTask extends Task
 
         try {
             // make sure we can create our bundle file
-            FileOutputStream fout = new FileOutputStream(_target);
-            JarOutputStream jout = new JarOutputStream(fout);
-            jout.setLevel(Deflater.BEST_COMPRESSION);
+            OutputStream fout = createOutputStream(_target);
 
             // we'll fill this with component id to tuple mappings
             HashIntMap mapping = new HashIntMap();
@@ -206,7 +205,7 @@ public class ComponentBundlerTask extends Task
                     mapping.put(cid, new Tuple(info[0], info[1]));
 
                     // process and store the main component image
-                    processComponent(info, aset, cfile, jout);
+                    processComponent(info, aset, cfile, fout);
 
                     // pick up any auxiliary images as well like the shadow or
                     // crop files
@@ -217,20 +216,20 @@ public class ComponentBundlerTask extends Task
                             FileUtil.resuffix(cfile, ext, AUX_EXTS[aa] + ext));
                         if (afile.exists()) {
                             info[2] = action + AUX_EXTS[aa];
-                            processComponent(info, aset, afile, jout);
+                            processComponent(info, aset, afile, fout);
                         }
                     }
                 }
             }
 
             // write our mapping table to the jar file as well
-            jout.putNextEntry(new JarEntry(BundleUtil.COMPONENTS_PATH));
-            ObjectOutputStream oout = new ObjectOutputStream(jout);
+            fout = nextEntry(fout, BundleUtil.COMPONENTS_PATH);
+            ObjectOutputStream oout = new ObjectOutputStream(fout);
             oout.writeObject(mapping);
             oout.flush();
 
             // seal up our jar file
-            jout.close();
+            fout.close();
 
         } catch (IOException ioe) {
             String errmsg = "Unable to create component bundle.";
@@ -246,13 +245,13 @@ public class ComponentBundlerTask extends Task
     }
 
     protected void processComponent (
-        String[] info, TileSet aset, File cfile, JarOutputStream jout)
+        String[] info, TileSet aset, File cfile, OutputStream fout)
         throws IOException, BuildException
     {
         // construct the path that'll go in the jar file
         String ipath = composePath(
             info, BundleUtil.IMAGE_EXTENSION);
-        jout.putNextEntry(new JarEntry(ipath));
+        fout = nextEntry(fout, ipath);
 
         // create a trimmed tileset based on the source action tileset and
         // stuff the new trimmed image into the jar file at the same time
@@ -260,7 +259,7 @@ public class ComponentBundlerTask extends Task
 
         TrimmedTileSet tset = null;
         try {
-            tset = TrimmedTileSet.trimTileSet(aset, jout);
+            tset = trim(aset, fout);
             tset.setImagePath(ipath);
         } catch (Throwable t) {
             System.err.println(
@@ -278,8 +277,9 @@ public class ComponentBundlerTask extends Task
         if (tset != null) {
             String tpath = composePath(
                 info, BundleUtil.TILESET_EXTENSION);
-            jout.putNextEntry(new JarEntry(tpath));
-            ObjectOutputStream oout = new ObjectOutputStream(jout);
+            fout = nextEntry(fout, tpath);
+
+            ObjectOutputStream oout = new ObjectOutputStream(fout);
             oout.writeObject(tset);
             oout.flush();
         }
@@ -417,7 +417,7 @@ public class ComponentBundlerTask extends Task
         digester.addSetProperties("actions" + ActionRuleSet.ACTION_PATH);
         addTileSetRuleSet(digester, new SwissArmyTileSetRuleSet());
         addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
-        
+
 
         HashMap actsets = new ActionMap();
         digester.push(actsets);
@@ -437,6 +437,37 @@ public class ComponentBundlerTask extends Task
         }
 
         return actsets;
+    }
+
+    /**
+     * Creates the base output stream to which to write our bundle's files.
+     */
+    protected OutputStream createOutputStream (File target)
+        throws IOException
+    {
+        JarOutputStream jout = new JarOutputStream(new FileOutputStream(target));
+        jout.setLevel(Deflater.BEST_COMPRESSION);
+        return jout;
+    }
+
+    /**
+     * Advances to the next named entry in the bundle and returns the stream to which to write
+     *  that entry.
+     */
+    protected OutputStream nextEntry (OutputStream lastEntry, String path)
+        throws IOException
+    {
+        ((JarOutputStream)lastEntry).putNextEntry(new JarEntry(path));
+        return lastEntry;
+    }
+
+    /**
+     * Converts the tileset to a trimmed tile set and saves it at the specified location.
+     */
+    protected TrimmedTileSet trim (TileSet aset, OutputStream fout)
+        throws IOException
+    {
+        return TrimmedTileSet.trimTileSet(aset, fout);
     }
 
     /** Used when parsing action tilesets. */

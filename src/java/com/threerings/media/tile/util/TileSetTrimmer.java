@@ -22,6 +22,7 @@
 package com.threerings.media.tile.util;
 
 import java.awt.Rectangle;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RasterFormatException;
@@ -69,6 +70,16 @@ public class TileSetTrimmer
     }
 
     /**
+     * Convenience function to trim the tile set using FastImageIO to save the result.
+     */
+    public static void trimTileSet (
+        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr)
+        throws IOException
+    {
+        trimTileSet(source, destImage, tmr, FastImageIO.FILE_SUFFIX);
+    }
+
+    /**
      * Generates a trimmed tileset image from the supplied source
      * tileset. The source tileset must be configured with an image
      * provider so that the tile images can be obtained. The tile images
@@ -80,9 +91,10 @@ public class TileSetTrimmer
      * will be written.
      * @param tmr a callback object that will be used to inform the caller
      * of the trimmed tile metrics.
+     * @param imgFormat the format in which to write the image file - or if null, use FastImageIO.
      */
     public static void trimTileSet (
-        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr)
+        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr, String imgFormat)
         throws IOException
     {
         int tcount = source.getTileCount();
@@ -140,6 +152,10 @@ public class TileSetTrimmer
         }
 
         // write out trimmed image
-        FastImageIO.write(image, destImage);
+        if (imgFormat == null || FastImageIO.FILE_SUFFIX.equals(imgFormat)) {
+            FastImageIO.write(image, destImage);
+        } else {
+            ImageIO.write(image, imgFormat, destImage);
+        }
     }
 }

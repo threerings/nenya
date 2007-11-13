@@ -162,7 +162,27 @@ public class ResourceManager
      */
     public ResourceManager (String resourceRoot, ClassLoader loader)
     {
-        _rootPath = resourceRoot;
+        this(resourceRoot, null, loader);
+    }
+
+    /**
+     * Creates a resource manager with a root path to resources over the network. See
+     * {@link #ResourceManager(String)} for further documentation.
+     */
+    public ResourceManager (String resourceRoot, String networkResourceRoot)
+    {
+        this(resourceRoot, networkResourceRoot, ResourceManager.class.getClassLoader());
+    }
+
+    /**
+     * Creates a resource manager with a root path to resources over the network and the specified
+     * class loader via which to load classes. See {@link #ResourceManager(String)} for further
+     * documentation.
+     */
+    public ResourceManager (String fileResourceRoot, String networkResourceRoot, ClassLoader loader)
+    {
+        _rootPath = fileResourceRoot;
+        _networkRootPath = networkResourceRoot;
         _loader = loader;
 
         // check a system property to determine if we should unpack our bundles, but don't freak
@@ -239,16 +259,7 @@ public class ResourceManager
         }
 
         // load up our configuration
-        Properties config = new Properties();
-        try {
-            config.load(new FileInputStream(new File(_rdir, configPath)));
-        } catch (Exception e) {
-            String errmsg = "Unable to load resource manager config [rdir=" + _rdir +
-                ", cpath=" + configPath + "]";
-            Log.warning(errmsg + ".");
-            Log.logStackTrace(e);
-            throw new IOException(errmsg);
-        }
+        Properties config = loadConfig(configPath);
 
         // resolve the configured resource sets
         List<ResourceBundle> dlist = new ArrayList<ResourceBundle>();
@@ -259,7 +270,9 @@ public class ResourceManager
                 continue;
             }
             String setName = key.substring(RESOURCE_SET_PREFIX.length());
-            resolveResourceSet(setName, config.getProperty(key), dlist);
+            String resourceSetType = config.getProperty(RESOURCE_SET_TYPE_PREFIX + setName,
+                FILE_SET_TYPE);
+            resolveResourceSet(setName, config.getProperty(key), resourceSetType, dlist);
         }
 
         // if an observer was passed in, then we do not need to block the caller
@@ -408,7 +421,14 @@ public class ResourceManager
 
         // first look for this resource in our default resource bundle
         for (ResourceBundle bundle : _default) {
-            in = bundle.getResource(path);
+            // Try a localized version first.
+            if (_localePrefix != null) {
+                in = bundle.getResource(PathUtil.appendPath(_localePrefix, path));
+            }
+            // If that didn't work, try generic.
+            if (in == null) {
+                in = bundle.getResource(path);
+            }
             if (in != null) {
                 return in;
             }
@@ -462,7 +482,18 @@ public class ResourceManager
     {
         // first look for this resource in our default resource bundle
         for (ResourceBundle bundle : _default) {
-            BufferedImage image = bundle.getImageResource(path, false);
+            // try a localized version first
+            BufferedImage image = null;
+            if (_localePrefix != null) {
+                image =
+                    bundle.getImageResource(PathUtil.appendPath(_localePrefix, path), false);
+            }
+
+            // if we didn't find that, try generic
+            if (image == null) {
+                image = bundle.getImageResource(path, false);
+            }
+
             if (image != null) {
                 return image;
             }
@@ -606,6 +637,25 @@ public class ResourceManager
         return (ResourceBundle[])_sets.get(name);
     }
 
+    /**
+     * Loads the configuration properties for our resource sets.
+     */
+    protected Properties loadConfig (String configPath)
+        throws IOException
+    {
+        Properties config = new Properties();
+        try {
+            config.load(new FileInputStream(new File(_rdir, configPath)));
+        } catch (Exception e) {
+            String errmsg = "Unable to load resource manager config [rdir=" + _rdir +
+                ", cpath=" + configPath + "]";
+            Log.warning(errmsg + ".");
+            Log.logStackTrace(e);
+            throw new IOException(errmsg);
+        }
+        return config;
+    }
+
     protected void initResourceDir (String resourceDir)
     {
         // if none was specified, check the resource_dir system property
@@ -633,19 +683,25 @@ public class ResourceManager
      * Loads up a resource set based on the supplied definition information.
      */
     protected void resolveResourceSet (
-        String setName, String definition, List<ResourceBundle> dlist)
+        String setName, String definition, String setType, List<ResourceBundle> dlist)
     {
         List<ResourceBundle> set = new ArrayList<ResourceBundle>();
         StringTokenizer tok = new StringTokenizer(definition, ":");
         while (tok.hasMoreTokens()) {
             String path = tok.nextToken().trim();
-            FileResourceBundle bundle =
-                new FileResourceBundle(getResourceFile(path), true, _unpack);
-            set.add(bundle);
-            if (bundle.isUnpacked() && bundle.sourceIsReady()) {
-                continue;
+            if (setType.equals(FILE_SET_TYPE)) {
+                FileResourceBundle bundle =
+                    new FileResourceBundle(getResourceFile(path), true, _unpack);
+                set.add(bundle);
+                if (bundle.isUnpacked() && bundle.sourceIsReady()) {
+                    continue;
+                }
+                dlist.add(bundle);
+            } else if (setType.equals(NETWORK_SET_TYPE)) {
+                NetworkResourceBundle bundle =
+                    new NetworkResourceBundle(_networkRootPath, path);
+                set.add(bundle);
             }
-            dlist.add(bundle);
         }
 
         // convert our array list into an array and stick it in the table
@@ -768,6 +824,9 @@ public class ResourceManager
      * classpath. */
     protected String _rootPath;
 
+    /** The root path we give to network bundles for all resources they're interested in. */
+    protected String _networkRootPath;
+
     /** Whether or not to unpack our resource bundles. */
     protected boolean _unpack;
 
@@ -783,6 +842,15 @@ public class ResourceManager
     /** The prefix of configuration entries that describe a resource set. */
     protected static final String RESOURCE_SET_PREFIX = "resource.set.";
 
+    /** The prefix of configuration entries that describe a resource set. */
+    protected static final String RESOURCE_SET_TYPE_PREFIX = "resource.set_type.";
+
     /** The name of the default resource set. */
     protected static final String DEFAULT_RESOURCE_SET = "default";
+
+    /** Resource set type indicating the resources should be loaded from local files. */
+    protected static final String FILE_SET_TYPE = "file";
+
+    /** Resource set type indicating the resources should be loaded over the network. */
+    protected static final String NETWORK_SET_TYPE = "network";
 }

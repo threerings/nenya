@@ -30,6 +30,7 @@ import com.samskivert.util.ListUtil;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.media.image.Colorization;
+import com.threerings.resource.FastImageIO;
 import com.threerings.media.tile.util.TileSetTrimmer;
 
 /**
@@ -87,7 +88,7 @@ public class TrimmedObjectTileSet extends TileSet
     {
         return (_bits == null) ? null : _bits[tileIdx].constraints;
     }
-    
+
     /**
      * Checks whether the tile at the specified index has the given constraint.
      */
@@ -96,7 +97,7 @@ public class TrimmedObjectTileSet extends TileSet
         return (_bits == null || _bits[tileIdx].constraints == null) ? false :
             ListUtil.contains(_bits[tileIdx].constraints, constraint);
     }
-    
+
     // documentation inherited from interface RecolorableTileSet
     public String[] getColorizations ()
     {
@@ -167,13 +168,24 @@ public class TrimmedObjectTileSet extends TileSet
     }
 
     /**
-     * Creates a trimmed object tileset from the supplied source object tileset. The image path
-     * must be set by hand to the appropriate path based on where the image data that is written to
-     * the <code>destImage</code> parameter is actually stored on the file system. See {@link
-     * TileSetTrimmer#trimTileSet} for further information.
+     * Convenience function to trim the tile set to a file using FastImageIO.
      */
     public static TrimmedObjectTileSet trimObjectTileSet (
         ObjectTileSet source, OutputStream destImage)
+        throws IOException
+    {
+        return trimObjectTileSet(source, destImage, FastImageIO.FILE_SUFFIX);
+    }
+
+    /**
+     * Creates a trimmed object tileset from the supplied source object tileset. The image path
+     * must be set by hand to the appropriate path based on where the image data that is written to
+     * the <code>destImage</code> parameter is actually stored on the file system. If imgFormat is
+     * null, uses FastImageIO to save the file.  See {@link TileSetTrimmer#trimTileSet} for further
+     * information.
+     */
+    public static TrimmedObjectTileSet trimObjectTileSet (
+        ObjectTileSet source, OutputStream destImage, String imgFormat)
         throws IOException
     {
         final TrimmedObjectTileSet tset = new TrimmedObjectTileSet();
@@ -199,10 +211,10 @@ public class TrimmedObjectTileSet extends TileSet
         // fill in the original object metrics
         for (int ii = 0; ii < tcount; ii++) {
             tset._ometrics[ii] = new Rectangle();
-            if (source._xorigins != null) { 
+            if (source._xorigins != null) {
                 tset._ometrics[ii].x = source._xorigins[ii];
             }
-            if (source._yorigins != null) { 
+            if (source._yorigins != null) {
                 tset._ometrics[ii].y = source._yorigins[ii];
             }
             tset._ometrics[ii].width = source._owidths[ii];
@@ -234,7 +246,7 @@ public class TrimmedObjectTileSet extends TileSet
                 tset._bounds[tileIndex] = new Rectangle(imageX, imageY, trimWidth, trimHeight);
             }
         };
-        TileSetTrimmer.trimTileSet(source, destImage, tmr);
+        TileSetTrimmer.trimTileSet(source, destImage, tmr, imgFormat);
 
 //         Log.info("Trimmed object tileset [bounds=" + StringUtil.toString(tset._bounds) +
 //                  ", metrics=" + StringUtil.toString(tset._ometrics) + "].");
@@ -259,7 +271,7 @@ public class TrimmedObjectTileSet extends TileSet
 
         /** The constraints associated with this object. */
         public String[] constraints;
-        
+
         /** Generates a string representation of this instance. */
         public String toString ()
         {

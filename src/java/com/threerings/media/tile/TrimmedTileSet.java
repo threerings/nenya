@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import com.threerings.media.image.Colorization;
+import com.threerings.resource.FastImageIO;
 import com.threerings.media.tile.util.TileSetTrimmer;
 
 /**
@@ -62,12 +63,23 @@ public class TrimmedTileSet extends TileSet
     }
 
     /**
-     * Creates a trimmed tileset from the supplied source tileset. The image path must be set by
-     * hand to the appropriate path based on where the image data that is written to the
-     * <code>destImage</code> parameter is actually stored on the file system. See {@link
-     * TileSetTrimmer#trimTileSet} for further information.
+     * Convenience function to trim the tile set and save it using FastImageIO.
      */
     public static TrimmedTileSet trimTileSet (TileSet source, OutputStream destImage)
+        throws IOException
+    {
+        return trimTileSet(source, destImage, FastImageIO.FILE_SUFFIX);
+    }
+
+    /**
+     * Creates a trimmed tileset from the supplied source tileset. The image path must be set by
+     * hand to the appropriate path based on where the image data that is written to the
+     * <code>destImage</code> parameter is actually stored on the file system. The image format
+     * indicateds how the resulting image should be saved.  If null, we save using FastImageIO
+     * See {@link TileSetTrimmer#trimTileSet} for further information.
+     */
+    public static TrimmedTileSet trimTileSet (TileSet source, OutputStream destImage,
+                                              String imgFormat)
         throws IOException
     {
         final TrimmedTileSet tset = new TrimmedTileSet();
@@ -90,7 +102,7 @@ public class TrimmedTileSet extends TileSet
                 tset._obounds[tileIndex] = new Rectangle(imageX, imageY, trimWidth, trimHeight);
             }
         };
-        TileSetTrimmer.trimTileSet(source, destImage, tmr);
+        TileSetTrimmer.trimTileSet(source, destImage, tmr, imgFormat);
 
         return tset;
     }
