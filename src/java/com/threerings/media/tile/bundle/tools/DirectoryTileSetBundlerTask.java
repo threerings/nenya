@@ -1,5 +1,5 @@
 //
-// $Id: TileSetBundlerTask.java 158 2007-02-24 00:38:17Z mdb $
+// $Id$
 //
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved

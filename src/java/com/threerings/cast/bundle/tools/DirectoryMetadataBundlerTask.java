@@ -1,5 +1,5 @@
 //
-// $Id: ComponentBundlerTask.java 281 2007-08-02 23:18:16Z charlie $
+// $Id$
 //
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved
