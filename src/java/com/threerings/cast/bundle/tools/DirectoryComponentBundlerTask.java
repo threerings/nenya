@@ -61,5 +61,10 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
         return TrimmedTileSet.trimTileSet(aset, fout, "png");
     }
 
-
-}
+    @Override // documentation inherited
+    protected boolean outOfDate (Object source, File target)
+    {
+        // Since we're updating individual files, assume always out of date and rebuild.
+        return true;
+    }
+ }
