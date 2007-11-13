@@ -79,6 +79,20 @@
     </javac>
   </target>
 
+  <!-- adds readField and writeField methods to Stremable classes -->
+  <target name="procstream">
+    <taskdef name="instream" classpathref="classpath"
+             classname="com.threerings.presents.tools.InstrumentStreamableTask"/>
+    <!-- now instrument the associated files -->
+    <instream outdir="${classes.dir}">
+      <path refid="classpath"/>
+      <fileset dir="${classes.dir}" includes="**/data/*.class"/>
+      <fileset dir="${classes.dir}" includes="**/net/*.class"/>
+      <fileset dir="${classes.dir}" includes="**/dobj/*.class"/>
+      <fileset dir="${classes.dir}" includes="**/util/*.class"/>
+    </instream>
+  </target>
+
   <!-- installs the pre-built native libraries -->
   <target name="ninstall" depends="prepare">
     <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" executable="make">
@@ -127,7 +141,7 @@
   <target name="all" depends="clean,prepare,compile,ninstall,javadoc,tests,dist"/>
 
   <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,compile,ninstall,tests">
+  <target name="dist" depends="prepare,compile,procstream,ninstall,tests">
     <!-- build our various jar files -->
     <jar destfile="${deploy.dir}/${app.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>

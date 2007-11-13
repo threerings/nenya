@@ -13,6 +13,7 @@
     <include name="retroweaver-all-1.2.2.jar"/>
     <include name="samskivert.jar"/>
     <include name="xml-writer.jar"/>
+    <include name="javassist.jar"/>
     <!-- these LWJGL, JME and JME-BUI libraries are optional -->
     <include name="lwjgl.jar"/>
     <include name="lwjgl_util.jar"/>
