@@ -36,6 +36,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 
 import com.threerings.media.Log;
+import com.threerings.util.FileUtil;
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
 import com.threerings.media.tile.TileSet;
@@ -155,9 +156,9 @@ public class DirectoryTileSetBundler extends TileSetBundler
     }
 
     @Override // documentation inherited
-    protected boolean maySkipIfNewer ()
+    protected long getTgtModificationDate (File target)
     {
-        // Can't skip since we're copying individual files.
-        return false;
+        // Return the oldest modification date of anything within the directory.
+        return FileUtil.getOldestLastModified(target);
     }
 }

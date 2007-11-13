@@ -310,7 +310,7 @@ public class TileSetBundler
         }
 
         // see if our newest file is newer than the tileset bundle
-        if (newest < target.lastModified() && maySkipIfNewer()) {
+        if (newest < getTgtModificationDate(target)) {
             return false;
         }
 
@@ -323,14 +323,6 @@ public class TileSetBundler
         };
 
         return createBundle(target, bundle, improv, bundleDesc.getParent());
-    }
-
-    /**
-     * Whether we're allowed to skip creation of the bundle if we're not out of date.
-     */
-    protected boolean maySkipIfNewer ()
-    {
-        return true;
     }
 
     /**
@@ -460,6 +452,14 @@ public class TileSetBundler
             String errmsg = "Failed to create bundle " + target + ": " + e;
             throw (IOException) new IOException(errmsg).initCause(e);
         }
+    }
+
+    /**
+     * Returns the last modified date of <code>target</code> to be compared for out-of-dateness.
+     */
+    protected long getTgtModificationDate (File target)
+    {
+        return target.lastModified();
     }
 
     /** Replaces the image suffix with <code>.raw</code>. */

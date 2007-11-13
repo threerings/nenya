@@ -27,8 +27,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.threerings.media.tile.TileSet;
+import com.threerings.util.FileUtil;
 
+import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TrimmedTileSet;
 
 /**
@@ -62,9 +63,9 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
     }
 
     @Override // documentation inherited
-    protected boolean outOfDate (Object source, File target)
+    protected long getTgtModificationDate (File target)
     {
-        // Since we're updating individual files, assume always out of date and rebuild.
-        return true;
+        // Return the oldest modification date of anything within the directory.
+        return FileUtil.getOldestLastModified(target);
     }
  }

@@ -302,16 +302,17 @@ public class ComponentBundlerTask extends Task
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             File fromDir = fs.getDir(getProject());
             String[] srcFiles = ds.getIncludedFiles();
+            long tgtModificationDate = getTgtModificationDate(target);
             for (int f = 0; f < srcFiles.length; f++) {
                 File cfile = new File(fromDir, srcFiles[f]);
-                if (newer(cfile, target)) {
+                if (newer(cfile, tgtModificationDate)) {
                     return true;
                 }
             }
             return false;
 
         } else if (source instanceof File) {
-            return newer((File)source, target);
+            return newer((File)source, getTgtModificationDate(target));
 
         } else {
             System.err.println("Can't compare " + source +
@@ -324,9 +325,17 @@ public class ComponentBundlerTask extends Task
      * Returns true if <code>source</code> is newer than
      * <code>target</code>.
      */
-    protected boolean newer (File source, File target)
+    protected boolean newer (File source, long tgtModificationDate)
     {
-        return source.lastModified() > target.lastModified();
+        return source.lastModified() > tgtModificationDate;
+    }
+
+    /**
+     * Returns the last modified date of <code>target</code> to be compared for out-of-dateness.
+     */
+    protected long getTgtModificationDate (File target)
+    {
+        return target.lastModified();
     }
 
     /**
