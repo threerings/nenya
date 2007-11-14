@@ -29,6 +29,8 @@ import flash.geom.Rectangle;
 
 import mx.core.IRawChildrenContainer;
 
+import com.threerings.util.ClassUtil;
+
 public class DisplayUtil
 {
     /**
@@ -178,6 +180,115 @@ public class DisplayUtil
 
             return (dist1 > dist2) ? 1 : ((dist1 < dist2) ? -1 : 0); // signum
         };
+    }
+
+    /**
+     * Find a component with the specified name in the specified display hierarchy.
+     * Whether finding deeply or shallowly, if two components have the target name and are
+     * at the same depth, the first one found will be returned.
+     *
+     * Note: This method will not find rawChildren of flex componenets.
+     */
+    public static function findInHierarchy (
+        top :DisplayObject, name :String, findShallow :Boolean = true,
+        maxDepth :int = int.MAX_VALUE) :DisplayObject
+    {
+        var result :Array = findInHierarchy0(top, name, findShallow, maxDepth);
+        return (result != null) ? DisplayObject(result[0]) : null;
+    }
+
+    /**
+     * Dump the display hierarchy to a String, each component on a newline, children indented
+     * two spaces:
+     * "instance0"  flash.display.Sprite
+     *   "instance1"  flash.display.Sprite
+     *   "entry_box"  flash.text.TextField
+     *
+     * Note: This method will not dump rawChildren of flex componenets.
+     */
+    public static function dumpHierarchy (top :DisplayObject) :String
+    {
+        return dumpHierarchy0(top);
+    }
+
+    /**
+     * Internal worker method for findInHierarchy.
+     */
+    private static function findInHierarchy0 (
+        obj :DisplayObject, name :String, shallow :Boolean, maxDepth :int, curDepth :int = 0) :Array
+    {
+        var bestResult :Array;
+        if (obj.name == name) {
+            if (shallow) {
+                return [ obj, curDepth ];
+
+            } else {
+                bestResult = [ obj, curDepth ];
+            }
+
+        } else {
+            bestResult = null;
+        }
+
+        if (curDepth < maxDepth && (obj is DisplayObjectContainer)) {
+            var cont :DisplayObjectContainer = obj as DisplayObjectContainer;
+            var nextDepth :int = curDepth + 1;
+            for (var ii :int = 0; ii < cont.numChildren; ii++) {
+                try {
+                    var result :Array = findInHierarchy0(
+                        cont.getChildAt(ii), name, shallow, maxDepth, nextDepth);
+                    if (result != null) {
+                        if (shallow) {
+                            // we update maxDepth for every hit, so result is always
+                            // shallower than any current bestResult
+                            bestResult = result;
+                            maxDepth = int(result[1]) - 1;
+                            if (maxDepth == curDepth) {
+                                break; // stop looking
+                            }
+
+                        } else {
+                            // only replace if it's deeper
+                            if (bestResult == null || int(result[1]) > int(bestResult[1])) {
+                                bestResult = result;
+                            }
+                        }
+                    }
+                } catch (err :SecurityError) {
+                    // skip this child
+                }
+            }
+        }
+
+        return bestResult;
+    }
+
+    /**
+     * Internal worker method for dumpHierarchy.
+     */
+    private static function dumpHierarchy0 (
+        obj :DisplayObject, spaces :String = "", inStr :String = "") :String
+    {
+        if (obj != null) {
+            if (inStr != "") {
+                inStr += "\n";
+            }
+            inStr += spaces + "\"" + obj.name + "\"  " + ClassUtil.getClassName(obj);
+
+            if (obj is DisplayObjectContainer) {
+                spaces += "  ";
+                var container :DisplayObjectContainer = obj as DisplayObjectContainer;
+                for (var ii :int = 0; ii < container.numChildren; ii++) {
+                    try {
+                        var child :DisplayObject = container.getChildAt(ii);
+                        inStr = dumpHierarchy0(container.getChildAt(ii), spaces, inStr);
+                    } catch (err :SecurityError) {
+                        inStr += "\n" + spaces + "SECURITY-BLOCKED";
+                    }
+                }
+            }
+        }
+        return inStr;
     }
 }
 }
