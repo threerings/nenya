@@ -310,7 +310,7 @@ public class TileSetBundler
         }
 
         // see if our newest file is newer than the tileset bundle
-        if (newest < getTgtModificationDate(target)) {
+        if (skipIfTargetNewer() && newest < target.lastModified()) {
             return false;
         }
 
@@ -322,7 +322,7 @@ public class TileSetBundler
             }
         };
 
-        return createBundle(target, bundle, improv, bundleDesc.getParent());
+        return createBundle(target, bundle, improv, bundleDesc.getParent(), newest);
     }
 
     /**
@@ -332,10 +332,12 @@ public class TileSetBundler
      * @param bundle contains the tilesets we'd like to save out to the bundle.
      * @param improv the image provider.
      * @param imageBase the base directory for getting images for non
+     * @param newestMod the most recent modification to any part of the bundle.  By default we
+     *   ignore this since we normally duck out if we're up to date.
      * ObjectTileSet tilesets.
      */
     public boolean createBundle (
-        File target, TileSetBundle bundle, ImageProvider improv, String imageBase)
+        File target, TileSetBundle bundle, ImageProvider improv, String imageBase, long newestMod)
         throws IOException
     {
         return createBundleJar(target, bundle, improv, imageBase);
@@ -455,11 +457,11 @@ public class TileSetBundler
     }
 
     /**
-     * Returns the last modified date of <code>target</code> to be compared for out-of-dateness.
+     * Returns whether we should skip updating the bundle if the target is newer than any component.
      */
-    protected long getTgtModificationDate (File target)
+    protected boolean skipIfTargetNewer ()
     {
-        return target.lastModified();
+        return true;
     }
 
     /** Replaces the image suffix with <code>.raw</code>. */

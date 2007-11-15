@@ -150,7 +150,8 @@ public class ComponentBundlerTask extends Task
         ArrayList sources = (ArrayList)_filesets.clone();
         sources.add(_mapfile);
         sources.add(_actionDef);
-        if (!outOfDate(sources, _target)) {
+        long newest = getNewestDate(sources);
+        if (skipIfTargetNewer() && newest < _target.lastModified()) {
             System.out.println(_target.getPath() + " is up to date.");
             return;
         }
@@ -205,7 +206,7 @@ public class ComponentBundlerTask extends Task
                     mapping.put(cid, new Tuple(info[0], info[1]));
 
                     // process and store the main component image
-                    processComponent(info, aset, cfile, fout);
+                    processComponent(info, aset, cfile, fout, newest);
 
                     // pick up any auxiliary images as well like the shadow or
                     // crop files
@@ -216,17 +217,19 @@ public class ComponentBundlerTask extends Task
                             FileUtil.resuffix(cfile, ext, AUX_EXTS[aa] + ext));
                         if (afile.exists()) {
                             info[2] = action + AUX_EXTS[aa];
-                            processComponent(info, aset, afile, fout);
+                            processComponent(info, aset, afile, fout, newest);
                         }
                     }
                 }
             }
 
             // write our mapping table to the jar file as well
-            fout = nextEntry(fout, BundleUtil.COMPONENTS_PATH);
-            ObjectOutputStream oout = new ObjectOutputStream(fout);
-            oout.writeObject(mapping);
-            oout.flush();
+            if (!skipEntry(BundleUtil.COMPONENTS_PATH, newest)) {
+                fout = nextEntry(fout, BundleUtil.COMPONENTS_PATH);
+                ObjectOutputStream oout = new ObjectOutputStream(fout);
+                oout.writeObject(mapping);
+                oout.flush();
+            }
 
             // seal up our jar file
             fout.close();
@@ -245,12 +248,18 @@ public class ComponentBundlerTask extends Task
     }
 
     protected void processComponent (
-        String[] info, TileSet aset, File cfile, OutputStream fout)
+        String[] info, TileSet aset, File cfile, OutputStream fout, long newest)
         throws IOException, BuildException
     {
         // construct the path that'll go in the jar file
         String ipath = composePath(
             info, BundleUtil.IMAGE_EXTENSION);
+
+        // If we decide that the entry is up to date and we don't need to process it, bail out.
+        if (skipEntry(ipath, newest)) {
+            return;
+        }
+
         fout = nextEntry(fout, ipath);
 
         // create a trimmed tileset based on the source action tileset and
@@ -273,69 +282,59 @@ public class ComponentBundlerTask extends Task
             throw new BuildException(errmsg, t);
         }
 
-        // then write our trimmed tileset to the jar file
+        // then write our trimmed tileset bundle data
         if (tset != null) {
+
             String tpath = composePath(
                 info, BundleUtil.TILESET_EXTENSION);
-            fout = nextEntry(fout, tpath);
+            if (!skipEntry(tpath, newest)) {
+                fout = nextEntry(fout, tpath);
 
-            ObjectOutputStream oout = new ObjectOutputStream(fout);
-            oout.writeObject(tset);
-            oout.flush();
-        }
-    }
-
-    protected boolean outOfDate (ArrayList sources, File target)
-    {
-        for (int ii = 0; ii < sources.size(); ii++) {
-            if (outOfDate(sources.get(ii), target)) {
-                return true;
+                ObjectOutputStream oout = new ObjectOutputStream(fout);
+                oout.writeObject(tset);
+                oout.flush();
             }
         }
-        return false;
     }
 
-    protected boolean outOfDate (Object source, File target)
+    protected long getNewestDate (ArrayList sources)
+    {
+        long newest = 0L;
+        for (int ii = 0; ii < sources.size(); ii++) {
+            newest = Math.max(newest, getNewestDate(sources.get(ii)));
+        }
+        return newest;
+    }
+
+    protected long getNewestDate (Object source)
     {
         if (source instanceof FileSet) {
             FileSet fs = (FileSet)source;
             DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             File fromDir = fs.getDir(getProject());
             String[] srcFiles = ds.getIncludedFiles();
-            long tgtModificationDate = getTgtModificationDate(target);
+            long newest = 0L;
             for (int f = 0; f < srcFiles.length; f++) {
                 File cfile = new File(fromDir, srcFiles[f]);
-                if (newer(cfile, tgtModificationDate)) {
-                    return true;
-                }
+                newest = Math.max(newest, cfile.lastModified());
             }
-            return false;
+            return newest;
 
         } else if (source instanceof File) {
-            return newer((File)source, getTgtModificationDate(target));
+            return ((File)source).lastModified();
 
         } else {
-            System.err.println("Can't compare " + source +
-                               " to " + target + ".");
-            return true;
+            System.err.println("Can't get newest date for source: " + source + ".");
+            return 0L;
         }
     }
 
     /**
-     * Returns true if <code>source</code> is newer than
-     * <code>target</code>.
+     * Returns whether we should skip updating the bundle if the target is newer than any component.
      */
-    protected boolean newer (File source, long tgtModificationDate)
+    protected boolean skipIfTargetNewer ()
     {
-        return source.lastModified() > tgtModificationDate;
-    }
-
-    /**
-     * Returns the last modified date of <code>target</code> to be compared for out-of-dateness.
-     */
-    protected long getTgtModificationDate (File target)
-    {
-        return target.lastModified();
+        return true;
     }
 
     /**
@@ -468,6 +467,16 @@ public class ComponentBundlerTask extends Task
     {
         ((JarOutputStream)lastEntry).putNextEntry(new JarEntry(path));
         return lastEntry;
+    }
+
+    /**
+     * Returns whether we should skip the specified entry in the bundle, presumably if it was
+     *  already created and up to date.
+     */
+    protected boolean skipEntry (String path, long newest)
+    {
+        // If we're making the bundle, by default, we don't skip anything.
+        return false;
     }
 
     /**

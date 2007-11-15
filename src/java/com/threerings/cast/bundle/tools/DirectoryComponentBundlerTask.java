@@ -46,6 +46,8 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
         return null;
     }
 
+
+
     @Override // documentation inherited
     protected OutputStream nextEntry (OutputStream lastEntry, String path)
         throws IOException
@@ -56,6 +58,13 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
     }
 
     @Override // documentation inherited
+    protected boolean skipEntry (String path, long newest)
+    {
+        File file = new File(_target, path);
+        return (file.lastModified() > newest);
+    }
+
+    @Override // documentation inherited
     protected TrimmedTileSet trim (TileSet aset, OutputStream fout)
         throws IOException
     {
@@ -63,9 +72,9 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
     }
 
     @Override // documentation inherited
-    protected long getTgtModificationDate (File target)
+    protected boolean skipIfTargetNewer ()
     {
-        // Return the oldest modification date of anything within the directory.
-        return FileUtil.getOldestLastModified(target);
+        // We have to check modification later on a file-by-file basis, so cannot skip.
+        return false;
     }
  }

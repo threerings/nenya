@@ -58,17 +58,9 @@ public class DirectoryTileSetBundler extends TileSetBundler
         super(configPath);
     }
 
-    /**
-     * Finish the creation of a tileset bundle jar file.
-     *
-     * @param target the tileset bundle file that will be created.
-     * @param bundle contains the tilesets we'd like to save out to the bundle.
-     * @param improv the image provider.
-     * @param imageBase the base directory for getting images for non
-     * ObjectTileSet tilesets.
-     */
+    @Override // documentation inherited
     public boolean createBundle (
-        File target, TileSetBundle bundle, ImageProvider improv, String imageBase)
+        File target, TileSetBundle bundle, ImageProvider improv, String imageBase, long newestMod)
         throws IOException
     {
         try {
@@ -101,6 +93,10 @@ public class DirectoryTileSetBundler extends TileSetBundler
                         // write the trimmed tileset image to the destination
                         // output stream
                         File outFile = new File(target, imagePath);
+                        if (outFile.lastModified() > newestMod) {
+                            // Our file's newer than the newest bundle mod - up to date.
+                            continue;
+                        }
                         outFile.getParentFile().mkdirs();
                         FileOutputStream fout = new FileOutputStream(outFile);
                         TrimmedObjectTileSet tset =
@@ -123,9 +119,18 @@ public class DirectoryTileSetBundler extends TileSetBundler
                     // read the image file and convert it to our custom
                     // format in the bundle
                     File ifile = new File(imageBase, imagePath);
+                    if (ifile.lastModified() > newestMod) {
+                        // Our file's newer than the newest bundle mod - up to date.
+                        continue;
+                    }
+
                     try {
                         BufferedImage image = ImageIO.read(ifile);
                         File outFile = new File(target, imagePath);
+                        if (outFile.lastModified() > newestMod) {
+                            // Our file's newer than the newest bundle mod - up to date.
+                            continue;
+                        }
                         outFile.getParentFile().mkdirs();
                         FileOutputStream fout = new FileOutputStream(outFile);
                         FileInputStream imgin = new FileInputStream(ifile);
@@ -141,6 +146,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
             // now write a serialized representation of the tileset bundle
             // object to the bundle jar file
             File outFile = new File(target, BundleUtil.METADATA_PATH);
+
             outFile.getParentFile().mkdirs();
             FileOutputStream fout = new FileOutputStream(outFile);
             ObjectOutputStream oout = new ObjectOutputStream(fout);
@@ -156,9 +162,9 @@ public class DirectoryTileSetBundler extends TileSetBundler
     }
 
     @Override // documentation inherited
-    protected long getTgtModificationDate (File target)
+    protected boolean skipIfTargetNewer ()
     {
-        // Return the oldest modification date of anything within the directory.
-        return FileUtil.getOldestLastModified(target);
+        // We have to check modification later on a file-by-file basis, so cannot skip.
+        return false;
     }
 }
