@@ -31,11 +31,14 @@ public class FileUtil
     public static long getOldestLastModified (File dir)
     {
         long oldest = dir.lastModified();
-        for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                oldest = Math.min(oldest, getOldestLastModified(file));
-            } else {
-                oldest = Math.min(oldest, file.lastModified());
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    oldest = Math.min(oldest, getOldestLastModified(file));
+                } else {
+                    oldest = Math.min(oldest, file.lastModified());
+                }
             }
         }
         return oldest;
