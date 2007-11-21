@@ -68,6 +68,9 @@ public class ChatControl extends HBox
             _txt.height = height;
             _but.height = height;
         }
+
+        addEventListener(Event.ADDED_TO_STAGE, handleAddRemove);
+        addEventListener(Event.REMOVED_FROM_STAGE, handleAddRemove);
     }
 
     /**
@@ -104,26 +107,6 @@ public class ChatControl extends HBox
         _txt.setStyle("backgroundColor", color);
     }
 
-    override public function parentChanged (p :DisplayObjectContainer) :void
-    {
-        super.parentChanged(p);
-
-        if (p != null) {
-            // set up any already-configured text
-            _txt.text = _curLine;
-
-            // request focus
-            callLater(function () :void {
-                _txt.setFocus();
-            });
-            _controls.push(this);
-
-        } else {
-            _curLine = _txt.text;
-            ArrayUtil.removeAll(_controls, this);
-        }
-    }
-
     /**
      * Handles FlexEvent.ENTER and the action from the send button.
      */
@@ -142,6 +125,27 @@ public class ChatControl extends HBox
 
         // if there was no error, clear the entry area in prep for the next entry event
         _txt.text = "";
+    }
+
+    /**
+     * Handles Event.ADDED_TO_STAGE and Event.REMOVED_FROM_STAGE.
+     */
+    protected function handleAddRemove (event :Event) :void
+    {
+        if (event.type == Event.ADDED_TO_STAGE) {
+            // set up any already-configured text
+            _txt.text = _curLine;
+
+            // request focus
+            callLater(function () :void {
+                _txt.setFocus();
+            });
+            _controls.push(this);
+
+        } else {
+            _curLine = _txt.text;
+            ArrayUtil.removeAll(_controls, this);
+        }
     }
 
     /** Our client-side context. */
