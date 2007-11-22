@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Iterator;
 
 import com.samskivert.util.Predicate;
-import com.samskivert.util.ComparableArrayList;
+import com.samskivert.util.SortableArrayList;
 
 import com.threerings.media.AbstractMedia;
 import com.threerings.media.AbstractMediaManager;
@@ -248,10 +248,10 @@ public class SpriteManager extends AbstractMediaManager
 //    }
 
     @Override // from AbstractMediaManager
-    protected ComparableArrayList<? extends AbstractMedia> createMediaList ()
+    protected SortableArrayList<? extends AbstractMedia> createMediaList ()
     {
-        return (_sprites = new ComparableArrayList<Sprite>());
+        return (_sprites = new SortableArrayList<Sprite>());
     }
 
-    protected ComparableArrayList<Sprite> _sprites;
+    protected SortableArrayList<Sprite> _sprites;
 }

@@ -27,7 +27,7 @@ import java.awt.Shape;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import com.samskivert.util.ComparableArrayList;
+import com.samskivert.util.SortableArrayList;
 import com.samskivert.util.ObserverList.ObserverOp;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.Tuple;
@@ -166,7 +166,7 @@ public abstract class AbstractMediaManager
         }
         
         _media.remove(media);
-        _media.insertSorted(media);
+        _media.insertSorted(media, RENDER_ORDER);
     }
     
     /**
@@ -195,7 +195,7 @@ public abstract class AbstractMediaManager
         }
 
         media.init(this);
-        int ipos = _media.insertSorted(media);
+        int ipos = _media.insertSorted(media, RENDER_ORDER);
 
         // if we've started our tick but have not yet painted our media, we need to take care that
         // this newly added media will be ticked before our upcoming render
@@ -270,7 +270,7 @@ public abstract class AbstractMediaManager
     }
 
     /** Type safety jockeying. */
-    protected abstract ComparableArrayList<? extends AbstractMedia> createMediaList ();
+    protected abstract SortableArrayList<? extends AbstractMedia> createMediaList ();
 
     /**
      * Dispatches all queued media notifications.
@@ -284,6 +284,13 @@ public abstract class AbstractMediaManager
         _notify.clear();
     }
 
+    /** Used to sort media by render order. */
+    protected static final Comparator<AbstractMedia> RENDER_ORDER = new Comparator<AbstractMedia>() {
+        public int compare (AbstractMedia am1, AbstractMedia am2) {
+            return am1.renderCompareTo(am2);
+        }
+    };
+
     /** The media host we're working with. */
     protected MediaHost _host;
 
@@ -295,8 +302,8 @@ public abstract class AbstractMediaManager
         new ArrayList<Tuple<ObserverList,ObserverOp>>();
 
     /** Our render-order sorted list of media. */
-    @SuppressWarnings("unchecked") protected ComparableArrayList<AbstractMedia> _media =
-        (ComparableArrayList<AbstractMedia>)createMediaList();
+    @SuppressWarnings("unchecked") protected SortableArrayList<AbstractMedia> _media =
+        (SortableArrayList<AbstractMedia>)createMediaList();
 
     /** The position in our media list that we're ticking (while in the middle of a call to {@link
      * #tick}) otherwise -1. */

@@ -37,7 +37,7 @@ import com.samskivert.util.StringUtil;
  * Something that can be rendered on the media panel.
  */
 public abstract class AbstractMedia
-    implements Shape, Comparable<AbstractMedia>
+    implements Shape
 {
     /** A {@link #_renderOrder} value at or above which, indicates that this
      * media is in the HUD (heads up display) and should not scroll when the
@@ -166,8 +166,10 @@ public abstract class AbstractMedia
         return _bounds.getPathIterator(at, flatness);
     }
 
-    // from interface Comparable<AbstractMedia>
-    public int compareTo (AbstractMedia other)
+    /**
+     * Compares this media to the specified media by render order.
+     */
+    public int renderCompareTo (AbstractMedia other)
     {
         int result = _renderOrder - other._renderOrder;
         return (result != 0) ? result : naturalCompareTo(other);
