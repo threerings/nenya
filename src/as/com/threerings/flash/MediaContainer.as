@@ -623,8 +623,7 @@ public class MediaContainer extends Sprite
     /**
      * Update the graphics to indicate how much is loaded.
      */
-    protected function updateLoadingProgress (
-            soFar :Number, total :Number) :void
+    protected function updateLoadingProgress (soFar :Number, total :Number) :void
     {
         // nada, by default
     }
