@@ -19,7 +19,7 @@ public class ChatInput extends TextInput
     public function ChatInput ()
     {
         styleName = "chatInput";
-        width = 175;
+        width = 147;
     }
 
     override protected function focusInHandler (event :FocusEvent) :void
