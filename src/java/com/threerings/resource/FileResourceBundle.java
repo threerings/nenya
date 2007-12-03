@@ -1,5 +1,5 @@
 //
-// $Id: ResourceBundle.java 310 2007-10-26 19:50:53Z mdb $
+// $Id$
 //
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved

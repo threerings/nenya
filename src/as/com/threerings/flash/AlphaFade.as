@@ -1,5 +1,5 @@
 //
-// $Id: AnimationImpl.as 263 2007-06-14 18:20:16Z dhoover $
+// $Id$
 //
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved

@@ -1,5 +1,5 @@
 //
-// $Id: ChatControl.as 5606 2007-08-22 01:38:59Z mdb $
+// $Id$
 
 package com.threerings.flex {
 
