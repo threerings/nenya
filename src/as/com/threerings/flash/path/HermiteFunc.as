@@ -61,9 +61,9 @@ public class HermiteFunc extends InterpFunc
         }
         var tt :Number = t*t;
 
-        return int((_p0 - _p1) * (6*tt - 6*t) +
-                   _m0 * (3*tt - 4*t + 1) +
-                   _m1 * (3*tt - 2*t));
+        return (_p0 - _p1) * (6*tt - 6*t) +
+               _m0 * (3*tt - 4*t + 1) +
+               _m1 * (3*tt - 2*t);
     }
 
     /** The coefficient for the spline that interpolates the beginning point value. */
