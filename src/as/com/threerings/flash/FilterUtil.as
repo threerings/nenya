@@ -184,6 +184,8 @@ public class FilterUtil
     /**
      * Create a filter that, if applied to a DisplayObject, will shift the hue of that object
      * by the given value.
+     *
+     * @param hueShift a value, in degrees, between -180 and 180.
      */
     public static function createHueShift (hue :int) :ColorMatrixFilter
     {
@@ -193,6 +195,8 @@ public class FilterUtil
     /**
     * Shift the color matrix filter by the given amount.  This is adapted from the code found at
     * http://www.kirupa.com/forum/showthread.php?t=230706
+     *
+     * @param hueShift a value, in degrees, between -180 and 180.
     */
     public static function shiftHueBy (original :ColorMatrixFilter, 
         hueShift :int) :ColorMatrixFilter
