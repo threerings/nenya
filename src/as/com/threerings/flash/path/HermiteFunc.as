@@ -54,7 +54,7 @@ public class HermiteFunc extends InterpFunc
     }
 
     /** Get the derivative of this function at a point. */
-    public function getSlope (t :Number) :int
+    public function getSlope (t :Number) :Number
     {
         if (t >= 1 || t < 0) { // cope with a funny startOffset
             return 0;
