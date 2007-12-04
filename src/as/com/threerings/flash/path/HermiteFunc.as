@@ -53,6 +53,19 @@ public class HermiteFunc extends InterpFunc
         }
     }
 
+    /** Get the derivate of this function at a point. */
+    public function getSlope (t :Number) :int
+    {
+        if (t >= 1 || t < 0) { // cope with a funny startOffset
+            return 0;
+        }
+        var tt :Number = t*t;
+
+        return int((_p0 - _p1) * (6*tt - 6*t) +
+                   _m0 * (3*tt - 4*t + 1) +
+                   _m1 * (3*tt - 2*t));
+    }
+
     /** The coefficient for the spline that interpolates the beginning point value. */
     protected var _p0 :Number;
 
