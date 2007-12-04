@@ -33,14 +33,14 @@ public class LinearFunc extends InterpFunc
     }
 
     // from InterpFunc
-    override public function getValue (complete :Number) :int
+    override public function getValue (complete :Number) :Number
     {
         if (complete >= 1) {
             return _end;
         } else if (complete < 0) { // cope with a funny startOffset
             return _start;
         } else {
-            return int((_end - _start) * complete) + _start;
+            return ((_end - _start) * complete) + _start;
         }
     }
 

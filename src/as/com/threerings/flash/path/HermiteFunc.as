@@ -36,7 +36,7 @@ public class HermiteFunc extends InterpFunc
     }
 
     // from InterpFunc
-    override public function getValue (t :Number) :int
+    override public function getValue (t :Number) :Number
     {
         if (t >= 1) {
             return _p1;
@@ -46,10 +46,10 @@ public class HermiteFunc extends InterpFunc
             var tt :Number = t*t;
             var ttt :Number = tt * t;
 
-            return int(_p0 * (2*ttt - 3*tt + 1) +
-                       _m0 * (ttt - 2*tt + t) +
-                       _p1 * (-2*ttt + 3*tt) +
-                       _m1 * (ttt - tt));
+            return _p0 * (2*ttt - 3*tt + 1) +
+                   _m0 * (ttt - 2*tt + t) +
+                   _p1 * (-2*ttt + 3*tt) +
+                   _m1 * (ttt - tt);
         }
     }
 

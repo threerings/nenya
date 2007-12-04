@@ -26,7 +26,7 @@ package com.threerings.flash.path {
  */
 public /*abstract*/ class InterpFunc
 {
-    public /*abstract*/ function getValue (complete :Number) :int
+    public /*abstract*/ function getValue (complete :Number) :Number
     {
         throw new Error("abstract");
     }
