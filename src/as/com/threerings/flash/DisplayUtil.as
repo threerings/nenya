@@ -217,6 +217,10 @@ public class DisplayUtil
     private static function findInHierarchy0 (
         obj :DisplayObject, name :String, shallow :Boolean, maxDepth :int, curDepth :int = 0) :Array
     {
+        if (obj == null) {
+            return null;
+        }
+
         var bestResult :Array;
         if (obj.name == name) {
             if (shallow) {
