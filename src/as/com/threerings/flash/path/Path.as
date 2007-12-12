@@ -137,7 +137,11 @@ public /*abstract*/ class Path
         if (_onStart != null) {
             _onStart(this);
         }
-        return tick(now);
+        var remain :int = tick(now);
+        if (remain <= 0) {
+           pathCompleted(false);
+        }
+        return remain;
     }
 
     /**
