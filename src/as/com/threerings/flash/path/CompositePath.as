@@ -46,10 +46,8 @@ public class CompositePath extends Path
         if (_pathIdx >= 0) {
             remain = tickPath(_paths[_pathIdx] as Path, curStamp);
         }
-        if (remain <= 0) {
-            if (++_pathIdx < _paths.length) {
-                return startPath(_paths[_pathIdx] as Path, curStamp, remain);
-            }
+        while (remain <= 0 && ++_pathIdx < _paths.length) {
+            remain = startPath(_paths[_pathIdx] as Path, curStamp, remain);
         }
         return remain;
     }
