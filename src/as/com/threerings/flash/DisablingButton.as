@@ -84,7 +84,7 @@ public class DisablingButton extends SimpleButton
         updateState();
     }
 
-    override public function get mouseEnabled() :Boolean
+    override public function get mouseEnabled () :Boolean
     {
         return _mouseEnabled;
     }
@@ -101,7 +101,7 @@ public class DisablingButton extends SimpleButton
         super.upState = ((null != _disabledState && !super.enabled) ? _disabledState : _upState);
 
         // mouseEnabled is always false when the button is disabled
-        super.mouseEnabled = (super.enabled ? _mouseEnabled : false);
+        super.mouseEnabled = super.enabled && _mouseEnabled;
     }
 
     protected var _disabledState :DisplayObject;
