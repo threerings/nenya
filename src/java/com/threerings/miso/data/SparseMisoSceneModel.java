@@ -176,6 +176,16 @@ public class SparseMisoSceneModel extends MisoSceneModel
             return -1;
         }
 
+        public void getAllObjects (ArrayList list) {
+            for (ObjectInfo info : objectInfo) {
+                list.add(info);
+            }
+            for (int ii = 0; ii < objectTileIds.length; ii++) {
+                int x = objectXs[ii], y = objectYs[ii];
+                list.add(new ObjectInfo(objectTileIds[ii], x, y));
+            }
+        }
+
         public void getObjects (Rectangle region, ObjectSet set) {
             // first look for intersecting interesting objects
             for (int ii = 0; ii < objectInfo.length; ii++) {
@@ -270,6 +280,18 @@ public class SparseMisoSceneModel extends MisoSceneModel
             for (int oo = 0; oo < sect.objectInfo.length; oo++) {
                 list.add(sect.objectInfo[oo]);
             }
+        }
+    }
+
+    /**
+     * Adds all {@link ObjectInfo} records in this scene to the supplied list.
+     */
+    public void getAllObjects (ArrayList list)
+    {
+        for (Iterator iter = getSections(); iter.hasNext(); ) {
+            Section sect = (Section)iter.next();
+
+            sect.getAllObjects(list);
         }
     }
 
