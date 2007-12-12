@@ -104,7 +104,6 @@ public class DisablingButton extends SimpleButton
         super.mouseEnabled = (!super.enabled ? _mouseEnabled : false);
     }
 
-    protected var _showingDisabledState :Boolean;
     protected var _disabledState :DisplayObject;
     protected var _upState :DisplayObject;
     protected var _mouseEnabled :Boolean = true;
