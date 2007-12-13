@@ -54,6 +54,10 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
     {
         File file = new File(_target, path);
         file.getParentFile().mkdirs();
+        if (!file.getParentFile().isDirectory()) {
+            throw new IOException("Unable to make component directory.[dir=" +
+                file.getParentFile() + "]");
+        }
         return new FileOutputStream(file);
     }
 

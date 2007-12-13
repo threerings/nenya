@@ -171,15 +171,10 @@ public class ComponentBundlerTask extends Task
             OutputStream fout = createOutputStream(_target);
 
             // we'll fill this with component id to tuple mappings
-            HashIntMap mapping = new HashIntMap();
-
-            // herein we'll insert trimmed tileset objects that go along
-            // with each of the trimmed action images
-            HashIntMap actionSets = new HashIntMap();
+            HashIntMap<Tuple<String, String>> mapping = new HashIntMap<Tuple<String, String>>();
 
             // deal with the filesets
-            for (int i = 0; i < _filesets.size(); i++) {
-                FileSet fs = (FileSet)_filesets.get(i);
+            for (FileSet fs : _filesets) {
                 DirectoryScanner ds = fs.getDirectoryScanner(getProject());
                 File fromDir = fs.getDir(getProject());
                 String[] srcFiles = ds.getIncludedFiles();
@@ -203,7 +198,7 @@ public class ComponentBundlerTask extends Task
                     // obtain the component id from our id broker
                     int cid = broker.getComponentID(info[0], info[1]);
                     // add a mapping for this component
-                    mapping.put(cid, new Tuple(info[0], info[1]));
+                    mapping.put(cid, new Tuple<String, String>(info[0], info[1]));
 
                     // process and store the main component image
                     processComponent(info, aset, cfile, fout, newest);
@@ -231,8 +226,10 @@ public class ComponentBundlerTask extends Task
                 oout.flush();
             }
 
-            // seal up our jar file
-            fout.close();
+            if (fout != null) {
+                // seal up our jar file if we created one
+                fout.close();
+            }
 
         } catch (IOException ioe) {
             String errmsg = "Unable to create component bundle.";
@@ -266,7 +263,7 @@ public class ComponentBundlerTask extends Task
         // stuff the new trimmed image into the jar file at the same time
         aset.setImagePath(cfile.getPath());
 
-        TrimmedTileSet tset = null;
+        TrimmedTileSet tset;
         try {
             tset = trim(aset, fout);
             tset.setImagePath(ipath);
@@ -283,17 +280,13 @@ public class ComponentBundlerTask extends Task
         }
 
         // then write our trimmed tileset bundle data
-        if (tset != null) {
+        String tpath = composePath(info, BundleUtil.TILESET_EXTENSION);
+        if (!skipEntry(tpath, newest)) {
+            fout = nextEntry(fout, tpath);
 
-            String tpath = composePath(
-                info, BundleUtil.TILESET_EXTENSION);
-            if (!skipEntry(tpath, newest)) {
-                fout = nextEntry(fout, tpath);
-
-                ObjectOutputStream oout = new ObjectOutputStream(fout);
-                oout.writeObject(tset);
-                oout.flush();
-            }
+            ObjectOutputStream oout = new ObjectOutputStream(fout);
+            oout.writeObject(tset);
+            oout.flush();
         }
     }
 
@@ -667,7 +660,7 @@ public class ComponentBundlerTask extends Task
     protected String _root;
 
     /** A list of filesets that contain tile images. */
-    protected ArrayList _filesets = new ArrayList();
+    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
 
     /** Used to separate keys and values in the map file. */
     protected static final String SEP_STR = " := ";
