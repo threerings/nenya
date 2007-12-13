@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -740,33 +742,30 @@ public class ResourceManager
     {
         BufferedImage image;
 
-        if (iis instanceof ImageInputStream) {
+        // Java 1.4.2 and below can't deal with the MemoryCacheImageInputStream without throwing
+        //  a hissy fit.
+        if (iis instanceof ImageInputStream ||
+            getNumericJavaVersion(System.getProperty("java.version")) <
+                                  getNumericJavaVersion("1.5.0")) {
             image = ImageIO.read(iis);
 
         } else {
+            // if we don't already have an image input stream, create a memory cache image input
+            // stream to avoid causing freakout if we're used in a sandbox because ImageIO
+            // otherwise use FileCacheImageInputStream which tries to create a temp file
+            MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(iis);
+            image = ImageIO.read(mciis);
             try {
-                // if we don't already have an image input stream, create a memory cache image input
-                // stream to avoid causing freakout if we're used in a sandbox because ImageIO
-                // otherwise use FileCacheImageInputStream which tries to create a temp file
-                MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(iis);
-                image = ImageIO.read(mciis);
-                try {
-                    // this doesn't close the underlying stream
-                    mciis.close();
-                } catch (IOException ioe) {
-                    // ImageInputStreamImpl.close() throws an IOException if it's already closed;
-                    // there's no way to find out if it's already closed or not, so we have to check
-                    // the exception message to determine if this is actually warning worthy
-                    if (!"closed".equals(ioe.getMessage())) {
-                        Log.warning("Failure closing image input '" + iis + "'.");
-                        Log.logStackTrace(ioe);
-                    }
+                // this doesn't close the underlying stream
+                mciis.close();
+            } catch (IOException ioe) {
+                // ImageInputStreamImpl.close() throws an IOException if it's already closed;
+                // there's no way to find out if it's already closed or not, so we have to check
+                // the exception message to determine if this is actually warning worthy
+                if (!"closed".equals(ioe.getMessage())) {
+                    Log.warning("Failure closing image input '" + iis + "'.");
+                    Log.logStackTrace(ioe);
                 }
-            } catch (IIOException iioe) {
-                // Fall back to the old way of doing things.
-                // It would appear that Java 1.4.2 explodes trying to use the
-                //  MemoryCacheImageInputStream to load its images.
-                image = ImageIO.read(iis);
             }
         }
 
@@ -774,6 +773,26 @@ public class ResourceManager
         StreamUtil.close(iis);
 
         return image;
+    }
+
+    /**
+     * Converts the java version string to a more comparable numeric version number.
+     */
+    protected static int getNumericJavaVersion (String verstr)
+    {
+        Matcher m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(_\\d+)?.*").matcher(verstr);
+        if (!m.matches()) {
+            // if we can't parse the java version we're in weird land and should probably just try
+            // our luck with what we've got rather than try to download a new jvm
+            Log.warning("Unable to parse VM version, hoping for the best [version=" + verstr + "]");
+            return 0;
+        }
+
+        int one = Integer.parseInt(m.group(1)); // will there ever be a two?
+        int major = Integer.parseInt(m.group(2));
+        int minor = Integer.parseInt(m.group(3));
+        int patch = m.group(4) == null ? 0 : Integer.parseInt(m.group(4).substring(1));
+        return patch + 100 * (minor + 100 * (major + 100 * one));
     }
 
     /** Used to unpack bundles on a separate thread. */
