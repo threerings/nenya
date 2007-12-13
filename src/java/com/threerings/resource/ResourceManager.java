@@ -44,6 +44,7 @@ import java.util.StringTokenizer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -743,22 +744,29 @@ public class ResourceManager
             image = ImageIO.read(iis);
 
         } else {
-            // if we don't already have an image input stream, create a memory cache image input
-            // stream to avoid causing freakout if we're used in a sandbox because ImageIO
-            // otherwise use FileCacheImageInputStream which tries to create a temp file
-            MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(iis);
-            image = ImageIO.read(mciis);
             try {
-                // this doesn't close the underlying stream
-                mciis.close();
-            } catch (IOException ioe) {
-                // ImageInputStreamImpl.close() throws an IOException if it's already closed;
-                // there's no way to find out if it's already closed or not, so we have to check
-                // the exception message to determine if this is actually warning worthy
-                if (!"closed".equals(ioe.getMessage())) {
-                    Log.warning("Failure closing image input '" + iis + "'.");
-                    Log.logStackTrace(ioe);
+                // if we don't already have an image input stream, create a memory cache image input
+                // stream to avoid causing freakout if we're used in a sandbox because ImageIO
+                // otherwise use FileCacheImageInputStream which tries to create a temp file
+                MemoryCacheImageInputStream mciis = new MemoryCacheImageInputStream(iis);
+                image = ImageIO.read(mciis);
+                try {
+                    // this doesn't close the underlying stream
+                    mciis.close();
+                } catch (IOException ioe) {
+                    // ImageInputStreamImpl.close() throws an IOException if it's already closed;
+                    // there's no way to find out if it's already closed or not, so we have to check
+                    // the exception message to determine if this is actually warning worthy
+                    if (!"closed".equals(ioe.getMessage())) {
+                        Log.warning("Failure closing image input '" + iis + "'.");
+                        Log.logStackTrace(ioe);
+                    }
                 }
+            } catch (IIOException iioe) {
+                // Fall back to the old way of doing things.
+                // It would appear that Java 1.4.2 explodes trying to use the
+                //  MemoryCacheImageInputStream to load its images.
+                image = ImageIO.read(iis);
             }
         }
 
