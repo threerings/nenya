@@ -35,6 +35,8 @@ import flash.text.TextFieldType;
 import flash.text.TextFormat;
 import flash.text.TextFormatAlign;
 
+import com.threerings.util.Util;
+
 public class TextFieldUtil
 {
     /** A fudge factor that must be added to a TextField's textWidth when setting the width. */
@@ -46,52 +48,41 @@ public class TextFieldUtil
     /**
      * Create a TextField.
      *
-     * args: contains properties with which to initialize the TextField
+     * @param initProps contains properties with which to initialize the TextField.
+     * Additionally it may contain the following properties:
+     *    outlineColor: uint
+     *
+     * initProps may be destructively modified.
      */
     public static function createField (
-        text :String, args :Object = null, clazz :Class = null) :TextField
+        text :String, initProps :Object = null, clazz :Class = null) :TextField
     {
         var tf :TextField = (clazz == null) ? new TextField() : TextField(new clazz());
-        tf.background = getArg(args, "background", false);
-        tf.border = getArg(args, "border", false);
-        tf.multiline = getArg(args, "multiline", false);
-        tf.type = getArg(args, "type", TextFieldType.DYNAMIC);
 
-        var format :* = getArg(args, "format");
-        if (format !== undefined) {
-            tf.defaultTextFormat = format;
+        if ("outlineColor" in initProps) {
+            tf.filters = [ new GlowFilter(uint(initProps["outlineColor"]), 1, 2, 2, 255) ];
         }
 
-        var outColor :* = getArg(args, "outlineColor");
-        if (outColor !== undefined) {
-            tf.filters = [ new GlowFilter(uint(outColor), 1, 2, 2, 255) ];
-        }
-
-        tf.autoSize = getArg(args, "autoSize", TextFieldAutoSize.LEFT);
+        Util.init(tf, initProps, null, MASK_FIELD_PROPS);
         tf.text = text;
         if (tf.autoSize != null) {
-            tf.width = tf.textWidth + 5;
-            tf.height = tf.textHeight + 4;
+            tf.width = tf.textWidth + WIDTH_PAD;
+            tf.height = tf.textHeight + HEIGHT_PAD;
         }
 
         return tf;
     }
 
     /**
-     * Create a TextFormat.
+     * Create a TextFormat using initProps.
+     * If unspecified, the following properties have default values:
+     *  size: 18
+     *  font: _sans
      */
-    public static function createFormat (args :Object) :TextFormat
+    public static function createFormat (initProps :Object) :TextFormat
     {
         var f :TextFormat = new TextFormat();
-        f.align = getArg(args, "align", TextFormatAlign.LEFT);
-        f.blockIndent = getArg(args, "blockIndent", null);
-        f.bold = getArg(args, "bold", false);
-        f.bullet = getArg(args, "bullet", null);
-
-        f.size = getArg(args, "size", 18);
-        f.font = getArg(args, "font", "Arial");
-        f.color = getArg(args, "color", 0x000000);
-
+        Util.init(f, initProps, DEFAULT_FORMAT_PROPS);
         return f;
     }
 
@@ -151,18 +142,11 @@ public class TextFieldUtil
         _lastSelected = null;
     }
 
-    /**
-     * Utility function for createTextField() and createFormat().
-     */
-    protected static function getArg (args :Object, name :String, defVal :* = undefined) :*
-    {
-        if (args != null && (name in args)) {
-            return args[name];
-        }
-        return defVal;
-    }
-
     /** The last tracked TextField to be selected. */
     protected static var _lastSelected :TextField;
+
+    protected static const MASK_FIELD_PROPS :Object = { outlineColor: true };
+
+    protected static const DEFAULT_FORMAT_PROPS :Object = { size: 18, font: "_sans" };
 }
 }
