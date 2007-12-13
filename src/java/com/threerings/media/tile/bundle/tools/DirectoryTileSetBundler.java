@@ -85,9 +85,6 @@ public class DirectoryTileSetBundler extends TileSetBundler
                     // need to do this so that we can trim it!
                     set.setImageProvider(improv);
 
-                    // we're going to trim it, so adjust the path
-                    imagePath = adjustImagePath(imagePath);
-
                     try {
                         // create a trimmed object tileset, which will
                         // write the trimmed tileset image to the destination
