@@ -21,6 +21,10 @@
      classname="com.jmex.sound.openAL.SoundSystem" classpathref="classpath"/>
     <echo level="info" message="Have OpenAL: ${jme-sound.present}"/>
 
+    <available property="jl.present"
+     classname="javazoom.jl.decoder.Decoder" classpathref="classpath"/>
+    <echo level="info" message="Have JL: ${jl.present}"/>
+
     <available property="xml-writer.present"
      classname="com.megginson.sax.DataWriter" classpathref="classpath"/>
     <echo level="info" message="Have XML Writer: ${xml-writer.present}"/>
@@ -36,6 +40,7 @@
       <and>
         <isset property="lwjgl.present"/>
         <isset property="jme-sound.present"/>
+        <isset property="jl.present"/>
       </and>
     </condition>
 
