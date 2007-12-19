@@ -68,6 +68,14 @@ import com.threerings.util.Util;
 [Event(name="mediaSizeKnown", type="com.threerings.util.ValueEvent")]
 
 /**
+ * Dispatched when we've initialized our content. This is merely a redispatch
+ * of the INIT event we get from the loader.
+ *
+ * @eventType flash.events.Event.INIT
+ */
+[Event(name="init", type="flash.events.Event")]
+
+/**
  * A wrapper class for all media that will be placed on the screen.
  * Subject to change.
  */
@@ -534,6 +542,9 @@ public class MediaContainer extends Sprite
     protected function handleInit (event :Event) :void
     {
         _initialized = true;
+
+        // redispatch
+        dispatchEvent(event);
     }
 
     /**
