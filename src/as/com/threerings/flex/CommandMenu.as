@@ -73,7 +73,7 @@ use namespace mx_internal;
  *
  * See "Defining menu structure and data" in the Flex manual for the full list.
  */ 
-public class CommandMenu extends ScrollableArrowMenu
+public class CommandMenu extends Menu
 {
     /**
      * Factory method to create a command menu.
@@ -115,22 +115,49 @@ public class CommandMenu extends ScrollableArrowMenu
     public function popUp (trigger :DisplayObject, popUpwards :Boolean = false,
                            popLeftwards :Boolean = false) :void
     {
+        _upping = popUpwards;
+        _lefting = popLeftwards;
+        _fitting = null;
         var r :Rectangle = trigger.getBounds(trigger.stage);
+        show(_lefting ? r.left : r.right, _upping ? r.top : r.bottom);
+    }
 
-        if (popUpwards) {
-            show(r.x, 0);
-            // then, reposition the y once we know our size
-            y = r.y - getExplicitOrMeasuredHeight();
+    /**
+     * Shows the menu at the current mouse coordinates, popping upwards or leftwards as necessary
+     * to fit the menu into the supplied bounds.
+     */
+    public function popUpIn (bounds :Rectangle) :void
+    {
+        var mx :int = DisplayObject(Application.application).mouseX;
+        var my :int = DisplayObject(Application.application).mouseY;
 
-        } else {
-            // position it below the trigger
-            show(r.x, r.y + r.height);
+        // show it at zero zero so that it is layed out and measured
+        show(0, 0);
+        _fitting = bounds;
+
+        // then determine if we need to point it leftwards or upwards
+        if (mx + getExplicitOrMeasuredWidth() > bounds.right) {
+            mx -= getExplicitOrMeasuredWidth();
+        }
+        if (my + getExplicitOrMeasuredHeight() > bounds.bottom) {
+            my -= getExplicitOrMeasuredHeight();
         }
 
-        if (popLeftwards) {
-            // reposition the x now that we know our size
-            x = r.x + r.width - getExplicitOrMeasuredWidth();
-        }
+        // finally move it to the correct position
+        x = mx;
+        y = my;
+    }
+
+    /**
+     * Shows the menu at the specified mouse coordinates.
+     */
+    public function popUpAt (mx :int, my :int, popUpwards :Boolean = false,
+                             popLeftwards :Boolean = false) :void
+    {
+        _upping = popUpwards;
+        _lefting = popLeftwards;
+        _fitting = null;
+        show(mx, my);
     }
 
     /**
@@ -145,7 +172,16 @@ public class CommandMenu extends ScrollableArrowMenu
         if (yShow == null) {
             yShow = DisplayObject(Application.application).mouseY;
         }
+
         super.show(xShow, yShow);
+
+        // reposition now that we know our size
+        if (_lefting) {
+            y = x - getExplicitOrMeasuredWidth();
+        }
+        if (_upping) {
+            y = y - getExplicitOrMeasuredHeight();
+        }
     }
 
     /**
@@ -175,15 +211,12 @@ public class CommandMenu extends ScrollableArrowMenu
         var menu :CommandMenu;
 
         // check to see if the menu exists, if not create it
-        if (!IMenuItemRenderer(row).menu)
-        {
-            /* The only differences between this method and the original method in mx.controls.Menu
-             * are these few lines.
-             */
+        if (!IMenuItemRenderer(row).menu) {
+            // the only differences between this method and the original method in mx.controls.Menu
+            // are these few lines.
             menu = new CommandMenu();
             menu.maxHeight = this.maxHeight;
             menu.verticalScrollPolicy = this.verticalScrollPolicy;
-            menu.arrowScrollPolicy = this.arrowScrollPolicy;
             menu.variableRowHeight = this.variableRowHeight;
 
             menu.parentMenu = this;
@@ -213,6 +246,25 @@ public class CommandMenu extends ScrollableArrowMenu
         }
 
         super.openSubMenu(row);
+
+        // if we're lefting, upping or fitting make sure our submenu does so as well
+        var submenu :Menu = IMenuItemRenderer(row).menu;
+        var lefting :Boolean = _lefting;
+        var upping :Boolean = _upping;
+        if (_fitting != null) {
+            if (submenu.x + submenu.getExplicitOrMeasuredWidth() > _fitting.right) {
+                lefting = true;
+            }
+            if (submenu.y + submenu.getExplicitOrMeasuredHeight() > _fitting.bottom) {
+                upping = true;
+            }
+        }
+        if (lefting) {
+            submenu.x -= submenu.getExplicitOrMeasuredWidth();
+        }
+        if (upping) {
+            submenu.y -= (submenu.getExplicitOrMeasuredHeight() - DisplayObject(row).height);
+        }
     }
 
     // from List
@@ -243,5 +295,8 @@ public class CommandMenu extends ScrollableArrowMenu
     }
 
     protected var _dispatcher :IEventDispatcher;
+    protected var _fitting :Rectangle;
+    protected var _lefting :Boolean = false;
+    protected var _upping :Boolean = false;
 }
 }
