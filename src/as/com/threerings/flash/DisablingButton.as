@@ -102,6 +102,10 @@ public class DisablingButton extends SimpleButton
 
         // mouseEnabled is always false when the button is disabled
         super.mouseEnabled = super.enabled && _mouseEnabled;
+
+        // force a visual update.
+        super.enabled = !super.enabled;
+        super.enabled = !super.enabled;
     }
 
     protected var _disabledState :DisplayObject;
