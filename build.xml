@@ -92,7 +92,8 @@
   </target>
 
   <!-- installs the pre-built native libraries -->
-  <target name="ninstall" depends="prepare">
+  <condition property="isunix"><os family="unix"/></condition>
+  <target name="ninstall" depends="prepare" if="isunix">
     <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" executable="make">
       <arg line="install"/>
     </exec>
