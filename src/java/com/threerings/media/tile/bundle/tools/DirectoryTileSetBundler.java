@@ -120,8 +120,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
                     }
 
                 } else {
-                    // read the image file and convert it to our custom
-                    // format in the bundle
+                    // read the image file and write it to the proper place
                     File ifile = new File(imageBase, imagePath);
                     if (ifile.lastModified() > newestMod) {
                         // Our file's newer than the newest bundle mod - up to date.
@@ -140,8 +139,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
                         FileInputStream imgin = new FileInputStream(ifile);
                         IOUtils.copy(imgin, fout);
                     } catch (Exception e) {
-                        String msg = "Failure bundling image " + ifile +
-                            ": " + e;
+                        String msg = "Failure bundling image " + ifile + ": " + e;
                         throw (IOException) new IOException(msg).initCause(e);
                     }
                 }
