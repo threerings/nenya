@@ -378,7 +378,7 @@ public class TileSetBundler
                     continue;
                 }
 
-                // if this is an object tileset, we can't trim it!
+                // if this is an object tileset, trim it
                 if (set instanceof ObjectTileSet) {
                     // set the tileset up with an image provider; we
                     // need to do this so that we can trim it!
