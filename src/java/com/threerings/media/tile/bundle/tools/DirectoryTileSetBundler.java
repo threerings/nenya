@@ -92,7 +92,11 @@ public class DirectoryTileSetBundler extends TileSetBundler
                         File outFile = new File(target, imagePath);
                         if (outFile.lastModified() > newestMod) {
                             // Our file's newer than the newest bundle mod - up to date.
-                            continue;
+                            
+                            // FIXME: We can't just skip it, since we would've normally trimmed it,
+                            // so we need to get an appropriate TrimmedObjectTileSet added to our
+                            // bundle in place of this old ObjectTileSet.
+                            //continue;
                         }
                         outFile.getParentFile().mkdirs();
                         FileOutputStream fout = new FileOutputStream(outFile);
