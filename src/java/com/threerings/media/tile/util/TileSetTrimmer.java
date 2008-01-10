@@ -151,11 +151,13 @@ public class TileSetTrimmer
             xoff += tb.width;
         }
 
-        // write out trimmed image
-        if (imgFormat == null || FastImageIO.FILE_SUFFIX.equals(imgFormat)) {
-            FastImageIO.write(image, destImage);
-        } else {
-            ImageIO.write(image, imgFormat, destImage);
+        if (destImage != null) {
+            // write out trimmed image
+            if (imgFormat == null || FastImageIO.FILE_SUFFIX.equals(imgFormat)) {
+                FastImageIO.write(image, destImage);
+            } else {
+                ImageIO.write(image, imgFormat, destImage);
+            }
         }
     }
 }

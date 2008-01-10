@@ -87,25 +87,28 @@ public class DirectoryTileSetBundler extends TileSetBundler
 
                     try {
                         // create a trimmed object tileset, which will
-                        // write the trimmed tileset image to the destination
-                        // output stream
+                        // write the trimmed tileset image to the destination output stream
                         File outFile = new File(target, imagePath);
+                        FileOutputStream fout = null;
+                        
                         if (outFile.lastModified() > newestMod) {
                             // Our file's newer than the newest bundle mod - up to date.
+                            // So don't actually do anything
                             
-                            // FIXME: We can't just skip it, since we would've normally trimmed it,
-                            // so we need to get an appropriate TrimmedObjectTileSet added to our
-                            // bundle in place of this old ObjectTileSet.
-                            //continue;
+                            // TODO: Ideally, we'd like to skip re-trimming altogether, since that's
+                            // expensive, but for the moment, we're at least doing half as much by
+                            // not writing out the trimmed image.
+                            
+                        } else {
+                            // It's changed, so let's open the file & do all that jazz
+                            outFile.getParentFile().mkdirs();
+                            fout = new FileOutputStream(outFile);
                         }
-                        outFile.getParentFile().mkdirs();
-                        FileOutputStream fout = new FileOutputStream(outFile);
+                        
                         TrimmedObjectTileSet tset =
-                            TrimmedObjectTileSet.trimObjectTileSet(
-                                (ObjectTileSet)set, fout, "png");
+                            TrimmedObjectTileSet.trimObjectTileSet((ObjectTileSet)set, fout, "png");
                         tset.setImagePath(imagePath);
-                        // replace the original set with the trimmed
-                        // tileset in the tileset bundle
+                        // replace the original set with the trimmed tileset in the tileset bundle
                         bundle.addTileSet(tileSetId, tset);
 
                     } catch (Exception e) {
