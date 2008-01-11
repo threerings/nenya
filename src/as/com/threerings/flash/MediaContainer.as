@@ -140,12 +140,7 @@ public class MediaContainer extends Sprite
 
         // set up the new media
         willShowNewMedia();
-        if (StringUtil.endsWith(url.toLowerCase(), ".flv")) {
-            setupVideo(url);
-
-        } else {
-            setupSwfOrImage(url);
-        }
+        showNewMedia(url);
         didShowNewMedia();
     }
 
@@ -183,6 +178,16 @@ public class MediaContainer extends Sprite
         _isImage = false;
     }
 
+    protected function showNewMedia (url :String) :void
+    {
+        if (StringUtil.endsWith(url.toLowerCase(), ".flv")) {
+            setupVideo(url);
+
+        } else {
+            setupSwfOrImage(url);
+        }
+    }
+
     /**
      * A place where subclasses can configure things after we've setup new media.
      */
@@ -211,6 +216,24 @@ public class MediaContainer extends Sprite
     {
         startedLoading();
 
+        var loader :Loader = initLoader();
+        loader.load(new URLRequest(url), getContext(url));
+
+        try {
+            var info :LoaderInfo = loader.contentLoaderInfo;
+            updateContentDimensions(info.width, info.height);
+        } catch (err :Error) {
+            // an error is thrown trying to access these props before they're
+            // ready
+        }
+    }
+
+    /**
+     * Initialize a Loader as our _media, and configure it however needed to prepare
+     * loading user content.
+     */
+    protected function initLoader () :Loader
+    {
         // create our loader and set up some event listeners
         var loader :Loader = new Loader();
         _media = loader;
@@ -219,17 +242,9 @@ public class MediaContainer extends Sprite
         info.addEventListener(Event.INIT, handleInit);
         info.addEventListener(IOErrorEvent.IO_ERROR, loadError);
         info.addEventListener(ProgressEvent.PROGRESS, loadProgress);
-
-        // start it loading, add it as a child
-        loader.load(new URLRequest(url), getContext(url));
         addChildAt(loader, 0);
 
-        try {
-            updateContentDimensions(info.width, info.height);
-        } catch (err :Error) {
-            // an error is thrown trying to access these props before they're
-            // ready
-        }
+        return loader;
     }
 
     /**
