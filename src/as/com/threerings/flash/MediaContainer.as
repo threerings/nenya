@@ -43,6 +43,7 @@ import flash.events.StatusEvent;
 import flash.events.TextEvent;
 
 import flash.geom.Point;
+import flash.geom.Rectangle;
 
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
@@ -583,7 +584,7 @@ public class MediaContainer extends Sprite
     /**
      * Configure the mask for this object.
      */
-    protected function configureMask (ww :int, hh :int) :void
+    protected function configureMask (rect :Rectangle) :void
     {
         var mask :Shape;
         if (_media.mask != null) {
@@ -611,7 +612,7 @@ public class MediaContainer extends Sprite
 
         mask.graphics.clear();
         mask.graphics.beginFill(0xFFFFFF);
-        mask.graphics.drawRect(0, 0, ww, hh);
+        mask.graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
         mask.graphics.endFill();
     }
 
@@ -638,12 +639,25 @@ public class MediaContainer extends Sprite
     protected function contentDimensionsUpdated () :void
     {
         // update the mask
+        var r :Rectangle = getMaskRectangle();
+        if (r != null) {
+            configureMask(r);
+        }
+    }
+
+    /**
+     * Get the mask area, or null if no mask is needed.
+     */
+    protected function getMaskRectangle () :Rectangle
+    {
         var maxW :int = getMaxContentWidth();
         var maxH :int = getMaxContentHeight();
         if ((maxW < int.MAX_VALUE) && (maxH < int.MAX_VALUE)) {
             // if we should do masking, then mask to the lesser of maximum and actual size
-            configureMask(Math.min(maxW, _w), Math.min(maxH, _h));
+            return new Rectangle(0, 0, Math.min(maxW, _w), Math.min(maxH, _h));
         }
+
+        return null;
     }
 
     /**
