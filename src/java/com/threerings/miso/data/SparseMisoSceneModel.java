@@ -411,7 +411,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
      * Don't call this method! This is only public so that the scene
      * writer can generate XML from the raw scene data.
      */
-    public Iterator getSections ()
+    public Iterator<Section> getSections ()
     {
         return _sections.values().iterator();
     }
@@ -438,7 +438,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
     protected final Section getSection (int x, int y, boolean create)
     {
         int key = key(x, y);
-        Section sect = (Section)_sections.get(key);
+        Section sect = _sections.get(key);
         if (sect == null && create) {
             short sx = (short)(MathUtil.floorDiv(x, swidth)*swidth);
             short sy = (short)(MathUtil.floorDiv(y, sheight)*sheight);
@@ -452,14 +452,14 @@ public class SparseMisoSceneModel extends MisoSceneModel
     public Object clone ()
     {
         SparseMisoSceneModel model = (SparseMisoSceneModel)super.clone();
-        model._sections = new StreamableHashIntMap();
-        for (Iterator iter = getSections(); iter.hasNext(); ) {
-            Section sect = (Section)iter.next();
+        model._sections = new StreamableHashIntMap<Section>();
+        for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
+            Section sect = iter.next();
             model.setSection((Section)sect.clone());
         }
         return model;
     }
 
     /** Contains our sections in row major order. */
-    protected StreamableHashIntMap _sections = new StreamableHashIntMap();
+    protected StreamableHashIntMap<Section> _sections = new StreamableHashIntMap<Section>();
 }
