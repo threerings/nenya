@@ -238,13 +238,9 @@ public class MediaContainer extends Sprite
         // create our loader and set up some event listeners
         var loader :Loader = new Loader();
         _media = loader;
-        var info :LoaderInfo = loader.contentLoaderInfo;
-        info.addEventListener(Event.COMPLETE, loadingComplete);
-        info.addEventListener(Event.INIT, handleInit);
-        info.addEventListener(IOErrorEvent.IO_ERROR, loadError);
-        info.addEventListener(ProgressEvent.PROGRESS, loadProgress);
         addChildAt(loader, 0);
 
+        addListeners(loader.contentLoaderInfo);
         return loader;
     }
 
@@ -499,20 +495,31 @@ public class MediaContainer extends Sprite
     }
 
     /**
+     * Add our listeners to the LoaderInfo object.
+     */
+    protected function addListeners (info :LoaderInfo) :void
+    {
+        info.addEventListener(Event.COMPLETE, handleComplete);
+        info.addEventListener(Event.INIT, handleInit);
+        info.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+        info.addEventListener(ProgressEvent.PROGRESS, handleProgress);
+    }
+
+    /**
      * Remove our listeners from the LoaderInfo object.
      */
     protected function removeListeners (info :LoaderInfo) :void
     {
-        info.removeEventListener(Event.COMPLETE, loadingComplete);
+        info.removeEventListener(Event.COMPLETE, handleComplete);
         info.removeEventListener(Event.INIT, handleInit);
-        info.removeEventListener(IOErrorEvent.IO_ERROR, loadError);
-        info.removeEventListener(ProgressEvent.PROGRESS, loadProgress);
+        info.removeEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+        info.removeEventListener(ProgressEvent.PROGRESS, handleProgress);
     }
 
     /**
      * A callback to receive IO_ERROR events.
      */
-    protected function loadError (event :IOErrorEvent) :void
+    protected function handleIOError (event :IOErrorEvent) :void
     {
         stoppedLoading();
         setupBrokenImage(-1, -1);
@@ -521,7 +528,7 @@ public class MediaContainer extends Sprite
     /**
      * A callback to receive PROGRESS events.
      */
-    protected function loadProgress (event :ProgressEvent) :void
+    protected function handleProgress (event :ProgressEvent) :void
     {
         updateLoadingProgress(event.bytesLoaded, event.bytesTotal);
         var info :LoaderInfo = (event.target as LoaderInfo);
@@ -566,7 +573,7 @@ public class MediaContainer extends Sprite
     /**
      * Callback function to receive COMPLETE events for swfs or images.
      */
-    protected function loadingComplete (event :Event) :void
+    protected function handleComplete (event :Event) :void
     {
         var info :LoaderInfo = (event.target as LoaderInfo);
         removeListeners(info);
