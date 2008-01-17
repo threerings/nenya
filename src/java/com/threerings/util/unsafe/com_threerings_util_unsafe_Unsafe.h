@@ -9,22 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     com_threerings_util_unsafe_Unsafe
- * Method:    enableGC
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_threerings_util_unsafe_Unsafe_enableGC
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_threerings_util_unsafe_Unsafe
- * Method:    disableGC
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_threerings_util_unsafe_Unsafe_disableGC
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_threerings_util_unsafe_Unsafe
  * Method:    nativeSleep
  * Signature: (I)V
  */

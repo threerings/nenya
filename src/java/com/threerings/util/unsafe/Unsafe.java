@@ -33,27 +33,6 @@ import static com.threerings.NenyaLog.log;
 public class Unsafe
 {
     /**
-     * Enables or disables garbage collection. <em>Warning:</em> you will
-     * be fucked if you leave it disabled for too long. Do not do this
-     * unless you are dang sure about what you're doing and are prepared
-     * to test your code on every platform this side of Nantucket.
-     *
-     * <p> Calls to this method do not nest. Regardless of how many times
-     * you disable GC, only one call is required to reenable it.
-     */
-    public static void setGCEnabled (boolean enabled)
-    {
-        // we don't support nesting, NOOP if the state doesn't change
-        if (_loaded && enabled != _gcEnabled) {
-            if (_gcEnabled = enabled) {
-                enableGC();
-            } else {
-                disableGC();
-            }
-        }
-    }
-
-    /**
      * Causes the current thread to block for the specified number of
      * milliseconds. This exists primarily to work around the fact that on
      * Linux, {@link Thread#sleep} is only accurate to around 12ms which
@@ -172,6 +151,7 @@ public class Unsafe
 
     static {
         try {
+        System.out.println("Tring to load unsafe");
             System.loadLibrary("unsafe");
             _loaded = init();
         } catch (SecurityException se) {
