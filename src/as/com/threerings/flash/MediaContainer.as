@@ -132,12 +132,12 @@ public class MediaContainer extends Sprite
         if (Util.equals(_url, url)) {
             return; // no change
         }
-        _url = url;
 
         // shutdown any previous media
         if (_media != null) {
             shutdown(false);
         }
+        _url = url;
 
         // set up the new media
         willShowNewMedia();
@@ -158,10 +158,10 @@ public class MediaContainer extends Sprite
      */
     public function setMediaObject (disp :DisplayObject) :void
     {
-        _url = null;
         if (_media != null) {
             shutdown(false);
         }
+        _url = null;
 
         willShowNewMedia();
         addChildAt(disp, 0);
@@ -310,7 +310,8 @@ public class MediaContainer extends Sprite
                 loader.unload();
 
                 removeChild(loader);
-                log.info("Unloaded media [url=" + url + "].");
+                var extra :String  = (url == _url) ? "" : (", _url=" + _url);
+                log.info("Unloaded media [url=" + url + extra + "].");
 
             } else if (_media is VideoDisplayer) {
                 var vid :VideoDisplayer = (_media as VideoDisplayer);
