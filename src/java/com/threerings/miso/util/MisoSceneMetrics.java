@@ -87,11 +87,11 @@ public class MisoSceneMetrics
         slopeY = -slopeX;
 
         // calculate the edge length separating each fine coordinate
-        finelen = tilelen / (float)finegran;
+        finelen = tilelen / finegran;
 
         // calculate the fine-coordinate x-axis line
         fineSlopeX = (float)tilehei / (float)tilewid;
-        fineBX = -(fineSlopeX * (float)tilehwid);
+        fineBX = -(fineSlopeX * tilehwid);
         fineSlopeY = -fineSlopeX;
 
         // calculate the fine coordinate dimensions

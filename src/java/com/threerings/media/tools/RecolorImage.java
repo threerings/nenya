@@ -349,7 +349,7 @@ public class RecolorImage extends JPanel
 
             iter = names.iterator();
             while (iter.hasNext()) {
-                _classList.addItem((String)iter.next());
+                _classList.addItem(iter.next());
             }
 
             _classList.setSelectedIndex(0);
