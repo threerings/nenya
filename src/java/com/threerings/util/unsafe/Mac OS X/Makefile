@@ -22,32 +22,24 @@ INSTALL_PATH=${ROOT}/dist/lib/`uname -m`-Darwin
 
 INCLUDES=-I.. -I/System/Library/Frameworks/JavaVM.framework/Headers
 LIBRARIES=
-TARGETS=libunsafe.jnilib libunsafegc.jnilib
+TARGET=libunsafe.jnilib
 
 #
 # Target definitions
 
-all: ${TARGETS}
+all: ${TARGET}
 
 install:
 	@${MKDIR} -p ${INSTALL_PATH}
-	cp ${TARGETS} ${INSTALL_PATH}
+	cp ${TARGET} ${INSTALL_PATH}
 
-libunsafe.jnilib: com_threerings_util_unsafe_Unsafe.c
+${TARGET}: com_threerings_util_unsafe_Unsafe.c
 	@echo "Compiling $<"
 	@${CC} ${INCLUDES} -c com_threerings_util_unsafe_Unsafe.c \
 	    -o com_threerings_util_unsafe_Unsafe.o
 	@echo "Creating $@"
-	@${CC} -o libunsafe.jnilib com_threerings_util_unsafe_Unsafe.o \
-	    ${LIBRARIES} ${LIBRARIES_PATH} -dynamiclib
-
-libunsafegc.jnilib: com_threerings_util_unsafe_UnsafeGC.c
-	@echo "Compiling $<"
-	@${CC} ${INCLUDES} -c com_threerings_util_unsafe_UnsafeGC.c \
-	    -o com_threerings_util_unsafe_UnsafeGC.o
-	@echo "Creating $@"
-	@${CC} -o libunsafegc.jnilib com_threerings_util_unsafe_UnsafeGC.o \
+	@${CC} -o ${TARGET} com_threerings_util_unsafe_Unsafe.o \
 	    ${LIBRARIES} ${LIBRARIES_PATH} -dynamiclib
 
 clean:
-	-${RM} -f *.o ${TARGETS}
+	-${RM} -f *.o ${TARGET}

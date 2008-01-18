@@ -22,32 +22,24 @@ INSTALL_PATH=${ROOT}/dist/lib/i386-FreeBSD
 
 INCLUDES=-I.. -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${OSINCDIR}
 LIBRARIES=
-TARGETS=libunsafe.so libunsafegc.so
+TARGET=libunsafe.so
 
 #
 # Target definitions
 
-all: ${TARGETS}
+all: ${TARGET}
 
 install:
 	@${MKDIR} -p ${INSTALL_PATH}
-	cp ${TARGETS} ${INSTALL_PATH}
+	cp ${TARGET} ${INSTALL_PATH}
 
-libunsafe.so: com_threerings_util_unsafe_Unsafe.c
-	@echo "Compiling $<"
+${TARGET}: com_threerings_util_unsafe_Unsafe.c
+	@echo "Compiling Unsafe.c"
 	@${CC} ${INCLUDES} -c com_threerings_util_unsafe_Unsafe.c \
 	    -o com_threerings_util_unsafe_Unsafe.o
-	@echo "Creating $@"
-	@${CC} -o libunsafe.so com_threerings_util_unsafe_Unsafe.o \
-	    ${LIBRARIES} ${LIBRARIES_PATH} -shared
-
-libunsafegc.so: com_threerings_util_unsafe_UnsafeGC.c
-	@echo "Compiling $<"
-	@${CC} ${INCLUDES} -c com_threerings_util_unsafe_UnsafeGC.c \
-	    -o com_threerings_util_unsafe_Unsafe.o
-	@echo "Creating $@"
-	@${CC} -o libunsafegc.so com_threerings_util_unsafe_Unsafegc.o \
+	@echo "Creating libunsafe.so"
+	@${CC} -o ${TARGET} com_threerings_util_unsafe_Unsafe.o \
 	    ${LIBRARIES} ${LIBRARIES_PATH} -shared
 
 clean:
-	-${RM} -f *.o ${TARGETS}
+	-${RM} -f *.o ${TARGET}
