@@ -137,9 +137,7 @@ public class ChatControl extends HBox
             _txt.text = _curLine;
 
             // request focus
-            callLater(function () :void {
-                _txt.setFocus();
-            });
+            callLater(_txt.setFocus);
             _controls.push(this);
 
         } else {
