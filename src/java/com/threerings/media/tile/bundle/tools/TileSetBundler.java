@@ -27,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
@@ -42,21 +41,18 @@ import org.apache.commons.io.IOUtils;
 import org.xml.sax.SAXException;
 
 import com.samskivert.io.PersistenceException;
-
+import com.samskivert.util.HashIntMap;
 import com.threerings.media.Log;
-import com.threerings.media.image.ImageUtil;
-import com.threerings.resource.FastImageIO;
-
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
 import com.threerings.media.tile.SimpleCachingImageProvider;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileSetIDBroker;
 import com.threerings.media.tile.TrimmedObjectTileSet;
-import com.threerings.media.tile.UniformTileSet;
 import com.threerings.media.tile.bundle.BundleUtil;
 import com.threerings.media.tile.bundle.TileSetBundle;
 import com.threerings.media.tile.tools.xml.TileSetRuleSet;
+import com.threerings.resource.FastImageIO;
 
 /**
  * The tileset bundler is used to create tileset bundles from a set of XML
@@ -366,6 +362,10 @@ public class TileSetBundler
             // write all of the image files to the bundle, converting the
             // tilesets to trimmed tilesets in the process
             Iterator iditer = bundle.enumerateTileSetIds();
+            
+            // Store off the updated TileSets in a separate Map so we can wait to change the
+            // bundle till we're done iterating.
+            HashIntMap<TileSet> toUpdate = new HashIntMap<TileSet>();
             while (iditer.hasNext()) {
                 int tileSetId = ((Integer)iditer.next()).intValue();
                 TileSet set = bundle.getTileSet(tileSetId);
@@ -398,7 +398,7 @@ public class TileSetBundler
                         tset.setImagePath(imagePath);
                         // replace the original set with the trimmed
                         // tileset in the tileset bundle
-                        bundle.addTileSet(tileSetId, tset);
+                        toUpdate.put(tileSetId, tset);
 
                     } catch (Exception e) {
                         e.printStackTrace(System.err);
@@ -431,6 +431,7 @@ public class TileSetBundler
                     }
                 }
             }
+            bundle.putAll(toUpdate);
 
             // now write a serialized representation of the tileset bundle
             // object to the bundle jar file
