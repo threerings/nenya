@@ -34,6 +34,32 @@ import com.threerings.util.CommandEvent;
 public class CommandButton extends Button
 {
     /**
+     * A convenient factory method for creating CommandButtons.
+     *
+     * Usage: addChild(CommandButton.create("OK", function () :void {
+     *            trace("ok clicked");
+     *        }));
+     */
+    public static function create (
+        label :String, cmdOrFn :* = null, arg :Object = null) :CommandButton
+    {
+        var cb :CommandButton = new CommandButton();
+        cb.label = label;
+        if (cmdOrFn is Function) {
+            cb.setCallback(cmdOrFn as Function, arg)
+
+        } else if (cmdOrFn is String) {
+            cb.setCommand(String(cmdOrFn), arg);
+
+        } else if (cmdOrFn != null) {
+            // runtime errors suck, but this is actionscript
+            throw new Error("cmdOrFn must be a String or Function.");
+        }
+
+        return cb;
+    }
+
+    /**
      * Create a command button.
      */
     public function CommandButton (cmd :String = null, arg :Object = null)
