@@ -44,10 +44,7 @@ public class CommandLinkButton extends LinkButton
      */
     public function CommandLinkButton (label :String = null, cmdOrFn :* = null, arg :Object = null)
     {
-        if (cmdOrFn != null && !(cmdOrFn is String) && !(cmdOrFn is Function)) {
-            // runtime errors suck, but this is actionscript
-            throw new Error("cmdOrFn must be a String or Function.");
-        }
+        CommandButton.validateCmd(cmdOrFn);
         this.label = label;
         _cmdOrFn = cmdOrFn;
         _arg = arg;
@@ -74,14 +71,7 @@ public class CommandLinkButton extends LinkButton
     override protected function clickHandler (event :MouseEvent) :void
     {
         super.clickHandler(event);
-
-        if (enabled) {
-            // stop the click event
-            event.stopImmediatePropagation();
-
-            // dispatch the command event
-            CommandEvent.dispatch(this, _cmdOrFn, _arg);
-        }
+        CommandButton.processCommandClick(this, event, _cmdOrFn, _arg);
     }
 
     /** The command (String) to submit, or the function (Function) to call

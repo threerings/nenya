@@ -1,5 +1,5 @@
 //
-// $Id$
+// $Id: CommandButton.as 408 2008-02-06 01:03:55Z ray $
 //
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved
@@ -23,15 +23,14 @@ package com.threerings.flex {
 
 import flash.events.MouseEvent;
 
-import mx.controls.Button;
+import mx.controls.CheckBox;
 
 import com.threerings.util.CommandEvent;
 
 /**
- * A command button simply dispatches a Controller command (with an optional
- * argument) when it is clicked.
+ * A checkbox that dispatches a command (or calls a function) when it is toggled.
  */
-public class CommandButton extends Button
+public class CommandCheckBox extends CheckBox
 {
     /**
      * Create a command button.
@@ -41,14 +40,15 @@ public class CommandButton extends Button
      *        or a function, which will be called when clicked.
      * @param arg the argument for the CommentEvent or the function. If the arg is an Array
      *        then those parameters are used for calling the function.
+     * Note that if arg is null, the actual argument passed will be the selected state of the
+     * button.
      */
-    public function CommandButton (label :String = null, cmdOrFn :* = null, arg :Object = null)
+    public function CommandCheckBox (label :String = null, cmdOrFn :* = null, arg :Object = null)
     {
-        validateCmd(cmdOrFn);
+        CommandButton.validateCmd(cmdOrFn);
         this.label = label;
         _cmdOrFn = cmdOrFn;
         _arg = arg;
-        buttonMode = true;
     }
 
     /**
@@ -69,36 +69,10 @@ public class CommandButton extends Button
         _arg = arg;
     }
 
-    override public function set enabled (val :Boolean) :void
-    {
-        super.enabled = val;
-        buttonMode = val;
-    }
-
     override protected function clickHandler (event :MouseEvent) :void
     {
         super.clickHandler(event);
-        processCommandClick(this, event, _cmdOrFn, _arg);
-    }
-
-    internal static function validateCmd (cmdOrFn :Object) :void
-    {
-        if (cmdOrFn != null && !(cmdOrFn is String) && !(cmdOrFn is Function)) {
-            // runtime errors suck, but this is actionscript
-            throw new Error("cmdOrFn must be a String or Function.");
-        }
-    }
-
-    internal static function processCommandClick (
-        button :Button, event :MouseEvent, cmdOrFn :Object, arg :Object) :void
-    {
-        if (button.enabled) {
-            event.stopImmediatePropagation();
-            if (arg == null && button.toggle) {
-                arg = button.selected;
-            }
-            CommandEvent.dispatch(button, cmdOrFn, arg);
-        }
+        CommandButton.processCommandClick(this, event, _cmdOrFn, _arg);
     }
 
     /** The command (String) to submit, or the function (Function) to call
