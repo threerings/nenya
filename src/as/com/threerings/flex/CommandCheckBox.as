@@ -40,8 +40,8 @@ public class CommandCheckBox extends CheckBox
      *        or a function, which will be called when clicked.
      * @param arg the argument for the CommentEvent or the function. If the arg is an Array
      *        then those parameters are used for calling the function.
-     * Note that if arg is null, the actual argument passed will be the selected state of the
-     * button.
+     * Note that if arg is null, the actual argument passed will be the 'selected' state of the
+     * button. If you really want to call a method with no args, specify arg as an emtpy Array.
      */
     public function CommandCheckBox (label :String = null, cmdOrFn :* = null, arg :Object = null)
     {
