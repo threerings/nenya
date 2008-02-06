@@ -33,9 +33,24 @@ import com.threerings.util.CommandEvent;
  */
 public class CommandLinkButton extends LinkButton
 {
-    public function CommandLinkButton (cmd :String = null, arg :Object = null)
+    /**
+     * Create a command link button.
+     *
+     * @param label the label text for the button.
+     * @param cmdOrFn either a String, which will be the CommandEvent command to dispatch,
+     *        or a function, which will be called when clicked.
+     * @param arg the argument for the CommentEvent or the function. If the arg is an Array
+     *        then those parameters are used for calling the function.
+     */
+    public function CommandLinkButton (label :String = null, cmdOrFn :* = null, arg :Object = null)
     {
-        setCommand(cmd, arg);
+        if (cmdOrFn != null && !(cmdOrFn is String) && !(cmdOrFn is Function)) {
+            // runtime errors suck, but this is actionscript
+            throw new Error("cmdOrFn must be a String or Function.");
+        }
+        this.label = label;
+        _cmdOrFn = cmdOrFn;
+        _arg = arg;
     }
 
     /**

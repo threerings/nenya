@@ -59,9 +59,7 @@ public class ChatControl extends HBox
         addChild(_txt = new ChatInput());
         _txt.addEventListener(FlexEvent.ENTER, sendChat, false, 0, true);
 
-        _but = new CommandButton();
-        _but.label = sendButtonLabel;
-        _but.setCallback(sendChat);
+        _but = new CommandButton(sendButtonLabel, sendChat);
         addChild(_but);
 
         if (!isNaN(height)) {

@@ -34,37 +34,23 @@ import com.threerings.util.CommandEvent;
 public class CommandButton extends Button
 {
     /**
-     * A convenient factory method for creating CommandButtons.
+     * Create a command button.
      *
-     * Usage: addChild(CommandButton.create("OK", function () :void {
-     *            trace("ok clicked");
-     *        }));
+     * @param label the label text for the button.
+     * @param cmdOrFn either a String, which will be the CommandEvent command to dispatch,
+     *        or a function, which will be called when clicked.
+     * @param arg the argument for the CommentEvent or the function. If the arg is an Array
+     *        then those parameters are used for calling the function.
      */
-    public static function create (
-        label :String, cmdOrFn :* = null, arg :Object = null) :CommandButton
+    public function CommandButton (label :String = null, cmdOrFn :* = null, arg :Object = null)
     {
-        var cb :CommandButton = new CommandButton();
-        cb.label = label;
-        if (cmdOrFn is Function) {
-            cb.setCallback(cmdOrFn as Function, arg)
-
-        } else if (cmdOrFn is String) {
-            cb.setCommand(String(cmdOrFn), arg);
-
-        } else if (cmdOrFn != null) {
+        if (cmdOrFn != null && !(cmdOrFn is String) && !(cmdOrFn is Function)) {
             // runtime errors suck, but this is actionscript
             throw new Error("cmdOrFn must be a String or Function.");
         }
-
-        return cb;
-    }
-
-    /**
-     * Create a command button.
-     */
-    public function CommandButton (cmd :String = null, arg :Object = null)
-    {
-        setCommand(cmd, arg);
+        this.label = label;
+        _cmdOrFn = cmdOrFn;
+        _arg = arg;
         buttonMode = true;
     }
 
