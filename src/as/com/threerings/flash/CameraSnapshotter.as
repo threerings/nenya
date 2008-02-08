@@ -7,89 +7,125 @@ import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 
-import flash.events.Event;
-import flash.events.MouseEvent;
-
 import flash.media.Camera;
 import flash.media.Video;
-
-import flash.utils.ByteArray;
-
-import com.threerings.util.ValueEvent;
 
 // TODO: use PreferredCamera?
 public class CameraSnapshotter extends Sprite
 {
-    public function CameraSnapshotter (width :int, height :int)
-    {
-        _video = new Video(width, height);
-        _video.attachCamera(Camera.getCamera());
-        _videoInterface.addChild(_video);
-
-        var btn :SimpleTextButton;
-        btn = new SimpleTextButton("snapshot");
-        btn.addEventListener(MouseEvent.CLICK, handleTakeSnapshot);
-        btn.y = height;
-        _videoInterface.addChild(btn);
-
-        btn = new SimpleTextButton("cancel");
-        btn.addEventListener(MouseEvent.CLICK, handleCancel);
-        btn.x = width - btn.width;
-        btn.y = height;
-        _videoInterface.addChild(btn);
-
-        _bmp = new BitmapData(width, height, false);
-        _previewInterface.addChild(new Bitmap(_bmp));
-
-        btn = new SimpleTextButton("accept");
-        btn.addEventListener(MouseEvent.CLICK, handleAccept);
-        btn.y = height;
-        _previewInterface.addChild(btn);
-
-        btn = new SimpleTextButton("clear");
-        btn.addEventListener(MouseEvent.CLICK, handleClear);
-        btn.x = width - btn.width;
-        btn.y = height;
-        _previewInterface.addChild(btn);
-
-        addChild(_videoInterface);
-    }
-
+    /**
+     * Static method to determine if the user even has a camera.
+     */
     public static function hasCamera () :Boolean
     {
         var names :Array = Camera.names;
         return (names != null && names.length > 0);
     }
 
-    protected function handleTakeSnapshot (event :MouseEvent) :void
+    /**
+     * @see setCamera
+     */
+    public function CameraSnapshotter (cameraName :String = null)
     {
-        _bmp.draw(_video);
-        removeChild(_videoInterface);
-        addChild(_previewInterface);
+        setCameraName(cameraName);
     }
 
-    protected function handleClear (event :MouseEvent) :void
+    override public function get width () :Number
     {
-        removeChild(_previewInterface);
-        addChild(_videoInterface);
+        return (_camera == null) ? 0 : _camera.width;
     }
 
-    protected function handleCancel (event :MouseEvent) :void
+    override public function get height () :Number
     {
-        dispatchEvent(new ValueEvent(Event.COMPLETE, null));
+        return (_camera == null) ? 0 : _camera.height;
     }
 
-    protected function handleAccept (event :MouseEvent) :void
+    /**
+     * @param cameraName the actual name of the camera, not the index (as used to get it from
+     * the Camera class).
+     */
+    public function setCameraName (cameraName :String = null) :void
     {
-        dispatchEvent(new ValueEvent(Event.COMPLETE, _bmp));
+        // translate the real name of the camera into the "name" used to get it.
+        var nameIdx :String = null;
+        if (cameraName != null) {
+            var names :Array = Camera.names;
+            for (var ii :int = 0; ii < names.length; ii++) {
+                if (cameraName === names[ii]) {
+                    nameIdx = String(ii);
+                    break;
+                }
+            }
+        }
+
+        setCamera(Camera.getCamera(nameIdx));
     }
+
+    public function setCamera (camera :Camera) :void
+    {
+        if (_video != null) {
+            if (_bitmap.parent != null) {
+                removeChild(_bitmap);
+            }
+            if (_video.parent != null) {
+                removeChild(_video);
+            }
+            _bitmap = null;
+            _video = null;
+        }
+
+        _camera = camera;
+        if (_camera == null) {
+            return;
+        }
+
+        _video = new Video(_camera.width, _camera.height);
+        _bitmap = new Bitmap(new BitmapData(_camera.width, _camera.height, false));
+        _video.attachCamera(_camera);
+        addChild(_video);
+    }
+
+    public function getCameraName () :String
+    {
+        return (_camera == null) ? null : _camera.name;
+    }
+
+    public function takeSnapshot () :void
+    {
+        if (_camera == null) {
+            return; // throw exception?
+        }
+
+        _bitmap.bitmapData.draw(_video);
+        if (_video.parent != null) {
+            removeChild(_video);
+            addChild(_bitmap);
+        }
+    }
+
+    public function clearSnapshot () :void
+    {
+        if (_camera == null) {
+            return;
+        }
+        if (_video.parent == null) {
+            removeChild(_bitmap);
+            addChild(_video);
+        }
+    }
+
+    public function getSnapshot () :BitmapData
+    {
+        if (_camera == null) {
+            return null;
+        }
+        return _bitmap.bitmapData;
+    }
+
+    protected var _camera :Camera;
 
     protected var _video :Video;
 
-    protected var _bmp :BitmapData;
-
-    protected var _videoInterface :Sprite = new Sprite();
-
-    protected var _previewInterface :Sprite = new Sprite();
+    protected var _bitmap :Bitmap;
 }
 }
