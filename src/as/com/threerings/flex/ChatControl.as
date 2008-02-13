@@ -48,7 +48,8 @@ public class ChatControl extends HBox
     }
 
     public function ChatControl (
-        ctx :CrowdContext, sendButtonLabel :String = "send", height :Number = NaN)
+        ctx :CrowdContext, sendButtonLabel :String = "send",
+        height :Number = NaN, controlHeight :Number = NaN)
     {
         _ctx = ctx;
         _chatDtr = _ctx.getChatDirector();
@@ -62,9 +63,9 @@ public class ChatControl extends HBox
         _but = new CommandButton(sendButtonLabel, sendChat);
         addChild(_but);
 
-        if (!isNaN(height)) {
-            _txt.height = height;
-            _but.height = height;
+        if (!isNaN(controlHeight)) {
+            _txt.height = controlHeight;
+            _but.height = controlHeight;
         }
 
         addEventListener(Event.ADDED_TO_STAGE, handleAddRemove);
