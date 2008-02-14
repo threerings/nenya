@@ -35,6 +35,41 @@ public class MathUtil
     }
 
     /**
+     * Converts degrees to radians.
+     */
+    public static function toRadians (degrees :Number) :Number
+    {
+        return degrees * Math.PI / 180;
+    }
+
+    /**
+     * Normalizes an angle in radians to occupy the [0, 2pi) range.
+     */
+    public static function normalizeRadians (radians :Number) :Number
+    {
+        var twopi :Number = Math.PI * 2;
+        var norm :Number = radians % twopi;
+        return (norm >= 0) ? norm : (norm + twopi);
+    }
+
+    /**
+     * Converts radians to degrees.
+     */
+    public static function toDegrees (radians :Number) :Number
+    {
+        return radians * 180 / Math.PI;
+    }
+
+    /**
+     * Normalizes an angle in degrees to occupy the [0, 360) range.
+     */
+    public static function normalizeDegrees (degrees :Number) :Number
+    {
+        var norm :Number = degrees % 360;
+        return (norm >= 0) ? norm : (norm + 360);
+    }
+
+    /**
      * Returns distance from point (x1, y1) to (x2, y2) in 2D.
      *
      * <p>Supports various distance metrics: the common Euclidean distance, taxicab distance,
