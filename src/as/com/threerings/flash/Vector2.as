@@ -45,6 +45,14 @@ public class Vector2
     }
 
     /**
+     * Creates a new Vector2 pointing from s to t.
+     */
+    public static function fromPoints (s :Point, t :Point) :Vector2
+    {
+        return new Vector2(t.x - s.x, t.y - s.y);
+    }
+    
+    /**
      * Creates a Vector2 of magnitude 'len' that has been rotated about the origin by 'radians'.
      */
     public static function fromAngle (radians :Number, len :Number = 1) :Vector2
