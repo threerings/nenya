@@ -41,6 +41,12 @@ public class Vector3
     /** Creates a new vector. All three X, Y, Z parameters are optional. */
     public function Vector3 (x :Number = 0, y :Number = 0, z :Number = 0)
     {
+        set(x, y, z);
+    }
+
+    /** Assigns values to the three parameters of this vector. */
+    public function set (x :Number, y :Number, z :Number) :void
+    {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -49,24 +55,13 @@ public class Vector3
     /** Duplicates a vector. */
     public function clone() :Vector3
     {
-        return new Vector3 (this.x, this.y, this.z);
+        return new Vector3(this.x, this.y, this.z);
     }
 
     /** Returns this vector's length. */
-    public function length () :Number
+    public function get length () :Number
     {
-        if (this == INFINITE || x == Infinity || y == Infinity || z == Infinity) {
-            return Infinity;
-        } else {
-            return Math.sqrt(x * x + y * y + z * z);
-        }
-    }
-
-    /** Returns a new vector that is a normalized version of this vector. */
-    public function normalize () :Vector3
-    {
-        var len :Number = length();
-        return new Vector3 (x / len, y / len, z / len);
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     /** Returns the dot product of this vector with vector v. */
@@ -75,22 +70,73 @@ public class Vector3
         return x * v.x + y * v.y + z * v.z;
     }
 
-    /** Returns a new vector that is the cross product of this vector with vector v. */
+    /** Returns a new vector that is a normalized version of this vector. */
+    public function normalize () :Vector3
+    {
+        return this.clone().normalizeLocal();
+    }
+
+    /** Destructively normalizes this vector. Returns a reference to the modified self. */
+    public function normalizeLocal () :Vector3
+    {
+        var len :Number = this.length;
+        set(x / len, y / len, z / len);
+        return this;
+    }
+    
+    /**
+     * Returns a new vector that is the cross product of this vector with vector v,
+     * such that <code>result = this &#8855; v</code>.
+     */
     public function cross (v :Vector3) :Vector3
     {
-        return new Vector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+        return this.clone().crossLocal(v);
+    }
+
+    /**
+     * Sets this vector to the result of a cross product with vector v, such that
+     * <code>this = this &#8855; v</code>. Returns a reference to the modified self.
+     */
+    public function crossLocal (v :Vector3) :Vector3
+    {
+        var xx :Number = y * v.z - z * v.y;
+        var yy :Number = z * v.x - x * v.z;
+        var zz :Number = x * v.y - y * v.x;
+        set(xx, yy, zz);
+
+        return this;
     }
 
     /** Returns a new vector that is the summation of this vector with vector v. */
     public function add (v :Vector3) :Vector3
     {
-        return new Vector3(x + v.x, y + v.y, z + v.z);
+        return this.clone().addLocal(v);
+    }
+
+    /**
+     * Sets this vector to the result of summation with v, such that <code>this = this + v</code>.
+     * Returns a reference to the modified self.
+     */
+    public function addLocal (v :Vector3) :Vector3
+    {
+        set(x + v.x, y + v.y, z + v.z);
+        return this;
     }
 
     /** Returns a new vector that is the subtraction of vector v from this vector.*/
     public function subtract (v :Vector3) :Vector3
     {
-        return new Vector3(x - v.x, y - v.y, z - v.z);
+        return this.clone().subtractLocal(v);
+    }
+
+    /**
+     * Sets the vector to the result of subtraction of v, such that <code>this = this - v</code>.
+     * Returns a reference to the modified self.
+     */
+    public function subtractLocal (v :Vector3) :Vector3
+    {
+        set(x - v.x, y - v.y, z - v.z);
+        return this;
     }
 
     /**
@@ -111,7 +157,7 @@ public class Vector3
             return INFINITE; // the two shall never meet
         } else {
             var r :Number = rray / rplane;
-            return s.add(this.multiply(r));
+            return s.add(this.scale(r));
         }
     }
     
@@ -119,9 +165,19 @@ public class Vector3
      * Returns a new vector that is the result of multiplying the current vector
      * by the specified scalar.
      */
-    public function multiply (value :Number) :Vector3
+    public function scale (value :Number) :Vector3
     {
-        return new Vector3(x * value, y * value, z * value);
+        return this.clone().scaleLocal(value);
+    }
+
+    /**
+     * Destructively multiplies this vector by the specified scalar.
+     * Returns a reference to the modified self.
+     */
+    public function scaleLocal (value :Number) :Vector3
+    {
+        set(x * value, y * value, z * value);
+        return this;
     }
         
     /**
