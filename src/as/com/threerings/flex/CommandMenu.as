@@ -72,7 +72,7 @@ use namespace mx_internal;
  * ];
  *
  * See "Defining menu structure and data" in the Flex manual for the full list.
- */ 
+ */
 public class CommandMenu extends Menu
 {
     /**
@@ -139,8 +139,15 @@ public class CommandMenu extends Menu
         if (mx + getExplicitOrMeasuredWidth() > bounds.right) {
             mx -= getExplicitOrMeasuredWidth();
         }
+        if (mx < bounds.left) {
+            mx = Math.max(bounds.right - getExplicitOrMeasuredWidth(), bounds.left);
+        }
+        // if we've poped out of the boundaries, just snap it to the lower right corner
         if (my + getExplicitOrMeasuredHeight() > bounds.bottom) {
             my -= getExplicitOrMeasuredHeight();
+        }
+        if (my < bounds.top) {
+            my = Math.max(bounds.bottom - getExplicitOrMeasuredHeight(), bounds.top);
         }
 
         // finally move it to the correct position
@@ -264,6 +271,17 @@ public class CommandMenu extends Menu
         }
         if (upping) {
             submenu.y -= (submenu.getExplicitOrMeasuredHeight() - DisplayObject(row).height);
+        }
+        // if we've poped out of the boundaries, just snap it to the lower right corner
+        if (_fitting != null) {
+            if (submenu.x < _fitting.left) {
+                submenu.x = Math.max(
+                        _fitting.right - submenu.getExplicitOrMeasuredWidth(), _fitting.left);
+            }
+            if (submenu.y < _fitting.top) {
+                submenu.y = Math.max(
+                        _fitting.bottom - submenu.getExplicitOrMeasuredHeight(), _fitting.top);
+            }
         }
     }
 
