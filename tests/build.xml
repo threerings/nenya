@@ -13,7 +13,7 @@
   <property name="tbundle.dir" value="rsrc/bundles/tiles"/>
 
   <!-- import some targets to check dependency availability -->
-  <import file="../depends-incl.xml"/>
+  <import file="../etc/depends-incl.xml"/>
 
   <!-- declare our classpath -->
   <property name="classes.dir" value="${deploy.dir}/classes"/>

@@ -6,7 +6,7 @@
   <property file="build.properties"/>
 
   <!-- configuration parameters -->
-  <property name="app.name"    value="nenya"/>
+  <property name="lib.name"    value="nenya"/>
   <property name="deploy.dir"  value="dist"/>
   <property name="savedoc.dir" value="docs"/>
 
@@ -16,8 +16,8 @@
 
   <!-- import some targets to enumerate library dependencies -->
   <property name="libs.dir" value="lib"/>
-  <import file="libs-incl.xml"/>
-  <import file="depends-incl.xml"/>
+  <import file="etc/libs-incl.xml"/>
+  <import file="etc/depends-incl.xml"/>
 
   <!-- declare our classpath business -->
   <path id="classpath">
@@ -40,7 +40,7 @@
       <fileset dir="rsrc" includes="**/*"/>
     </copy>
     <copy todir="${deploy.dir}/lib" flatten="true">
-      <fileset refid="${app.name}.libs"/>
+      <fileset refid="${lib.name}.libs"/>
     </copy>
   </target>
 
@@ -49,6 +49,7 @@
     <delete dir="${deploy.dir}/classes"/>
     <delete dir="${deploy.dir}/docs"/>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.jar"/></delete>
+    <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.swc"/></delete>
   </target>
 
   <!-- wipes the entire build directory clean -->
@@ -89,6 +90,36 @@
       <fileset dir="${classes.dir}" includes="**/data/*.class"/>
       <fileset dir="${classes.dir}" includes="**/util/*.class"/>
     </instream>
+  </target>
+
+  <!-- checks whether our Flash library needs building -->
+  <target name="checkaslib">
+    <condition property="no_build_aslib"><or>
+      <not><available file="${flexsdk.dir}/lib/compc.jar"/></not>
+      <uptodate targetfile="${deploy.dir}/${lib.name}.swc">
+        <srcfiles dir="src/as" includes="**/*.as"/>
+      </uptodate>
+    </or></condition>
+  </target>
+
+  <!-- builds our Flash library -->
+  <target name="aslib" unless="no_build_aslib" depends="checkaslib">
+    <copy file="etc/aslib-config.xml.in" tofile="${deploy.dir}/aslib-config.xml">
+      <filterset>
+        <filter token="flex_sdk_dir" value="${flexsdk.dir}"/>
+        <filter token="lib_name_dir" value="${lib.name}"/>
+      </filterset>
+    </copy>
+    <java jar="${flexsdk.dir}/lib/compc.jar" fork="true" failonerror="true">
+      <arg value="-load-config"/>
+      <arg value="${deploy.dir}/aslib-config.xml"/>
+      <arg value="-compiler.optimize"/>
+      <arg value="-compiler.source-path=src/as/"/>
+      <arg value="-include-sources=src/as/"/>
+      <arg value="-output"/>
+      <arg value="${deploy.dir}/${lib.name}.swc"/>
+    </java>
+    <delete file="${deploy.dir}/aslib-config.xml"/>
   </target>
 
   <!-- installs the pre-built native libraries -->
@@ -140,31 +171,31 @@
   <target name="all" depends="clean,prepare,compile,ninstall,javadoc,tests,dist"/>
 
   <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,compile,procstream,ninstall,tests">
+  <target name="dist" depends="prepare,compile,procstream,ninstall,aslib,tests">
     <!-- build our various jar files -->
-    <jar destfile="${deploy.dir}/${app.name}-rsrc.jar">
+    <jar destfile="${deploy.dir}/${lib.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${app.name}-media.jar">
+    <jar destfile="${deploy.dir}/${lib.name}-media.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/tools/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/util/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/NenyaLog*"/>
     </jar>
-    <jar destfile="${deploy.dir}/${app.name}-miso.jar">
+    <jar destfile="${deploy.dir}/${lib.name}-miso.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/miso/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/miso/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${app.name}-cast.jar">
+    <jar destfile="${deploy.dir}/${lib.name}-cast.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/cast/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${app.name}-jme.jar">
+    <jar destfile="${deploy.dir}/${lib.name}-jme.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/jme/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/jme/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${app.name}-openal.jar">
+    <jar destfile="${deploy.dir}/${lib.name}-openal.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>
     </jar>
   </target>
@@ -174,8 +205,8 @@
     <!-- various bits used by the retroweaver tasks -->
     <taskdef name="weave" classpathref="classpath"
              classname="com.rc.retroweaver.ant.RetroWeaverTask"/>
-    <property name="inpre" value="${deploy.dir}/${app.name}"/>
-    <property name="outpre" value="${deploy.dir}/retro/${app.name}"/>
+    <property name="inpre" value="${deploy.dir}/${lib.name}"/>
+    <property name="outpre" value="${deploy.dir}/retro/${lib.name}"/>
     <path id="retrocp">
       <pathelement location="/usr/local/jdk1.4/jre/lib/rt.jar"/>
       <fileset dir="lib" includes="**/*.jar"/>
@@ -263,23 +294,23 @@
   <!-- creates a zipfile with our source distribution -->
   <target name="snapshot">
      <echo message="You may want to stop and run 'ant savedoc' first."/>
-     <delete file="${deploy.dir}/${app.name}-snapshot.zip"/>
-     <mkdir dir="${deploy.dir}/snapshot/${app.name}"/>
-     <copy todir="${deploy.dir}/snapshot/${app.name}">
+     <delete file="${deploy.dir}/${lib.name}-snapshot.zip"/>
+     <mkdir dir="${deploy.dir}/snapshot/${lib.name}"/>
+     <copy todir="${deploy.dir}/snapshot/${lib.name}">
        <fileset dir=".">
          <include name="**"/>
          <exclude name="dist/**"/>
          <exclude name="tests/dist/**"/>
-         <exclude name="${app.name}-*.zip"/>
+         <exclude name="${lib.name}-*.zip"/>
        </fileset>
      </copy>
-     <copy todir="${deploy.dir}/snapshot/${app.name}/lib">
+     <copy todir="${deploy.dir}/snapshot/${lib.name}/lib">
        <fileset dir="${deploy.dir}/lib" includes="*.jar"/>
      </copy>
-     <copy todir="${deploy.dir}/snapshot/${app.name}/docs/api">
+     <copy todir="${deploy.dir}/snapshot/${lib.name}/docs/api">
        <fileset dir="${deploy.dir}/docs" includes="**"/>
      </copy>
-     <zip destfile="${deploy.dir}/${app.name}-snapshot.zip" basedir="${deploy.dir}/snapshot"/>
+     <zip destfile="${deploy.dir}/${lib.name}-snapshot.zip" basedir="${deploy.dir}/snapshot"/>
      <delete dir="${deploy.dir}/snapshot"/>
   </target>
 

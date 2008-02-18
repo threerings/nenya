@@ -2,6 +2,7 @@
 <!-- declares the libraries needed to build nenya -->
 <project name="library-dependencies">
   <fileset dir="${libs.dir}" id="nenya.libs">
+    <!-- Java dependencies -->
     <include name="ant.jar"/>
     <include name="commons-collections.jar"/>
     <include name="commons-digester.jar"/>
@@ -25,5 +26,8 @@
     <include name="jme.jar"/>
     <include name="jme-bui.jar"/>
     <include name="jl1.0.jar"/>
+    <!-- ActionScript dependencies -->
+    <include name="narya.swc"/>
+    <include name="flexlib.swc"/>
   </fileset>
 </project>
