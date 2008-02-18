@@ -27,7 +27,7 @@
     <include name="jme-bui.jar"/>
     <include name="jl1.0.jar"/>
     <!-- ActionScript dependencies -->
-    <include name="narya.swc"/>
+    <include name="naryalib.swc"/>
     <include name="flexlib.swc"/>
   </fileset>
 </project>
