@@ -39,55 +39,10 @@ public class DisplayUtil
      * object should appear before the second in the container, 1 if it should appear after,
      * and 0 if the order does not matter. (Since quicksort is not a stable sort algorithm,
      * returning 0 in the compare function is equivalent to returning -1).
-     * 
-     * If comp is null, sortDisplayChildren will sort container so that objects with smaller
-     * y-values appear before objects with larger y-values.
      */ 
-    public static function sortDisplayChildren (container :DisplayObjectContainer, comp :Function = null) :void
+    public static function sortDisplayChildren (container :DisplayObjectContainer, comp :Function) :void
     {
-        qsortDisplayChildren(container, 0, container.numChildren - 1, (null != comp ? comp : displayObjectYLessEqual));
-    }
-    
-    private static function displayObjectYLessEqual (a :DisplayObject, b :DisplayObject) :int
-    {
-        return (a.y <= b.y ? -1 : 1);
-    }
-    
-    /** Helper function for sortDisplayChildren. */
-    private static function qsortDisplayChildren (container :DisplayObjectContainer, left :int, right :int, comp :Function) :void
-    {
-        if (right - left > 1) { // containers of size 0 or 1 are already sorted
-            
-            // arbitrarily choose the element in the middle of the sort list as the pivot element
-            var pivotIndex :int = left + ((right - left) * 0.5);
-            
-            pivotIndex = partitionDisplayChildren(container, left, right, pivotIndex, comp);
-            qsortDisplayChildren(container, left, pivotIndex - 1, comp);
-            qsortDisplayChildren(container, pivotIndex + 1, right, comp);
-        }
-    }
-    
-    /** Helper function for qsortDisplayChildren. */
-    private static function partitionDisplayChildren (
-        container :DisplayObjectContainer, left :int, right :int, pivotIndex :int, comp :Function) :int
-    {
-        var pivotObj :DisplayObject = container.getChildAt(pivotIndex);
-        
-        container.swapChildrenAt(pivotIndex, right); // move pivot to end
-        
-        var storeIndex :int = left;
-        
-        for (var i :int = left; i < right; ++i) {
-            var thisObj :DisplayObject = container.getChildAt(i);
-            if (1 != comp(thisObj, pivotObj)) {
-                container.swapChildrenAt(i, storeIndex);
-                storeIndex += 1;
-            }
-        }
-            
-        container.swapChildrenAt(storeIndex, right);
-        
-        return storeIndex;
+        qsortDisplayChildren(container, 0, container.numChildren - 1, comp);
     }
 
     /**
@@ -266,6 +221,44 @@ public class DisplayUtil
     public static function dumpHierarchy (top :DisplayObject) :String
     {
         return dumpHierarchy0(top);
+    }
+
+    /** Helper function for sortDisplayChildren. */
+    private static function qsortDisplayChildren (
+        container :DisplayObjectContainer, left :int, right :int, comp :Function) :void
+    {
+        if (right - left > 1) { // containers of size 0 or 1 are already sorted
+            
+            // arbitrarily choose the element in the middle of the sort list as the pivot element
+            var pivotIndex :int = left + ((right - left) / 2);
+            
+            pivotIndex = partitionDisplayChildren(container, left, right, pivotIndex, comp);
+            qsortDisplayChildren(container, left, pivotIndex - 1, comp);
+            qsortDisplayChildren(container, pivotIndex + 1, right, comp);
+        }
+    }
+
+    /** Helper function for qsortDisplayChildren. */
+    private static function partitionDisplayChildren (
+        container :DisplayObjectContainer, left :int, right :int, pivotIndex :int, comp :Function) :int
+    {
+        var pivotObj :DisplayObject = container.getChildAt(pivotIndex);
+        
+        container.swapChildrenAt(pivotIndex, right); // move pivot to end
+        
+        var storeIndex :int = left;
+        
+        for (var i :int = left; i < right; ++i) {
+            var thisObj :DisplayObject = container.getChildAt(i);
+            if (0 > comp(thisObj, pivotObj)) {
+                container.swapChildrenAt(i, storeIndex);
+                storeIndex += 1;
+            }
+        }
+            
+        container.swapChildrenAt(storeIndex, right);
+        
+        return storeIndex;
     }
 
     /**
