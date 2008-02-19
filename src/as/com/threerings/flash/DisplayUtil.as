@@ -35,39 +35,41 @@ public class DisplayUtil
     /**
      * Quicksorts container's children.
      * 
-     * lessEqualComp is a function that takes two DisplayObjects, and returns Boolean 'true' if the
-     * first object is less than or equal to the second.
+     * comp is a function that takes two DisplayObjects, and returns int -1 if the first
+     * object should appear before the second in the container, 1 if it should appear after,
+     * and 0 if the order does not matter. (Since quicksort is not a stable sort algorithm,
+     * returning 0 in the compare function is equivalent to returning -1).
      * 
-     * If lessEqualComp is null, sortDisplayChildren will sort container so that objects with smaller
+     * If comp is null, sortDisplayChildren will sort container so that objects with smaller
      * y-values appear before objects with larger y-values.
      */ 
-    public static function sortDisplayChildren (container :DisplayObjectContainer, lessEqualComp :Function = null) :void
+    public static function sortDisplayChildren (container :DisplayObjectContainer, comp :Function = null) :void
     {
-        qsortDisplayChildren(container, 0, container.numChildren - 1, (null != lessEqualComp ? lessEqualComp : displayObjectYLessEqual));
+        qsortDisplayChildren(container, 0, container.numChildren - 1, (null != comp ? comp : displayObjectYLessEqual));
     }
     
-    private static function displayObjectYLessEqual (a :DisplayObject, b :DisplayObject) :Boolean
+    private static function displayObjectYLessEqual (a :DisplayObject, b :DisplayObject) :int
     {
-        return (a.y <= b.y);
+        return (a.y <= b.y ? -1 : 1);
     }
     
     /** Helper function for sortDisplayChildren. */
-    private static function qsortDisplayChildren (container :DisplayObjectContainer, left :int, right :int, lessEqualComp :Function) :void
+    private static function qsortDisplayChildren (container :DisplayObjectContainer, left :int, right :int, comp :Function) :void
     {
         if (right - left > 1) { // containers of size 0 or 1 are already sorted
             
             // arbitrarily choose the element in the middle of the sort list as the pivot element
             var pivotIndex :int = left + ((right - left) * 0.5);
             
-            pivotIndex = partitionDisplayChildren(container, left, right, pivotIndex, lessEqualComp);
-            qsortDisplayChildren(container, left, pivotIndex - 1, lessEqualComp);
-            qsortDisplayChildren(container, pivotIndex + 1, right, lessEqualComp);
+            pivotIndex = partitionDisplayChildren(container, left, right, pivotIndex, comp);
+            qsortDisplayChildren(container, left, pivotIndex - 1, comp);
+            qsortDisplayChildren(container, pivotIndex + 1, right, comp);
         }
     }
     
     /** Helper function for qsortDisplayChildren. */
     private static function partitionDisplayChildren (
-        container :DisplayObjectContainer, left :int, right :int, pivotIndex :int, lessEqualComp :Function) :int
+        container :DisplayObjectContainer, left :int, right :int, pivotIndex :int, comp :Function) :int
     {
         var pivotObj :DisplayObject = container.getChildAt(pivotIndex);
         
@@ -77,7 +79,7 @@ public class DisplayUtil
         
         for (var i :int = left; i < right; ++i) {
             var thisObj :DisplayObject = container.getChildAt(i);
-            if (lessEqualComp(thisObj, pivotObj)) {
+            if (1 != comp(thisObj, pivotObj)) {
                 container.swapChildrenAt(i, storeIndex);
                 storeIndex += 1;
             }
