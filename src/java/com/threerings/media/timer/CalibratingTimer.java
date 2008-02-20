@@ -58,9 +58,9 @@ public abstract class CalibratingTimer
     /** Calculates the drift factor from the time elapsed from the last calibrate call. */
     protected void calibrate ()
     {
-        long elapsedNanos = (current() - _driftTimerStamp);
+        long elapsedTimer = (current() - _driftTimerStamp);
         double elapsedMillis = System.currentTimeMillis() - _driftMilliStamp;
-        double drift = (elapsedNanos / 1000000L) / elapsedMillis;
+        double drift = (elapsedTimer / _milliDivider) / elapsedMillis;
         if (drift > 1.25 || drift < 0.75) {
             if (_driftFactor == 1.0) {
                 Log.warning("Calibrating [drift=" + drift + "]");
