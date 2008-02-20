@@ -25,26 +25,16 @@ package com.threerings.media.timer;
  * Uses the {@link System#nanoTime} method introduced in 1.5 to try to obtain higher resolution
  * timestamps than those available via {@link System#currentTimeMillis}.
  */
-public class NanoTimer implements MediaTimer
+public class NanoTimer extends CalibratingTimer
 {
-    // documentation inherited from interface
-    public void reset ()
+    public NanoTimer ()
     {
-        _resetStamp = System.nanoTime();
+        init(1000000, 1000);
     }
 
-    // documentation inherited from interface
-    public long getElapsedMillis ()
+    @Override
+    public long current ()
     {
-        return (System.nanoTime() - _resetStamp) / 1000000L;
+        return System.nanoTime();
     }
-
-    // documentation inherited from interface
-    public long getElapsedMicros ()
-    {
-        return (System.nanoTime() - _resetStamp) / 1000L;
-    }
-
-    /** The time at which this timer was last reset. */
-    protected long _resetStamp = System.nanoTime();
 }

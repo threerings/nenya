@@ -23,47 +23,23 @@ package com.threerings.media.timer;
 
 import sun.misc.Perf;
 
-import com.threerings.media.Log;
-
 /**
  * A timer that uses the performance clock exposed by Sun in JDK 1.4.2.
  */
-public class PerfTimer implements MediaTimer
+public class PerfTimer extends CalibratingTimer
 {
     public PerfTimer ()
     {
         _timer = Perf.getPerf();
-        _mfrequency = _timer.highResFrequency() / 1000;
-        _ufrequency = _timer.highResFrequency() / 1000000;
-        _startStamp = _timer.highResCounter();
-        Log.info("Using high performance timer [mfreq=" + _mfrequency +
-                 ", ufreq=" + _ufrequency + ", start=" + _startStamp + "].");
+        init(_timer.highResFrequency() / 1000, _timer.highResFrequency() / 1000000);
     }
 
-    // documentation inherited from interface
-    public void reset ()
+    @Override
+    public long current ()
     {
-        _startStamp = _timer.highResCounter();
-    }
-
-    // documentation inherited from interface
-    public long getElapsedMillis ()
-    {
-        return (_timer.highResCounter() - _startStamp) / _mfrequency;
-    }
-
-    // documentation inherited from interface
-    public long getElapsedMicros ()
-    {
-        return (_timer.highResCounter() - _startStamp) / _ufrequency;
+        return _timer.highResCounter();
     }
 
     /** A performance timer object. */
     protected Perf _timer;
-
-    /** The time at which this timer was last reset. */
-    protected long _startStamp;
-
-    /** The timer frequencies. */
-    protected long _mfrequency, _ufrequency;
 }
