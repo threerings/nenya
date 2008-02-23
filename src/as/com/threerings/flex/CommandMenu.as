@@ -31,6 +31,7 @@ import mx.controls.Menu;
 import mx.controls.listClasses.BaseListData;
 import mx.controls.listClasses.IListItemRenderer;
 import mx.controls.menuClasses.IMenuItemRenderer;
+import mx.controls.menuClasses.MenuListData;
 
 import mx.core.mx_internal;
 import mx.core.Application;
@@ -288,8 +289,28 @@ public class CommandMenu extends Menu
     // from List
     override protected function makeListData (data :Object, uid :String, rowNum :int) :BaseListData
     {
-        return new CommandListData(itemToLabel(data), itemToIcon(data),
-            getItemProp(data, "iconObject") as IFlexDisplayObject, labelField, uid, this, rowNum);
+        // Oh, FFS.
+        // We need to set up these "maxMeasuredIconWidth" fields on the MenuListData, but our
+        // superclass has made those variables private.
+        // We can get the values out of another MenuListData, so we just always call super()
+        // to create one of those, and if we need to make a CommandListData, we construct one
+        // from the fields in the MenuListData.
+
+        var menuListData :MenuListData = super.makeListData(data, uid, rowNum) as MenuListData;
+
+        var iconObject :IFlexDisplayObject = getItemProp(data, "iconObject") as IFlexDisplayObject;
+        if (iconObject != null) {
+            var cmdListData :CommandListData = new CommandListData(menuListData.label,
+                menuListData.icon, iconObject, labelField, uid, this, rowNum);
+
+            cmdListData.maxMeasuredIconWidth = menuListData.maxMeasuredIconWidth;
+            cmdListData.maxMeasuredTypeIconWidth = menuListData.maxMeasuredTypeIconWidth;
+            cmdListData.maxMeasuredBranchIconWidth = menuListData.maxMeasuredBranchIconWidth;
+            cmdListData.useTwoColumns = menuListData.useTwoColumns;
+            return cmdListData;
+        }
+
+        return menuListData;
     }
 
     /**
