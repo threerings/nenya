@@ -25,9 +25,9 @@ package com.threerings.flex.menuClasses {
 import mx.core.IFlexDisplayObject;
 import mx.core.IUIComponent;
 
-import mx.controls.listClasses.ListData;
+import mx.controls.menuClasses.MenuListData;
 
-public class CommandListData extends ListData
+public class CommandListData extends MenuListData
 {
     /** An already-instantiated icon, to use if the icon property is null. */
     public var iconObject :IFlexDisplayObject;
