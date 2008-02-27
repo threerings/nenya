@@ -40,7 +40,7 @@ public abstract class CalibratingTimer
     // documentation inherited from interface
     public void reset ()
     {
-        _startStamp = current();
+        _startStamp = _priorCurrent = current();
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
         _callsSinceCalibration = 0;
@@ -52,7 +52,13 @@ public abstract class CalibratingTimer
         if (_callsSinceCalibration++ > 1000) {
             calibrate();
         }
-        return (long)(((current() - _startStamp)) / _driftFactor);
+        long current = current();
+        if (_driftRatio != 1.0) {
+            long elapsed = current - _priorCurrent;
+            _startStamp += (elapsed - (elapsed * _driftRatio));
+            _priorCurrent = current;
+        }
+        return current - _startStamp;
     }
 
     /** Calculates the drift factor from the time elapsed from the last calibrate call. */
@@ -60,27 +66,28 @@ public abstract class CalibratingTimer
     {
         long elapsedTimer = (current() - _driftTimerStamp);
         double elapsedMillis = System.currentTimeMillis() - _driftMilliStamp;
-        double drift = (elapsedTimer / _milliDivider) / elapsedMillis;
+        double drift = elapsedMillis / (elapsedTimer / _milliDivider);
         if (drift > 1.25 || drift < 0.75) {
-            if (_driftFactor == 1.0) {
-                Log.warning("Calibrating [drift=" + drift + "]");
-            }
-            _driftFactor = drift;
-        } else if (_driftFactor != 1.0) {
+            Log.warning("Calibrating [drift=" + drift + "]");
+            _driftRatio = drift;
+        } else if (_driftRatio != 1.0) {
             // If we're within bounds now but we weren't before, reset _driftFactor and log it
-            _driftFactor = 1.0;
+            _driftRatio = 1.0;
             Log.warning("Calibrating [drift=" + drift + "]");
         }
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
         _callsSinceCalibration = 0;
     }
-
+    
     /** Return the current value for this timer. */
     public abstract long current ();
 
     /** current() value when the timer was started. */
     protected long _startStamp;
+    
+    /** current() value when elapsed was called last. */
+    protected long _priorCurrent;
 
     /** Amount by which current() should be divided to get milliseconds. */
     protected long _milliDivider;
@@ -94,8 +101,8 @@ public abstract class CalibratingTimer
     /** current() value from the last time we called calibrate. */
     protected long _driftTimerStamp;
 
-    /** Factor by which the timer values are drifting from currentTimeMillis. */
-    protected double _driftFactor = 1.0;
+    /** Ratio of currentTimeMillis to timer millis. */
+    protected double _driftRatio = 1.0;
 
     /** Number of calls to elapsed since we've called calibrate. */
     protected int _callsSinceCalibration = 0;
