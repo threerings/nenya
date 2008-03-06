@@ -28,7 +28,7 @@ import java.util.HashMap;
 import com.samskivert.io.PersistenceException;
 
 import com.threerings.media.Log;
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.BaseImageManager;
 
 /**
  * The tile manager provides a simplified interface for retrieving and
@@ -55,7 +55,7 @@ public class TileManager
      * @param imgr the image manager via which the tile manager will
      * decode and cache images.
      */
-    public TileManager (ImageManager imgr)
+    public TileManager (BaseImageManager imgr)
     {
         _imgr = imgr;
         _defaultProvider = new IMImageProvider(_imgr, (String)null);
@@ -242,7 +242,7 @@ public class TileManager
     }
 
     /** The entity through which we decode and cache images. */
-    protected ImageManager _imgr;
+    protected BaseImageManager _imgr;
 
     /** A cache of tilesets that have been loaded by hand. */
     protected HashMap _handcache = new HashMap();

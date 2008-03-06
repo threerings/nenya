@@ -35,7 +35,7 @@ import com.threerings.media.Log;
  * for some other reason.
  *
  * <p> These objects are never created directly, but always obtained from
- * the {@link ImageManager}.
+ * the {@link BaseImageManager}.
  */
 public class CachedVolatileMirage extends VolatileMirage
 {
@@ -44,7 +44,7 @@ public class CachedVolatileMirage extends VolatileMirage
      * prepared image.
      */
     protected CachedVolatileMirage (
-        ImageManager imgr, ImageManager.ImageKey source,
+        BaseImageManager imgr, BaseImageManager.ImageKey source,
         Rectangle bounds, Colorization[] zations)
     {
         super(imgr, bounds);
@@ -96,7 +96,7 @@ public class CachedVolatileMirage extends VolatileMirage
 
     /** The key that identifies the image data used to create our volatile
      * image. */
-    protected ImageManager.ImageKey _source;
+    protected BaseImageManager.ImageKey _source;
 
     /** Optional colorizations that are applied to our source image when
      * creating our mirage. */

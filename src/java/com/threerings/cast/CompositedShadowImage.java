@@ -26,7 +26,7 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.BaseImageManager;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
 
@@ -38,7 +38,7 @@ import com.threerings.cast.CompositedActionFrames.ComponentFrames;
  */
 public class CompositedShadowImage extends CompositedMultiFrameImage
 {
-    public CompositedShadowImage (ImageManager imgr, ComponentFrames[] sources,
+    public CompositedShadowImage (BaseImageManager imgr, ComponentFrames[] sources,
                                   String action, int orient, float shadowAlpha)
     {
         super(imgr, sources, action, orient);

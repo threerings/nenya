@@ -39,7 +39,7 @@ public class BackedVolatileMirage extends VolatileMirage
      * Creates a mirage with the supplied regeneration informoation and
      * prepared image.
      */
-    public BackedVolatileMirage (ImageManager imgr, BufferedImage source)
+    public BackedVolatileMirage (BaseImageManager imgr, BufferedImage source)
     {
         super(imgr, new Rectangle(0, 0, source.getWidth(), source.getHeight()));
         _source = source;

@@ -28,7 +28,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.BaseImageManager;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
 
@@ -40,7 +40,7 @@ import com.threerings.cast.CompositedActionFrames.ComponentFrames;
 public class CompositedMaskedImage extends CompositedMultiFrameImage
 {
     public CompositedMaskedImage (
-        ImageManager imgr, ComponentFrames[] sources, String action,
+        BaseImageManager imgr, ComponentFrames[] sources, String action,
         int orient)
     {
         super(imgr, sources, action, orient);

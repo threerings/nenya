@@ -30,8 +30,8 @@ import java.util.HashMap;
 import com.samskivert.util.CheapIntMap;
 import com.samskivert.util.QuickSort;
 
+import com.threerings.media.image.BaseImageManager;
 import com.threerings.media.image.BufferedMirage;
-import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.ImageUtil;
 
 import com.threerings.media.tile.NoSuchTileSetException;
@@ -53,7 +53,7 @@ public class AutoFringer
      * Constructs an instance that will fringe according to the rules in
      * the supplied fringe configuration.
      */
-    public AutoFringer (FringeConfiguration fringeconf, ImageManager imgr,
+    public AutoFringer (FringeConfiguration fringeconf, BaseImageManager imgr,
                         TileManager tmgr)
     {
         _fringeconf = fringeconf;
@@ -399,7 +399,7 @@ public class AutoFringer
         }
     }
 
-    protected ImageManager _imgr;
+    protected BaseImageManager _imgr;
     protected TileManager _tmgr;
     protected FringeConfiguration _fringeconf;
     protected CheapIntMap _fringers = new CheapIntMap(16);

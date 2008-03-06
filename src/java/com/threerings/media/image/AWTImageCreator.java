@@ -33,7 +33,7 @@ import java.awt.image.BufferedImage;
  * AWT to determine the optimal image format.
  */
 public class AWTImageCreator
-    implements ImageManager.OptimalImageCreator
+    implements BaseImageManager.OptimalImageCreator
 {
      /**
       * Create an image creator that will rely on the AWT to determine the
@@ -53,7 +53,7 @@ public class AWTImageCreator
         }
     }
 
-    // documentation inherited from interface ImageManager.OptimalImageCreator
+    // documentation inherited from interface BaseImageManager.OptimalImageCreator
     public BufferedImage createImage (int width, int height, int trans)
     {
         // DEBUG: override transparency for the moment on all images

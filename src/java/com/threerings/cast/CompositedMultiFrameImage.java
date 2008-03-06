@@ -31,7 +31,7 @@ import java.util.Comparator;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
 import com.threerings.cast.bundle.BundledComponentRepository.TileSetFrameImage;
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.BaseImageManager;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
 
@@ -43,7 +43,7 @@ public class CompositedMultiFrameImage
     implements TrimmedMultiFrameImage
 {
     public CompositedMultiFrameImage (
-        ImageManager imgr, ComponentFrames[] sources,
+        BaseImageManager imgr, ComponentFrames[] sources,
         String action, int orient)
     {
         _imgr = imgr;
@@ -190,7 +190,7 @@ public class CompositedMultiFrameImage
     }
 
     /** The image manager from whom we load our images. */
-    protected ImageManager _imgr;
+    protected BaseImageManager _imgr;
 
     /** The action frames from which we obtain our source imagery. */
     protected ComponentFrames[] _sources;
