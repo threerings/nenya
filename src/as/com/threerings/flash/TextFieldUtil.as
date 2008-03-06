@@ -65,7 +65,7 @@ public class TextFieldUtil
 
         Util.init(tf, initProps, null, MASK_FIELD_PROPS);
         tf.text = text;
-        if (tf.autoSize != null) {
+        if (tf.autoSize != TextFieldAutoSize.NONE) {
             tf.width = tf.textWidth + WIDTH_PAD;
             tf.height = tf.textHeight + HEIGHT_PAD;
         }
