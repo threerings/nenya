@@ -1,6 +1,8 @@
 package com.threerings.media.timer;
 
 import com.samskivert.Log;
+import com.samskivert.util.Interval;
+import com.samskivert.util.RunQueue;
 
 /**
  * Calibrates timing values from a subclass' implementation of current against those returned by
@@ -19,11 +21,14 @@ public abstract class CalibratingTimer
     protected void init (long milliDivider, long microDivider)
     {
         _milliDivider = milliDivider;
-        _calibrationInterval = 5 * 1000 * _milliDivider;// Calibrate every 5 seconds
         _microDivider = microDivider;
         reset();
         Log.info("Using " + getClass() + " timer [mfreq=" + _milliDivider + ", ufreq="
             + _microDivider + ", start=" + _startStamp + "].");
+        new Interval(RunQueue.AWT) {
+            @Override public void expired () {
+                calibrate();
+            }}.schedule(5000, true);
     }
 
     // documentation inherited from interface
@@ -50,9 +55,6 @@ public abstract class CalibratingTimer
     protected long elapsed ()
     {
         long current = current();
-        if ((current - _driftTimerStamp) > _calibrationInterval) {
-            calibrate();
-        }
         if (_driftRatio != 1.0) {
             long elapsed = current - _priorCurrent;
             _startStamp += (elapsed - (elapsed * _driftRatio));
@@ -64,7 +66,7 @@ public abstract class CalibratingTimer
     /** Calculates the drift factor from the time elapsed from the last calibrate call. */
     protected void calibrate ()
     {
-        long elapsedTimer = (current() - _driftTimerStamp);
+        double elapsedTimer = (current() - _driftTimerStamp);
         double elapsedMillis = System.currentTimeMillis() - _driftMilliStamp;
         double drift = elapsedMillis / (elapsedTimer / _milliDivider);
         if (drift > 1.25 || drift < 0.75) {
@@ -102,8 +104,4 @@ public abstract class CalibratingTimer
 
     /** Ratio of currentTimeMillis to timer millis. */
     protected double _driftRatio = 1.0;
-
-    /** Amount of timer ticks that elapse between calibrations. */
-    protected long _calibrationInterval;
-
 }
