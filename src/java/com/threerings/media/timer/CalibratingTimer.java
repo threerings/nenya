@@ -19,6 +19,7 @@ public abstract class CalibratingTimer
     protected void init (long milliDivider, long microDivider)
     {
         _milliDivider = milliDivider;
+        _calibrationInterval = 5 * 1000 * _milliDivider;// Calibrate every 5 seconds
         _microDivider = microDivider;
         reset();
         Log.info("Using " + getClass() + " timer [mfreq=" + _milliDivider + ", ufreq="
@@ -43,16 +44,15 @@ public abstract class CalibratingTimer
         _startStamp = _priorCurrent = current();
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
-        _callsSinceCalibration = 0;
     }
 
     /** Returns the difference between _startStamp and current() */
     protected long elapsed ()
     {
-        if (_callsSinceCalibration++ > 1000) {
+        long current = current();
+        if ((current - _driftTimerStamp) > _calibrationInterval) {
             calibrate();
         }
-        long current = current();
         if (_driftRatio != 1.0) {
             long elapsed = current - _priorCurrent;
             _startStamp += (elapsed - (elapsed * _driftRatio));
@@ -77,7 +77,6 @@ public abstract class CalibratingTimer
         }
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
-        _callsSinceCalibration = 0;
     }
     
     /** Return the current value for this timer. */
@@ -104,7 +103,7 @@ public abstract class CalibratingTimer
     /** Ratio of currentTimeMillis to timer millis. */
     protected double _driftRatio = 1.0;
 
-    /** Number of calls to elapsed since we've called calibrate. */
-    protected int _callsSinceCalibration = 0;
+    /** Amount of timer ticks that elapse between calibrations. */
+    protected long _calibrationInterval;
 
 }
