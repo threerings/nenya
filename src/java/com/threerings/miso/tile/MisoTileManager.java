@@ -29,7 +29,7 @@ import com.samskivert.io.StreamUtil;
 import com.threerings.resource.ResourceManager;
 import com.threerings.util.CompiledConfig;
 
-import com.threerings.media.image.BaseImageManager;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.tile.TileManager;
 
 import com.threerings.miso.Log;
@@ -47,7 +47,7 @@ public class MisoTileManager extends TileManager
      * @param imgr the image manager via which the tile manager will
      * decode and cache images.
      */
-    public MisoTileManager (ResourceManager rmgr, BaseImageManager imgr)
+    public MisoTileManager (ResourceManager rmgr, ImageManager imgr)
     {
         super(imgr);
 

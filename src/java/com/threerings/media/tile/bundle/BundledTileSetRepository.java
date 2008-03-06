@@ -30,7 +30,7 @@ import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
 
 import com.threerings.media.Log;
-import com.threerings.media.image.BaseImageManager;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.tile.IMImageProvider;
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.TileSet;
@@ -57,7 +57,7 @@ public class BundledTileSetRepository
      * loading our tile data.
      */
     public BundledTileSetRepository (final ResourceManager rmgr,
-                                     final BaseImageManager imgr,
+                                     final ImageManager imgr,
                                      final String name)
     {
         _imgr = imgr;
@@ -222,7 +222,7 @@ public class BundledTileSetRepository
     }
 
     /** The image manager via which we load our images. */
-    protected BaseImageManager _imgr;
+    protected ImageManager _imgr;
 
     /** A mapping from tileset id to tileset. */
     protected HashIntMap _idmap;

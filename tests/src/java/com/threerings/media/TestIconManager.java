@@ -27,7 +27,7 @@ import javax.swing.*;
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.tile.TileManager;
 import com.threerings.resource.ResourceManager;
 
@@ -43,7 +43,7 @@ public class TestIconManager
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             ResourceManager rmgr = new ResourceManager("rsrc");
-            ImageManager imgr = new ImageManager(rmgr, frame);
+            ClientImageManager imgr = new ClientImageManager(rmgr, frame);
             TileManager tmgr = new TileManager(imgr);
             IconManager iconmgr = new IconManager(
                 tmgr, "rsrc/config/media/iconmgr.properties");

@@ -25,7 +25,7 @@ import java.awt.Component;
 import java.util.Iterator;
 
 import com.threerings.cast.ComponentClass;
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.resource.ResourceManager;
 
 import junit.framework.Test;
@@ -44,7 +44,7 @@ public class BundledComponentRepositoryTest extends TestCase
             ResourceManager rmgr = new ResourceManager("rsrc");
             rmgr.initBundles(
                 null, "config/resource/manager.properties", null);
-            ImageManager imgr = new ImageManager(rmgr, (Component)null);
+            ClientImageManager imgr = new ClientImageManager(rmgr, (Component)null);
             BundledComponentRepository repo =
                 new BundledComponentRepository(rmgr, imgr, "components");
 

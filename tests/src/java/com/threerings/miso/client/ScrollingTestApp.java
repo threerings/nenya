@@ -34,7 +34,7 @@ import com.samskivert.util.Config;
 import com.threerings.resource.ResourceManager;
 
 import com.threerings.media.FrameManager;
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.util.LinePath;
 import com.threerings.media.util.Path;
 
@@ -94,7 +94,7 @@ public class ScrollingTestApp
         ResourceManager rmgr = new ResourceManager("rsrc");
         rmgr.initBundles(
             null, "config/resource/manager.properties", null);
-        ImageManager imgr = new ImageManager(rmgr, _frame);
+        ClientImageManager imgr = new ClientImageManager(rmgr, _frame);
 	_tilemgr = new MisoTileManager(rmgr, imgr);
         _tilemgr.setTileSetRepository(
             new BundledTileSetRepository(rmgr, imgr, "tilesets"));

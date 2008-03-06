@@ -25,12 +25,12 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import com.threerings.media.image.Colorization;
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.image.Mirage;
 
 /**
  * Provides a generic interface via which tileset images may be loaded. In most cases, a running
- * application will want to obtain images via the {@link ImageManager}, but in some circumstances a
+ * application will want to obtain images via the {@link ClientImageManager}, but in some circumstances a
  * simpler image provider may be desirable to avoid the overhead of the image manager
  * infrastructure when simple image loading is all that is desired.
  */

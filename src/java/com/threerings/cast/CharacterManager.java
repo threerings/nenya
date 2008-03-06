@@ -35,7 +35,7 @@ import com.samskivert.util.Throttle;
 import com.samskivert.util.Tuple;
 
 import com.threerings.media.image.Colorization;
-import com.threerings.media.image.BaseImageManager;
+import com.threerings.media.image.ImageManager;
 import com.threerings.util.DirectionCodes;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
@@ -52,7 +52,7 @@ public class CharacterManager
     /**
      * Constructs the character manager.
      */
-    public CharacterManager (BaseImageManager imgr, ComponentRepository crepo)
+    public CharacterManager (ImageManager imgr, ComponentRepository crepo)
     {
         // keep these around
         _imgr = imgr;
@@ -421,7 +421,7 @@ public class CharacterManager
     }
 
     /** The image manager with whom we interact. */
-    protected BaseImageManager _imgr;
+    protected ImageManager _imgr;
 
     /** The component repository. */
     protected ComponentRepository _crepo;

@@ -33,7 +33,7 @@ import java.awt.image.BufferedImage;
  * AWT to determine the optimal image format.
  */
 public class AWTImageCreator
-    implements BaseImageManager.OptimalImageCreator
+    implements ImageManager.OptimalImageCreator
 {
      /**
       * Create an image creator that will rely on the AWT to determine the

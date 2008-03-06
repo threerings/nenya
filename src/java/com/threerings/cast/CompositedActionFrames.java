@@ -24,7 +24,7 @@ package com.threerings.cast;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.image.BaseImageManager;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.util.MultiFrameImage;
 
@@ -65,7 +65,7 @@ public class CompositedActionFrames
      * source frames and colorization configuration. The actual component
      * frame images will not be composited until they are requested.
      */
-    public CompositedActionFrames (BaseImageManager imgr, LRUHashMap frameCache,
+    public CompositedActionFrames (ImageManager imgr, LRUHashMap frameCache,
                                    String action, ComponentFrames[] sources)
     {
         // sanity check
@@ -177,7 +177,7 @@ public class CompositedActionFrames
 
     /** The image manager from whom we can obtain prepared volatile images
      * onto which to render our composited actions. */
-    protected BaseImageManager _imgr;
+    protected ImageManager _imgr;
 
     /** Used to cache our composited action frame images. */
     protected LRUHashMap _frameCache;

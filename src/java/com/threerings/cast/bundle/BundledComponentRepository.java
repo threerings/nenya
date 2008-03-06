@@ -40,7 +40,7 @@ import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
 
-import com.threerings.media.image.BaseImageManager;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.BufferedMirage;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageDataProvider;
@@ -85,7 +85,7 @@ public class BundledComponentRepository
      * resource bundles.
      */
     public BundledComponentRepository (
-        ResourceManager rmgr, BaseImageManager imgr, String name)
+        ResourceManager rmgr, ImageManager imgr, String name)
         throws IOException
     {
         // keep this guy around
@@ -261,7 +261,7 @@ public class BundledComponentRepository
         /**
          * Constructs an instance that will obtain image data from the specified resource bundle.
          */
-        public ResourceBundleProvider (BaseImageManager imgr, ResourceBundle bundle)
+        public ResourceBundleProvider (ImageManager imgr, ResourceBundle bundle)
         {
             super(imgr, (String)null);
             _dprov = this;
@@ -508,7 +508,7 @@ public class BundledComponentRepository
     }
 
     /** We use the image manager to decode and cache images. */
-    protected BaseImageManager _imgr;
+    protected ImageManager _imgr;
 
     /** A table of action sequences. */
     protected HashMap _actions;

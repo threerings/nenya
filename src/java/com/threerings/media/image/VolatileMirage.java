@@ -39,7 +39,7 @@ public abstract class VolatileMirage implements Mirage
     /**
      * Informs the base class of its image manager and image bounds.
      */
-    protected VolatileMirage (BaseImageManager imgr, Rectangle bounds)
+    protected VolatileMirage (ImageManager imgr, Rectangle bounds)
     {
         _imgr = imgr;
         _bounds = bounds;
@@ -186,7 +186,7 @@ public abstract class VolatileMirage implements Mirage
     }
 
     /** The image manager with whom we interoperate. */
-    protected BaseImageManager _imgr;
+    protected ImageManager _imgr;
 
     /** The bounds of the region of our source image which we desire for
      * this mirage (possibly the whole thing). */

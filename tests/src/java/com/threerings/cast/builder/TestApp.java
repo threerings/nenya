@@ -26,7 +26,7 @@ import javax.swing.JFrame;
 
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.resource.ResourceManager;
 
 import com.threerings.cast.CharacterManager;
@@ -45,7 +45,7 @@ public class TestApp
         ResourceManager rmgr = new ResourceManager("rsrc");
         rmgr.initBundles(
             null, "config/resource/manager.properties", null);
-        ImageManager imgr = new ImageManager(rmgr, _frame);
+        ClientImageManager imgr = new ClientImageManager(rmgr, _frame);
 
         ComponentRepository crepo =
             new BundledComponentRepository(rmgr, imgr, "components");

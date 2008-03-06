@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.resource.ResourceManager;
 import com.threerings.util.DirectionCodes;
 import com.threerings.util.DirectionUtil;
@@ -123,7 +123,7 @@ public class CharSpriteViz extends JPanel
             ResourceManager rmgr = new ResourceManager("rsrc");
             rmgr.initBundles(
                 null, "config/resource/manager.properties", null);
-            ImageManager imgr = new ImageManager(rmgr, frame);
+            ClientImageManager imgr = new ClientImageManager(rmgr, frame);
             ComponentRepository crepo =
                 new BundledComponentRepository(rmgr, imgr, "components");
             CharacterManager charmgr = new CharacterManager(imgr, crepo);

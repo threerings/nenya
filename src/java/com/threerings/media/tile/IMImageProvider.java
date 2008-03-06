@@ -24,7 +24,7 @@ package com.threerings.media.tile;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import com.threerings.media.image.BaseImageManager;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageDataProvider;
 import com.threerings.media.image.Mirage;
@@ -35,13 +35,13 @@ import com.threerings.media.image.Mirage;
  */
 public class IMImageProvider implements ImageProvider
 {
-    public IMImageProvider (BaseImageManager imgr, ImageDataProvider dprov)
+    public IMImageProvider (ImageManager imgr, ImageDataProvider dprov)
     {
         _imgr = imgr;
         _dprov = dprov;
     }
 
-    public IMImageProvider (BaseImageManager imgr, String rset)
+    public IMImageProvider (ImageManager imgr, String rset)
     {
         _imgr = imgr;
         _rset = rset;
@@ -59,12 +59,12 @@ public class IMImageProvider implements ImageProvider
         return _imgr.getMirage(getImageKey(path), bounds, zations);
     }
 
-    protected final BaseImageManager.ImageKey getImageKey (String path)
+    protected final ImageManager.ImageKey getImageKey (String path)
     {
         return (_dprov == null) ? _imgr.getImageKey(_rset, path) : _imgr.getImageKey(_dprov, path);
     }
 
-    protected BaseImageManager _imgr;
+    protected ImageManager _imgr;
     protected ImageDataProvider _dprov;
     protected String _rset;
 }

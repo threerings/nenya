@@ -39,7 +39,7 @@ import com.samskivert.swing.VGroupLayout;
 import com.samskivert.swing.util.SwingUtil;
 
 import com.threerings.media.Log;
-import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.image.ImageUtil;
 
 /**
@@ -53,7 +53,7 @@ public class TraceViz
         // create the frame and image manager
         _frame = new JFrame();
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ImageManager imgr = new ImageManager(null, _frame);
+        ClientImageManager imgr = new ClientImageManager(null, _frame);
 
         // set up the content panel
         JPanel content = (JPanel)_frame.getContentPane();
