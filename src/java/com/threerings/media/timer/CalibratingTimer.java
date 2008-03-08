@@ -22,8 +22,10 @@
 package com.threerings.media.timer;
 
 import com.samskivert.Log;
+import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.Interval;
 import com.samskivert.util.RunQueue;
+import com.threerings.media.MediaPrefs;
 
 /**
  * Calibrates timing values from a subclass' implementation of current against those returned by
@@ -87,9 +89,15 @@ public abstract class CalibratingTimer
     /** Calculates the drift factor from the time elapsed from the last calibrate call. */
     protected void calibrate ()
     {
-        double elapsedTimer = (current() - _driftTimerStamp);
+        long current = current();
+        double elapsedTimer = (current - _driftTimerStamp);
         double elapsedMillis = System.currentTimeMillis() - _driftMilliStamp;
         double drift = elapsedMillis / (elapsedTimer / _milliDivider);
+        if (_debugCalibrate.getValue()) {
+            Log.warning("Calibrating [timer=" + elapsedTimer + ", millis=" + elapsedMillis
+                + ", drift=" + drift + ", timerstamp=" + _driftTimerStamp + ", millistamp="
+                + _driftMilliStamp + ", current=" + current + "]");
+        }
         if (drift > 1.25 || drift < 0.75) {
             Log.warning("Calibrating [drift=" + drift + "]");
             _driftRatio = drift;
@@ -125,4 +133,9 @@ public abstract class CalibratingTimer
 
     /** Ratio of currentTimeMillis to timer millis. */
     protected double _driftRatio = 1.0;
+
+    /** A debug hook that toggles dumping of calibration values. */
+    protected static RuntimeAdjust.BooleanAdjust _debugCalibrate = new RuntimeAdjust.BooleanAdjust(
+        "Toggles calibrations statistics", "narya.media.timer",
+        MediaPrefs.config, false);
 }
