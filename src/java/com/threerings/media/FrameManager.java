@@ -22,34 +22,21 @@
 package com.threerings.media;
 
 import java.applet.Applet;
-
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.Window;
 
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
-import java.awt.EventQueue;
-
 import javax.swing.JLayeredPane;
-import javax.swing.RepaintManager;
 import javax.swing.JRootPane;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
+import javax.swing.RepaintManager;
 
 import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
-
+import com.threerings.media.timer.CalibratingTimer;
 import com.threerings.media.timer.MediaTimer;
 import com.threerings.media.timer.MillisTimer;
 import com.threerings.media.util.TrailingAverage;
@@ -215,6 +202,19 @@ public abstract class FrameManager
     public long getTimeStamp ()
     {
         return _timer.getElapsedMillis();
+    }
+    
+    /**
+     * Returns the highest drift ratio our timer has seen. 1.0 means no drift (and is what we return
+     * if we're not using a CalibratingTimer)
+     */
+    public double getMaxTimerDriftRatio ()
+    {
+    	if (_timer instanceof CalibratingTimer) {
+    	    return ((CalibratingTimer)_timer).getMaxDriftRatio();
+    	} else {
+    		return 1.0;
+    	}
     }
 
     /**

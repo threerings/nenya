@@ -73,6 +73,14 @@ public abstract class CalibratingTimer
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
     }
+    
+    /**
+     * Returns the greatest drift ratio we've had to compensate for.
+     */
+    public double getMaxDriftRatio ()
+    {
+    	return _maxDriftRatio;
+    }
 
     /** Returns the difference between _startStamp and current() */
     protected long elapsed ()
@@ -101,6 +109,9 @@ public abstract class CalibratingTimer
         if (drift > 1.25 || drift < 0.75) {
             Log.warning("Calibrating [drift=" + drift + "]");
             _driftRatio = drift;
+            if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
+            	_maxDriftRatio = drift;
+            }
         } else if (_driftRatio != 1.0) {
             // If we're within bounds now but we weren't before, reset _driftFactor and log it
             _driftRatio = 1.0;
@@ -133,6 +144,9 @@ public abstract class CalibratingTimer
 
     /** Ratio of currentTimeMillis to timer millis. */
     protected double _driftRatio = 1.0;
+    
+    /** The largest drift we've had to adjust for. */
+    protected double _maxDriftRatio = 1.0;
 
     /** A debug hook that toggles dumping of calibration values. */
     protected static RuntimeAdjust.BooleanAdjust _debugCalibrate = new RuntimeAdjust.BooleanAdjust(
