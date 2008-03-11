@@ -114,7 +114,7 @@ public abstract class CalibratingTimer
                 + ", drift=" + drift + ", timerstamp=" + _driftTimerStamp + ", millistamp="
                 + _driftMilliStamp + ", current=" + current + "]");
         }
-        if (drift > 1.25 || drift < 0.75) {
+        if (drift > MAX_ALLOWED_DRIFT_RATIO || drift < MIN_ALLOWED_DRIFT_RATIO) {
             Log.warning("Calibrating [drift=" + drift + "]");
             _driftRatio = drift;
             if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
@@ -131,6 +131,12 @@ public abstract class CalibratingTimer
     
     /** Return the current value for this timer. */
     public abstract long current ();
+    
+    /** The largest drift ratio we'll allow without correcting. */
+    protected static final double MAX_ALLOWED_DRIFT_RATIO = 1.1;
+    
+    /** The smallest drift ratio we'll allow without correcting. */
+    protected static final double MIN_ALLOWED_DRIFT_RATIO = 0.9;
 
     /** current() value when the timer was started. */
     protected long _startStamp;
