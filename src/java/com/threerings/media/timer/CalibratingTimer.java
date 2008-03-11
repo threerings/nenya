@@ -81,6 +81,14 @@ public abstract class CalibratingTimer
     {
     	return _maxDriftRatio;
     }
+    
+    /**
+     * Clears out our remembered max drift.
+     */
+    public void clearMaxDriftRatio ()
+    {
+    	_maxDriftRatio = 1.0;
+    }
 
     /** Returns the difference between _startStamp and current() */
     protected long elapsed ()

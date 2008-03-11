@@ -216,6 +216,16 @@ public abstract class FrameManager
     		return 1.0;
     	}
     }
+    
+    /**
+     * Clears out the maximum drift our timer remembers seeing.
+     */
+    public void clearMaxTimerDriftRatio ()
+    {
+        if (_timer instanceof CalibratingTimer) {
+            ((CalibratingTimer)_timer).clearMaxDriftRatio();
+        }
+    }
 
     /**
      * Returns an overlay that can be used to render sprites and animations on top of the entire
