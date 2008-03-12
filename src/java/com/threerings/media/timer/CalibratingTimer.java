@@ -48,10 +48,6 @@ public abstract class CalibratingTimer
         reset();
         Log.info("Using " + getClass() + " timer [mfreq=" + _milliDivider + ", ufreq="
             + _microDivider + ", start=" + _startStamp + "].");
-        new Interval(RunQueue.AWT) {
-            @Override public void expired () {
-                calibrate();
-            }}.schedule(5000, true);
     }
 
     // documentation inherited from interface
@@ -69,9 +65,19 @@ public abstract class CalibratingTimer
     // documentation inherited from interface
     public void reset ()
     {
+        if (_calibrateInterval != null) {
+            _calibrateInterval.cancel();
+            _calibrateInterval = null;
+        }
         _startStamp = _priorCurrent = current();
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
+        _calibrateInterval = new Interval(RunQueue.AWT) {
+            @Override public void expired () {
+                calibrate();
+            }
+        };
+        _calibrateInterval.schedule(5000, true);
     }
     
     /**
@@ -161,6 +167,9 @@ public abstract class CalibratingTimer
     
     /** The largest drift we've had to adjust for. */
     protected double _maxDriftRatio = 1.0;
+    
+    /** Interval that fires every five seconds to run the calibration. */
+    protected Interval _calibrateInterval;
 
     /** A debug hook that toggles dumping of calibration values. */
     protected static RuntimeAdjust.BooleanAdjust _debugCalibrate = new RuntimeAdjust.BooleanAdjust(
