@@ -66,8 +66,8 @@ public class SparseMisoSceneWriter implements NestableWriter
         writer.dataElement("defTileSet", Integer.toString(model.defTileSet));
 
         writer.startElement("sections");
-        for (Iterator iter = model.getSections(); iter.hasNext(); ) {
-            Section sect = (Section)iter.next();
+        for (Iterator<Section> iter = model.getSections(); iter.hasNext(); ) {
+            Section sect = iter.next();
             if (sect.isBlank()) {
                 continue;
             }
@@ -95,37 +95,39 @@ public class SparseMisoSceneWriter implements NestableWriter
 
             // write our interesting object tile information
             for (int ii = 0; ii < sect.objectInfo.length; ii++) {
-                ObjectInfo info = sect.objectInfo[ii];
-                attrs = new AttributesImpl();
-                attrs.addAttribute("", "tileId", "", "",
-                                   String.valueOf(info.tileId));
-                attrs.addAttribute("", "x", "", "", String.valueOf(info.x));
-                attrs.addAttribute("", "y", "", "", String.valueOf(info.y));
-
-                if (!StringUtil.isBlank(info.action)) {
-                    attrs.addAttribute("", "action", "", "", info.action);
-                }
-                if (info.priority != 0) {
-                    attrs.addAttribute("", "priority", "", "",
-                                       String.valueOf(info.priority));
-                }
-                if (info.sx != 0 || info.sy != 0) {
-                    attrs.addAttribute("", "sx",  "", "",
-                                       String.valueOf(info.sx));
-                    attrs.addAttribute("", "sy",  "", "",
-                                       String.valueOf(info.sy));
-                    attrs.addAttribute("", "sorient",  "", "",
-                                       String.valueOf(info.sorient));
-                }
-                if (info.zations != 0) {
-                    attrs.addAttribute("", "zations",  "", "",
-                                       String.valueOf(info.zations));
-                }
-                writer.emptyElement("", "object", "", attrs);
+                writeInterestingObject(sect.objectInfo[ii], writer);
             }
             writer.endElement("objects");
             writer.endElement("section");
         }
         writer.endElement("sections");
+    }
+
+    /**
+     * Writes <code>info</code> out to <code>writer</code>. 
+     */
+    public static void writeInterestingObject (ObjectInfo info, DataWriter writer)
+        throws SAXException
+    {
+        AttributesImpl attrs = new AttributesImpl();
+        attrs.addAttribute("", "tileId", "", "", String.valueOf(info.tileId));
+        attrs.addAttribute("", "x", "", "", String.valueOf(info.x));
+        attrs.addAttribute("", "y", "", "", String.valueOf(info.y));
+
+        if (!StringUtil.isBlank(info.action)) {
+            attrs.addAttribute("", "action", "", "", info.action);
+        }
+        if (info.priority != 0) {
+            attrs.addAttribute("", "priority", "", "", String.valueOf(info.priority));
+        }
+        if (info.sx != 0 || info.sy != 0) {
+            attrs.addAttribute("", "sx", "", "", String.valueOf(info.sx));
+            attrs.addAttribute("", "sy", "", "", String.valueOf(info.sy));
+            attrs.addAttribute("", "sorient", "", "", String.valueOf(info.sorient));
+        }
+        if (info.zations != 0) {
+            attrs.addAttribute("", "zations", "", "", String.valueOf(info.zations));
+        }
+        writer.emptyElement("", "object", "", attrs);
     }
 }

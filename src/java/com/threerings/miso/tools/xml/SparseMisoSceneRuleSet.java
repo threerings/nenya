@@ -52,11 +52,11 @@ public class SparseMisoSceneRuleSet implements NestableRuleSet
         // this creates the appropriate instance when we encounter our
         // prefix tag
         dig.addRule(prefix, new Rule() {
-            public void begin (String namespace, String name,
+            @Override public void begin (String namespace, String name,
                                Attributes attributes) throws Exception {
                 digester.push(createMisoSceneModel());
             }
-            public void end (String namespace, String name) throws Exception {
+            @Override public void end (String namespace, String name) throws Exception {
                 digester.pop();
             }
         });
@@ -70,12 +70,21 @@ public class SparseMisoSceneRuleSet implements NestableRuleSet
         dig.addObjectCreate(sprefix, Section.class.getName());
         dig.addRule(sprefix, new SetPropertyFieldsRule());
         dig.addRule(sprefix + "/base", new SetFieldRule("baseTileIds"));
-        dig.addObjectCreate(sprefix + "/objects/object",
-                            ObjectInfo.class.getName());
-        dig.addRule(sprefix + "/objects/object", new SetPropertyFieldsRule());
-        dig.addSetNext(sprefix + "/objects/object", "addObject",
-                       ObjectInfo.class.getName());
+        addObjectExtractor(dig, "objects", sprefix, "addObject");
         dig.addSetNext(sprefix, "setSection", Section.class.getName());
+    }
+
+    /**
+     * Adds a set of rules to <code>dig</code> to create an Object info from the element at
+     * base/type/object and calls <code>methodName</code> on the object on dig's stack.
+     */
+    public static void addObjectExtractor (Digester dig, String type, String base,
+        String methodName)
+    {
+        String prefix = base + "/" + type + "/object";
+        dig.addObjectCreate(prefix, ObjectInfo.class);
+        dig.addRule(prefix, new SetPropertyFieldsRule());
+        dig.addSetNext(prefix, methodName, ObjectInfo.class.getName());
     }
 
     protected SparseMisoSceneModel createMisoSceneModel ()
