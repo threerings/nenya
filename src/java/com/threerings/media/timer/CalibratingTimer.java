@@ -120,7 +120,12 @@ public abstract class CalibratingTimer
                 + ", drift=" + drift + ", timerstamp=" + _driftTimerStamp + ", millistamp="
                 + _driftMilliStamp + ", current=" + current + "]");
         }
-        if (drift > MAX_ALLOWED_DRIFT_RATIO || drift < MIN_ALLOWED_DRIFT_RATIO) {
+        if (elapsedTimer < 0) {
+            Log.warning("The timer has decided to live in the past, resetting drift[previousTimer="
+                + _driftTimerStamp + ", currentTimer=" + current + ", previousMillis="
+                + _driftMilliStamp + ", currentMillis=" + System.currentTimeMillis() + "]");
+            _driftRatio = 1.0;
+        } else if (drift > MAX_ALLOWED_DRIFT_RATIO || drift < MIN_ALLOWED_DRIFT_RATIO) {
             Log.warning("Calibrating [drift=" + drift + "]");
             _driftRatio = drift;
             if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
