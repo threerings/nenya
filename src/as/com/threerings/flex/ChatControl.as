@@ -73,6 +73,14 @@ public class ChatControl extends HBox
     }
 
     /**
+     * Provides access to the text field we use to accept chat.
+     */
+    public function get chatInput () :ChatInput
+    {
+        return _txt;
+    }
+
+    /**
      * Request focus to this chat control.
      */
     override public function setFocus () :void
