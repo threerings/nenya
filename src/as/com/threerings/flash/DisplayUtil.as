@@ -28,8 +28,6 @@ import flash.display.DisplayObjectContainer;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
-import mx.core.IRawChildrenContainer;
-
 public class DisplayUtil
 {
     /**
@@ -57,13 +55,11 @@ public class DisplayUtil
         callbackFunction(disp);
 
         if (disp is DisplayObjectContainer) {
-            // a little type-unsafety so that we don't have to write two blocks
-            var o :Object = (disp is IRawChildrenContainer) ?
-                IRawChildrenContainer(disp).rawChildren : disp;
-            var nn :int = int(o.numChildren);
+            var container :DisplayObjectContainer = disp as DisplayObjectContainer;
+            var nn :int = container.numChildren;
             for (var ii :int = 0; ii < nn; ii++) {
                 try {
-                    disp = DisplayObject(o.getChildAt(ii));
+                    disp = container.getChildAt(ii);
                 } catch (err :SecurityError) {
                     continue;
                 }
