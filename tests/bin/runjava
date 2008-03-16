@@ -16,26 +16,7 @@ my $root = join("/", @parts);
 $realroot = $root;
 $root = "$root/..";
 
-# make sure JAVA_HOME is set
-my $jhome = $ENV{"JAVA_HOME"};
-if (!defined $jhome) {
-    warn "$0: Error: No JAVA_HOME specified!\n";
-    warn "\n";
-    warn "You must set your JAVA_HOME environment variable to the\n";
-    warn "the absolute path of your JDK installation. For example:\n";
-    warn "\n";
-    warn " % JAVA_HOME=/usr/local/jdk1.2\n";
-    warn " % export JAVA_HOME\n";
-    die "\n";
-}
-
-# make sure it's set to a directory
-if (! -d $jhome) {
-    die "$0: Can't find a java interpreter in '$jhome'.\n";
-}
-
-my $java = "$jhome/bin/java";
-my $jlib = "$jhome/lib/classes.zip";
+my $java = "java";
 
 # determine our machine architecture
 my $ostype = `uname -s`;
@@ -73,7 +54,7 @@ foreach $dir (@dirs) {
 }
 
 # finally add the standard classes
-$classpath = "$classpath:$jlib";
+$classpath = "$classpath";
 
 # specify our server root (this is for server code)
 my $rootarg = "-Dresource_dir=$realroot/rsrc -Dtest_dir=$realroot";
