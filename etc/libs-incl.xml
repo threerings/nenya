@@ -7,6 +7,8 @@
     <include name="commons-collections.jar"/>
     <include name="commons-digester.jar"/>
     <include name="commons-io.jar"/>
+    <include name="commons-logging.jar"/>
+    <include name="commons-beanutils.jar"/>
     <include name="google-collect.jar"/>
     <include name="junit4.jar"/>
     <include name="narya-base.jar"/>
