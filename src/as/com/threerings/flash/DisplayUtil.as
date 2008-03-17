@@ -71,6 +71,17 @@ public class DisplayUtil
     }
 
     /**
+     * Center the specified rectangle within the specified bounds. If the bounds are too
+     * small then the rectangle will be pinned to the upper-left.
+     */
+    public static function centerRectInRect (rect :Rectangle, bounds :Rectangle) :Point
+    {
+        return new Point(
+            bounds.x + Math.max(0, (bounds.width - rect.width) / 2),
+            bounds.y + Math.max(0, (bounds.height - rect.height) / 2));
+    }
+
+    /**
      * Returns the most reasonable position for the specified rectangle to
      * be placed at so as to maximize its containment by the specified
      * bounding rectangle while still placing it as near its original
@@ -79,15 +90,13 @@ public class DisplayUtil
      * @param rect the rectangle to be positioned.
      * @param bounds the containing rectangle.
      */
-    public static function fitRectInRect (
-            rect :Rectangle , bounds :Rectangle) :Point
+    public static function fitRectInRect (rect :Rectangle, bounds :Rectangle) :Point
     {
         // Guarantee that the right and bottom edges will be contained
         // and do our best for the top and left edges.
-        var br :Point = bounds.bottomRight;
         return new Point(
-            Math.min(br.x - rect.width, Math.max(rect.x, bounds.x)),
-            Math.min(br.y - rect.height, Math.max(rect.y, bounds.y)));
+            Math.min(bounds.right - rect.width, Math.max(rect.x, bounds.x)),
+            Math.min(bounds.bottom - rect.height, Math.max(rect.y, bounds.y)));
     }
 
     /**
