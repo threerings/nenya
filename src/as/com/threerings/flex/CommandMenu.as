@@ -25,6 +25,7 @@ import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
 import flash.events.IEventDispatcher;
 
+import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import mx.controls.Menu;
@@ -48,6 +49,8 @@ import mx.utils.ObjectUtil;
 import flexlib.controls.ScrollableArrowMenu;
 
 import com.threerings.util.CommandEvent;
+
+import com.threerings.flex.PopUpUtil;
 
 import com.threerings.flex.menuClasses.CommandMenuItemRenderer;
 import com.threerings.flex.menuClasses.CommandListData;
@@ -124,39 +127,6 @@ public class CommandMenu extends Menu
     }
 
     /**
-     * Shows the menu at the current mouse coordinates, popping upwards or leftwards as necessary
-     * to fit the menu into the supplied bounds.
-     */
-    public function popUpIn (bounds :Rectangle) :void
-    {
-        var mx :int = DisplayObject(Application.application).mouseX;
-        var my :int = DisplayObject(Application.application).mouseY;
-
-        // show it at zero zero so that it is layed out and measured
-        show(0, 0);
-        _fitting = bounds;
-
-        // then determine if we need to point it leftwards or upwards
-        if (mx + getExplicitOrMeasuredWidth() > bounds.right) {
-            mx -= getExplicitOrMeasuredWidth();
-        }
-        if (mx < bounds.left) {
-            mx = Math.max(bounds.right - getExplicitOrMeasuredWidth(), bounds.left);
-        }
-        // if we've poped out of the boundaries, just snap it to the lower right corner
-        if (my + getExplicitOrMeasuredHeight() > bounds.bottom) {
-            my -= getExplicitOrMeasuredHeight();
-        }
-        if (my < bounds.top) {
-            my = Math.max(bounds.bottom - getExplicitOrMeasuredHeight(), bounds.top);
-        }
-
-        // finally move it to the correct position
-        x = mx;
-        y = my;
-    }
-
-    /**
      * Shows the menu at the specified mouse coordinates.
      */
     public function popUpAt (mx :int, my :int, popUpwards :Boolean = false,
@@ -169,8 +139,20 @@ public class CommandMenu extends Menu
     }
 
     /**
+     * Shows the menu at the current mouse location.
+     */
+    public function popUpAtMouse (popUpwards :Boolean = false, popLeftwards :Boolean = false) :void
+    {
+        _upping = popUpwards;
+        _lefting = popLeftwards;
+        _fitting = null;
+        show(); // our show, with no args, pops at the mouse
+    }
+
+    /**
      * Just like our superclass's show(), except that when invoked with no args, causes the menu to
      * show at the current mouse location instead of the top-left corner of the application.
+     * Also, we ensure that the resulting menu is in-bounds.
      */
     override public function show (xShow :Object = null, yShow :Object = null) :void
     {
@@ -190,6 +172,8 @@ public class CommandMenu extends Menu
         if (_upping) {
             y = y - getExplicitOrMeasuredHeight();
         }
+
+        PopUpUtil.fit(this);
     }
 
     /**
