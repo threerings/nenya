@@ -43,7 +43,6 @@ import com.jcraft.jorbis.Info;
  */
 public class OggStreamDecoder extends StreamDecoder
 {
-
     // documentation inherited
     public void init (InputStream in)
         throws IOException
