@@ -17,9 +17,9 @@
      classname="com.jmex.bui.BWindow" classpathref="classpath"/>
     <echo level="info" message="Have JME-BUI: ${jme-bui.present}"/>
 
-    <available property="jme-sound.present"
-     classname="com.jmex.sound.openAL.SoundSystem" classpathref="classpath"/>
-    <echo level="info" message="Have OpenAL: ${jme-sound.present}"/>
+    <available property="jorbis.present"
+     classname="com.jcraft.jorbis.Info" classpathref="classpath"/>
+    <echo level="info" message="Have JOrbis: ${jorbis.present}"/>
 
     <available property="jl.present"
      classname="javazoom.jl.decoder.Decoder" classpathref="classpath"/>
@@ -39,7 +39,7 @@
     <condition property="build.openal">
       <and>
         <isset property="lwjgl.present"/>
-        <isset property="jme-sound.present"/>
+        <isset property="jorbis.present"/>
         <isset property="jl.present"/>
       </and>
     </condition>

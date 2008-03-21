@@ -27,6 +27,8 @@
     <include name="jme-terrain.jar"/>
     <include name="jme.jar"/>
     <include name="jme-bui.jar"/>
+    <include name="jogg-0.0.7.jar"/>
+    <include name="jorbis-0.0.15.jar"/>
     <include name="jl1.0.jar"/>
     <!-- ActionScript dependencies -->
     <include name="naryalib.swc"/>
