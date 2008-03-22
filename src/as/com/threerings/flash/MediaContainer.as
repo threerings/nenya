@@ -140,9 +140,11 @@ public class MediaContainer extends Sprite
         _url = url;
 
         // set up the new media
-        willShowNewMedia();
-        showNewMedia(url);
-        didShowNewMedia();
+        if (url != null) {
+            willShowNewMedia();
+            showNewMedia(url);
+            didShowNewMedia();
+        }
     }
 
     /**
