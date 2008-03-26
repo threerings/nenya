@@ -33,7 +33,7 @@ import flash.errors.IOError;
 
 import flash.events.Event;
 import flash.events.EventDispatcher;
-import flash.events.IEventDispatcher;
+import flash.events.ErrorEvent;
 import flash.events.IOErrorEvent;
 import flash.events.MouseEvent;
 import flash.events.NetStatusEvent;
@@ -493,7 +493,8 @@ public class MediaContainer extends Sprite
     {
         info.addEventListener(Event.COMPLETE, handleComplete);
         info.addEventListener(Event.INIT, handleInit);
-        info.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+        info.addEventListener(IOErrorEvent.IO_ERROR, handleError);
+        info.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
         info.addEventListener(ProgressEvent.PROGRESS, handleProgress);
     }
 
@@ -504,14 +505,15 @@ public class MediaContainer extends Sprite
     {
         info.removeEventListener(Event.COMPLETE, handleComplete);
         info.removeEventListener(Event.INIT, handleInit);
-        info.removeEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+        info.removeEventListener(IOErrorEvent.IO_ERROR, handleError);
+        info.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, handleError);
         info.removeEventListener(ProgressEvent.PROGRESS, handleProgress);
     }
 
     /**
-     * A callback to receive IO_ERROR events.
+     * A callback to receive IO_ERROR and SECURITY_ERROR events.
      */
-    protected function handleIOError (event :IOErrorEvent) :void
+    protected function handleError (event :ErrorEvent) :void
     {
         stoppedLoading();
         setupBrokenImage(-1, -1);
