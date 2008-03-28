@@ -77,6 +77,13 @@ import com.threerings.util.Util;
 [Event(name="init", type="flash.events.Event")]
 
 /**
+ * Dispatched when we've unloaded our content... always. The LoaderInfo's UNLOAD event
+ * is only dispatched if the INIT event has already been dispatched and not if you cancel a
+ * load before it INIT.
+ */
+[Event(name="unload", type="flash.events.Event")]
+
+/**
  * A wrapper class for all media that will be placed on the screen.
  * Subject to change.
  */
@@ -299,6 +306,7 @@ public class MediaContainer extends Sprite
                     // ignore
                 }
                 loader.unload();
+                dispatchEvent(new Event(Event.UNLOAD));
 
                 removeChild(loader);
                 var extra :String  = (url == _url) ? "" : (", _url=" + _url);
