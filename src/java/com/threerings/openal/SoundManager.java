@@ -136,6 +136,15 @@ public class SoundManager
     }
 
     /**
+     * Loads a clip buffer for the sound clip loaded via the specified provider with the
+     * specified path. The loaded clip is placed in the cache.
+     */
+    public void loadClip (ClipProvider provider, String path)
+    {
+        getClip(provider, path);
+    }
+
+    /**
      * Creates a sound manager and initializes the OpenAL sound subsystem.
      */
     protected SoundManager (RunQueue rqueue)
@@ -182,7 +191,7 @@ public class SoundManager
 
     /**
      * Creates a clip buffer for the sound clip loaded via the specified provider with the
-     * specified path. The clip buffer may come from teh cache, and it will immediately be queued
+     * specified path. The clip buffer may come from the cache, and it will immediately be queued
      * for loading if it is not already loaded.
      */
     protected ClipBuffer getClip (ClipProvider provider, String path)
