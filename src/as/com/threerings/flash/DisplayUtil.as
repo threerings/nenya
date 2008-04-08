@@ -36,26 +36,26 @@ public class DisplayUtil
      *
      * comp is a function that takes two DisplayObjects, and returns int -1 if the first
      * object should appear before the second in the container, 1 if it should appear after,
-     * and 0 if the order does not matter.
+     * and 0 if the order does not matter. If omitted, Comparators.COMPARABLE
+     * will be used- all the children should implement Comparable.
      */
-    public static function sortDisplayChildren (container :DisplayObjectContainer, comp :Function) :void
+    public static function sortDisplayChildren (
+        container :DisplayObjectContainer, comp :Function = null) :void
     {
         var numChildren :int = container.numChildren;
+        // put all children in an array
         var children :Array = new Array(numChildren);
-
-        // pull the display children into an array.
-        // guess that removing children from the end of a DisplayObjectContainer
-        // is more efficient than removing them from the beginning.
-        for (var i :int = numChildren - 1; i >= 0; --i) {
-            children[i] = container.removeChildAt(i);
+        var ii :int;
+        for (ii = 0; ii < numChildren; ii++) {
+            children[ii] = container.getChildAt(ii);
         }
 
         // stable sort the array
         ArrayUtil.stableSort(children, comp);
 
-        // add children back to the container
-        for each (var child :DisplayObject in children) {
-            container.addChild(child);
+        // set their new indexes
+        for (ii = 0; ii < numChildren; ii++) {
+            container.setChildIndex(DisplayObject(children[ii]), ii);
         }
     }
 
