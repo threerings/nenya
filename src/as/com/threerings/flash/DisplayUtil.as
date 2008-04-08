@@ -21,6 +21,7 @@
 
 package com.threerings.flash {
 
+import com.threerings.util.ArrayUtil;
 import com.threerings.util.ClassUtil;
 
 import flash.display.DisplayObject;
@@ -31,16 +32,31 @@ import flash.geom.Rectangle;
 public class DisplayUtil
 {
     /**
-     * Quicksorts container's children.
-     * 
+     * Sorts a container's children, using ArrayUtil.stableSort.
+     *
      * comp is a function that takes two DisplayObjects, and returns int -1 if the first
      * object should appear before the second in the container, 1 if it should appear after,
-     * and 0 if the order does not matter. (Since quicksort is not a stable sort algorithm,
-     * returning 0 in the compare function is equivalent to returning -1).
-     */ 
+     * and 0 if the order does not matter.
+     */
     public static function sortDisplayChildren (container :DisplayObjectContainer, comp :Function) :void
     {
-        qsortDisplayChildren(container, 0, container.numChildren - 1, comp);
+        var numChildren :int = container.numChildren;
+        var children :Array = new Array(numChildren);
+
+        // pull the display children into an array.
+        // guess that removing children from the end of a DisplayObjectContainer
+        // is more efficient than removing them from the beginning.
+        for (var i :int = numChildren - 1; i >= 0; --i) {
+            children[i] = container.removeChildAt(i);
+        }
+
+        // stable sort the array
+        ArrayUtil.stableSort(children, comp);
+
+        // add children back to the container
+        for each (var child :DisplayObject in children) {
+            container.addChild(child);
+        }
     }
 
     /**
@@ -233,10 +249,10 @@ public class DisplayUtil
         container :DisplayObjectContainer, left :int, right :int, comp :Function) :void
     {
         if (right - left > 1) { // containers of size 0 or 1 are already sorted
-            
+
             // arbitrarily choose the element in the middle of the sort list as the pivot element
             var pivotIndex :int = left + ((right - left) / 2);
-            
+
             pivotIndex = partitionDisplayChildren(container, left, right, pivotIndex, comp);
             qsortDisplayChildren(container, left, pivotIndex - 1, comp);
             qsortDisplayChildren(container, pivotIndex + 1, right, comp);
@@ -248,11 +264,11 @@ public class DisplayUtil
         container :DisplayObjectContainer, left :int, right :int, pivotIndex :int, comp :Function) :int
     {
         var pivotObj :DisplayObject = container.getChildAt(pivotIndex);
-        
+
         container.swapChildrenAt(pivotIndex, right); // move pivot to end
-        
+
         var storeIndex :int = left;
-        
+
         for (var i :int = left; i < right; ++i) {
             var thisObj :DisplayObject = container.getChildAt(i);
             if (0 > comp(thisObj, pivotObj)) {
@@ -260,9 +276,9 @@ public class DisplayUtil
                 storeIndex += 1;
             }
         }
-            
+
         container.swapChildrenAt(storeIndex, right);
-        
+
         return storeIndex;
     }
 
@@ -349,7 +365,7 @@ public class DisplayUtil
         }
         return inStr;
     }
-    
-    
+
+
 }
 }
