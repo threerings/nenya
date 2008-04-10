@@ -11,12 +11,13 @@
     <include name="commons-beanutils.jar"/>
     <include name="google-collect.jar"/>
     <include name="junit4.jar"/>
-    <include name="narya-base.jar"/>
-    <include name="narya-distrib.jar"/>
     <include name="retroweaver-all-1.2.2.jar"/>
-    <include name="samskivert.jar"/>
     <include name="xml-writer.jar"/>
     <include name="javassist.jar"/>
+    <!-- these might be named lib-SNAPSHOT-0.0.jar or lib.jar -->
+    <include name="samskivert.jar"/>
+    <include name="narya-base*.jar"/>
+    <include name="narya-distrib*.jar"/>
     <!-- these LWJGL, JME and JME-BUI libraries are optional -->
     <include name="lwjgl.jar"/>
     <include name="lwjgl_util.jar"/>
