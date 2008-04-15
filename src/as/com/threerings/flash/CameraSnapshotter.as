@@ -90,6 +90,17 @@ public class CameraSnapshotter extends Sprite
         return (_camera == null) ? null : _camera.name;
     }
 
+    /**
+     * Just like Camera's setMode().
+     * @see flash.media.Camera#setMode()
+     */
+    public function setMode (width :int, height :int, fps :Number, favorArea :Boolean = true) :void
+    {
+        _camera.setMode(width, height, fps, favorArea);
+        _video.width = _camera.width;
+        _video.height = _camera.height;
+    }
+
     public function takeSnapshot () :void
     {
         if (_camera == null) {
