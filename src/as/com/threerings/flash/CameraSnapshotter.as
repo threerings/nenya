@@ -7,6 +7,8 @@ import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 
+import flash.geom.Matrix;
+
 import flash.media.Camera;
 import flash.media.Video;
 
@@ -79,10 +81,7 @@ public class CameraSnapshotter extends Sprite
             return;
         }
 
-        _video = new Video(_camera.width, _camera.height);
-        _bitmap = new Bitmap(new BitmapData(_camera.width, _camera.height, false));
-        _video.attachCamera(_camera);
-        addChild(_video);
+        attachVideo();
     }
 
     public function getCameraName () :String
@@ -96,9 +95,10 @@ public class CameraSnapshotter extends Sprite
      */
     public function setMode (width :int, height :int, fps :Number, favorArea :Boolean = true) :void
     {
+        clearSnapshot();
+        removeChild(_video);
         _camera.setMode(width, height, fps, favorArea);
-        _video.width = _camera.width;
-        _video.height = _camera.height;
+        attachVideo();
     }
 
     public function takeSnapshot () :void
@@ -107,7 +107,11 @@ public class CameraSnapshotter extends Sprite
             return; // throw exception?
         }
 
-        _bitmap.bitmapData.draw(_video);
+        // for some reason the video seems to always be locked at 160x120 when we try to
+        // draw it, so we do some scaling...
+        var matrix :Matrix = new Matrix(_camera.width / 160, 0, 0, _camera.height / 120);
+        _bitmap.bitmapData.draw(_video, matrix);
+
         if (_video.parent != null) {
             removeChild(_video);
             addChild(_bitmap);
@@ -131,6 +135,17 @@ public class CameraSnapshotter extends Sprite
             return null;
         }
         return _bitmap.bitmapData;
+    }
+
+    protected function attachVideo () :void
+    {
+        _video = new Video(_camera.width, _camera.height);
+        // the constructor args don't seem to do dick, so we set the values again...
+        _video.width = _camera.width;
+        _video.height = _camera.height;
+        _video.attachCamera(_camera);
+        addChild(_video);
+        _bitmap = new Bitmap(new BitmapData(_camera.width, _camera.height, false));
     }
 
     protected var _camera :Camera;
