@@ -7,8 +7,6 @@ import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 
-import flash.geom.Matrix;
-
 import flash.media.Camera;
 import flash.media.Video;
 
@@ -107,10 +105,7 @@ public class CameraSnapshotter extends Sprite
             return; // throw exception?
         }
 
-        // for some reason the video seems to always be locked at 160x120 when we try to
-        // draw it, so we do some scaling...
-        var matrix :Matrix = new Matrix(_camera.width / 160, 0, 0, _camera.height / 120);
-        _bitmap.bitmapData.draw(_video, matrix);
+        _bitmap.bitmapData.draw(_video);
 
         if (_video.parent != null) {
             removeChild(_video);

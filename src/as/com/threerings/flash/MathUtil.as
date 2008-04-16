@@ -47,7 +47,7 @@ public class MathUtil
      */
     public static function normalizeRadians (radians :Number) :Number
     {
-        var twopi :Number = Math.PI * 2;
+        const twopi :Number = Math.PI * 2;
         var norm :Number = radians % twopi;
         return (norm >= 0) ? norm : (norm + twopi);
     }
