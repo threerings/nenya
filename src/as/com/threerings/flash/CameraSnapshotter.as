@@ -7,8 +7,14 @@ import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 
+import flash.events.StatusEvent;
+
 import flash.media.Camera;
 import flash.media.Video;
+
+import flash.text.TextField;
+
+import com.threerings.util.MethodQueue;
 
 // TODO: use PreferredCamera?
 public class CameraSnapshotter extends Sprite
@@ -27,6 +33,11 @@ public class CameraSnapshotter extends Sprite
      */
     public function CameraSnapshotter (cameraName :String = null)
     {
+        // create a label behind the videos that only shows up if a camera doesn't work
+        var tf :TextField = new TextField();
+        tf.text = "Camera unavailable.";
+        addChild(tf);
+
         setCameraName(cameraName);
     }
 
@@ -96,6 +107,7 @@ public class CameraSnapshotter extends Sprite
         clearSnapshot();
         removeChild(_video);
         _camera.setMode(width, height, fps, favorArea);
+
         attachVideo();
     }
 
@@ -118,8 +130,10 @@ public class CameraSnapshotter extends Sprite
         if (_camera == null) {
             return;
         }
-        if (_video.parent == null) {
+        if (_bitmap.parent != null) {
             removeChild(_bitmap);
+        }
+        if (_video.parent == null) {
             addChild(_video);
         }
     }
@@ -134,6 +148,11 @@ public class CameraSnapshotter extends Sprite
 
     protected function attachVideo () :void
     {
+        if (_video != null) {
+            // shut down the old video
+            _video.attachCamera(null);
+        }
+
         _video = new Video(_camera.width, _camera.height);
         // the constructor args don't seem to do dick, so we set the values again...
         _video.width = _camera.width;
