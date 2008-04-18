@@ -127,7 +127,8 @@ public abstract class CalibratingTimer
             _driftRatio = 1.0;
         } else if (drift > MAX_ALLOWED_DRIFT_RATIO || drift < MIN_ALLOWED_DRIFT_RATIO) {
             Log.warning("Calibrating [drift=" + drift + "]");
-            _driftRatio = drift;
+            // Keep the drift somewhat sane between .01 and 10
+            _driftRatio = Math.min(Math.max(.01, drift), 10);
             if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
             	_maxDriftRatio = drift;
             }
