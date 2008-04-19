@@ -29,7 +29,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 
-import com.threerings.media.animation.Animation.AnimCompletedOp;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LinearTimeFunction;
@@ -44,14 +43,25 @@ public class GleamAnimation extends Animation
 {
 
     /**
-     * Creates a gleam animation with the supplied sprite. The sprite will
-     * be faded to the specified color and then back again. The sprite may
-     * be already added to the supplied sprite manager or not, but when
-     * the animation is complete, it will have been added.
-     *
-     * @param fadeIn if true, the sprite itself will be faded in as we
-     * fade up to the gleam color and the gleam color will fade out,
-     * leaving just the sprite imagery.
+     * Creates a gleam animation with the supplied sprite. The sprite will be faded to the
+     * specified color and then back again.
+     * 
+     * @param fadeIn if true, the sprite itself will be faded in as we fade up to the gleam color
+     * and the gleam color will fade out, leaving just the sprite imagery.
+     */
+    public GleamAnimation (Sprite sprite, Color color, int upmillis,
+            int downmillis, boolean fadeIn)
+    {
+        this(null, sprite, color, upmillis, downmillis, fadeIn, 750, 0);
+    }
+
+    /**
+     * Creates a gleam animation with the supplied sprite. The sprite will be faded to the
+     * specified color and then back again. The sprite may be already added to the supplied sprite
+     * manager or not, but when the animation is complete, it will have been added.
+     * 
+     * @param fadeIn if true, the sprite itself will be faded in as we fade up to the gleam color
+     * and the gleam color will fade out, leaving just the sprite imagery.
      */
     public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color, int upmillis,
             int downmillis, boolean fadeIn)
@@ -60,16 +70,14 @@ public class GleamAnimation extends Animation
     }
 
     /**
-     * Creates a gleam animation with the supplied sprite. The sprite will
-     * be faded to the specified color and then back again. The sprite may
-     * be already added to the supplied sprite manager or not, but when
-     * the animation is complete, it will have been added.
-     *
-     * @param fadeIn if true, the sprite itself will be faded in as we
-     * fade up to the gleam color and the gleam color will fade out,
-     * leaving just the sprite imagery.
+     * Creates a gleam animation with the supplied sprite. The sprite will be faded to the
+     * specified color and then back again. The sprite may be already added to the supplied sprite
+     * manager or not, but when the animation is complete, it will have been added.
+     * 
+     * @param fadeIn if true, the sprite itself will be faded in as we fade up to the gleam color
+     * and the gleam color will fade out, leaving just the sprite imagery.
      * @param maxAlpha the maximum alpha value to scale the color to.
-     * @param millisBetweenUpdates millisecons to wait between actually updating the alpha and 
+     * @param millisBetweenUpdates milliseconds to wait between actually updating the alpha and
      * redrawing
      */
     public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color, int upmillis,
@@ -187,7 +195,7 @@ public class GleamAnimation extends Animation
 
         // remove the sprite we're fiddling with from the manager; we'll
         // add it back when we're done
-        if (_spmgr.isManaged(_sprite)) {
+        if (_spmgr != null && _spmgr.isManaged(_sprite)) {
             _spmgr.removeSprite(_sprite);
         }
     }
@@ -196,7 +204,7 @@ public class GleamAnimation extends Animation
     protected void shutdown ()
     {
         super.shutdown();
-        if (!_spmgr.isManaged(_sprite)) {
+        if (_spmgr != null && !_spmgr.isManaged(_sprite)) {
             _spmgr.addSprite(_sprite);
         }
     }
