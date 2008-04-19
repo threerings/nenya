@@ -114,12 +114,20 @@ public class ObjectActionHandler
     }
 
     /**
+     * Creates an indicator for this type of object action.
+     */
+    public SceneObjectIndicator createIndicator (MisoScenePanel panel, String text, Icon icon)
+    {
+        return new SceneObjectTip(text, icon);
+    }
+
+    /**
      * Looks up the object action handler associated with the specified
      * command.
      */
     public static ObjectActionHandler lookup (String command)
     {
-        return (ObjectActionHandler)_oahandlers.get(getType(command));
+        return _oahandlers.get(getType(command));
     }
 
     /**
@@ -147,5 +155,6 @@ public class ObjectActionHandler
     }
 
     /** Our registered object action handlers. */
-    protected static HashMap _oahandlers = new HashMap();
+    protected static HashMap<String, ObjectActionHandler> _oahandlers =
+        new HashMap<String, ObjectActionHandler>();
 }

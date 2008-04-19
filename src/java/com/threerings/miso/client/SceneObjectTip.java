@@ -29,7 +29,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import java.util.Collection;
-
 import javax.swing.Icon;
 import javax.swing.UIManager;
 
@@ -50,6 +49,7 @@ import com.samskivert.util.StringUtil;
  * </pre>
  */
 public class SceneObjectTip extends LabelSausage
+    implements SceneObjectIndicator
 {
     /**
      * Used to position a scene tip in relation to the object with which
@@ -90,7 +90,7 @@ public class SceneObjectTip extends LabelSausage
 
         // locate the most appropriate tip layout
         for (int ii = 0, ll = _layouts.size(); ii < ll; ii++) {
-            LayoutReg reg = (LayoutReg)_layouts.get(ii);
+            LayoutReg reg = _layouts.get(ii);
             String act = tipFor.info.action == null ? "" : tipFor.info.action;
             if (act.startsWith(reg.prefix)) {
                 reg.layout.layout(gfx, boundary, tipFor, this);
@@ -99,17 +99,35 @@ public class SceneObjectTip extends LabelSausage
         }
     }
 
-    /**
-     * Paint this tip at it's location.
-     */
+    // documentation inherited from interface
     public void paint (Graphics2D gfx)
     {
         paint(gfx, bounds.x, bounds.y, _background, null);
     }
 
+    // documentation inherited from interface
+    public Rectangle getBounds ()
+    {
+        return bounds;
+    }
+
+    // documentation inherited from interface
+    public void removed ()
+    {
+        // Nothin doin
+    }
+
+    // documentation inherited from interface
+    public void update (Icon icon, String tiptext)
+    {
+        _label.setText(tiptext);
+        _icon = icon;
+    }
+
     /**
      * Generates a string representation of this instance.
      */
+    @Override
     public String toString ()
     {
         return _label.getText() + "[" + StringUtil.toString(bounds) + "]";
@@ -130,7 +148,7 @@ public class SceneObjectTip extends LabelSausage
         _layouts.insertSorted(reg);
     }
 
-    // documentation inherited
+    @Override
     protected void drawBase (Graphics2D gfx, int x, int y)
     {
         Composite ocomp = gfx.getComposite();
@@ -160,7 +178,7 @@ public class SceneObjectTip extends LabelSausage
     }
 
     /** Used to store {@link TipLayout} registrations. */
-    protected static class LayoutReg implements Comparable
+    protected static class LayoutReg implements Comparable<LayoutReg>
     {
         /** The prefix that defines our applicability. */
         public String prefix;
@@ -169,8 +187,7 @@ public class SceneObjectTip extends LabelSausage
         public TipLayout layout;
 
         // documentation inherited from interface
-        public int compareTo (Object o) {
-            LayoutReg or = (LayoutReg)o;
+        public int compareTo (LayoutReg or) {
             if (or.prefix.length() == prefix.length()) {
                 return or.prefix.compareTo(prefix);
             } else {
@@ -192,7 +209,7 @@ public class SceneObjectTip extends LabelSausage
     }
 
     /** Contains a sorted list of layout registrations. */
-    protected static ComparableArrayList _layouts = new ComparableArrayList();
+    protected static ComparableArrayList<LayoutReg> _layouts = new ComparableArrayList<LayoutReg>();
 
     /** The number of pixels to pad around the icon. */
     protected static final int ICON_PAD = 4;

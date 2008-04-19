@@ -45,8 +45,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -57,6 +57,7 @@ import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.swing.event.CommandEvent;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;
+
 import com.threerings.media.VirtualMediaPanel;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.tile.Tile;
@@ -221,8 +222,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected void showFlagsDidChange (int oldflags)
     {
         if ((oldflags & SHOW_TIPS) != (_showFlags & SHOW_TIPS)) {
-            for (Iterator iter = _tips.values().iterator(); iter.hasNext(); ) {
-                dirtyTip((SceneObjectTip)iter.next());
+            for (SceneObjectIndicator indic : _indicators.values()) {
+                dirtyIndicator(indic);
             }
         }
     }
@@ -966,7 +967,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Recomputes our set of visible objects and their tips.
+     * Recomputes our set of visible objects and their indicators.
      */
     protected void recomputeVisible ()
     {
@@ -996,8 +997,8 @@ public class MisoScenePanel extends VirtualMediaPanel
             }
         }
 
-        // recompute our object tips
-        computeTips();
+        // recompute our object indicators
+        computeIndicators();
 
 //         Log.info("Computed " + _vizobjs.size() + " visible objects from " +
 //                  _blocks.size() + " blocks.");
@@ -1021,13 +1022,12 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Compute the tips for any objects in the scene.
+     * Compute the indicators for any objects in the scene.
      */
-    public void computeTips ()
+    public void computeIndicators ()
     {
-        // clear any old tips
-        _tips.clear();
-
+        Map<SceneObject, SceneObjectIndicator> _unupdated = new HashMap<SceneObject, SceneObjectIndicator>(
+            _indicators);
         for (int ii = 0, nn = _vizobjs.size(); ii < nn; ii++) {
             SceneObject scobj = _vizobjs.get(ii);
             String action = scobj.info.action;
@@ -1047,12 +1047,27 @@ public class MisoScenePanel extends VirtualMediaPanel
             String tiptext = getTipText(scobj, action);
             if (tiptext != null) {
                 Icon icon = getTipIcon(scobj, action);
-                SceneObjectTip tip = new SceneObjectTip(tiptext, icon);
-                _tips.put(scobj, tip);
+                SceneObjectIndicator indic = _unupdated.remove(scobj);
+                if (indic == null) {
+                    // let the object action handler create the indicator if it exists, otherwise
+                    // just use a regular tip
+                    if (oah != null) {
+                        indic = oah.createIndicator(this, tiptext, icon);
+                    } else {
+                        indic = new SceneObjectTip(tiptext, icon);
+                    }
+                    _indicators.put(scobj, indic);
+                } else {
+                    indic.update(icon, tiptext);
+                }
             }
         }
+        // clear out any no longer used indicators
+        for (SceneObject toremove : _unupdated.keySet()) {
+            _indicators.remove(toremove).removed();
+        }
 
-        _tipsLaidOut = false;
+        _indicatorsLaidOut = false;
     }
 
     /**
@@ -1076,12 +1091,12 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Dirties the specified tip.
+     * Dirties the specified indicator.
      */
-    protected void dirtyTip (SceneObjectTip tip)
+    protected void dirtyIndicator (SceneObjectIndicator indic)
     {
-        if (tip != null) {
-            Rectangle r = tip.bounds;
+        if (indic != null) {
+            Rectangle r = indic.getBounds();
             if (r != null) {
                 _remgr.invalidateRegion(r);
             }
@@ -1121,9 +1136,9 @@ public class MisoScenePanel extends VirtualMediaPanel
             }
         }
 
-        // dirty the tips associated with the hover objects
-        dirtyTip(_tips.get(oldHover));
-        dirtyTip(_tips.get(newHover));
+        // dirty the indicators associated with the hover objects
+        dirtyIndicator(_indicators.get(oldHover));
+        dirtyIndicator(_indicators.get(newHover));
     }
 
     /**
@@ -1293,47 +1308,47 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected void paintExtras (Graphics2D gfx, Rectangle clip)
     {
         if (isResponsive()) {
-            paintTips(gfx, clip);
+            paintIndicators(gfx, clip);
         }
     }
 
     /**
-     * Paint all the appropriate tips for our scene objects.
+     * Paint all the appropriate indicators for our scene objects.
      */
-    protected void paintTips (Graphics2D gfx, Rectangle clip)
+    protected void paintIndicators (Graphics2D gfx, Rectangle clip)
     {
-        // make sure the tips are ready
-        if (!_tipsLaidOut) {
+        // make sure the indicators are ready
+        if (!_indicatorsLaidOut) {
             List<Rectangle> boundaries = new ArrayList<Rectangle>(); 
-            for (Entry<SceneObject, SceneObjectTip> entry : _tips.entrySet()) {
+            for (Entry<SceneObject, SceneObjectIndicator> entry : _indicators.entrySet()) {
                 entry.getValue().layout(gfx, entry.getKey(), _vbounds, boundaries);
-                dirtyTip(entry.getValue());
-                boundaries.add(entry.getValue().bounds);
+                dirtyIndicator(entry.getValue());
+                boundaries.add(entry.getValue().getBounds());
             }
-            _tipsLaidOut = true;
+            _indicatorsLaidOut = true;
         }
 
         if (checkShowFlag(SHOW_TIPS)) {
-            // show all the tips
-            for (SceneObjectTip tip : _tips.values()) {
-                paintTip(gfx, clip, tip);
+            // show all the indicators
+            for (SceneObjectIndicator indic : _indicators.values()) {
+                paintIndicator(gfx, clip, indic);
             }
 
         } else {
-            // show maybe one tip
-            SceneObjectTip tip = _tips.get(_hobject);
-            if (tip != null) {
-                paintTip(gfx, clip, tip);
+            // show maybe one indicator
+            SceneObjectIndicator indic = _indicators.get(_hobject);
+            if (indic != null) {
+                paintIndicator(gfx, clip, indic);
             }
         }
     }
 
     /**
-     * Paint the specified tip if it intersects the clipping rectangle.
+     * Paint the specified indicator if it intersects the clipping rectangle.
      */
-    protected void paintTip (Graphics2D gfx, Rectangle clip, SceneObjectTip tip)
+    protected void paintIndicator (Graphics2D gfx, Rectangle clip, SceneObjectIndicator tip)
     {
-        if (clip.intersects(tip.bounds)) {
+        if (clip.intersects(tip.getBounds())) {
             tip.paint(gfx);
         }
     }
@@ -1351,12 +1366,10 @@ public class MisoScenePanel extends VirtualMediaPanel
         // you want to follow along
 
         // obtain our upper left tile
-        Point tpos = MisoUtil.screenToTile(
-            _metrics, bounds.x, bounds.y, new Point());
+        Point tpos = MisoUtil.screenToTile(_metrics, bounds.x, bounds.y, new Point());
 
         // determine which quadrant of the upper left tile we occupy
-        Point spos = MisoUtil.tileToScreen(
-            _metrics, tpos.x, tpos.y, new Point());
+        Point spos = MisoUtil.tileToScreen(_metrics, tpos.x, tpos.y, new Point());
         boolean left = (bounds.x - spos.x < _metrics.tilehwid);
         boolean top = (bounds.y - spos.y < _metrics.tilehhei);
 
@@ -1677,12 +1690,12 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Used to track the tile coordinates over which the mouse is hovering. */
     protected Point _hcoords = new Point();
 
-    /** Our object tips, indexed by the object that they tip for. */
-    protected HashMap<SceneObject, SceneObjectTip> _tips = 
-        new HashMap<SceneObject, SceneObjectTip>();
+    /** Our object indicators, indexed by the object that they indicate. */
+    protected HashMap<SceneObject, SceneObjectIndicator> _indicators = 
+        new HashMap<SceneObject, SceneObjectIndicator>();
 
-    /** Have the tips been laid out? */
-    protected boolean _tipsLaidOut = false;
+    /** Have the indicators been laid out? */
+    protected boolean _indicatorsLaidOut = false;
 
     /** Flags indicating which features we should show in the scene. */
     protected int _showFlags = 0;
