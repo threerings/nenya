@@ -83,6 +83,24 @@ public class GleamAnimation extends Animation
     public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color, int upmillis,
             int downmillis, boolean fadeIn, int maxAlpha, int millisBetweenUpdates)
     {
+        this(spmgr, sprite, color, upmillis, downmillis, fadeIn, 750, 0, 0);
+    }
+
+    /**
+     * Creates a gleam animation with the supplied sprite. The sprite will be faded to the
+     * specified color and then back again. The sprite may be already added to the supplied sprite
+     * manager or not, but when the animation is complete, it will have been added.
+     * 
+     * @param fadeIn if true, the sprite itself will be faded in as we fade up to the gleam color
+     * and the gleam color will fade out, leaving just the sprite imagery.
+     * @param maxAlpha the maximum alpha value to scale the color to.
+     * @param millisBetweenUpdates milliseconds to wait between actually updating the alpha and
+     * redrawing
+     * @param minAlpha the minimum alpha value to scale the color to.
+     */
+    public GleamAnimation (SpriteManager spmgr, Sprite sprite, Color color, int upmillis,
+            int downmillis, boolean fadeIn, int maxAlpha, int millisBetweenUpdates, int minAlpha)
+    {
         super(new Rectangle(sprite.getBounds()));
         _spmgr = spmgr;
         _sprite = sprite;
@@ -90,8 +108,8 @@ public class GleamAnimation extends Animation
         _upmillis = upmillis;
         _downmillis = downmillis;
         _maxAlpha = maxAlpha;
-        _upfunc = new LinearTimeFunction(0, _maxAlpha, upmillis);
-        _downfunc = new LinearTimeFunction(_maxAlpha, 0, downmillis);
+        _upfunc = new LinearTimeFunction(_minAlpha, _maxAlpha, upmillis);
+        _downfunc = new LinearTimeFunction(_maxAlpha, _minAlpha, downmillis);
         _fadeIn = fadeIn;
         _millisBetweenUpdates = millisBetweenUpdates;
     }
