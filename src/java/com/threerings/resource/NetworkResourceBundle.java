@@ -59,6 +59,7 @@ public class NetworkResourceBundle extends ResourceBundle
         try {
             ucon = (HttpURLConnection) resourceUrl.openConnection();
         } catch (IOException ioe) {
+            Log.warning("Unable to open connection [url=" + resourceUrl + ", ex=" + ioe + "]");
         }
 
         if (ucon == null) {
@@ -68,6 +69,7 @@ public class NetworkResourceBundle extends ResourceBundle
             ucon.connect();
             return ucon.getInputStream();
         } catch (IOException ioe) {
+            Log.warning("Unable to open input stream [url=" + resourceUrl + ", ex=" + ioe + "]");
             return null;
         } catch (AccessControlException ace) {
             Log.warning("Unable to connect due to access permissions [url=" + resourceUrl + "]");
