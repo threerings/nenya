@@ -36,6 +36,9 @@ public class NetworkResourceBundle extends ResourceBundle
 {
     public NetworkResourceBundle (String root, String path)
     {
+        if (!root.endsWith("/")) {
+            root += "/";
+        }
         try {
             _bundleURL = new URL(root + path);
         } catch (MalformedURLException mue) {
