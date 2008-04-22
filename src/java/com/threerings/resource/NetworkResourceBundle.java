@@ -86,6 +86,15 @@ public class NetworkResourceBundle extends ResourceBundle
         return ResourceManager.loadImage(in);
     }
 
+    /**
+     * Returns a string representation of this resource bundle.
+     */
+    @Override
+    public String toString ()
+    {
+        return "[url=" + _bundleURL + "]";
+    }
+
     /** Our identifier for this bundle. */
     protected String _ident;
 
