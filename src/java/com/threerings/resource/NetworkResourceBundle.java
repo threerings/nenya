@@ -21,14 +21,13 @@
 
 package com.threerings.resource;
 
-import java.io.InputStream;
-
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.awt.image.BufferedImage;
+import java.security.AccessControlException;
 
 /**
  * Resource bundle that retrieves its contents via HTTP over the network from a root URL.
@@ -70,6 +69,9 @@ public class NetworkResourceBundle extends ResourceBundle
             return ucon.getInputStream();
         } catch (IOException ioe) {
             return null;
+        } catch (AccessControlException ace) {
+            Log.warning("Unable to connect due to access permissions [url=" + resourceUrl + "]");
+            throw ace;
         }
     }
 
