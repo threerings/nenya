@@ -9,6 +9,8 @@ import flash.display.Sprite;
 
 import flash.events.StatusEvent;
 
+import flash.geom.Matrix;
+
 import flash.media.Camera;
 import flash.media.Video;
 
@@ -117,7 +119,14 @@ public class CameraSnapshotter extends Sprite
             return; // throw exception?
         }
 
-        _bitmap.bitmapData.draw(_video);
+        // NOTE: we specify a matrix to scale the video, because no matter what size it really
+        // is, it will usually snapshot as if it were at the smallest size. STRANGE.
+        // Note that this stupid hack doesn't always work, but it mostly works, and it's better
+        // than leaving everything alone, which mostly didn't work. But then again,
+        // this code is specifically saying: "fuck up the scale", so if Adobe fixes their
+        // bug in the future, this will cause broken behavior.
+        _bitmap.bitmapData.draw(_video,
+            new Matrix(_camera.width / 160, 0, 0, _camera.height / 120));
 
         if (_video.parent != null) {
             removeChild(_video);
