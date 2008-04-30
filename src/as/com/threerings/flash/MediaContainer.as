@@ -180,6 +180,16 @@ public class MediaContainer extends Sprite
     }
 
     /**
+     * Sets whether this MediaContainer automatically shuts down when removed
+     * from the stage. By default this is not enabled.
+     */
+    public function setShutdownOnRemove (enable :Boolean = true) :void
+    {
+        var fn :Function = enable ? addEventListener : removeEventListener;
+        fn(Event.REMOVED_FROM_STAGE, handleShutdownOnRemove);
+    }
+
+    /**
      * A place where subclasses can initialize things prior to showing new media.
      */
     protected function willShowNewMedia () :void
@@ -588,6 +598,15 @@ public class MediaContainer extends Sprite
         updateContentDimensions(info.width, info.height);
         updateLoadingProgress(1, 1);
         stoppedLoading();
+    }
+
+    /**
+     * Handle shutting us down when we're removed. Only called if
+     * setShutdownOnRemove() was enabled.
+     */
+    protected function handleShutdownOnRemove (event :Event) :void
+    {
+        shutdown();
     }
 
     /**
