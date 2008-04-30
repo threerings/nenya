@@ -51,11 +51,11 @@ public class TextFieldUtil
      * @param initProps contains properties with which to initialize the TextField.
      * Additionally it may contain the following properties:
      *    outlineColor: uint
-     *
-     * initProps may be destructively modified.
+     * @param formatProps contains properties with which to initialize the defaultTextFormat.
      */
     public static function createField (
-        text :String, initProps :Object = null, clazz :Class = null) :TextField
+        text :String, initProps :Object = null, formatProps :Object = null, clazz :Class = null)
+        :TextField
     {
         var tf :TextField = (clazz == null) ? new TextField() : TextField(new clazz());
 
@@ -64,6 +64,9 @@ public class TextFieldUtil
         }
 
         Util.init(tf, initProps, null, MASK_FIELD_PROPS);
+        if (formatProps != null) {
+            tf.defaultTextFormat = createFormat(formatProps);
+        }
         tf.text = text;
         if (tf.autoSize != TextFieldAutoSize.NONE) {
             tf.width = tf.textWidth + WIDTH_PAD;
