@@ -21,8 +21,6 @@
 
 package com.threerings.flex {
 
-import flash.utils.Dictionary;
-
 import mx.collections.ArrayCollection;
 import mx.collections.Sort;
 
@@ -32,6 +30,8 @@ import mx.core.ClassFactory;
 import mx.core.ScrollPolicy;
 
 import com.threerings.util.Comparable;
+import com.threerings.util.Hashable;
+import com.threerings.util.HashMap;
 
 public class PlayerList extends VBox
 {
@@ -69,19 +69,19 @@ public class PlayerList extends VBox
 
     public function clear () :void
     {
-        _values = new Dictionary();
+        _values.clear();
         _players.removeAll();
     }
 
     /**
      * The PlayerList is meant to include data that is at least as complicated as a Name, so to 
-     * keep things simple and extendable, we require Comparable.  This allows the issue of passing
+     * keep things simple and extendable, we require Hashable.  This allows the issue of passing
      * the NameLabelCreator into the player renderer to be kept simple and straightforward and still
      * allow efficient item updating.
      */
-    public function addItem (value :Comparable) :void
+    public function addItem (value :Hashable) :void
     {
-        var currentValue :Array = _values[value] as Array;
+        var currentValue :Array = _values.get(value) as Array;
         if (currentValue != null) {
             currentValue[1] = value;
             // this is the same array already contained in the list, so the proper renderer should
@@ -89,28 +89,26 @@ public class PlayerList extends VBox
             _players.itemUpdated(currentValue);
         } else {
             currentValue = [_labelCreator, value];
-            _values[value] = currentValue;
+            _values.put(value, currentValue);
             _players.addItem(currentValue);
         }
     }
 
-    public function removeItem (value :Comparable) :void
+    public function removeItem (value :Hashable) :void
     {
-        var currentValue :Array = _values[value] as Array;
+        var currentValue :Array = _values.remove(value) as Array;
         if (currentValue != null) {
             _players.removeItemAt(_players.getItemIndex(currentValue));
         }
-
-        delete _values[value];
     }
 
     /**
      * Notify the list that this value has changed internally, and the renderer should be told to 
      * redraw its contents.
      */
-    public function itemUpdated (value :Comparable) :void
+    public function itemUpdated (value :Hashable) :void
     {
-        var currentValue :Array = _values[value] as Array;
+        var currentValue :Array = _values.get(value) as Array;
         if (currentValue != null) {
             currentValue[1] = value;
             _players.itemUpdated(currentValue);
@@ -141,7 +139,7 @@ public class PlayerList extends VBox
     protected var _labelCreator :NameLabelCreator;
     protected var _list :AmbidextrousList;
     protected var _players :ArrayCollection = new ArrayCollection();
-    protected var _values :Dictionary = new Dictionary();
+    protected var _values :HashMap = new HashMap();
 }
 }
 
