@@ -67,6 +67,12 @@ public class PlayerList extends VBox
         _players.sort = sort;
     }
 
+    public function clear () :void
+    {
+        _values = new Dictionary();
+        _players.removeAll();
+    }
+
     /**
      * The PlayerList is meant to include data that is at least as complicated as a Name, so to 
      * keep things simple and extendable, we require Comparable.  This allows the issue of passing
