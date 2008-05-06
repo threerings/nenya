@@ -67,6 +67,16 @@ public class PlayerList extends VBox
         _players.sort = sort;
     }
 
+    public function get scrollBarOnLeft () :Boolean
+    {
+        return _list.scrollBarOnLeft;
+    }
+
+    public function set scrollBarOnLeft (onLeft :Boolean) :void
+    {
+        _list.scrollBarOnLeft = onLeft;
+    }
+
     public function clear () :void
     {
         _values.clear();
