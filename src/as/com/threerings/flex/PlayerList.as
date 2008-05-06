@@ -43,8 +43,6 @@ public class PlayerList extends VBox
      */
     public function PlayerList (labelCreator :NameLabelCreator = null) :void
     {
-        styleName = "playerList";
-
         _labelCreator = labelCreator;
         if (_labelCreator == null) {
             _labelCreator = new DefaultNameLabelCreator();
@@ -60,6 +58,7 @@ public class PlayerList extends VBox
         _list.percentHeight = 100;
         _list.itemRenderer = new ClassFactory(getRenderingClass());
         _list.dataProvider = _players;
+        _list.styleName = "playerList";
 
         addChild(_list);
 
@@ -187,6 +186,7 @@ class PlayerRenderer extends HBox
 
         verticalScrollPolicy = ScrollPolicy.OFF;
         horizontalScrollPolicy = ScrollPolicy.OFF;
+        setStyle("backgroundAlpha", 0);
         // the horizontalGap should be 8...
     }
 
