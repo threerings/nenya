@@ -43,6 +43,8 @@ public class PlayerList extends VBox
      */
     public function PlayerList (labelCreator :NameLabelCreator = null) :void
     {
+        styleName = "playerList";
+
         _labelCreator = labelCreator;
         if (_labelCreator == null) {
             _labelCreator = new DefaultNameLabelCreator();
