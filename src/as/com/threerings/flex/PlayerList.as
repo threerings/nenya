@@ -66,6 +66,7 @@ public class PlayerList extends VBox
         var sort :Sort = new Sort();
         sort.compareFunction = sortFunction;
         _players.sort = sort;
+        _players.refresh();
     }
 
     public function get scrollBarOnLeft () :Boolean
@@ -140,9 +141,10 @@ public class PlayerList extends VBox
         var data1 :Object = (o1 as Array)[1];
         var data2 :Object = (o2 as Array)[1];
         if (data1 is Comparable && data2 is Comparable) {
-            return (data1 as Comparable).compareTo(data2);
+            var compare :int = (data1 as Comparable).compareTo(data2);
+            return compare > 0 ? 1 : (compare < 0 ? -1 : 0);
         } else {
-            // default to actionscript's magical great than or less than operators
+            // default to actionscript's magical greater than or less than operators
             return data1 > data2 ? -1 : (data1 < data2 ? 1 : 0);
         }
     }
