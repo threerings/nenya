@@ -90,6 +90,17 @@ public class TextFieldUtil
     }
 
     /**
+     * Update the defaultTextFormat for the specified field, as well as all text therein.
+     */
+    public static function updateFormat (field :TextField, props :Object) :void
+    {
+        var f :TextFormat = field.defaultTextFormat; // this gets a clone of the default fmt
+        Util.init(f, props); // update the clone
+        field.defaultTextFormat = f; // set it as the new default
+        field.text = field.text; // jiggle the text to update it
+    }
+
+    /**
      * Include the specified TextField in a set of TextFields in which only
      * one may have a selection at a time.
      */
