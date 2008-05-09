@@ -344,8 +344,7 @@ public class SkinMesh extends ModelMesh
     @Override // documentation inherited
     public void expandModelBounds ()
     {
-        BoundingVolume obound =
-            (BoundingVolume)getBatch(0).getModelBound().clone(null);
+        BoundingVolume obound = getBatch(0).getModelBound().clone(null);
         updateModelBound();
         getBatch(0).getModelBound().mergeLocal(obound);
     }
@@ -538,8 +537,7 @@ public class SkinMesh extends ModelMesh
     protected void storeFrame ()
     {
         if (_storeBlend) {
-            _frames.put(_storeFrameId, new BlendFrame(
-                (float[])_vbuf.clone(), (float[])_nbuf.clone()));
+            _frames.put(_storeFrameId, new BlendFrame(_vbuf.clone(), _nbuf.clone()));
         } else {
             TriangleBatch batch = getBatch(0), tbatch = new TriangleBatch();
             tbatch.setParentGeom(DUMMY_MESH);

@@ -40,16 +40,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.RadialMenu;
@@ -60,6 +62,7 @@ import com.samskivert.util.StringUtil;
 
 import com.threerings.media.VirtualMediaPanel;
 import com.threerings.media.sprite.Sprite;
+import com.threerings.media.tile.ObjectTile;
 import com.threerings.media.tile.Tile;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
@@ -352,9 +355,9 @@ public class MisoScenePanel extends VirtualMediaPanel
      */
     public void reportMemoryUsage ()
     {
-        HashMap base = new HashMap();
-        HashSet fringe = new HashSet();
-        HashMap object = new HashMap();
+        Map<Tile.Key,BaseTile> base = Maps.newHashMap();
+        Set<BaseTile> fringe = Sets.newHashSet();
+        Map<Tile.Key,ObjectTile> object = Maps.newHashMap();
         long[] usage = new long[3];
         for (SceneBlock block : _blocks.values()) {
             block.computeMemoryUsage(base, fringe, object, usage);
@@ -594,7 +597,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             _spritemgr.getHitSprites(_hitSprites, x, y);
             int hslen = _hitSprites.size();
             for (int i = 0; i < hslen; i++) {
-                Sprite sprite = (Sprite)_hitSprites.get(i);
+                Sprite sprite = _hitSprites.get(i);
                 appendDirtySprite(_hitList, sprite);
             }
 
@@ -824,10 +827,8 @@ public class MisoScenePanel extends VirtualMediaPanel
             int bkey = compose(bx, by);
             if (!_blocks.containsKey(bkey)) {
                 SceneBlock block = new SceneBlock(
-                    this, origin.x, origin.y,
-                    _metrics.blockwid, _metrics.blockhei);
-                boolean visible =
-                    block.getFootprint().getBounds().intersects(_vibounds);
+                    this, origin.x, origin.y, _metrics.blockwid, _metrics.blockhei);
+                boolean visible = block.getFootprint().getBounds().intersects(_vibounds);
                 block.setVisiBlock(visible);
                 _blocks.put(bkey, block);
 
@@ -847,8 +848,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         // recompute our visible object set
         recomputeVisible();
 
-        Log.debug("Rethunk [pending=" + _pendingBlocks +
-                  ", visible=" + _visiBlocks.size() + "].");
+        Log.debug("Rethunk [pending=" + _pendingBlocks + ", visible=" + _visiBlocks.size() + "].");
         return _visiBlocks.size();
     }
 
@@ -1026,8 +1026,7 @@ public class MisoScenePanel extends VirtualMediaPanel
      */
     public void computeIndicators ()
     {
-        Map<SceneObject, SceneObjectIndicator> _unupdated = new HashMap<SceneObject, SceneObjectIndicator>(
-            _indicators);
+        Map<SceneObject, SceneObjectIndicator> _unupdated = Maps.newHashMap(_indicators);
         for (int ii = 0, nn = _vizobjs.size(); ii < nn; ii++) {
             SceneObject scobj = _vizobjs.get(ii);
             String action = scobj.info.action;
@@ -1276,7 +1275,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         _spritemgr.getIntersectingSprites(_dirtySprites, clip);
         int size = _dirtySprites.size();
         for (int ii = 0; ii < size; ii++) {
-            Sprite sprite = (Sprite)_dirtySprites.get(ii);
+            Sprite sprite = _dirtySprites.get(ii);
             Rectangle bounds = sprite.getBounds();
             if (!bounds.intersects(clip)) {
                 continue;
@@ -1319,8 +1318,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         // make sure the indicators are ready
         if (!_indicatorsLaidOut) {
-            List<Rectangle> boundaries = new ArrayList<Rectangle>(); 
-            for (Entry<SceneObject, SceneObjectIndicator> entry : _indicators.entrySet()) {
+            List<Rectangle> boundaries = Lists.newArrayList(); 
+            for (Map.Entry<SceneObject, SceneObjectIndicator> entry : _indicators.entrySet()) {
                 entry.getValue().layout(gfx, entry.getKey(), _vbounds, boundaries);
                 dirtyIndicator(entry.getValue());
                 boundaries.add(entry.getValue().getBounds());
@@ -1596,7 +1595,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Used by {@link #rethink}. */
     protected class RethinkOp implements TileOp
     {
-        public HashSet blocks = new HashSet();
+        public Set blocks = Sets.newHashSet();
 
         public void apply (int tx, int ty, Rectangle tbounds) {
             _key.x = MathUtil.floorDiv(tx, _metrics.blockwid) *
@@ -1643,23 +1642,23 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected int _pendingBlocks;
 
     /** Used to track visible blocks that are waiting to be resolved. */
-    protected HashSet _visiBlocks = new HashSet();
+    protected Set<SceneBlock> _visiBlocks = Sets.newHashSet();
 
     /** Used to avoid repaints while we don't yet have resolved all the
      * blocks needed to render the visible view. */
     protected boolean _delayRepaint = false;
 
     /** A list of the potentially visible objects in the scene. */
-    protected ArrayList<SceneObject> _vizobjs = new ArrayList<SceneObject>();
+    protected List<SceneObject> _vizobjs = Lists.newArrayList();
 
     /** For computing fringe tiles. */
-    protected HashMap _masks = new HashMap();
+    protected Map _masks = Maps.newHashMap();
 
     /** The dirty sprites and objects that need to be re-painted. */
     protected DirtyItemList _dirtyItems = new DirtyItemList();
 
     /** The working sprites list used when calculating dirty regions. */
-    protected ArrayList _dirtySprites = new ArrayList();
+    protected List<Sprite> _dirtySprites = Lists.newArrayList();
 
     /** Used when rendering tiles. */
     protected Rectangle _tbounds;
@@ -1672,7 +1671,7 @@ public class MisoScenePanel extends VirtualMediaPanel
 
     /** Used to collect the list of sprites "hit" by a particular mouse
      * location. */
-    protected List _hitSprites = new ArrayList();
+    protected List<Sprite> _hitSprites = Lists.newArrayList();
 
     /** The list that we use to track and sort the items over which the
      * mouse is hovering. */
@@ -1691,8 +1690,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected Point _hcoords = new Point();
 
     /** Our object indicators, indexed by the object that they indicate. */
-    protected HashMap<SceneObject, SceneObjectIndicator> _indicators = 
-        new HashMap<SceneObject, SceneObjectIndicator>();
+    protected Map<SceneObject, SceneObjectIndicator> _indicators = Maps.newHashMap();
 
     /** Have the indicators been laid out? */
     protected boolean _indicatorsLaidOut = false;

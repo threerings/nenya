@@ -63,10 +63,10 @@ public class TestSoundManager
         }
 
         while (true) {
-            Runnable r = (Runnable)_queue.get();
+            Runnable r = _queue.get();
             r.run();
         }
     }
 
-    protected static Queue _queue = new Queue();
+    protected static Queue<Runnable> _queue = new Queue<Runnable>();
 }

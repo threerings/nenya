@@ -789,7 +789,7 @@ public class ModelViewer extends JmeCanvasApp
         TextureKey.setLocationOverride(new TextureKey.LocationOverride() {
             public URL getLocation (String name)
                 throws MalformedURLException {
-                return new URL(parent.toURL(), name);
+                return new URL(parent.toURI().toURL(), name);
             }
         });
         try {
@@ -1107,7 +1107,7 @@ public class ModelViewer extends JmeCanvasApp
         {
             Vector3f target = new Vector3f();
             if (_model != null) {
-                BoundingVolume bound = (BoundingVolume)_model.getWorldBound();
+                BoundingVolume bound = _model.getWorldBound();
                 if (bound != null) {
                     bound.getCenter(target);
                 }

@@ -238,8 +238,7 @@ public class ModelMesh extends TriMesh
                     ((ModelController)controller).putClone(null, properties));
             }
         }
-        TriangleBatch batch = (TriangleBatch)getBatch(0),
-            mbatch = (TriangleBatch)mstore.getBatch(0);
+        TriangleBatch batch = getBatch(0), mbatch = mstore.getBatch(0);
         mbatch.setVertexBuffer(properties.isSet("vertices") ?
             batch.getVertexBuffer() :
                 BufferUtils.clone(batch.getVertexBuffer()));
@@ -317,7 +316,7 @@ public class ModelMesh extends TriMesh
             "localRotation", null));
         setLocalScale((Vector3f)capsule.readSavable(
             "localScale", null));
-        TriangleBatch batch = (TriangleBatch)getBatch(0);
+        TriangleBatch batch = getBatch(0);
         batch.setModelBound((BoundingVolume)capsule.readSavable(
             "modelBound", null));
         _textureKey = capsule.readString("textureKey", null);

@@ -25,16 +25,17 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.samskivert.util.ArrayUtil;
-import com.samskivert.util.HashIntMap;
+import com.samskivert.util.IntMap;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.geom.GeomUtil;
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.ObjectTile;
+import com.threerings.media.tile.Tile;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
 import com.threerings.media.util.MathUtil;
@@ -401,8 +402,8 @@ public class SceneBlock
      * is placed into the zeroth array element, fringe tile usage into the
      * first and object tile usage into the second.
      */
-    public void computeMemoryUsage (
-        HashMap bases, HashSet fringes, HashMap objects, long[] usage)
+    public void computeMemoryUsage (Map<Tile.Key,BaseTile> bases, Set<BaseTile> fringes,
+                                    Map<Tile.Key,ObjectTile> objects, long[] usage)
     {
         // account for our base tiles
         MisoSceneModel model = _panel.getSceneModel();
@@ -415,7 +416,7 @@ public class SceneBlock
                     continue;
                 }
 
-                BaseTile sbase = (BaseTile)bases.get(base.key);
+                BaseTile sbase = bases.get(base.key);
                 if (sbase == null) {
                     bases.put(base.key, base);
                     usage[0] += base.getEstimatedMemoryUsage();
@@ -440,7 +441,7 @@ public class SceneBlock
         int ocount = (_objects == null) ? 0 : _objects.length;
         for (int ii = 0; ii < ocount; ii++) {
             SceneObject scobj = _objects[ii];
-            ObjectTile tile = (ObjectTile)objects.get(scobj.tile.key);
+            ObjectTile tile = objects.get(scobj.tile.key);
             if (tile == null) {
                 objects.put(scobj.tile.key, scobj.tile);
                 usage[2] += scobj.tile.getEstimatedMemoryUsage();
@@ -482,7 +483,7 @@ public class SceneBlock
      * Links this block to its neighbors; informs neighboring blocks of
      * object coverage.
      */
-    protected void update (HashIntMap blocks)
+    protected void update (IntMap blocks)
     {
         boolean recover = false;
 
@@ -527,7 +528,7 @@ public class SceneBlock
     /**
      * Sets the footprint of this object tile
      */
-    protected void setCovered (HashIntMap blocks, SceneObject scobj)
+    protected void setCovered (IntMap blocks, SceneObject scobj)
     {
         int endx = scobj.info.x - scobj.tile.getBaseWidth() + 1;
         int endy = scobj.info.y - scobj.tile.getBaseHeight() + 1;
