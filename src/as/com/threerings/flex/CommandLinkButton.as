@@ -50,6 +50,17 @@ public class CommandLinkButton extends LinkButton
         _arg = arg;
     }
 
+    override public function set enabled (enable :Boolean) :void
+    {
+        super.enabled = enable;
+
+        if (enable) {
+            buttonMode = true;
+        } else {
+            buttonMode = false;
+        }
+    }
+
     /**
      * Set the command and argument to be issued when this button is pressed.
      */
