@@ -53,12 +53,7 @@ public class CommandLinkButton extends LinkButton
     override public function set enabled (enable :Boolean) :void
     {
         super.enabled = enable;
-
-        if (enable) {
-            buttonMode = true;
-        } else {
-            buttonMode = false;
-        }
+        buttonMode = enable;
     }
 
     /**
