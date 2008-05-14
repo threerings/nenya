@@ -199,7 +199,7 @@ public class SceneBlock
     /**
      * Returns true if this block has been resolved, false if not.
      */
-    protected synchronized boolean isResolved ()
+    public synchronized boolean isResolved ()
     {
         return _sbounds != null;
     }
