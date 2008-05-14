@@ -203,7 +203,7 @@ public class GleamAnimation extends Animation
     protected int _downmillis;
     protected int _maxAlpha = 750;
     protected int _minAlpha;
-    protected int _alpha = -1;
+    protected int _alpha;
     protected long _lastUpdate;
     protected int _millisBetweenUpdates;
 }
