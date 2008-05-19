@@ -180,7 +180,8 @@
       <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/tools/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/util/**"/>
+      <fileset dir="${classes.dir}" includes="com/threerings/util/**"
+          excludes="**/*.c,**/Makefile,**/*.h"/>
       <fileset dir="${classes.dir}" includes="com/threerings/NenyaLog*"/>
     </jar>
     <jar destfile="${deploy.dir}/${lib.name}-miso.jar">
