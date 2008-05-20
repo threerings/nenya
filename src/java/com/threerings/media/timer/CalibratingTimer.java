@@ -24,7 +24,6 @@ package com.threerings.media.timer;
 import com.samskivert.Log;
 import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.Interval;
-import com.samskivert.util.RunQueue;
 import com.threerings.media.MediaPrefs;
 
 /**
@@ -72,12 +71,12 @@ public abstract class CalibratingTimer
         _startStamp = _priorCurrent = current();
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
-        _calibrateInterval = new Interval(RunQueue.AWT) {
+        _calibrateInterval = new Interval() {
             @Override public void expired () {
                 calibrate();
             }
         };
-        _calibrateInterval.schedule(5000, true);
+        _calibrateInterval.schedule(CALIBRATE_INTERVAL, CALIBRATE_INTERVAL, false);
     }
     
     /**
@@ -93,7 +92,7 @@ public abstract class CalibratingTimer
      */
     public void clearMaxDriftRatio ()
     {
-    	_maxDriftRatio = 1.0;
+    	_maxDriftRatio = 1.0F;
     }
 
     /** Returns the difference between _startStamp and current() */
@@ -111,44 +110,48 @@ public abstract class CalibratingTimer
     /** Calculates the drift factor from the time elapsed from the last calibrate call. */
     protected void calibrate ()
     {
-        long current = current();
-        double elapsedTimer = (current - _driftTimerStamp);
-        double elapsedMillis = System.currentTimeMillis() - _driftMilliStamp;
-        double drift = elapsedMillis / (elapsedTimer / _milliDivider);
+        long currentTimer = current();
+        long currentMillis = System.currentTimeMillis();
+        long elapsedTimer = currentTimer - _driftTimerStamp;
+        int elapsedMillis = (int)(currentMillis - _driftMilliStamp);
+        float drift = elapsedMillis / (elapsedTimer / _milliDivider);
         if (_debugCalibrate.getValue()) {
             Log.warning("Calibrating [timer=" + elapsedTimer + ", millis=" + elapsedMillis
                 + ", drift=" + drift + ", timerstamp=" + _driftTimerStamp + ", millistamp="
-                + _driftMilliStamp + ", current=" + current + "]");
+                + _driftMilliStamp + ", current=" + currentTimer + "]");
         }
         if (elapsedTimer < 0) {
             Log.warning("The timer has decided to live in the past, resetting drift[previousTimer="
-                + _driftTimerStamp + ", currentTimer=" + current + ", previousMillis="
-                + _driftMilliStamp + ", currentMillis=" + System.currentTimeMillis() + "]");
-            _driftRatio = 1.0;
+                + _driftTimerStamp + ", currentTimer=" + currentTimer + ", previousMillis="
+                + _driftMilliStamp + ", currentMillis=" + currentMillis + "]");
+            _driftRatio = 1.0F;
         } else if (drift > MAX_ALLOWED_DRIFT_RATIO || drift < MIN_ALLOWED_DRIFT_RATIO) {
             Log.warning("Calibrating [drift=" + drift + "]");
             // Keep the drift somewhat sane between .01 and 10
-            _driftRatio = Math.min(Math.max(.01, drift), 10);
+            _driftRatio = (float)Math.min(Math.max(.01, drift), 10);
             if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
             	_maxDriftRatio = drift;
             }
         } else if (_driftRatio != 1.0) {
             // If we're within bounds now but we weren't before, reset _driftFactor and log it
-            _driftRatio = 1.0;
+            _driftRatio = 1.0F;
             Log.warning("Calibrating [drift=" + drift + "]");
         }
-        _driftMilliStamp = System.currentTimeMillis();
-        _driftTimerStamp = current();
+        _driftMilliStamp = currentMillis;
+        _driftTimerStamp = currentTimer;
     }
     
     /** Return the current value for this timer. */
     public abstract long current ();
     
     /** The largest drift ratio we'll allow without correcting. */
-    protected static final double MAX_ALLOWED_DRIFT_RATIO = 1.1;
+    protected static final float MAX_ALLOWED_DRIFT_RATIO = 1.1F;
     
     /** The smallest drift ratio we'll allow without correcting. */
-    protected static final double MIN_ALLOWED_DRIFT_RATIO = 0.9;
+    protected static final float MIN_ALLOWED_DRIFT_RATIO = 0.9F;
+    
+    /** Milliseconds between calibrate calls. */
+    protected static final int CALIBRATE_INTERVAL = 5000;
 
     /** current() value when the timer was started. */
     protected long _startStamp;
@@ -169,14 +172,14 @@ public abstract class CalibratingTimer
     protected long _driftTimerStamp;
 
     /** Ratio of currentTimeMillis to timer millis. */
-    protected double _driftRatio = 1.0;
+    protected float _driftRatio = 1.0F;
     
     /** The largest drift we've had to adjust for. */
-    protected double _maxDriftRatio = 1.0;
+    protected float _maxDriftRatio = 1.0F;
     
     /** Interval that fires every five seconds to run the calibration. */
     protected Interval _calibrateInterval;
-
+    
     /** A debug hook that toggles dumping of calibration values. */
     protected static RuntimeAdjust.BooleanAdjust _debugCalibrate = new RuntimeAdjust.BooleanAdjust(
         "Toggles calibrations statistics", "narya.media.timer",
