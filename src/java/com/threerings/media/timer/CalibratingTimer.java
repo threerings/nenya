@@ -113,7 +113,7 @@ public abstract class CalibratingTimer
         long currentTimer = current();
         long currentMillis = System.currentTimeMillis();
         long elapsedTimer = currentTimer - _driftTimerStamp;
-        int elapsedMillis = (int)(currentMillis - _driftMilliStamp);
+        float elapsedMillis = currentMillis - _driftMilliStamp;
         float drift = elapsedMillis / (elapsedTimer / _milliDivider);
         if (_debugCalibrate.getValue()) {
             Log.warning("Calibrating [timer=" + elapsedTimer + ", millis=" + elapsedMillis
