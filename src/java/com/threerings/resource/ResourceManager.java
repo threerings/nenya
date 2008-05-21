@@ -505,11 +505,7 @@ public class ResourceManager
         // fallback next to an unpacked resource file
         File file = getResourceFile(path);
         if (file != null && file.exists()) {
-            if (path.endsWith(FastImageIO.FILE_SUFFIX)) {
-                return loadImage(file, true);
-            } else {
-                return loadImage(file, false);
-            }
+            return loadImage(file, path.endsWith(FastImageIO.FILE_SUFFIX));
         }
 
         // first try a locale-specific file

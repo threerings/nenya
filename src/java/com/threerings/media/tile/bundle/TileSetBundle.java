@@ -94,11 +94,7 @@ public class TileSetBundle extends HashIntMap
     public BufferedImage loadImage (String path)
         throws IOException
     {
-        if (path.endsWith(FastImageIO.FILE_SUFFIX)) {
-            return _bundle.getImageResource(path, true);
-        } else {
-            return _bundle.getImageResource(path, false);
-        }
+        return _bundle.getImageResource(path, path.endsWith(FastImageIO.FILE_SUFFIX));
     }
 
     // custom serialization process
