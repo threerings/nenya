@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -655,6 +656,16 @@ public class ResourceManager
         return config;
     }
 
+    /**
+     * If we have a full list of the resources available, we return it.  A return value of null
+     *  means that we do not know what's available and we'll have to try all possibilities.  This
+     *  is fine for most applications.
+     */
+    protected HashSet<String> getResourceList ()
+    {
+        return null;
+    }
+    
     protected void initResourceDir (String resourceDir)
     {
         // if none was specified, check the resource_dir system property
@@ -698,7 +709,7 @@ public class ResourceManager
                 dlist.add(bundle);
             } else if (setType.equals(NETWORK_SET_TYPE)) {
                 NetworkResourceBundle bundle =
-                    new NetworkResourceBundle(_networkRootPath, path);
+                    new NetworkResourceBundle(_networkRootPath, path, getResourceList());
                 set.add(bundle);
             }
         }

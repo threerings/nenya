@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
+import java.util.HashSet;
 
 /**
  * Resource bundle that retrieves its contents via HTTP over the network from a root URL.
@@ -35,6 +36,11 @@ import java.security.AccessControlException;
 public class NetworkResourceBundle extends ResourceBundle
 {
     public NetworkResourceBundle (String root, String path)
+    {
+        this(root, path, null);
+    }
+    
+    public NetworkResourceBundle (String root, String path, HashSet<String> rsrcList)
     {
         if (!root.endsWith("/")) {
             root += "/";
@@ -45,6 +51,8 @@ public class NetworkResourceBundle extends ResourceBundle
             Log.warning("Created malformed URL for resource. [root=" + root + ", path=" + path);
         }
         _ident = path;
+        
+        _rsrcList = rsrcList;
     }
 
     @Override // documentation inherited
@@ -57,6 +65,11 @@ public class NetworkResourceBundle extends ResourceBundle
     public InputStream getResource (String path)
         throws IOException
     {
+        // If we can reject it before opening a connection, then save the network latency.
+        if (!inResourceList(path)) {
+            return null;
+        }
+        
         URL resourceUrl = new URL(_bundleURL, path);
         HttpURLConnection ucon = null;
         try {
@@ -92,6 +105,15 @@ public class NetworkResourceBundle extends ResourceBundle
     }
 
     /**
+     * Returns whether we believe the path to be available.  If we have no list, we assume
+     *  everything may be available.
+     */
+    protected boolean inResourceList (String path)
+    {
+        return _rsrcList == null || _rsrcList.contains(path);
+    }
+    
+    /**
      * Returns a string representation of this resource bundle.
      */
     @Override
@@ -105,4 +127,7 @@ public class NetworkResourceBundle extends ResourceBundle
 
     /** Our root url to the resources in this bundle. */
     protected URL _bundleURL;
+    
+    /** A list of all the resources included in this bundle. */
+    protected HashSet<String> _rsrcList;
 }
