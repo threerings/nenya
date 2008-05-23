@@ -370,7 +370,7 @@ public class MisoScenePanel extends VirtualMediaPanel
                  "->" + (usage[2] / 1024) + "k" + "].");
     }
 
-    // documentation inherited
+    @Override
     public void addNotify ()
     {
         super.addNotify();
@@ -384,7 +384,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
     }
 
-    // documentation inherited
+    @Override
     public void removeNotify ()
     {
         super.removeNotify();
@@ -669,13 +669,13 @@ public class MisoScenePanel extends VirtualMediaPanel
         return false;
     }
 
-    // documentation inherited from interface
+    @Override
     public Rectangle getViewBounds ()
     {
         return _vbounds;
     }
 
-    // documentation inherited from interface
+    @Override
     public Component getComponent ()
     {
         return this;
@@ -696,7 +696,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         _activeMenu = null;
     }
 
-    // documentation inherited
+    @Override
     public void setBounds (int x, int y, int width, int height)
     {
         super.setBounds(x, y, width, height);
@@ -719,7 +719,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
     }
 
-    // documentation inherited
+    @Override
     protected void viewLocationDidChange (int dx, int dy)
     {
         super.viewLocationDidChange(dx, dy);
@@ -739,10 +739,11 @@ public class MisoScenePanel extends VirtualMediaPanel
             _ulpos.setLocation(_tcoords);
             if (rethink() > 0) {
                 _delayRepaint = mightDelayPaint;
-                Log.info("Delaying repaint... " +
+                Log.info("Got new pending blocks " +
                          "[need=" + _visiBlocks.size() +
                          ", of=" + _pendingBlocks +
-                         ", view=" + StringUtil.toString(_vbounds) + "].");
+                         ", view=" + StringUtil.toString(_vbounds) +
+                         ", delay=" + _delayRepaint + "].");
             }
         }
     }
@@ -807,8 +808,8 @@ public class MisoScenePanel extends VirtualMediaPanel
 
         // prune any blocks that are no longer influential
         Point key = new Point();
-        for (Iterator iter = _blocks.values().iterator(); iter.hasNext(); ) {
-            SceneBlock block = (SceneBlock)iter.next();
+        for (Iterator<SceneBlock> iter = _blocks.values().iterator(); iter.hasNext(); ) {
+            SceneBlock block = iter.next();
             key.x = block.getBounds().x;
             key.y = block.getBounds().y;
             if (!_rethinkOp.blocks.contains(key)) {
@@ -820,8 +821,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             }
         }
 
-        for (Iterator iter = _rethinkOp.blocks.iterator(); iter.hasNext(); ) {
-            Point origin = (Point)iter.next();
+        for (Point origin : _rethinkOp.blocks) {
             int bx = MathUtil.floorDiv(origin.x, _metrics.blockwid);
             int by = MathUtil.floorDiv(origin.y, _metrics.blockhei);
             int bkey = compose(bx, by);
@@ -909,10 +909,8 @@ public class MisoScenePanel extends VirtualMediaPanel
         if (_dpanel != null) {
             _dpanel.blockCleared(block);
         }
-
-        // Clear out waiting for the block since it is no longer resolving.
-        _pendingBlocks--;
-        _visiBlocks.remove(block);
+        
+        blockFinished(block);
     }
 
     /**
@@ -936,12 +934,17 @@ public class MisoScenePanel extends VirtualMediaPanel
                 _remgr.invalidateRegion(sbounds);
             }
         }
+        
+        blockFinished(block);
+    }
+
+    /**
+     * Called whenever a block is done resolving, whether it was successfully resolved or if it
+     * was abandoned.
+     */
+    protected void blockFinished (SceneBlock block)
+    {
         --_pendingBlocks;
-//         if (_pendingBlocks == 0) {
-//             Log.info("Finished resolving pending blocks " +
-//                      "[view=" + StringUtil.toString(_vbounds) + "].");
-//             reportMemoryUsage();
-//         }
 
         // once all the visible pending blocks have completed their
         // resolution, recompute our visible object set and show ourselves
@@ -1202,7 +1205,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics g)
     {
         if (_delayRepaint) {
@@ -1210,8 +1213,8 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
         super.paint(g);
     }
-
-    // documentation inherited
+    
+    @Override
     protected void paintInFront (Graphics2D gfx, Rectangle dirty)
     {
         super.paintInFront(gfx, dirty);
@@ -1223,7 +1226,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
     }
 
-    // documentation inherited
+    @Override
     protected void paintBetween (Graphics2D gfx, Rectangle dirty)
     {
         // render any intersecting tiles
@@ -1249,6 +1252,7 @@ public class MisoScenePanel extends VirtualMediaPanel
      * we intersperse them with objects in our scene and need to manage
      * their z-order.
      */
+    @Override
     protected void paintBits (Graphics2D gfx, int layer, Rectangle dirty)
     {
         _animmgr.paint(gfx, layer, dirty);
@@ -1595,7 +1599,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Used by {@link #rethink}. */
     protected class RethinkOp implements TileOp
     {
-        public Set blocks = Sets.newHashSet();
+        public Set<Point> blocks = Sets.newHashSet();
 
         public void apply (int tx, int ty, Rectangle tbounds) {
             _key.x = MathUtil.floorDiv(tx, _metrics.blockwid) *
