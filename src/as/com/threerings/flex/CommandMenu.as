@@ -83,14 +83,18 @@ public class CommandMenu extends Menu
      * Factory method to create a command menu.
      *
      * @param items an array of menu items.
+     * @param dispatcher an override event dispatcher to use for command events, rather than
+     * our parent.
      */
-    public static function createMenu (items :Array) :CommandMenu
+    public static function createMenu (
+        items :Array, dispatcher :IEventDispatcher = null) :CommandMenu
     {
         var menu :CommandMenu = new CommandMenu();
         menu.owner = DisplayObjectContainer(Application.application);
         menu.tabEnabled = false;
         menu.showRoot = true;
-        Menu.popUpMenu(menu, null, items);
+        menu.setDispatcher(dispatcher);
+        Menu.popUpMenu(menu, null, items); // does not actually pop up, but needed.
         return menu;
     }
 
@@ -105,8 +109,8 @@ public class CommandMenu extends Menu
     }
 
     /**
-     * Configures the event dispatcher to be used when dispatching this menu's events. By default
-     * they will be dispatched on the stage.
+     * Configures the event dispatcher to be used when dispatching this menu's command events.
+     * Normally they will be dispatched on our parent (usually the SystemManager or something).
      */
     public function setDispatcher (dispatcher :IEventDispatcher) :void
     {
@@ -116,8 +120,8 @@ public class CommandMenu extends Menu
     /**
      * Actually pop up the menu. This can be used instead of show().
      */
-    public function popUp (trigger :DisplayObject, popUpwards :Boolean = false,
-                           popLeftwards :Boolean = false) :void
+    public function popUp (
+        trigger :DisplayObject, popUpwards :Boolean = false, popLeftwards :Boolean = false) :void
     {
         _upping = popUpwards;
         _lefting = popLeftwards;
@@ -129,8 +133,8 @@ public class CommandMenu extends Menu
     /**
      * Shows the menu at the specified mouse coordinates.
      */
-    public function popUpAt (mx :int, my :int, popUpwards :Boolean = false,
-                             popLeftwards :Boolean = false) :void
+    public function popUpAt (
+        mx :int, my :int, popUpwards :Boolean = false, popLeftwards :Boolean = false) :void
     {
         _upping = popUpwards;
         _lefting = popLeftwards;
