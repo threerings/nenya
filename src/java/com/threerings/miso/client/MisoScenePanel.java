@@ -154,8 +154,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     public void refreshScene ()
     {
         clearScene();
-        rethink();
-        _delayRepaint = true;
+        // Don't repaint immediately if we've gotten new penders from our rethink
+        _delayRepaint = rethink() > 0;
         _remgr.invalidateRegion(_vbounds);
     }
 
