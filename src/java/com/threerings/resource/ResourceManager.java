@@ -322,6 +322,35 @@ public class ResourceManager
     }
 
     /**
+     * (Re)initializes the directory to search for resource files.
+     *
+     * @param resourceDir the directory path, or <code>null</code> to set the resource dir to
+     * the value of the <code>resource_dir</code> system property.
+     */
+    public void initResourceDir (String resourceDir)
+    {
+        // if none was specified, check the resource_dir system property
+        if (resourceDir == null) {
+            try {
+                resourceDir = System.getProperty("resource_dir");
+            } catch (SecurityException se) {
+                // no problem
+            }
+        }
+
+        // if we found no resource directory, don't use one
+        if (resourceDir == null) {
+            return;
+        }
+
+        // make sure there's a trailing slash
+        if (!resourceDir.endsWith(File.separator)) {
+            resourceDir += File.separator;
+        }
+        _rdir = new File(resourceDir);
+    }
+
+    /**
      * Given a path relative to the resource directory, the path is properly jimmied (assuming we
      * always use /) and combined with the resource directory to yield a {@link File} object that
      * can be used to access the resource.
@@ -664,29 +693,6 @@ public class ResourceManager
     protected HashSet<String> getResourceList ()
     {
         return null;
-    }
-    
-    protected void initResourceDir (String resourceDir)
-    {
-        // if none was specified, check the resource_dir system property
-        if (resourceDir == null) {
-            try {
-                resourceDir = System.getProperty("resource_dir");
-            } catch (SecurityException se) {
-                // no problem
-            }
-        }
-
-        // if we found no resource directory, don't use one
-        if (resourceDir == null) {
-            return;
-        }
-
-        // make sure there's a trailing slash
-        if (!resourceDir.endsWith(File.separator)) {
-            resourceDir += File.separator;
-        }
-        _rdir = new File(resourceDir);
     }
 
     /**
