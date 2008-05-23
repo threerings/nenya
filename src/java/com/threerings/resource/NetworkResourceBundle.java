@@ -67,7 +67,6 @@ public class NetworkResourceBundle extends ResourceBundle
     {
         // If we can reject it before opening a connection, then save the network latency.
         if (!inResourceList(path)) {
-            System.err.println("MST Failed find: " + _ident + " : " + path);
             return null;
         }
         
