@@ -66,8 +66,9 @@ import com.jme.util.geom.BufferUtils;
 import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.ShaderCache;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A {@link TriMesh} with a serialization mechanism tailored to stored models.

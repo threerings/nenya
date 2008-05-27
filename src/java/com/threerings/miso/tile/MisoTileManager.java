@@ -32,7 +32,7 @@ import com.threerings.util.CompiledConfig;
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.tile.TileManager;
 
-import com.threerings.miso.Log;
+import static com.threerings.miso.Log.log;
 
 /**
  * Extends the basic tile manager and provides support for automatically
@@ -62,7 +62,7 @@ public class MisoTileManager extends TileManager
             _fringer = new AutoFringer(config, imgr, this);
 
         } catch (IOException ioe) {
-            Log.warning("Unable to load fringe configuration " +
+            log.warning("Unable to load fringe configuration " +
                         "[path=" + FRINGE_CONFIG_PATH +
                         ", error=" + ioe + "].");
 

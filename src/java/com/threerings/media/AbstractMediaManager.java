@@ -32,6 +32,8 @@ import com.samskivert.util.ObserverList.ObserverOp;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.Tuple;
 
+import static com.threerings.resource.Log.log;
+
 /**
  * Manages, ticks, and paints {@link AbstractMedia}.
  */
@@ -109,8 +111,7 @@ public abstract class AbstractMediaManager
                 }
 
             } catch (Exception e) {
-                Log.warning("Failed to render media [media=" + media + ", e=" + e + "].");
-                Log.logStackTrace(e);
+                log.warning("Failed to render media [media=" + media + "].", e);
             }
         }
     }
@@ -124,7 +125,7 @@ public abstract class AbstractMediaManager
     public void fastForward (long timeDelta)
     {
         if (_tickStamp > 0) {
-            Log.warning("Egads! Asked to fastForward() during a tick.");
+            log.warning("Egads! Asked to fastForward() during a tick.");
             Thread.dumpStack();
         }
 
@@ -161,7 +162,7 @@ public abstract class AbstractMediaManager
     public void renderOrderDidChange (AbstractMedia media)
     {
         if (_tickStamp > 0) {
-            Log.warning("Egads! Render order changed during a tick.");
+            log.warning("Egads! Render order changed during a tick.");
             Thread.dumpStack();
         }
         
@@ -189,7 +190,7 @@ public abstract class AbstractMediaManager
     protected boolean insertMedia (AbstractMedia media)
     {
         if (_media.contains(media)) {
-            Log.warning("Attempt to insert media more than once [media=" + media + "].");
+            log.warning("Attempt to insert media more than once [media=" + media + "].");
             Thread.dumpStack();
             return false;
         }
@@ -241,7 +242,7 @@ public abstract class AbstractMediaManager
             }
             return true;
         }
-        Log.warning("Attempt to remove media that wasn't inserted [media=" + media + "].");
+        log.warning("Attempt to remove media that wasn't inserted [media=" + media + "].");
         return false;
     }
 
@@ -252,7 +253,7 @@ public abstract class AbstractMediaManager
     protected void clearMedia ()
     {
         if (_tickStamp > 0) {
-            Log.warning("Egads! Requested to clearMedia() during a tick.");
+            log.warning("Egads! Requested to clearMedia() during a tick.");
             Thread.dumpStack();
         }
 

@@ -25,6 +25,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 
+import static com.threerings.geom.Log.log;
+
 /**
  * General geometry utilites.
  */
@@ -200,7 +202,7 @@ public class GeomUtil
     public static Rectangle grow (Rectangle source, Rectangle target)
     {
         if (target == null) {
-            Log.warning("Can't grow with null rectangle [src=" + source + ", tgt=" + target + "].");
+            log.warning("Can't grow with null rectangle [src=" + source + ", tgt=" + target + "].");
             Thread.dumpStack();
         } else if (source == null) {
             source = new Rectangle(target);

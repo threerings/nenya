@@ -32,7 +32,7 @@ import com.samskivert.util.RandomUtil;
 import com.threerings.media.animation.Animation;
 import com.threerings.media.image.Mirage;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Displays a set of spark images originating from a specified position

@@ -30,6 +30,8 @@ import java.io.InputStream;
 
 import java.nio.ByteBuffer;
 
+import static com.threerings.openal.Log.log;
+
 /**
  * Decodes audio streams from data read from an {@link InputStream}.
  */
@@ -52,13 +54,13 @@ public abstract class StreamDecoder
         String path = file.getPath();
         int idx = path.lastIndexOf('.');
         if (idx == -1) {
-            Log.warning("Missing extension for file [file=" + path + "].");
+            log.warning("Missing extension for file [file=" + path + "].");
             return null;
         }
         String extension = path.substring(idx+1);
         Class clazz = _extensions.get(extension);
         if (clazz == null) {
-            Log.warning("No decoder registered for extension [extension=" + extension +
+            log.warning("No decoder registered for extension [extension=" + extension +
                 ", file=" + path + "].");
             return null;
         }
@@ -66,7 +68,7 @@ public abstract class StreamDecoder
         try {
             decoder = (StreamDecoder)clazz.newInstance();
         } catch (Exception e) {
-            Log.warning("Error instantiating decoder [file=" + path + ", error=" + e + "].");
+            log.warning("Error instantiating decoder [file=" + path + ", error=" + e + "].");
             return null;
         }
         decoder.init(new FileInputStream(file));

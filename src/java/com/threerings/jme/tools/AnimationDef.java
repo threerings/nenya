@@ -36,11 +36,12 @@ import com.jme.scene.Spatial;
 
 import com.samskivert.util.Tuple;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.model.Model;
 import com.threerings.jme.util.JmeUtil;
 
 import com.threerings.jme.tools.ModelDef.TransformNode;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A basic representation for keyframe animations.

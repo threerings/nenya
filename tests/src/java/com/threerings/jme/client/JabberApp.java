@@ -39,8 +39,9 @@ import com.threerings.util.Name;
 import com.threerings.presents.client.Client;
 import com.threerings.presents.net.UsernamePasswordCreds;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.JmeApp;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * The main point of entry for the Jabber client application. It creates
@@ -100,7 +101,7 @@ public class JabberApp extends JmeApp
         Client client = _client.getContext().getClient();
 
         // pass them on to the client
-        Log.info("Using [server=" + server + ".");
+        log.info("Using [server=" + server + ".");
         client.setServer(server, Client.DEFAULT_SERVER_PORTS);
 
         // configure the client with some credentials and logon
@@ -123,7 +124,7 @@ public class JabberApp extends JmeApp
         if (client.isLoggedOn()) {
             client.logoff(false);
         }
-        Log.info("Stopping.");
+        log.info("Stopping.");
         super.stop();
     }
 

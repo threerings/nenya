@@ -41,6 +41,8 @@ import com.threerings.media.tile.TileIcon;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
 
+import static com.threerings.media.Log.log;
+
 /**
  * Manages the creation of icons from tileset images. The icon manager is
  * provided with a configuration file, which maps icon set identifiers to
@@ -149,7 +151,7 @@ public class IconManager
             return new TileIcon(set.getTile(index));
 
         } catch (Exception e) {
-            Log.warning("Unable to load icon [iconSet=" + iconSet +
+            log.warning("Unable to load icon [iconSet=" + iconSet +
                         ", index=" + index + ", error=" + e + "].");
         }
 

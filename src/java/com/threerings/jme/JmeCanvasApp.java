@@ -40,6 +40,8 @@ import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 import com.jmex.bui.CanvasRootNode;
 
+import static com.threerings.jme.Log.log;
+
 /**
  * Extends the basic {@link JmeApp} with the necessary wiring to use the
  * GL/AWT bridge to display our GL interface in an AWT component.
@@ -56,7 +58,7 @@ public class JmeCanvasApp extends JmeApp
         try {
             _canvas = createCanvas();
         } catch (LWJGLException e) {
-            Log.warning("Failed to create LWJGL canvas [error=" + e + "].");
+            log.warning("Failed to create LWJGL canvas [error=" + e + "].");
         }
         ((JMECanvas)_canvas).setImplementor(_winimp);
         _canvas.setBounds(0, 0, width, height);
@@ -124,7 +126,7 @@ public class JmeCanvasApp extends JmeApp
                 try {
                     makeCurrent();
                 } catch (LWJGLException e) {
-                    Log.warning("Failed to make context current [error=" +
+                    log.warning("Failed to make context current [error=" +
                         e + "].");
                 }
             }
@@ -167,7 +169,7 @@ public class JmeCanvasApp extends JmeApp
             DisplaySystem.updateStates(renderer);
 
             if (!init()) {
-                Log.warning("JmeCanvasApp init failed.");
+                log.warning("JmeCanvasApp init failed.");
             }
         }
 
@@ -181,7 +183,7 @@ public class JmeCanvasApp extends JmeApp
                 // we don't process events as the AWT queue handles them
                 _failures = 0;
             } catch (Throwable t) {
-                Log.logStackTrace(t);
+                log.warning(t);
                 // stick a fork in things if we fail too many
                 // times in a row
                 if (++_failures > MAX_SUCCESSIVE_FAILURES) {

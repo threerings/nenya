@@ -38,9 +38,10 @@ import javax.swing.JPanel;
 import com.samskivert.swing.VGroupLayout;
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.Log;
 import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.image.ImageUtil;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Simple application for testing image trace functionality.
@@ -106,8 +107,7 @@ public class TraceViz
             app.run();
 
         } catch (Exception e) {
-            Log.warning("Failed to run application: " + e);
-            Log.logStackTrace(e);
+            log.warning("Failed to run application.", e);
         }
     }
 

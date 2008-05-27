@@ -28,7 +28,7 @@ import com.jme.scene.Controller;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
+import static com.threerings.jme.Log.log;
 
 /**
  * Some static classes and methods of general utility to applications using JME.
@@ -159,7 +159,7 @@ public class JmeUtil
             if (vals != null && vals.length == 3) {
                 return new Vector3f(vals[0], vals[1], vals[2]);
             } else {
-                Log.warning("Invalid vector [vector=" + vector + "].");
+                log.warning("Invalid vector [vector=" + vector + "].");
             }
         }
         return null;
@@ -179,7 +179,7 @@ public class JmeUtil
         } else if ("wrap".equals(type)) {
             return Controller.RT_WRAP;
         } else if (type != null) {
-            Log.warning("Invalid repeat type [type=" + type + "].");
+            log.warning("Invalid repeat type [type=" + type + "].");
         }
         return defaultType;
     }

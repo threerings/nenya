@@ -33,6 +33,8 @@ import java.awt.geom.Rectangle2D;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.StringUtil;
 
+import static com.threerings.media.Log.log;
+
 /**
  * Something that can be rendered on the media panel.
  */
@@ -216,7 +218,7 @@ public abstract class AbstractMedia
             if (_mgr != null) {
                 _mgr.queueNotification(_observers, amop);
             } else {
-                Log.warning("Have no manager, dropping notification " +
+                log.warning("Have no manager, dropping notification " +
                             "[media=" + this + ", op=" + amop + "].");
             }
         }

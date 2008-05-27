@@ -33,6 +33,8 @@ import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RunQueue;
 
+import static com.threerings.openal.Log.log;
+
 /**
  * An interface to the OpenAL library that provides a number of additional services:
  *
@@ -155,15 +157,14 @@ public class SoundManager
         try {
             AL.create("", 44100, 15, false);
         } catch (Exception e) {
-            Log.warning("Failed to initialize sound system.");
-            Log.logStackTrace(e);
+            log.warning("Failed to initialize sound system.", e);
             // don't start the background loading thread
             return;
         }
 
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
-            Log.warning("Failed to initialize sound system [errno=" + errno + "].");
+            log.warning("Failed to initialize sound system [errno=" + errno + "].");
             // don't start the background loading thread
             return;
         }
@@ -174,7 +175,7 @@ public class SoundManager
                                         final ClipBuffer item) {
                 _rqueue.postRunnable(new Runnable() {
                     public void run () {
-                        Log.debug("Flushing " + item.getKey());
+                        log.debug("Flushing " + item.getKey());
                         item.dispose();
                     }
                 });
@@ -211,8 +212,7 @@ public class SoundManager
             return buffer;
 
         } catch (Throwable t) {
-            Log.warning("Failure resolving buffer [key=" + ckey + "].");
-            Log.logStackTrace(t);
+            log.warning("Failure resolving buffer [key=" + ckey + "].", t);
             return null;
         }
     }
@@ -275,12 +275,12 @@ public class SoundManager
             while (true) {
                 final ClipBuffer buffer = (ClipBuffer)_toLoad.get();
                 try {
-                    Log.debug("Loading " + buffer.getKey() + ".");
+                    log.debug("Loading " + buffer.getKey() + ".");
                     final Clip clip = buffer.load();
                     _rqueue.postRunnable(new Runnable() {
                         public void run () {
                             Comparable ckey = buffer.getKey();
-                            Log.debug("Loaded " + ckey + ".");
+                            log.debug("Loaded " + ckey + ".");
                             _loading.remove(ckey);
                             if (buffer.bind(clip)) {
                                 _clips.put(ckey, buffer);
@@ -292,8 +292,7 @@ public class SoundManager
                     });
 
                 } catch (Throwable t) {
-                    Log.warning("Failed to load clip [key=" + buffer.getKey() + "].");
-                    Log.logStackTrace(t);
+                    log.warning("Failed to load clip [key=" + buffer.getKey() + "].", t);
 
                     // let the clip and its observers know that we are a miserable failure
                     queueClipFailure(buffer);

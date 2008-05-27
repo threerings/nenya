@@ -28,9 +28,10 @@ import java.io.ObjectInputStream;
 
 import com.samskivert.io.StreamUtil;
 
-import com.threerings.cast.Log;
 import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceBundle;
+
+import static com.threerings.cast.Log.log;
 
 /**
  * Utility functions related to creating and manipulating component bundles.
@@ -80,12 +81,12 @@ public class BundleUtil
             return new ObjectInputStream(bin).readObject();
 
         } catch (InvalidClassException ice) {
-            Log.warning("Aiya! Serialized object is hosed [bundle=" + bundle +
+            log.warning("Aiya! Serialized object is hosed [bundle=" + bundle +
                         ", element=" + path + ", error=" + ice.getMessage() + "].");
             return null;
 
         } catch (IOException ioe) {
-            Log.warning("Error reading resource from bundle [bundle=" + bundle + ", path=" + path +
+            log.warning("Error reading resource from bundle [bundle=" + bundle + ", path=" + path +
                         ", wiping?=" + wipeOnFailure + "].");
             if (wipeOnFailure) {
                 StreamUtil.close(bin);

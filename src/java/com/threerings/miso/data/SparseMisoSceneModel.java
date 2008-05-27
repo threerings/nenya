@@ -34,8 +34,9 @@ import com.threerings.io.SimpleStreamableObject;
 import com.threerings.media.util.MathUtil;
 import com.threerings.util.StreamableHashIntMap;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.util.ObjectSet;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Contains miso scene data that is broken up into NxN tile sections.
@@ -103,7 +104,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
 
         public int getBaseTileId (int col, int row) {
             if (col < x || col >= (x+width) || row < y || row >= (y+width)) {
-                Log.warning("Requested bogus tile +" + col + "+" + row +
+                log.warning("Requested bogus tile +" + col + "+" + row +
                             " from " + this + ".");
                 return -1;
             } else {
@@ -120,12 +121,12 @@ public class SparseMisoSceneModel extends MisoSceneModel
             // type at these coordinates
             int dupidx;
             if ((dupidx = ListUtil.indexOf(objectInfo, info)) != -1) {
-                Log.warning("Refusing to add duplicate object [ninfo=" + info +
+                log.warning("Refusing to add duplicate object [ninfo=" + info +
                         ", oinfo=" + objectInfo[dupidx] + "].");
                 return false;
             }
             if ((dupidx = indexOfUn(info)) != -1) {
-                Log.warning("Refusing to add duplicate object " +
+                log.warning("Refusing to add duplicate object " +
                         "[info=" + info + "].");
                 return false;
             }

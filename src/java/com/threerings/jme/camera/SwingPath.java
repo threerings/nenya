@@ -26,7 +26,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
-import com.threerings.jme.Log;
+import static com.threerings.jme.Log.log;
 
 /**
  * Swings the camera around a point of interest (which should be somewhere
@@ -78,13 +78,13 @@ public class SwingPath extends CameraPath
         super(camhand);
 
         if (pangle == 0) {
-            Log.warning("Requested to swing camera through zero degrees " +
+            log.warning("Requested to swing camera through zero degrees " +
                         "[spot=" + spot + ", paxis=" + paxis +
                         ", angvel=" + angvel + ", zoom=" + zoom + "].");
             pangle = 0.0001f;
         }
         if (angvel <= 0) {
-            Log.warning("Requested to swing camera with invalid velocity " +
+            log.warning("Requested to swing camera with invalid velocity " +
                         "[spot=" + spot + ", paxis=" + paxis + ", pangle=" +
                         pangle + ", angvel=" + angvel + ", zoom=" + zoom +
                         "].");

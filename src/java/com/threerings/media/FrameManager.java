@@ -36,11 +36,15 @@ import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
+
+import com.threerings.util.unsafe.Unsafe;
+
 import com.threerings.media.timer.CalibratingTimer;
 import com.threerings.media.timer.MediaTimer;
 import com.threerings.media.timer.MillisTimer;
 import com.threerings.media.util.TrailingAverage;
-import com.threerings.util.unsafe.Unsafe;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Provides a central point from which the computation for each "frame" or tick can be dispatched.
@@ -132,7 +136,7 @@ public abstract class FrameManager
             }
         }
         if (timer == null) {
-            Log.info("Can't use high performance timer, reverting to " +
+            log.info("Can't use high performance timer, reverting to " +
                      "System.currentTimeMillis() based timer.");
             timer = new MillisTimer();
         }
@@ -172,7 +176,7 @@ public abstract class FrameManager
     {
         Object[] nparts = ListUtil.testAndAddRef(_participants, participant);
         if (nparts == null) {
-            Log.warning("Refusing to add duplicate frame participant! " + participant);
+            log.warning("Refusing to add duplicate frame participant! " + participant);
         } else {
             _participants = nparts;
         }
@@ -395,7 +399,7 @@ public abstract class FrameManager
     {
         long gap = tickStamp - _lastTickStamp;
         if (_lastTickStamp != 0 && gap > (HANG_DEBUG ? HANG_GAP : BIG_GAP)) {
-            Log.debug("Long tick delay [delay=" + gap + "ms].");
+            log.debug("Long tick delay [delay=" + gap + "ms].");
         }
         _lastTickStamp = tickStamp;
 
@@ -403,8 +407,7 @@ public abstract class FrameManager
         try {
             _repainter.validateComponents();
         } catch (Throwable t) {
-            Log.warning("Failure validating components.");
-            Log.logStackTrace(t);
+            log.warning("Failure validating components.", t);
         }
 
         // tick all of our frame participants
@@ -425,15 +428,14 @@ public abstract class FrameManager
                 if (HANG_DEBUG) {
                     long delay = (System.currentTimeMillis() - start);
                     if (delay > HANG_GAP) {
-                        Log.info("Whoa nelly! Ticker took a long time " +
+                        log.info("Whoa nelly! Ticker took a long time " +
                                  "[part=" + part + ", time=" + delay + "ms].");
                     }
                 }
 
             } catch (Throwable t) {
-                Log.warning("Frame participant choked during tick " +
-                            "[part=" + StringUtil.safeToString(part) + "].");
-                Log.logStackTrace(t);
+                log.warning("Frame participant choked during tick " +
+                            "[part=" + StringUtil.safeToString(part) + "].", t);
             }
         }
 
@@ -506,8 +508,7 @@ public abstract class FrameManager
 
             } catch (Throwable t) {
                 String ptos = StringUtil.safeToString(part);
-                Log.warning("Frame participant choked during paint [part=" + ptos + "].");
-                Log.logStackTrace(t);
+                log.warning("Frame participant choked during paint [part=" + ptos + "].", t);
             }
 
             // render any components in our layered pane that are not in the default layer
@@ -517,7 +518,7 @@ public abstract class FrameManager
             if (HANG_DEBUG) {
                 long delay = (System.currentTimeMillis() - start);
                 if (delay > HANG_GAP) {
-                    Log.warning("Whoa nelly! Painter took a long time " +
+                    log.warning("Whoa nelly! Painter took a long time " +
                                 "[part=" + part + ", time=" + delay + "ms].");
                 }
             }
@@ -603,8 +604,7 @@ public abstract class FrameManager
             try {
                 comp.paint(g);
             } catch (Exception e) {
-                Log.warning("Component choked while rendering.");
-                Log.logStackTrace(e);
+                log.warning("Component choked while rendering.", e);
             }
             g.translate(-_tbounds.x, -_tbounds.y);
         }
@@ -615,7 +615,7 @@ public abstract class FrameManager
     {
         public void run ()
         {
-            Log.info("Frame manager ticker running " +
+            log.info("Frame manager ticker running " +
                      "[sleepGran=" + _sleepGranularity.getValue() + "].");
             while (_running) {
                 long start = 0L;
@@ -629,14 +629,14 @@ public abstract class FrameManager
                     getPerfMetrics()[0].record((int)(woke-start)/100);
                     int elapsed = (int)(woke-start);
                     if (elapsed > _sleepGranularity.getValue()*1500) {
-                        Log.warning("Long tick [elapsed=" + elapsed + "us].");
+                        log.warning("Long tick [elapsed=" + elapsed + "us].");
                     }
                 }
 
                 // work around sketchy bug on WinXP that causes the clock to leap into the past
                 // from time to time
                 if (woke < _lastAttempt) {
-                    Log.warning("Zoiks! We've leapt into the past, coping as best we can " +
+                    log.warning("Zoiks! We've leapt into the past, coping as best we can " +
                                 "[dt=" + (woke - _lastAttempt) + "].");
                     _lastAttempt = woke;
                 }

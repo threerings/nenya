@@ -57,6 +57,8 @@ import com.threerings.media.sprite.action.CommandSprite;
 import com.threerings.media.sprite.action.DisableableSprite;
 import com.threerings.media.sprite.action.HoverSprite;
 
+import static com.threerings.media.Log.log;
+
 /**
  * Provides a useful extensible framework for rendering animated displays that use sprites and
  * animations. Sprites and animations can be added to this panel and they will automatically be
@@ -291,7 +293,7 @@ public class MediaPanel extends JComponent
     public void setOpaque (boolean opaque)
     {
         if (!opaque) {
-            Log.warning("Media panels shouldn't be setOpaque(false).");
+            log.warning("Media panels shouldn't be setOpaque(false).");
             Thread.dumpStack();
         }
         super.setOpaque(true);
@@ -346,8 +348,7 @@ public class MediaPanel extends JComponent
         try {
             paint(gfx, dirty);
         } catch (Throwable t) {
-            Log.warning(this + " choked in paint(" + dirty + ").");
-            Log.logStackTrace(t);
+            log.warning(this + " choked in paint(" + dirty + ").", t);
         }
 
         // render our performance debugging if it's enabled
@@ -383,7 +384,7 @@ public class MediaPanel extends JComponent
             Rectangle clip = dirty[ii];
             // sanity-check the dirty rectangle
             if (clip == null) {
-                Log.warning("Found null dirty rect painting media panel?!");
+                log.warning("Found null dirty rect painting media panel?!");
                 Thread.dumpStack();
                 continue;
             }

@@ -47,6 +47,8 @@ import com.samskivert.util.ListUtil;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
 
+import static com.threerings.media.Log.log;
+
 /**
  * Used to get Swing's repainting to jive with our active rendering strategy.
  *
@@ -70,7 +72,7 @@ public class ActiveRepaintManager extends RepaintManager
     {
         Component vroot = null;
         if (DEBUG) {
-            Log.info("Maybe invalidating " + toString(comp) + ".");
+            log.info("Maybe invalidating " + toString(comp) + ".");
         }
 
         // locate the validation root for this component
@@ -101,7 +103,7 @@ public class ActiveRepaintManager extends RepaintManager
         // widget hierarchy
         if (vroot == null) {
             if (DEBUG) {
-                Log.info("Skipping vrootless component: " + toString(comp));
+                log.info("Skipping vrootless component: " + toString(comp));
             }
             return;
         }
@@ -110,7 +112,7 @@ public class ActiveRepaintManager extends RepaintManager
         // that is showing
         if (getRoot(vroot) == null) {
             if (DEBUG) {
-                Log.info("Skipping rootless component [comp=" + toString(comp) +
+                log.info("Skipping rootless component [comp=" + toString(comp) +
                          ", vroot=" + toString(vroot) + "].");
             }
             return;
@@ -119,7 +121,7 @@ public class ActiveRepaintManager extends RepaintManager
         // add the invalid component to our list and we'll validate it on the next frame
         if (!ListUtil.containsRef(_invalid, vroot)) {
             if (DEBUG) {
-                Log.info("Invalidating " + toString(vroot) + ".");
+                log.info("Invalidating " + toString(vroot) + ".");
             }
             _invalid = ListUtil.add(_invalid, vroot);
         }
@@ -151,7 +153,7 @@ public class ActiveRepaintManager extends RepaintManager
         }
 
         if (DEBUG) {
-            Log.info("Dirtying component [comp=" + toString(comp) +
+            log.info("Dirtying component [comp=" + toString(comp) +
                      ", drect=" + StringUtil.toString(new Rectangle(x, y, width, height)) + "].");
         }
 
@@ -221,7 +223,7 @@ public class ActiveRepaintManager extends RepaintManager
         for (int ii = 0; ii < icount; ii++) {
             if (invalid[ii] != null) {
                 if (DEBUG) {
-                    Log.info("Validating " + invalid[ii]);
+                    log.info("Validating " + invalid[ii]);
                 }
                 ((Component)invalid[ii]).validate();
             }
@@ -275,7 +277,7 @@ public class ActiveRepaintManager extends RepaintManager
                     drect.y = y;
 
                     if (DEBUG) {
-                        Log.info("Found dirty parent [comp=" + toString(comp) +
+                        log.info("Found dirty parent [comp=" + toString(comp) +
                                  ", drect=" + StringUtil.toString(drect) +
                                  ", pcomp=" + toString(c) +
                                  ", prect=" + StringUtil.toString(prect) + "].");
@@ -283,7 +285,7 @@ public class ActiveRepaintManager extends RepaintManager
                     prect.add(drect);
 
                     if (DEBUG) {
-                        Log.info("New prect " + StringUtil.toString(prect));
+                        log.info("New prect " + StringUtil.toString(prect));
                     }
 
                     // remove the child component and be on our way
@@ -361,7 +363,7 @@ public class ActiveRepaintManager extends RepaintManager
             // instance
             if (root == _root) {
                 if (DEBUG) {
-                    Log.info("Repainting [comp=" + toString(comp) + StringUtil.toString(_cbounds) +
+                    log.info("Repainting [comp=" + toString(comp) + StringUtil.toString(_cbounds) +
                              ", ocomp=" + toString(ocomp) +
                              ", drect=" + StringUtil.toString(drect) + "].");
                 }
@@ -374,8 +376,7 @@ public class ActiveRepaintManager extends RepaintManager
                     ocomp.paint(g);
 
                 } catch (Exception e) {
-                    Log.warning("Exception while painting component [comp=" + ocomp + "].");
-                    Log.logStackTrace(e);
+                    log.warning("Exception while painting component [comp=" + ocomp + "].", e);
                 }
                 g.translate(-_cbounds.x, -_cbounds.y);
 
@@ -385,7 +386,7 @@ public class ActiveRepaintManager extends RepaintManager
 
             } else if (root != null) {
                 if (DEBUG) {
-                    Log.info("Repainting old-school [comp=" + toString(comp) +
+                    log.info("Repainting old-school [comp=" + toString(comp) +
                              ", ocomp=" + toString(ocomp) + ", root=" + toString(root) +
                              ", bounds=" + StringUtil.toString(_cbounds) + "].");
                     dumpHierarchy(comp);
@@ -431,7 +432,7 @@ public class ActiveRepaintManager extends RepaintManager
     protected static void dumpHierarchy (Component comp)
     {
         for (String indent = ""; comp != null; indent += " ") {
-            Log.info(indent + toString(comp));
+            log.info(indent + toString(comp));
             comp = comp.getParent();
         }
     }

@@ -27,9 +27,10 @@ import java.util.Comparator;
 
 import com.samskivert.util.SortableArrayList;
 
-import com.threerings.media.Log;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.tile.ObjectTile;
+
+import static com.threerings.media.Log.log;
 
 /**
  * The dirty item list keeps track of dirty sprites and object tiles
@@ -90,7 +91,7 @@ public class DirtyItemList
         int size = size();
 
         if (DEBUG_SORT) {
-            Log.info("Sorting dirty item list [size=" + size + "].");
+            log.info("Sorting dirty item list [size=" + size + "].");
         }
 
         // if we've only got one item, we need to do no sorting
@@ -99,7 +100,7 @@ public class DirtyItemList
             _xitems.addAll(_items);
             _xitems.sort(ORIGIN_X_COMP);
             if (DEBUG_SORT) {
-                Log.info("Sorted by x-origin " +
+                log.info("Sorted by x-origin " +
                          "[items=" + toString(_xitems) + "].");
             }
 
@@ -107,7 +108,7 @@ public class DirtyItemList
             _yitems.addAll(_items);
             _yitems.sort(ORIGIN_Y_COMP);
             if (DEBUG_SORT) {
-                Log.info("Sorted by y-origin " +
+                log.info("Sorted by y-origin " +
                          "[items=" + toString(_yitems) + "].");
             }
 
@@ -142,12 +143,12 @@ public class DirtyItemList
         }
 
         if (DEBUG_SORT) {
-            Log.info("Sorted for render [items=" + toString(_items) + "].");
+            log.info("Sorted for render [items=" + toString(_items) + "].");
             for (int ii = 0, ll = _items.size()-1; ii < ll; ii++) {
                 DirtyItem a = (DirtyItem)_items.get(ii);
                 DirtyItem b = (DirtyItem)_items.get(ii+1);
                 if (_rcomp.compare(a, b) > 0) {
-                    Log.warning("Invalid ordering [a=" + a + ", b=" + b + "].");
+                    log.warning("Invalid ordering [a=" + a + ", b=" + b + "].");
                 }
             }
         }
@@ -444,7 +445,7 @@ public class DirtyItemList
                     int result = soa.getPriority() - sob.getPriority();
                     if (DEBUG_COMPARE) {
                         String items = DirtyItemList.toString(da, db);
-                        Log.info("compare: overlapping [result=" + result +
+                        log.info("compare: overlapping [result=" + result +
                                  ", items=" + items + "].");
                     }
                     return result;
@@ -456,7 +457,7 @@ public class DirtyItemList
             if (result != 0) {
                 if (DEBUG_COMPARE) {
                     String items = DirtyItemList.toString(da, db);
-                    Log.info("compare: Y-partitioned " +
+                    log.info("compare: Y-partitioned " +
                              "[result=" + result + ", items=" + items + "].");
                 }
                 return result;
@@ -467,7 +468,7 @@ public class DirtyItemList
             if (result != 0) {
                 if (DEBUG_COMPARE) {
                     String items = DirtyItemList.toString(da, db);
-                    Log.info("compare: X-partitioned " +
+                    log.info("compare: X-partitioned " +
                              "[result=" + result + ", items=" + items + "].");
                 }
                 return result;
@@ -477,7 +478,7 @@ public class DirtyItemList
             result = compareNonPartitioned(da, db);
             if (DEBUG_COMPARE) {
                 String items = DirtyItemList.toString(da, db);
-                Log.info("compare: non-partitioned " +
+                log.info("compare: non-partitioned " +
                          "[result=" + result + ", items=" + items + "].");
             }
 

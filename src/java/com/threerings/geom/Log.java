@@ -21,43 +21,12 @@
 
 package com.threerings.geom;
 
+import com.samskivert.util.Logger;
+
 /**
- * A placeholder class that contains a reference to the log object used by
- * this package.
+ * Contains a reference to the log object used by this package.
  */
 public class Log
 {
-    public static final String PACKAGE = "geom";
-
-    public static com.samskivert.util.Log log =
-        new com.samskivert.util.Log(PACKAGE);
-
-    /** Convenience function. */
-    public static void debug (String message)
-    {
-        log.debug(message);
-    }
-
-    /** Convenience function. */
-    public static void info (String message)
-    {
-        log.info(message);
-    }
-
-    /** Convenience function. */
-    public static void warning (String message)
-    {
-        log.warning(message);
-    }
-
-    /** Convenience function. */
-    public static void logStackTrace (Throwable t)
-    {
-        log.logStackTrace(com.samskivert.util.Log.WARNING, t);
-    }
-
-    public static int getLevel ()
-    {
-        return com.samskivert.util.Log.getLevel(PACKAGE);
-    }
+    public static Logger log = Logger.getLogger("com.threerings.geom");
 }

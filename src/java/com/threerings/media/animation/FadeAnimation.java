@@ -26,8 +26,9 @@ import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.threerings.media.Log;
 import com.threerings.media.effects.FadeEffect;
+
+import static com.threerings.media.Log.log;
 
 /**
  * An animation that displays an image fading from one alpha level to

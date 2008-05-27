@@ -23,10 +23,11 @@ package com.threerings.media;
 
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-
 import java.util.ArrayList;
 
 import com.samskivert.util.StringUtil;
+
+import static com.threerings.resource.Log.log;
 
 /**
  * Manages regions (rectangles) that are invalidated in the process of ticking animations and
@@ -64,13 +65,13 @@ public class RegionManager
     {
         // make sure we're on an AWT thread
         if (!EventQueue.isDispatchThread()) {
-            Log.warning("Oi! Region dirtied on non-AWT thread [rect=" + rect + "].");
+            log.warning("Oi! Region dirtied on non-AWT thread [rect=" + rect + "].");
             Thread.dumpStack();
         }
 
         // sanity check
         if (rect == null) {
-            Log.warning("Attempt to dirty a null rect!?");
+            log.warning("Attempt to dirty a null rect!?");
             Thread.dumpStack();
             return;
         }
@@ -78,7 +79,7 @@ public class RegionManager
         // more sanity checking
         long x = rect.x, y = rect.y;
         if ((Math.abs(x) > Integer.MAX_VALUE/2) || (Math.abs(y) > Integer.MAX_VALUE/2)) {
-            Log.warning("Requested to dirty questionable region " +
+            log.warning("Requested to dirty questionable region " +
                         "[rect=" + StringUtil.toString(rect) + "].");
             return; // Let's not do it!
         }
@@ -93,7 +94,7 @@ public class RegionManager
     protected final boolean isValidSize (int width, int height)
     {
         if (width < 0 || height < 0) {
-            Log.warning("Attempt to add invalid dirty region?! " +
+            log.warning("Attempt to add invalid dirty region?! " +
                         "[size=" + width + "x" + height + "].");
             Thread.dumpStack();
             return false;

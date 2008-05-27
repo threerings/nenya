@@ -30,6 +30,8 @@ import java.net.URL;
 import java.security.AccessControlException;
 import java.util.HashSet;
 
+import static com.threerings.resource.Log.log;
+
 /**
  * Resource bundle that retrieves its contents via HTTP over the network from a root URL.
  */
@@ -48,7 +50,7 @@ public class NetworkResourceBundle extends ResourceBundle
         try {
             _bundleURL = new URL(root + path);
         } catch (MalformedURLException mue) {
-            Log.warning("Created malformed URL for resource. [root=" + root + ", path=" + path);
+            log.warning("Created malformed URL for resource. [root=" + root + ", path=" + path);
         }
         _ident = path;
         
@@ -75,7 +77,7 @@ public class NetworkResourceBundle extends ResourceBundle
         try {
             ucon = (HttpURLConnection) resourceUrl.openConnection();
         } catch (IOException ioe) {
-            Log.warning("Unable to open connection [url=" + resourceUrl + ", ex=" + ioe + "]");
+            log.warning("Unable to open connection [url=" + resourceUrl + ", ex=" + ioe + "]");
         }
 
         if (ucon == null) {
@@ -85,10 +87,10 @@ public class NetworkResourceBundle extends ResourceBundle
             ucon.connect();
             return ucon.getInputStream();
         } catch (IOException ioe) {
-            Log.warning("Unable to open input stream [url=" + resourceUrl + ", ex=" + ioe + "]");
+            log.warning("Unable to open input stream [url=" + resourceUrl + ", ex=" + ioe + "]");
             return null;
         } catch (AccessControlException ace) {
-            Log.warning("Unable to connect due to access permissions [url=" + resourceUrl + "]");
+            log.warning("Unable to connect due to access permissions [url=" + resourceUrl + "]");
             throw ace;
         }
     }

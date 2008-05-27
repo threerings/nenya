@@ -27,8 +27,9 @@ import java.util.Comparator;
 import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.ListUtil;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.data.ObjectInfo;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Used to store an (arbitrarily) ordered, low-impact iteratable (doesn't
@@ -48,7 +49,7 @@ public class ObjectSet
         int ipos = indexOf(info);
         if (ipos >= 0) {
             // log a warning because the caller shouldn't be doing this
-            Log.warning("Requested to add an object to a set that already " +
+            log.warning("Requested to add an object to a set that already " +
                         "contains such an object [ninfo=" + info +
                         ", oinfo=" + _objs[ipos] + "].");
             Thread.dumpStack();

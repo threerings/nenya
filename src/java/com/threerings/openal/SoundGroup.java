@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
+import static com.threerings.openal.Log.log;
+
 /**
  * Manages a group of sounds, binding them to OpenAL sources as they are
  * played and freeing up those sources for use by other sounds when the
@@ -107,7 +109,7 @@ public class SoundGroup
         AL10.alGenSources(_sourceIds);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
-            Log.warning("Failed to create sources [cprov=" + provider +
+            log.warning("Failed to create sources [cprov=" + provider +
                         ", sources=" + sources + ", errno=" + errno + "].");
             _sourceIds = null;
             // we'll have no sources which means all requests to play

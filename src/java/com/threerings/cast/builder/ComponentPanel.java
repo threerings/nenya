@@ -27,8 +27,9 @@ import javax.swing.*;
 
 import com.samskivert.swing.VGroupLayout;
 
-import com.threerings.cast.Log;
 import com.threerings.cast.*;
+
+import static com.threerings.cast.Log.log;
 
 /**
  * The component panel displays the available components for all
@@ -66,7 +67,7 @@ public class ComponentPanel extends JPanel
             if (ccomps.size() > 0) {
                 add(new ClassEditor(model, cclass, ccomps));
             } else {
-                Log.info("Not creating editor for empty class " +
+                log.info("Not creating editor for empty class " +
                          "[class=" + cclass + "].");
             }
         }

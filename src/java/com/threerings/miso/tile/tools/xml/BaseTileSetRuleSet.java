@@ -28,8 +28,9 @@ import com.samskivert.xml.CallMethodSpecialRule;
 
 import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.tile.BaseTileSet;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Parses {@link BaseTileSet} instances from a tileset description. Base
@@ -66,7 +67,7 @@ public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         // check for a <passable> element
         if (set.getPassability() == null) {
-            Log.warning("Tile set definition missing valid <passable> " +
+            log.warning("Tile set definition missing valid <passable> " +
                         "element [set=" + set + "].");
             valid = false;
         }

@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
 
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.HashIntMap;
-import com.threerings.media.Log;
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
 import com.threerings.media.tile.SimpleCachingImageProvider;
@@ -53,6 +52,8 @@ import com.threerings.media.tile.bundle.BundleUtil;
 import com.threerings.media.tile.bundle.TileSetBundle;
 import com.threerings.media.tile.tools.xml.TileSetRuleSet;
 import com.threerings.resource.FastImageIO;
+
+import static com.threerings.media.Log.log;
 
 /**
  * The tileset bundler is used to create tileset bundles from a set of XML
@@ -259,7 +260,7 @@ public class TileSetBundler
 
                 // let's be robust
                 if (name == null) {
-                    Log.warning("Tileset was parsed, but received no name " +
+                    log.warning("Tileset was parsed, but received no name " +
                                 "[set=" + set + "]. Skipping.");
                     continue;
                 }
@@ -299,7 +300,7 @@ public class TileSetBundler
             try {
                 idBroker.commit();
             } catch (PersistenceException pe) {
-                Log.warning("Failure committing brokered tileset ids " +
+                log.warning("Failure committing brokered tileset ids " +
                             "back to broker's persistent store " +
                             "[error=" + pe + "].");
             }
@@ -373,7 +374,7 @@ public class TileSetBundler
 
                 // sanity checks
                 if (imagePath == null) {
-                    Log.warning("Tileset contains no image path " +
+                    log.warning("Tileset contains no image path " +
                                 "[set=" + set + "]. It ain't gonna work.");
                     continue;
                 }
@@ -450,7 +451,7 @@ public class TileSetBundler
             // remove the incomplete jar file and rethrow the exception
             jar.close();
             if (!target.delete()) {
-                Log.warning("Failed to close botched bundle '" + target + "'.");
+                log.warning("Failed to close botched bundle '" + target + "'.");
             }
             String errmsg = "Failed to create bundle " + target + ": " + e;
             throw (IOException) new IOException(errmsg).initCause(e);

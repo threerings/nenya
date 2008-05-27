@@ -23,8 +23,9 @@ package com.threerings.media.tile.tools.xml;
 
 import org.apache.commons.digester.Digester;
 
-import com.threerings.media.Log;
 import com.threerings.media.tile.UniformTileSet;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Parses {@link UniformTileSet} instances from a tileset description. A
@@ -69,14 +70,14 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
 
         // check for a <width> element
         if (set.getWidth() == 0) {
-            Log.warning("Tile set definition missing valid <width> " +
+            log.warning("Tile set definition missing valid <width> " +
                         "element [set=" + set + "].");
             valid = false;
         }
 
         // check for a <height> element
         if (set.getHeight() == 0) {
-            Log.warning("Tile set definition missing valid <height> " +
+            log.warning("Tile set definition missing valid <height> " +
                         "element [set=" + set + "].");
             valid = false;
         }

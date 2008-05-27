@@ -28,8 +28,9 @@ import javax.swing.Icon;
 import com.samskivert.swing.RadialMenu;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.client.SceneObject;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Objects in scenes can be configured to generate action events.  Those
@@ -88,7 +89,7 @@ public class ObjectActionHandler
      */
     public void handleAction (SceneObject scobj, ActionEvent event)
     {
-        Log.warning("Unknown object action [scobj=" + scobj +
+        log.warning("Unknown object action [scobj=" + scobj +
                     ", action=" + event + "].");
     }
 
@@ -138,7 +139,7 @@ public class ObjectActionHandler
     {
         // make sure we know about potential funny business
         if (_oahandlers.containsKey(prefix)) {
-            Log.warning("Warning! Overwriting previous object action " +
+            log.warning("Warning! Overwriting previous object action " +
                         "handler registration, all hell could shortly " +
                         "break loose [prefix=" + prefix +
                         ", handler=" + handler + "].");

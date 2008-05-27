@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * A utility class for positioning animations such that they don't overlap,
@@ -61,7 +61,7 @@ public class AnimationArranger
     protected AnimationAdapter _avoidAnimObs = new AnimationAdapter() {
         public void animationCompleted (Animation anim, long when) {
             if (!_avoidAnims.remove(anim)) {
-                Log.warning("Couldn't remove avoid animation?! " + anim + ".");
+                log.warning("Couldn't remove avoid animation?! " + anim + ".");
             }
         }
     };

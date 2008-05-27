@@ -53,7 +53,6 @@ import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Tuple;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.model.Model;
 import com.threerings.jme.model.ModelController;
 import com.threerings.jme.model.ModelMesh;
@@ -61,6 +60,8 @@ import com.threerings.jme.model.ModelNode;
 import com.threerings.jme.model.SkinMesh;
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.SpatialVisitor;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * An intermediate representation for models used to store data parsed from
@@ -130,7 +131,7 @@ public class ModelDef
                 ((ModelNode)pnode).attachChild(_spatial);
 
             } else if (parent != null) {
-                Log.warning("Missing or invalid parent node [spatial=" +
+                log.warning("Missing or invalid parent node [spatial=" +
                     name + ", parent=" + parent + "].");
             }
         }
@@ -626,7 +627,7 @@ public class ModelDef
                 if (node instanceof ModelNode) {
                     bones.add((ModelNode)node);
                 } else {
-                    Log.warning("Missing or invalid bone for bone weight " +
+                    log.warning("Missing or invalid bone for bone weight " +
                         "[bone=" + bone + "].");
                 }
             }
@@ -883,7 +884,7 @@ public class ModelDef
             Spatial target = node.equals(model.getName()) ?
                 model : nodes.get(node);
             if (target == null) {
-                Log.warning("Missing controller node [name=" + node + "].");
+                log.warning("Missing controller node [name=" + node + "].");
                 continue;
             }
             ModelController ctrl = createController(subProps, target);
@@ -912,7 +913,7 @@ public class ModelDef
         try {
             ctrl = (ModelController)Class.forName(cname).newInstance();
         } catch (Exception e) {
-            Log.warning("Error instantiating controller [class=" + cname +
+            log.warning("Error instantiating controller [class=" + cname +
                 ", error=" + e + "].");
             return null;
         }

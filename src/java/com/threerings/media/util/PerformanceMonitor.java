@@ -23,9 +23,10 @@ package com.threerings.media.util;
 
 import java.util.HashMap;
 
-import com.threerings.media.Log;
 import com.threerings.media.timer.MediaTimer;
 import com.threerings.media.timer.NanoTimer;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Provides a simple mechanism for monitoring the number of times an action takes place within a
@@ -78,7 +79,7 @@ public class PerformanceMonitor
         // get the observer's action hashtable
         HashMap actions = (HashMap)_observers.get(obs);
         if (actions == null) {
-            Log.warning("Attempt to unregister by unknown observer " +
+            log.warning("Attempt to unregister by unknown observer " +
                         "[observer=" + obs + ", name=" + name + "].");
             return;
         }
@@ -86,7 +87,7 @@ public class PerformanceMonitor
         // attempt to remove the specified action
         PerformanceAction action = (PerformanceAction)actions.remove(name);
         if (action == null) {
-            Log.warning("Attempt to unregister unknown action " +
+            log.warning("Attempt to unregister unknown action " +
                         "[observer=" + obs + ", name=" + name + "].");
             return;
         }
@@ -109,7 +110,7 @@ public class PerformanceMonitor
         // get the observer's action hashtable
         HashMap actions = (HashMap)_observers.get(obs);
         if (actions == null) {
-            Log.warning("Attempt to tick by unknown observer " +
+            log.warning("Attempt to tick by unknown observer " +
                         "[observer=" + obs + ", name=" + name + "].");
             return;
         }
@@ -117,7 +118,7 @@ public class PerformanceMonitor
         // get the specified action
         PerformanceAction action = (PerformanceAction)actions.get(name);
         if (action == null) {
-            Log.warning("Attempt to tick unknown value " +
+            log.warning("Attempt to tick unknown value " +
                         "[observer=" + obs + ", name=" + name + "].");
             return;
         }

@@ -30,7 +30,8 @@ import com.samskivert.util.RandomUtil;
 import com.threerings.cast.CharacterDescriptor;
 import com.threerings.cast.ComponentClass;
 import com.threerings.cast.ComponentRepository;
-import com.threerings.cast.Log;
+
+import static com.threerings.cast.Log.log;
 
 /**
  * Miscellaneous cast utility routines.
@@ -52,7 +53,7 @@ public class CastUtil
 
             // make sure the component class exists
             if (cclass == null) {
-                Log.warning("Missing definition for component class " +
+                log.warning("Missing definition for component class " +
                             "[class=" + cname + "].");
                 continue;
             }
@@ -60,7 +61,7 @@ public class CastUtil
             // make sure there are some components in this class
             Iterator iter = crepo.enumerateComponentIds(cclass);
             if (!iter.hasNext()) {
-                Log.info("Skipping class for which we have no components " +
+                log.info("Skipping class for which we have no components " +
                          "[class=" + cclass + "].");
                 continue;
             }
@@ -84,7 +85,7 @@ public class CastUtil
                 int idx = RandomUtil.getInt(choices.size());
                 components[ii] = ((Integer)choices.get(idx)).intValue();
             } else {
-                Log.info("Have no components in class [class=" + cclass + "].");
+                log.info("Have no components in class [class=" + cclass + "].");
             }
         }
 

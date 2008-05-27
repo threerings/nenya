@@ -110,12 +110,13 @@ import com.threerings.util.MessageBundle;
 import com.threerings.util.MessageManager;
 
 import com.threerings.jme.JmeCanvasApp;
-import com.threerings.jme.Log;
 import com.threerings.jme.camera.CameraHandler;
 import com.threerings.jme.model.Model;
 import com.threerings.jme.model.TextureProvider;
 import com.threerings.jme.util.ShaderCache;
 import com.threerings.jme.util.SpatialVisitor;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A simple viewer application that allows users to examine models and their animations by loading
@@ -136,7 +137,7 @@ public class ModelViewer extends JmeCanvasApp
                 System.setErr(logOut);
 
             } catch (IOException ioe) {
-                Log.warning("Failed to open debug log [path=" + dlog +
+                log.warning("Failed to open debug log [path=" + dlog +
                             ", error=" + ioe + "].");
             }
         }
@@ -731,7 +732,7 @@ public class ModelViewer extends JmeCanvasApp
                     Texture tex = TextureManager.loadTexture(file.toString(),
                         Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
                     if (tex == null) {
-                        Log.warning("Couldn't find texture [path=" + file +
+                        log.warning("Couldn't find texture [path=" + file +
                             "].");
                         return null;
                     }

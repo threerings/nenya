@@ -26,7 +26,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Used to create a path that is a sequence of several other paths.
@@ -81,7 +81,7 @@ public class PathSequence
     public boolean tick (Pathable pable, long tickStamp)
     {
         if (pable != _pable) {
-            Log.warning("PathSequence ticked with different path than " +
+            log.warning("PathSequence ticked with different path than " +
                 "it was inited with.");
         }
         return _curPath.tick(_pableRep, tickStamp);

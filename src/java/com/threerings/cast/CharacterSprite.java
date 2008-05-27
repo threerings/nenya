@@ -28,6 +28,8 @@ import javax.swing.SwingUtilities;
 
 import com.threerings.media.sprite.ImageSprite;
 
+import static com.threerings.cast.Log.log;
+
 /**
  * A character sprite is a sprite that animates itself while walking
  * about in a scene.
@@ -126,7 +128,7 @@ public class CharacterSprite extends ImageSprite
     {
         // sanity check
         if (action == null) {
-            Log.warning("Refusing to set null action sequence " + this + ".");
+            log.warning("Refusing to set null action sequence " + this + ".");
             Thread.dumpStack();
             return;
         }
@@ -143,7 +145,7 @@ public class CharacterSprite extends ImageSprite
     public void setOrientation (int orient)
     {
         if (orient < 0 || orient >= FINE_DIRECTION_COUNT) {
-            Log.info("Refusing to set invalid orientation [sprite=" + this +
+            log.info("Refusing to set invalid orientation [sprite=" + this +
                      ", orient=" + orient + "].");
             Thread.dumpStack();
             return;
@@ -257,13 +259,12 @@ public class CharacterSprite extends ImageSprite
             setFrameRate(actseq.framesPerSecond);
 
         } catch (NoSuchComponentException nsce) {
-            Log.warning("Character sprite references non-existent " +
+            log.warning("Character sprite references non-existent " +
                         "component [sprite=" + this + ", err=" + nsce + "].");
 
         } catch (Exception e) {
-            Log.warning("Failed to obtain action frames [sprite=" + this +
-                        ", descrip=" + _descrip + ", action=" + _action + "].");
-            Log.logStackTrace(e);
+            log.warning("Failed to obtain action frames [sprite=" + this +
+                        ", descrip=" + _descrip + ", action=" + _action + "].", e);
         }
     }
 
@@ -282,7 +283,7 @@ public class CharacterSprite extends ImageSprite
     {
         if (_descrip.getComponentIds() == null ||
             _descrip.getComponentIds().length == 0) {
-            Log.warning("Invalid character descriptor [sprite=" + this +
+            log.warning("Invalid character descriptor [sprite=" + this +
                         ", descrip=" + _descrip + "].");
             Thread.dumpStack();
         }
@@ -316,7 +317,7 @@ public class CharacterSprite extends ImageSprite
 
         // we now need to update the render offset for this frame
         if (_aframes == null) {
-            Log.warning("Have no action frames! " + _aframes + ".");
+            log.warning("Have no action frames! " + _aframes + ".");
         } else {
             _oxoff = _aframes.getXOrigin(_orient, frameIdx);
             _oyoff = _aframes.getYOrigin(_orient, frameIdx);

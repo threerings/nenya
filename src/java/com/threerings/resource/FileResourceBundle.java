@@ -38,6 +38,8 @@ import com.samskivert.util.StringUtil;
 
 import org.apache.commons.io.IOUtils;
 
+import static com.threerings.resource.Log.log;
+
 /**
  * A resource bundle provides access to the resources in a jar file.
  */
@@ -135,16 +137,16 @@ public class FileResourceBundle extends ResourceBundle
             try {
                 resolveJarFile();
             } catch (IOException ioe) {
-                Log.warning("Failure resolving jar file '" + _source +
+                log.warning("Failure resolving jar file '" + _source +
                             "': " + ioe + ".");
                 wipeBundle(true);
                 return false;
             }
 
-            Log.info("Unpacking into " + _cache + "...");
+            log.info("Unpacking into " + _cache + "...");
             if (!_cache.exists()) {
                 if (!_cache.mkdir()) {
-                    Log.warning("Failed to create bundle cache directory '" +
+                    log.warning("Failed to create bundle cache directory '" +
                                 _cache + "'.");
                     closeJar();
                     // we are hopelessly fucked
@@ -166,11 +168,11 @@ public class FileResourceBundle extends ResourceBundle
             try {
                 _unpacked.createNewFile();
                 if (!_unpacked.setLastModified(_sourceLastMod)) {
-                    Log.warning("Failed to set last mod on stamp file '" +
+                    log.warning("Failed to set last mod on stamp file '" +
                                 _unpacked + "'.");
                 }
             } catch (IOException ioe) {
-                Log.warning("Failure creating stamp file '" + _unpacked +
+                log.warning("Failure creating stamp file '" + _unpacked +
                             "': " + ioe + ".");
                 // no need to stick a fork in things at this point
             }
@@ -200,14 +202,14 @@ public class FileResourceBundle extends ResourceBundle
         // that we ensure that it is revalidated
         File vfile = new File(FileUtil.resuffix(_source, ".jar", ".jarv"));
         if (vfile.exists() && !vfile.delete()) {
-            Log.warning("Failed to delete " + vfile + ".");
+            log.warning("Failed to delete " + vfile + ".");
         }
 
         // close and delete our source jar file
         if (deleteJar && _source != null) {
             closeJar();
             if (!_source.delete()) {
-                Log.warning("Failed to delete " + _source +
+                log.warning("Failed to delete " + _source +
                             " [exists=" + _source.exists() + "].");
             }
         }
@@ -329,8 +331,7 @@ public class FileResourceBundle extends ResourceBundle
         } catch (IOException ioe) {
             String msg = "Failed to resolve resource bundle jar file '" +
                 _source + "'";
-            Log.warning(msg + ".");
-            Log.logStackTrace(ioe);
+            log.warning(msg + ".", ioe);
             throw (IOException) new IOException(msg).initCause(ioe);
         }
     }
@@ -345,7 +346,7 @@ public class FileResourceBundle extends ResourceBundle
                 _jarSource.close();
             }
         } catch (Exception ioe) {
-            Log.warning("Failed to close jar file [path=" + _source +
+            log.warning("Failed to close jar file [path=" + _source +
                         ", error=" + ioe + "].");
         }
     }
@@ -358,7 +359,7 @@ public class FileResourceBundle extends ResourceBundle
         if (_tmpdir == null) {
             String tmpdir = System.getProperty("java.io.tmpdir");
             if (tmpdir == null) {
-                Log.info("No system defined temp directory. Faking it.");
+                log.info("No system defined temp directory. Faking it.");
                 tmpdir = System.getProperty("user.home");
             }
             setCacheDir(new File(tmpdir));
@@ -375,16 +376,16 @@ public class FileResourceBundle extends ResourceBundle
         _tmpdir = new File(tmpdir, "narcache_" + rando);
         if (!_tmpdir.exists()) {
             if (_tmpdir.mkdirs()) {
-                Log.debug("Created narya temp cache directory '" + _tmpdir + "'.");
+                log.debug("Created narya temp cache directory '" + _tmpdir + "'.");
             } else {
-                Log.warning("Failed to create temp cache directory '" + _tmpdir + "'.");
+                log.warning("Failed to create temp cache directory '" + _tmpdir + "'.");
             }
         }
 
         // add a hook to blow away the temp directory when we exit
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run () {
-                Log.info("Clearing narya temp cache '" + _tmpdir + "'.");
+                log.info("Clearing narya temp cache '" + _tmpdir + "'.");
                 FileUtil.recursiveDelete(_tmpdir);
             }
         });

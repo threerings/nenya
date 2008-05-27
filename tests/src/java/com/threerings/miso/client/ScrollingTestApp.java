@@ -50,10 +50,11 @@ import com.threerings.cast.CharacterSprite;
 import com.threerings.cast.NoSuchComponentException;
 import com.threerings.cast.bundle.BundledComponentRepository;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.MisoConfig;
 import com.threerings.miso.tile.MisoTileManager;
 import com.threerings.miso.util.MisoContext;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Tests the scrolling capabilities of the IsoSceneView.
@@ -72,7 +73,7 @@ public class ScrollingTestApp
 
         // get the target graphics device
         GraphicsDevice gd = env.getDefaultScreenDevice();
-        Log.info("Graphics device [dev=" + gd +
+        log.info("Graphics device [dev=" + gd +
                  ", mem=" + gd.getAvailableAcceleratedMemory() +
                  ", displayChange=" + gd.isDisplayChangeSupported() +
                  ", fullScreen=" + gd.isFullScreenSupported() + "].");
@@ -80,7 +81,7 @@ public class ScrollingTestApp
         // get the graphics configuration and display mode information
         GraphicsConfiguration gc = gd.getDefaultConfiguration();
         DisplayMode dm = gd.getDisplayMode();
-        Log.info("Display mode [bits=" + dm.getBitDepth() +
+        log.info("Display mode [bits=" + dm.getBitDepth() +
                  ", wid=" + dm.getWidth() + ", hei=" + dm.getHeight() +
                  ", refresh=" + dm.getRefreshRate() + "].");
 
@@ -132,7 +133,7 @@ public class ScrollingTestApp
             }
 
         } catch (NoSuchComponentException nsce) {
-            Log.warning("Can't locate ship component [class=" + scclass +
+            log.warning("Can't locate ship component [class=" + scclass +
                         ", name=" + scname + "].");
         }
 
@@ -159,12 +160,12 @@ public class ScrollingTestApp
         // size and position the window, entering full-screen exclusive
         // mode if available
         if (gd.isFullScreenSupported()) {
-            Log.info("Entering full-screen exclusive mode.");
+            log.info("Entering full-screen exclusive mode.");
             gd.setFullScreenWindow(_frame);
             _frame.setUndecorated(true);
 
         } else {
-            Log.warning("Full-screen exclusive mode not available.");
+            log.warning("Full-screen exclusive mode not available.");
             // _frame.pack();
             _frame.setSize(200, 300);
             SwingUtil.centerWindow(_frame);
@@ -173,8 +174,7 @@ public class ScrollingTestApp
         try {
             _panel.setSceneModel(new ScrollingScene(ctx));
         } catch (Exception e) {
-            Log.warning("Error creating scene: " + e);
-            Log.logStackTrace(e);
+            log.warning("Error creating scene.", e);
         }
     }
 

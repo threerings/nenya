@@ -27,8 +27,9 @@ import java.util.HashMap;
 
 import com.samskivert.io.PersistenceException;
 
-import com.threerings.media.Log;
 import com.threerings.media.image.ImageManager;
+
+import static com.threerings.media.Log.log;
 
 /**
  * The tile manager provides a simplified interface for retrieving and
@@ -170,7 +171,7 @@ public class TileManager
         try {
             return _setrep.getTileSet(tileSetId);
         } catch (PersistenceException pe) {
-            Log.warning("Failure loading tileset [id=" + tileSetId +
+            log.warning("Failure loading tileset [id=" + tileSetId +
                         ", error=" + pe + "].");
             throw new NoSuchTileSetException(tileSetId);
         }
@@ -193,7 +194,7 @@ public class TileManager
         try {
             return _setrep.getTileSet(name);
         } catch (PersistenceException pe) {
-            Log.warning("Failure loading tileset [name=" + name +
+            log.warning("Failure loading tileset [name=" + name +
                         ", error=" + pe + "].");
             throw new NoSuchTileSetException(name);
         }

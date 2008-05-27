@@ -40,9 +40,10 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.OutputCapsule;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.ShaderCache;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A {@link Node} with a serialization mechanism tailored to stored models.

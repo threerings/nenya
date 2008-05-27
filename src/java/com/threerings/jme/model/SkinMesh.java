@@ -60,10 +60,11 @@ import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.ListUtil;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.ShaderCache;
 import com.threerings.jme.util.ShaderConfig;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A triangle mesh that deforms according to a bone hierarchy.

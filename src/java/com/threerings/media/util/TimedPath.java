@@ -21,7 +21,7 @@
 
 package com.threerings.media.util;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * A base class for path implementations that endeavor to move their
@@ -37,7 +37,7 @@ public abstract class TimedPath implements Path
     {
         // sanity check some things
         if (duration <= 0) {
-            Log.warning("Requested path with illegal duration (<=0) " +
+            log.warning("Requested path with illegal duration (<=0) " +
                         "[duration=" + duration + "]");
             Thread.dumpStack();
             duration = 1; // assume something short but non-zero

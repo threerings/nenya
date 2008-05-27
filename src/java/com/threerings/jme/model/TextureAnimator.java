@@ -37,10 +37,11 @@ import com.jme.util.export.OutputCapsule;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.JmeUtil.FrameState;
 import com.threerings.jme.util.SpatialVisitor;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * Animates a model's textures by flipping between different parts.

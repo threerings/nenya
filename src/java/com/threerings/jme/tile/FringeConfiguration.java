@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
+import static com.threerings.jme.Log.log;
 
 /**
  * Used to manage data about which tiles fringe on which others and how
@@ -54,7 +54,7 @@ public class FringeConfiguration implements Serializable
             if (record.isValid()) {
                 fringes.add(record);
             } else {
-                Log.warning("Not adding invalid fringe record [tile=" + this +
+                log.warning("Not adding invalid fringe record [tile=" + this +
                             ", fringe=" + record + "].");
             }
         }
@@ -112,7 +112,7 @@ public class FringeConfiguration implements Serializable
         if (record.isValid()) {
             _trecs.put(record.type, record);
         } else {
-            Log.warning("Refusing to add invalid tile record " +
+            log.warning("Refusing to add invalid tile record " +
                         "[tile=" + record + "].");
         }
     }

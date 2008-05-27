@@ -57,8 +57,9 @@ import com.samskivert.util.StringUtil;
 
 import com.threerings.resource.ResourceManager;
 
-import com.threerings.media.Log;
 import com.threerings.media.MediaPrefs;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Manages the playing of audio files.
@@ -363,11 +364,11 @@ public class SoundManager
         boolean queued = enqueue(skey, true);
         if (queued) {
             if (_verbose.getValue()) {
-                Log.info("Sound request [key=" + skey.key + "].");
+                log.info("Sound request [key=" + skey.key + "].");
             }
 
         } else /* if (_verbose.getValue()) */ {
-            Log.warning("SoundManager not playing sound because too many sounds in queue " +
+            log.warning("SoundManager not playing sound because too many sounds in queue " +
                         "[key=" + skey + "].");
         }
     }
@@ -433,7 +434,7 @@ public class SoundManager
                 processKey(key);
 
             } catch (Exception e) {
-                Log.logStackTrace(e);
+                log.warning(e);
             }
         }
     }
@@ -516,7 +517,7 @@ public class SoundManager
 
             } else if (key.isExpired()) {
                 if (_verbose.getValue()) {
-                    Log.info("Sound expired [key=" + key.key + "].");
+                    log.info("Sound expired [key=" + key.key + "].");
                 }
                 return;
 
@@ -563,7 +564,7 @@ public class SoundManager
                     } catch (IOException e) {
                         // this shouldn't ever ever happen because the stream
                         // we're given is from a reliable source
-                        Log.warning("Error reading clip data! [e=" + e + "].");
+                        log.warning("Error reading clip data! [e=" + e + "].");
                         return;
                     }
 
@@ -610,19 +611,19 @@ public class SoundManager
             } catch (InterruptedException ie) { }
 
         } catch (IOException ioe) {
-            Log.warning("Error loading sound file [key=" + key + ", e=" + ioe + "].");
+            log.warning("Error loading sound file [key=" + key + ", e=" + ioe + "].");
 
         } catch (UnsupportedAudioFileException uafe) {
-            Log.warning("Unsupported sound format [key=" + key + ", e=" + uafe + "].");
+            log.warning("Unsupported sound format [key=" + key + ", e=" + uafe + "].");
 
         } catch (LineUnavailableException lue) {
             String err = "Line not available to play sound [key=" + key.key + ", e=" + lue + "].";
             if (_soundSeemsToWork) {
-                Log.warning(err);
+                log.warning(err);
             } else {
                 // this error comes every goddamned time we play a sound on someone with a 
                 // misconfigured sound card, so let's just keep it to ourselves
-                Log.debug(err);
+                log.debug(err);
             }
 
         } finally {
@@ -676,7 +677,7 @@ public class SoundManager
                     Config c = getConfig(key);
                     String[] names = c.getValue(key.key, (String[])null);
                     if (names == null) {
-                        Log.warning("No such sound [key=" + key + "].");
+                        log.warning("No such sound [key=" + key + "].");
                         return null;
                     }
 
@@ -739,7 +740,7 @@ public class SoundManager
             try {
                 return new FileInputStream(pick);
             } catch (Exception e) {
-                Log.warning("Error reading test sound [e=" + e + ", file=" + pick + "].");
+                log.warning("Error reading test sound [e=" + e + ", file=" + pick + "].");
             }
         }
         return null;
@@ -761,7 +762,7 @@ public class SoundManager
             } catch (FileNotFoundException fnfe2) {
                 // only play the default sound if we have verbose sound debugging turned on.
                 if (_verbose.getValue()) {
-                    Log.warning("Could not locate sound data [bundle=" + bundle + 
+                    log.warning("Could not locate sound data [bundle=" + bundle + 
                                 ", path=" + path + "].");
                     if (_defaultClipPath != null) {
                         try {
@@ -770,14 +771,14 @@ public class SoundManager
                             try {
                                 clipin = _rmgr.getResource(_defaultClipPath);
                             } catch (FileNotFoundException fnfe4) {
-                                Log.warning("Additionally, the default " +
+                                log.warning("Additionally, the default " +
                                     "fallback sound could not be located " +
                                     "[bundle=" + _defaultClipBundle +
                                     ", path=" + _defaultClipPath + "].");
                             }
                         }
                     } else {
-                        Log.warning("No fallback default sound specified!");
+                        log.warning("No fallback default sound specified!");
                     }
                 }
                 // if we couldn't load the default, rethrow
@@ -803,7 +804,7 @@ public class SoundManager
                 props = ConfigUtil.loadInheritedProperties(
                     propPath + ".properties", _rmgr.getClassLoader());
             } catch (IOException ioe) {
-                Log.warning("Failed to load sound properties " +
+                log.warning("Failed to load sound properties " +
                             "[path=" + propPath + ", error=" + ioe + "].");
             }
             c = new Config(propPath, props);
@@ -865,7 +866,7 @@ public class SoundManager
             FloatControl control = (FloatControl) line.getControl(FloatControl.Type.PAN);
             control.setValue(pan);
         } catch (Exception e) {
-            Log.debug("Cannot set pan on line: " + e);
+            log.debug("Cannot set pan on line: " + e);
         }
     }
 

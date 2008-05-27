@@ -29,12 +29,13 @@ import com.samskivert.util.HashIntMap;
 import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
 
-import com.threerings.media.Log;
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.tile.IMImageProvider;
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileSetRepository;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Loads tileset data from a set of resource bundles.
@@ -81,7 +82,7 @@ public class BundledTileSetRepository
 
         // sanity check
         if (rbundles == null) {
-            Log.warning("Unable to fetch tileset resource set " +
+            log.warning("Unable to fetch tileset resource set " +
                         "[name=" + name + "]. Perhaps it's not defined " +
                         "in the resource manager config?");
             return;
@@ -127,11 +128,8 @@ public class BundledTileSetRepository
             addBundle(idmap, namemap, tsb);
 
         } catch (Exception e) {
-            Log.warning("Unable to load tileset bundle '" +
-                        BundleUtil.METADATA_PATH + "' from resource " +
-                        "bundle [rbundle=" + bundle +
-                        ", error=" + e + "].");
-            Log.logStackTrace(e);
+            log.warning("Unable to load tileset bundle '" + BundleUtil.METADATA_PATH +
+                        "' from resource bundle [rbundle=" + bundle + "].", e);
         }
     }
 
@@ -216,7 +214,7 @@ public class BundledTileSetRepository
             try {
                 wait();
             } catch (InterruptedException ie) {
-                Log.warning("Interrupted waiting for bundles " + ie);
+                log.warning("Interrupted waiting for bundles " + ie);
             }
         }
     }

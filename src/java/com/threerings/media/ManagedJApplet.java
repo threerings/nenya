@@ -30,7 +30,7 @@ import java.awt.Window;
 import javax.swing.JApplet;
 import javax.swing.RepaintManager;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * When using the {@link FrameManager} in an Applet, one must use this

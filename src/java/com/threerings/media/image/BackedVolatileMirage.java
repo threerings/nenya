@@ -25,7 +25,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Provides a volatile mirage that is backed by a buffered image that is
@@ -63,8 +63,7 @@ public class BackedVolatileMirage extends VolatileMirage
             gfx.drawImage(_source, -_bounds.x, -_bounds.y, null);
 
         } catch (Exception e) {
-            Log.warning("Failure refreshing mirage " + this + ".");
-            Log.logStackTrace(e);
+            log.warning("Failure refreshing mirage " + this + ".", e);
 
         } finally {
             gfx.dispose();

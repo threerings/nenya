@@ -29,7 +29,7 @@ import java.awt.RenderingHints;
 import com.samskivert.swing.Label;
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Does something extraordinary.

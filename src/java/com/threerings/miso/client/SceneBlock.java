@@ -40,12 +40,13 @@ import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
 import com.threerings.media.util.MathUtil;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.tile.BaseTile;
 import com.threerings.miso.util.MisoUtil;
 import com.threerings.miso.util.ObjectSet;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Contains the base and object tile information on a particular
@@ -133,7 +134,7 @@ public class SceneBlock
         long stamp = System.currentTimeMillis();
         long elapsed = stamp - now;
         if (elapsed > 500L) {
-            Log.warning("Base and fringe resolution took long time " +
+            log.warning("Base and fringe resolution took long time " +
                         "[block=" + this + ", baseCount=" + baseCount +
                         ", fringeCount=" + fringeCount +
                         ", elapsed=" + elapsed + "].");
@@ -159,7 +160,7 @@ public class SceneBlock
             elapsed = stamp - now;
             now = stamp;
             if (elapsed > 250L) {
-                Log.warning("Scene object took look time to resolve " +
+                log.warning("Scene object took look time to resolve " +
                             "[block=" + this + ", scobj=" + scobj +
                             ", elapsed=" + elapsed + "].");
             }
@@ -173,7 +174,7 @@ public class SceneBlock
                 _defset = _panel.getTileManager().getTileSet(bsetid);
             }
         } catch (Exception e) {
-            Log.warning("Unable to fetch default base tileset [tsid=" + bsetid +
+            log.warning("Unable to fetch default base tileset [tsid=" + bsetid +
                         ", error=" + e + "].");
         }
 
@@ -304,7 +305,7 @@ public class SceneBlock
         }
 
         if (errmsg != null) {
-            Log.warning(errmsg + " [fqtid=" + fqTileId +
+            log.warning(errmsg + " [fqtid=" + fqTileId +
                         ", x=" + tx + ", y=" + ty + "].");
         }
     }
@@ -421,7 +422,7 @@ public class SceneBlock
                     bases.put(base.key, base);
                     usage[0] += base.getEstimatedMemoryUsage();
                 } else if (base != _base[tidx]) {
-                    Log.warning("Multiple instances of same base tile " +
+                    log.warning("Multiple instances of same base tile " +
                                 "[base=" + base +
                                 ", x=" + xx + ", y=" + yy + "].");
                     usage[0] += base.getEstimatedMemoryUsage();
@@ -446,7 +447,7 @@ public class SceneBlock
                 objects.put(scobj.tile.key, scobj.tile);
                 usage[2] += scobj.tile.getEstimatedMemoryUsage();
             } else if (tile != scobj.tile) {
-                Log.warning("Multiple instances of same object tile: " +
+                log.warning("Multiple instances of same object tile: " +
                             scobj.info + ".");
                 usage[2] += scobj.tile.getEstimatedMemoryUsage();
             }

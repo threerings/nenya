@@ -39,7 +39,8 @@ import com.threerings.media.image.ImageManager;
 import com.threerings.util.DirectionCodes;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
-import com.threerings.cast.Log;
+
+import static com.threerings.cast.Log.log;
 
 /**
  * The character manager provides facilities for constructing sprites that
@@ -67,7 +68,7 @@ public class CharacterManager
 
         // create a cache for our composited action frames
         int acsize = _cacheSize.getValue();
-        Log.debug("Creating action cache [size=" + acsize + "k].");
+        log.debug("Creating action cache [size=" + acsize + "k].");
         _frameCache = new LRUHashMap(acsize*1024, new LRUHashMap.ItemSizer() {
             public int computeSize (Object value) {
                 return (int)((CompositedMultiFrameImage)
@@ -147,9 +148,7 @@ public class CharacterManager
             return sprite;
 
         } catch (Exception e) {
-            Log.warning("Failed to instantiate character sprite " +
-                        "[e=" + e + "].");
-            Log.logStackTrace(e);
+            log.warning("Failed to instantiate character sprite.", e);
             return null;
         }
     }
@@ -181,7 +180,7 @@ public class CharacterManager
         if (!_cacheStatThrottle.throttleOp()) {
             long size = getEstimatedCacheMemoryUsage();
             int[] eff = _frameCache.getTrackedEffectiveness();
-            Log.debug("CharacterManager LRU [mem=" + (size / 1024) + "k" +
+            log.debug("CharacterManager LRU [mem=" + (size / 1024) + "k" +
                       ", size=" + _frameCache.size() + ", hits=" + eff[0] +
                       ", misses=" + eff[1] + "].");
         }
@@ -202,12 +201,12 @@ public class CharacterManager
     {
         try {
             if (getActionFrames(desc, action) == null) {
-                Log.warning("Failed to resolve action sequence " +
+                log.warning("Failed to resolve action sequence " +
                             "[desc=" + desc + ", action=" + action + "].");
             }
 
         } catch (NoSuchComponentException nsce) {
-            Log.warning("Failed to resolve action sequence " +
+            log.warning("Failed to resolve action sequence " +
                         "[nsce=" + nsce + "].");
         }
     }
@@ -254,7 +253,7 @@ public class CharacterManager
         Colorization[][] zations = descrip.getColorizations();
         Point[] xlations = descrip.getTranslations();
 
-        Log.debug("Compositing action [action=" + action +
+        log.debug("Compositing action [action=" + action +
                   ", descrip=" + descrip + "].");
 
         // this will be used to construct any shadow layers
@@ -337,7 +336,7 @@ public class CharacterManager
     {
         final ComponentClass cclass = _crepo.getComponentClass(sclass);
         if (cclass == null) {
-            Log.warning("Components reference non-existent shadow layer " +
+            log.warning("Components reference non-existent shadow layer " +
                         "class [sclass=" + sclass +
                         ", scomps=" + StringUtil.toString(scomps) + "].");
             return null;

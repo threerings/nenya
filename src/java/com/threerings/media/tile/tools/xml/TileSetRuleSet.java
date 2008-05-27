@@ -28,8 +28,9 @@ import com.samskivert.util.StringUtil;
 import com.samskivert.xml.ValidatedSetNextRule.Validator;
 import com.samskivert.xml.ValidatedSetNextRule;
 
-import com.threerings.media.Log;
 import com.threerings.media.tile.TileSet;
+
+import static com.threerings.media.Log.log;
 
 /**
  * The tileset rule set is used to parse the base attributes of a tileset
@@ -106,14 +107,14 @@ public abstract class TileSetRuleSet
 
         // check for the 'name' attribute
         if (StringUtil.isBlank(set.getName())) {
-            Log.warning("Tile set definition missing 'name' attribute " +
+            log.warning("Tile set definition missing 'name' attribute " +
                         "[set=" + set + "].");
             valid = false;
         }
 
         // check for an <imagePath> element
         if (StringUtil.isBlank(set.getImagePath())) {
-            Log.warning("Tile set definition missing <imagePath> element " +
+            log.warning("Tile set definition missing <imagePath> element " +
                         "[set=" + set + "].");
             valid = false;
         }

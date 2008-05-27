@@ -27,10 +27,11 @@ import java.io.IOException;
 
 import com.samskivert.util.LRUHashMap;
 
-import com.threerings.media.Log;
 import com.threerings.media.image.BufferedMirage;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.Mirage;
+
+import static com.threerings.media.Log.log;
 
 /**
  * An image provider that can be used by command line tools to load images and provide them to
@@ -47,7 +48,7 @@ public abstract class SimpleCachingImageProvider implements ImageProvider
                 image = loadImage(path);
                 _cache.put(path, image);
             } catch (IOException ioe) {
-                Log.warning("Failed to load image [path=" + path + ", ioe=" + ioe + "].");
+                log.warning("Failed to load image [path=" + path + ", ioe=" + ioe + "].");
             }
         }
         return image;

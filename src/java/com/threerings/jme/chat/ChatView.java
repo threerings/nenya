@@ -46,7 +46,8 @@ import com.threerings.crowd.chat.data.UserMessage;
 import com.threerings.crowd.data.PlaceObject;
 
 import com.threerings.jme.JmeContext;
-import com.threerings.jme.Log;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * Displays chat messages and allows for their input.
@@ -140,7 +141,7 @@ public class ChatView extends BContainer
             return true;
 
         } else {
-            Log.warning("Received unknown message type: " + msg + ".");
+            log.warning("Received unknown message type: " + msg + ".");
             return false;
         }
     }

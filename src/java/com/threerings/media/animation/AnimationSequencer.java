@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * An animation that provides facilities for adding a sequence of
@@ -245,7 +245,7 @@ public class AnimationSequencer extends Animation
                 try {
                     _completionAction.run();
                 } catch (Throwable t) {
-                    Log.logStackTrace(t);
+                    log.warning(t);
                 }
             }
 

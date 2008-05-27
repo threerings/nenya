@@ -36,11 +36,12 @@ import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.ObjectTile;
 import com.threerings.media.tile.TileUtil;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.MisoPrefs;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.util.MisoSceneMetrics;
 import com.threerings.miso.util.MisoUtil;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Contains resolved information on an object in a scene.
@@ -256,7 +257,7 @@ public class SceneObject
             computeInfo(panel.getSceneMetrics());
 
         } catch (NoSuchTileSetException te) {
-            Log.warning("Scene contains non-existent object tileset " +
+            log.warning("Scene contains non-existent object tileset " +
                         "[info=" + info + "].");
         }
     }

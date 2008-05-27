@@ -40,8 +40,9 @@ import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.data.MisoSceneModel;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Automatically fringes a scene according to the rules in the supplied fringe configuration.
@@ -116,7 +117,7 @@ public class AutoFringer
                         BaseTile bt = (BaseTile) _tmgr.getTile(btid);
                         passable = bt.isPassable();
                     } catch (NoSuchTileSetException nstse) {
-                        Log.warning("Autofringer couldn't find a base " +
+                        log.warning("Autofringer couldn't find a base " +
                             "set while attempting to figure passability " +
                             "[error=" + nstse + "].");
                     }
@@ -160,7 +161,7 @@ public class AutoFringer
                 try {
                     ftimg = getTileImage(ftimg, fringers[ii].baseset, indexes[jj], masks, hashValue);
                 } catch (NoSuchTileSetException nstse) {
-                    Log.warning("Autofringer couldn't find a needed tileset [error=" + nstse + "].");
+                    log.warning("Autofringer couldn't find a needed tileset [error=" + nstse + "].");
                 }
             }
         }

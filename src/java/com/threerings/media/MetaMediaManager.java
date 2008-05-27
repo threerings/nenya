@@ -38,6 +38,8 @@ import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.animation.Animation;
 import com.threerings.media.animation.AnimationManager;
 
+import static com.threerings.media.Log.log;
+
 /**
  * Coordinates interaction between a sprite and animation manager and the media host that hosts and
  * renders them. This class is a little fiddly because {@link MediaPanel} has been around a long
@@ -98,7 +100,7 @@ public class MetaMediaManager
     {
         // sanity check
         if ((paused && (_pauseTime != 0)) || (!paused && (_pauseTime == 0))) {
-            Log.warning("Requested to pause when paused or vice-versa [paused=" + paused + "].");
+            log.warning("Requested to pause when paused or vice-versa [paused=" + paused + "].");
             return;
         }
 

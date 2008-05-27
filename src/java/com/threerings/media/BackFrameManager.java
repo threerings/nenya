@@ -27,6 +27,8 @@ import java.awt.GraphicsConfiguration;
 import java.awt.Rectangle;
 import java.awt.image.VolatileImage;
 
+import static com.threerings.media.Log.log;
+
 /**
  * A {@link FrameManager} extension that uses a volatile off-screen image
  * to do its rendering.
@@ -53,7 +55,7 @@ public class BackFrameManager extends FrameManager
 
             // if we've changed resolutions, recreate the buffer
             if (valres == VolatileImage.IMAGE_INCOMPATIBLE) {
-                Log.info("Back buffer incompatible, recreating.");
+                log.info("Back buffer incompatible, recreating.");
                 createBackBuffer(gc);
             }
 

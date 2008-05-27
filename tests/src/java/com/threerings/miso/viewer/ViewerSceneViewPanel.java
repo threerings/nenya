@@ -42,11 +42,12 @@ import com.threerings.media.util.Path;
 import com.threerings.media.util.PerformanceMonitor;
 import com.threerings.media.util.PerformanceObserver;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.MisoConfig;
 import com.threerings.miso.client.MisoScenePanel;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.util.MisoContext;
+
+import static com.threerings.miso.Log.log;
 
 public class ViewerSceneViewPanel extends MisoScenePanel
     implements PerformanceObserver, PathObserver
@@ -78,7 +79,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
     public void setSceneModel (MisoSceneModel model)
     {
         super.setSceneModel(model);
-        Log.info("Using " + model + ".");
+        log.info("Using " + model + ".");
     }
 
     // documentation inherited
@@ -144,7 +145,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
     // documentation inherited
     public void checkpoint (String name, int ticks)
     {
-        Log.info(name + " [ticks=" + ticks + "].");
+        log.info(name + " [ticks=" + ticks + "].");
     }
 
     // documentation inherited
@@ -153,7 +154,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
         super.mousePressed(e);
 
         int x = e.getX(), y = e.getY();
-        Log.info("Mouse pressed +" + x + "+" + y);
+        log.info("Mouse pressed +" + x + "+" + y);
 
         switch (e.getModifiers()) {
         case MouseEvent.BUTTON1_MASK:

@@ -26,7 +26,7 @@ import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * A mirage implementation which allows the image to be maintained in
@@ -76,8 +76,7 @@ public class CachedVolatileMirage extends VolatileMirage
             }
 
         } catch (Exception e) {
-            Log.warning("Failure refreshing mirage " + this + ".");
-            Log.logStackTrace(e);
+            log.warning("Failure refreshing mirage " + this + ".", e);
 
         } finally {
             if (gfx != null) {

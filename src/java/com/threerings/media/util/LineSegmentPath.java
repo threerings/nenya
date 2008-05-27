@@ -34,8 +34,9 @@ import com.samskivert.util.StringUtil;
 import com.threerings.util.DirectionCodes;
 import com.threerings.util.DirectionUtil;
 
-import com.threerings.media.Log;
 import com.threerings.media.util.MathUtil;
+
+import static com.threerings.media.Log.log;
 
 /**
  * The line segment path is used to cause a pathable to follow a path that
@@ -160,7 +161,7 @@ public class LineSegmentPath
         // information to compute our velocity
         int ncount = _nodes.size();
         if (ncount < 2) {
-            Log.warning("Requested to set duration of bogus path " +
+            log.warning("Requested to set duration of bogus path " +
                         "[path=" + this + ", duration=" + millis + "].");
             return;
         }

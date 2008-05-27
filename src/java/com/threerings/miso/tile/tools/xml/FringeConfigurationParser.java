@@ -34,10 +34,11 @@ import com.threerings.tools.xml.CompiledConfigParser;
 
 import com.threerings.media.tile.TileSetIDBroker;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.tile.FringeConfiguration.FringeRecord;
 import com.threerings.miso.tile.FringeConfiguration.FringeTileSetRecord;
 import com.threerings.miso.tile.FringeConfiguration;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Parses fringe config definitions.
@@ -73,7 +74,7 @@ public class FringeConfigurationParser extends CompiledConfigParser
                 if (((FringeRecord) target).isValid()) {
                     return true;
                 } else {
-                    Log.warning("A FringeRecord was not added because it was " +
+                    log.warning("A FringeRecord was not added because it was " +
                                 "improperly specified [rec=" + target + "].");
                     return false;
                 }
@@ -99,14 +100,14 @@ public class FringeConfigurationParser extends CompiledConfigParser
                         if (_idBroker.tileSetMapped(value)) {
                             frec.base_tsid = _idBroker.getTileSetID(value);
                         } else {
-                            Log.warning("Skipping unknown base " +
+                            log.warning("Skipping unknown base " +
                                 "tileset [name=" + value + "].");
                         }
 
                     } else if ("priority".equals(name)) {
                         frec.priority = Integer.parseInt(value);
                     } else {
-                        Log.warning("Skipping unknown attribute " +
+                        log.warning("Skipping unknown attribute " +
                                     "[name=" + name + "].");
                     }
                 }
@@ -123,7 +124,7 @@ public class FringeConfigurationParser extends CompiledConfigParser
                 if (((FringeTileSetRecord) target).isValid()) {
                     return true;
                 } else {
-                    Log.warning("A FringeTileSetRecord was not added because " +
+                    log.warning("A FringeTileSetRecord was not added because " +
                                 "it was improperly specified " +
                                 "[rec=" + target + "].");
                     return false;
@@ -148,14 +149,14 @@ public class FringeConfigurationParser extends CompiledConfigParser
                         if (_idBroker.tileSetMapped(value)) {
                             f.fringe_tsid = _idBroker.getTileSetID(value);
                         } else {
-                            Log.warning("Skipping unknown fringe " +
+                            log.warning("Skipping unknown fringe " +
                                 "tileset [name=" + value + "].");
                         }
 
                     } else if ("mask".equals(name)) {
                         f.mask = Boolean.valueOf(value).booleanValue();
                     } else {
-                        Log.warning("Skipping unknown attribute " +
+                        log.warning("Skipping unknown attribute " +
                                     "[name=" + name + "].");
                     }
                 }

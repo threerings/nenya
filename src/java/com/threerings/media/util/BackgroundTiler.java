@@ -24,7 +24,7 @@ package com.threerings.media.util;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Used to tile a background image into regions of various sizes. The
@@ -41,7 +41,7 @@ public class BackgroundTiler
     {
         // make sure we were given the goods
         if (src == null) {
-            Log.info("Backgrounder given null source image. Coping.");
+            log.info("Backgrounder given null source image. Coping.");
             return;
         }
 
@@ -56,7 +56,7 @@ public class BackgroundTiler
 
         // make sure the image suits our minimum useful dimensions
         if (_w3 <= 0 || _cw3 <= 0 || _h3 <= 0 || _ch3 <= 0) {
-            Log.warning("Backgrounder given source image of insufficient " +
+            log.warning("Backgrounder given source image of insufficient " +
                         "size for tiling " +
                         "[width=" + width + ", height=" + height + "].");
             return;

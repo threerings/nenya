@@ -28,7 +28,7 @@ import com.samskivert.util.Config;
 import com.samskivert.util.RandomUtil;
 import com.samskivert.util.RunQueue;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Manages the playing of audio files.
@@ -164,7 +164,7 @@ public class MusicManager
             }
         }
 
-        Log.debug("Sequence stopped that wasn't in the stack anymore [key=" + mkey + "].");
+        log.debug("Sequence stopped that wasn't in the stack anymore [key=" + mkey + "].");
     }
 
     /**
@@ -188,7 +188,7 @@ public class MusicManager
         Config c = _smgr.getConfig(info);
         String[] names = c.getValue(info.key, (String[])null);
         if ((names == null) || (names.length == 0)) {
-            Log.warning("No such music [key=" + info + "].");
+            log.warning("No such music [key=" + info + "].");
             _musicStack.removeFirst();
             playTopMusic();
             return;
@@ -216,7 +216,7 @@ public class MusicManager
                 _musicPlayer.init(_playerListener);
 
             } catch (Exception e) {
-                Log.warning("Unable to instantiate music player [class=" + playerClass + 
+                log.warning("Unable to instantiate music player [class=" + playerClass + 
                             ", e=" + e + "].");
 
                 // scrap it, try again with the next song
@@ -235,7 +235,7 @@ public class MusicManager
             // TODO: buffer for the music player?
             _musicPlayer.start(_smgr._rmgr.getResource(bundle, music));
         } catch (Exception e) {
-            Log.warning("Error playing music, skipping [e=" + e +
+            log.warning("Error playing music, skipping [e=" + e +
                 ", bundle=" + bundle + ", music=" + music + "].");
             _musicStack.removeFirst();
             playTopMusic();

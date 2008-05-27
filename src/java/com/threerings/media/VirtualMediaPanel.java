@@ -37,6 +37,8 @@ import com.threerings.media.image.Mirage;
 import com.threerings.media.util.MathUtil;
 import com.threerings.media.util.Pathable;
 
+import static com.threerings.media.Log.log;
+
 /**
  * Extends the base media panel with the notion of a virtual coordinate
  * system. All entities in the virtual media panel have virtual
@@ -236,7 +238,7 @@ public class VirtualMediaPanel extends MediaPanel
             // determine how far we'll be moving on this tick
             int dx = _nx - _vbounds.x, dy = _ny - _vbounds.y;
 
-//             Log.info("Scrolling into place [n=(" + _nx + ", " + _ny +
+//             log.info("Scrolling into place [n=(" + _nx + ", " + _ny +
 //                      "), t=(" + _vbounds.x + ", " + _vbounds.y +
 //                      "), d=(" + dx + ", " + dy +
 //                      "), width=" + width + ", height=" + height + "].");
@@ -334,7 +336,7 @@ public class VirtualMediaPanel extends MediaPanel
             break;
 
         default:
-            Log.warning("Eh? Set to invalid pathable mode " +
+            log.warning("Eh? Set to invalid pathable mode " +
                         "[mode=" + _fmode + "].");
             break;
         }

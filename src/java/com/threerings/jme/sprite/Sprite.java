@@ -26,7 +26,7 @@ import com.jme.scene.Spatial;
 
 import com.samskivert.util.ObserverList;
 
-import com.threerings.jme.Log;
+import static com.threerings.jme.Log.log;
 
 /**
  * Represents a visual entity that one controls as a single unit. Sprites
@@ -161,7 +161,7 @@ public class Sprite extends Node
     public void pathCompleted ()
     {
         if (_path == null) {
-            Log.warning("pathCompleted() called on pathless sprite " +
+            log.warning("pathCompleted() called on pathless sprite " +
                         "(re-completed?) [sprite=" + this + "].");
             Thread.dumpStack();
             return;

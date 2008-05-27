@@ -30,6 +30,8 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
+import static com.threerings.openal.Log.log;
+
 /**
  * Represents a streaming source of sound data.
  */
@@ -91,7 +93,7 @@ public abstract class Stream
     public void play ()
     {
         if (_state == AL10.AL_PLAYING) {
-            Log.warning("Tried to play stream already playing.");
+            log.warning("Tried to play stream already playing.");
             return;
         }
         if (_state == AL10.AL_INITIAL) {
@@ -108,7 +110,7 @@ public abstract class Stream
     public void pause ()
     {
         if (_state != AL10.AL_PLAYING) {
-            Log.warning("Tried to pause stream that wasn't playing.");
+            log.warning("Tried to pause stream that wasn't playing.");
             return;
         }
         AL10.alSourcePause(_sourceId);
@@ -121,7 +123,7 @@ public abstract class Stream
     public void stop ()
     {
         if (_state == AL10.AL_STOPPED) {
-            Log.warning("Tried to stop stream that was already stopped.");
+            log.warning("Tried to stop stream that was already stopped.");
             return;
         }
         AL10.alSourceStop(_sourceId);
@@ -271,7 +273,7 @@ public abstract class Stream
         try {
             read = Math.max(populateBuffer(_abuf), 0);
         } catch (IOException e) {
-            Log.warning("Error reading audio stream [error=" + e + "].");
+            log.warning("Error reading audio stream [error=" + e + "].");
         }
         if (read <= 0) {
             return false;

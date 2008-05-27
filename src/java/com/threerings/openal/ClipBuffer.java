@@ -29,6 +29,8 @@ import org.lwjgl.openal.AL10;
 
 import com.samskivert.util.ObserverList;
 
+import static com.threerings.openal.Log.log;
+
 /**
  * Represents a sound that has been loaded into the OpenAL system.
  */
@@ -154,7 +156,7 @@ public class ClipBuffer
         AL10.alGenBuffers(_bufferId);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
-            Log.warning("Failed to create buffer [key=" + getKey() +
+            log.warning("Failed to create buffer [key=" + getKey() +
                         ", errno=" + errno + "].");
             _bufferId = null;
             // queue up a failure notification so that we properly return
@@ -211,7 +213,7 @@ public class ClipBuffer
             _bufferId.get(0), clip.format, clip.data, clip.frequency);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
-            Log.warning("Failed to bind clip [key=" + getKey() +
+            log.warning("Failed to bind clip [key=" + getKey() +
                         ", errno=" + errno + "].");
             failed();
             return false;

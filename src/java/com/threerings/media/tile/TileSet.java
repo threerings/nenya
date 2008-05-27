@@ -31,13 +31,14 @@ import java.util.Iterator;
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 
-import com.threerings.media.Log;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.image.BufferedMirage;
 import com.threerings.media.util.MultiFrameImage;
 import com.threerings.media.util.MultiFrameImageImpl;
+
+import static com.threerings.media.Log.log;
 
 /**
  * A tileset stores information on a single logical set of tiles. It provides a clean interface for
@@ -126,7 +127,7 @@ public abstract class TileSet
             return tset;
 
         } catch (CloneNotSupportedException cnse) {
-            Log.warning("Unable to clone tileset prior to colorization [tset=" + this +
+            log.warning("Unable to clone tileset prior to colorization [tset=" + this +
                         ", zations=" + StringUtil.toString(zations) + ", error=" + cnse + "].");
             return null;
         }
@@ -252,7 +253,7 @@ public abstract class TileSet
         Mirage mirage = null;
         if (checkTileIndex(tileIndex)) {
             if (_improv == null) {
-                Log.warning("Aiya! Tile set missing image provider [path=" + _imagePath + "].");
+                log.warning("Aiya! Tile set missing image provider [path=" + _imagePath + "].");
             } else {
                 mirage = _improv.getTileImage(_imagePath, bounds, zations);
             }
@@ -289,7 +290,7 @@ public abstract class TileSet
             if (timg != null) {
                 img = timg.getSubimage(bounds.x, bounds.y, bounds.width, bounds.height);
             } else {
-                Log.warning("Missing source image " + this);
+                log.warning("Missing source image " + this);
             }
         }
         if (img == null) {
@@ -318,7 +319,7 @@ public abstract class TileSet
         if (tileIndex >= 0 && tileIndex < tcount) {
             return true;
         } else {
-            Log.warning("Requested invalid tile [tset=" + this + ", index=" + tileIndex + "].");
+            log.warning("Requested invalid tile [tset=" + this + ", index=" + tileIndex + "].");
             Thread.dumpStack();
             return false;
         }
@@ -386,7 +387,7 @@ public abstract class TileSet
                 }
             }
         }
-        Log.info("Tile caches [amem=" + (amem / 1024) + "k" +
+        log.info("Tile caches [amem=" + (amem / 1024) + "k" +
                  ", tmem=" + (Tile._totalTileMemory / 1024) + "k" +
                  ", seen=" + _atiles.size() + ", asize=" + asize + "].");
     }

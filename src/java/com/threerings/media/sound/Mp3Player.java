@@ -32,7 +32,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Plays mp3 files. Depends on three external jar files that aren't even
@@ -69,7 +69,7 @@ public class Mp3Player extends MusicPlayer
                     inStream = AudioSystem.getAudioInputStream(
                         new BufferedInputStream(stream, BUFFER_SIZE));
                 } catch (Exception e) {
-                    Log.warning("MP3 fuckola. [e=" + e + "].");
+                    log.warning("MP3 fuckola. [e=" + e + "].");
                     return;
                 }
 
@@ -85,7 +85,7 @@ public class Mp3Player extends MusicPlayer
                     _line = (SourceDataLine) AudioSystem.getLine(info);
                     _line.open(format);
                 } catch (LineUnavailableException lue) {
-                    Log.warning("MP3 line unavailable: " + lue);
+                    log.warning("MP3 line unavailable: " + lue);
                     return;
                 }
 
@@ -97,7 +97,7 @@ public class Mp3Player extends MusicPlayer
                     try {
                         count = inStream.read(data, 0, data.length);
                     } catch (IOException ioe) {
-                        Log.warning("Error reading MP3: " + ioe);
+                        log.warning("Error reading MP3: " + ioe);
                         break;
                     }
                     if (count >= 0) {

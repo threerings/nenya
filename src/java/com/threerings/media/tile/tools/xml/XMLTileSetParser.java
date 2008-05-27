@@ -35,8 +35,9 @@ import org.xml.sax.SAXException;
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.xml.ValidatedSetNextRule;
 
-import com.threerings.media.Log;
 import com.threerings.media.tile.TileSet;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Parse an XML tileset description file and construct tileset objects for
@@ -147,16 +148,14 @@ public class XMLTileSetParser
         try {
             _digester.parse(source);
         } catch (SAXException saxe) {
-            Log.warning("Exception parsing tile set descriptions " +
-                        "[error=" + saxe + "].");
-            Log.logStackTrace(saxe);
+            log.warning("Exception parsing tile set descriptions.", saxe);
         }
 
         // stick the tilesets from the list into the hashtable
         for (int i = 0; i < setlist.size(); i++) {
             TileSet set = (TileSet)setlist.get(i);
             if (set.getName() == null) {
-                Log.warning("Tileset did not receive name during " +
+                log.warning("Tileset did not receive name during " +
                             "parsing process [set=" + set + "].");
             } else {
                 tilesets.put(set.getName(), set);

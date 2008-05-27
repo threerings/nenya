@@ -22,14 +22,15 @@
 package com.threerings.media.sound;
 
 import com.threerings.resource.ResourceManager;
-import com.threerings.media.Log;
+
+import static com.threerings.media.Log.log;
 
 public class SoundTestApp
 {
     public SoundTestApp (String[] args)
     {
         if (args.length == 0) {
-            Log.info("Usage: runjava com.threerings.media.SoundTestApp " +
+            log.info("Usage: runjava com.threerings.media.SoundTestApp " +
                      "<key1> [<key2> <key3> ...]");
             System.exit(0);
         }

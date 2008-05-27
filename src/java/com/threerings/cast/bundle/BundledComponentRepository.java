@@ -60,10 +60,11 @@ import com.threerings.cast.CharacterComponent;
 import com.threerings.cast.ComponentClass;
 import com.threerings.cast.ComponentRepository;
 import com.threerings.cast.FrameProvider;
-import com.threerings.cast.Log;
 import com.threerings.cast.NoSuchComponentException;
 import com.threerings.cast.StandardActions;
 import com.threerings.cast.TrimmedMultiFrameImage;
+
+import static com.threerings.cast.Log.log;
 
 /**
  * A component repository implementation that obtains information from resource bundles.
@@ -227,7 +228,7 @@ public class BundledComponentRepository
         // look up the component class information
         ComponentClass clazz = (ComponentClass)_classes.get(cclass);
         if (clazz == null) {
-            Log.warning("Non-existent component class [class=" + cclass + ", name=" + cname +
+            log.warning("Non-existent component class [class=" + cclass + ", name=" + cname +
                         ", id=" + componentId + "].");
             return;
         }
@@ -247,7 +248,7 @@ public class BundledComponentRepository
         if (!comps.contains(component)) {
             comps.add(component);
         } else {
-            Log.info("Requested to register the same component twice? [comp=" + component + "].");
+            log.info("Requested to register the same component twice? [comp=" + component + "].");
         }
     }
 
@@ -286,7 +287,7 @@ public class BundledComponentRepository
             // obtain the action sequence definition for this action
             ActionSequence actseq = (ActionSequence)_actions.get(action);
             if (actseq == null) {
-                Log.warning("Missing action sequence definition [action=" + action +
+                log.warning("Missing action sequence definition [action=" + action +
                             ", component=" + component + "].");
                 return null;
             }
@@ -330,7 +331,7 @@ public class BundledComponentRepository
                     // if this is a shadow or crop image, no need to freak out as they are optional
                     if (!StandardActions.CROP_TYPE.equals(type) &&
                         !StandardActions.SHADOW_TYPE.equals(type)) {
-                        Log.warning("Unable to locate tileset for action '" + imgpath + "' " +
+                        log.warning("Unable to locate tileset for action '" + imgpath + "' " +
                                     component + ".");
                         if (_wipeOnFailure && _bundle instanceof FileResourceBundle) {
                             ((FileResourceBundle)_bundle).wipeBundle(false);
@@ -344,8 +345,7 @@ public class BundledComponentRepository
                 return new TileSetFrameImage(aset, actseq);
 
             } catch (Exception e) {
-                Log.warning("Error loading tset for action '" + imgpath + "' " + component + ".");
-                Log.logStackTrace(e);
+                log.warning("Error loading tset for action '" + imgpath + "' " + component + ".", e);
                 return null;
             }
         }

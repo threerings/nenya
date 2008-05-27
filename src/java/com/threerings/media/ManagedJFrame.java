@@ -32,7 +32,7 @@ import javax.swing.JFrame;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * When using the {@link FrameManager}, one must use this top-level frame

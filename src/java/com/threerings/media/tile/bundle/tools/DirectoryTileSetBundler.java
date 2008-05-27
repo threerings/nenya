@@ -35,7 +35,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 
-import com.threerings.media.Log;
 import com.threerings.util.FileUtil;
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
@@ -43,6 +42,8 @@ import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TrimmedObjectTileSet;
 import com.threerings.media.tile.bundle.BundleUtil;
 import com.threerings.media.tile.bundle.TileSetBundle;
+
+import static com.threerings.media.Log.log;
 
 public class DirectoryTileSetBundler extends TileSetBundler
 {
@@ -74,7 +75,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
 
                 // sanity checks
                 if (imagePath == null) {
-                    Log.warning("Tileset contains no image path " +
+                    log.warning("Tileset contains no image path " +
                                 "[set=" + set + "]. It ain't gonna work.");
                     continue;
                 }

@@ -61,8 +61,9 @@ import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.RandomUtil;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.SpatialVisitor;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * The base node for models.
@@ -594,7 +595,7 @@ public class Model extends ModelNode
                 return anim;
             }
         }
-        Log.warning("Requested unknown animation [name=" + name + "].");
+        log.warning("Requested unknown animation [name=" + name + "].");
         return null;
     }
 

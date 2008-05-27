@@ -29,7 +29,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * Draws a mirage combined with an arbitrary AffineTransform.

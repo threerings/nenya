@@ -57,6 +57,8 @@ import com.samskivert.net.PathUtil;
 import com.samskivert.util.ResultListener;
 import com.samskivert.util.StringUtil;
 
+import static com.threerings.resource.Log.log;
+
 /**
  * The resource manager is responsible for maintaining a repository of resources that are
  * synchronized with a remote source. This is accomplished in the form of sets of jar files
@@ -217,7 +219,7 @@ public class ResourceManager
                 }
             });
         } catch (SecurityException se) {
-            Log.info("Running in sandbox. Unable to bind rsrc:// handler.");
+            log.info("Running in sandbox. Unable to bind rsrc:// handler.");
         }
     }
 
@@ -314,7 +316,7 @@ public class ResourceManager
                     try {
                         initObs.wait();
                     } catch (InterruptedException ie) {
-                        Log.warning("Interrupted while waiting for bundles to unpack.");
+                        log.warning("Interrupted while waiting for bundles to unpack.");
                     }
                 }
             }
@@ -678,8 +680,7 @@ public class ResourceManager
         } catch (Exception e) {
             String errmsg = "Unable to load resource manager config [rdir=" + _rdir +
                 ", cpath=" + configPath + "]";
-            Log.warning(errmsg + ".");
-            Log.logStackTrace(e);
+            log.warning(errmsg + ".", e);
             throw new IOException(errmsg);
         }
         return config;
@@ -776,8 +777,7 @@ public class ResourceManager
                 // there's no way to find out if it's already closed or not, so we have to check
                 // the exception message to determine if this is actually warning worthy
                 if (!"closed".equals(ioe.getMessage())) {
-                    Log.warning("Failure closing image input '" + iis + "'.");
-                    Log.logStackTrace(ioe);
+                    log.warning("Failure closing image input '" + iis + "'.", ioe);
                 }
             }
         }
@@ -797,7 +797,7 @@ public class ResourceManager
         if (!m.matches()) {
             // if we can't parse the java version we're in weird land and should probably just try
             // our luck with what we've got rather than try to download a new jvm
-            Log.warning("Unable to parse VM version, hoping for the best [version=" + verstr + "]");
+            log.warning("Unable to parse VM version, hoping for the best [version=" + verstr + "]");
             return 0;
         }
 
@@ -829,7 +829,7 @@ public class ResourceManager
                 for (ResourceBundle bundle : _bundles) {
                     if (bundle instanceof FileResourceBundle &&
                         !((FileResourceBundle)bundle).sourceIsReady()) {
-                        Log.warning("Bundle failed to initialize " + bundle + ".");
+                        log.warning("Bundle failed to initialize " + bundle + ".");
                     }
                     if (_obs != null) {
                         int pct = count*100/_bundles.size();

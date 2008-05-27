@@ -36,8 +36,9 @@ import com.jme.util.export.OutputCapsule;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.JmeUtil;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A procedural animation that moves a node along a straight line at a constant velocity (then

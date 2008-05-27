@@ -27,7 +27,7 @@ import com.samskivert.util.Histogram;
 import com.samskivert.util.LoopingThread;
 import com.samskivert.util.Queue;
 
-import com.threerings.miso.Log;
+import static com.threerings.miso.Log.log;
 
 /**
  * A separate thread for resolving miso scene blocks.
@@ -39,7 +39,7 @@ public class SceneBlockResolver extends LoopingThread
      */
     public void resolveBlock (SceneBlock block, boolean hipri)
     {
-        Log.debug("Queueing block for resolution " + block +
+        log.debug("Queueing block for resolution " + block +
                   " (" + hipri + ").");
         if (hipri) {
             _queue.prepend(block);
@@ -84,23 +84,23 @@ public class SceneBlockResolver extends LoopingThread
                 try {
                     wait();
                 } catch (InterruptedException ie) {
-                    Log.info("Resolver interrupted.");
+                    log.info("Resolver interrupted.");
                 }
             }
         }
 
         try {
             long start = System.currentTimeMillis();
-            Log.debug("Resolving block " + block + ".");
+            log.debug("Resolving block " + block + ".");
             if (block.resolve()) {
-                Log.debug("Resolved block " + block + ".");
+                log.debug("Resolved block " + block + ".");
             }
             long elapsed = System.currentTimeMillis() - start;
             _histo.addValue((int)elapsed);
 
             // warn if a block takes a long time to resolve
             if (elapsed > LONG_RESOLVE_TIME) {
-                Log.warning("Block took long time to resolve [block=" + block +
+                log.warning("Block took long time to resolve [block=" + block +
                             ", elapsed=" + elapsed + "ms].");
             }
 
@@ -119,8 +119,7 @@ public class SceneBlockResolver extends LoopingThread
             });
 
         } catch (Exception e) {
-            Log.warning("Block failed during resolution " + block + ".");
-            Log.logStackTrace(e);
+            log.warning("Block failed during resolution " + block + ".", e);
         }
     }
 

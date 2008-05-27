@@ -22,8 +22,9 @@ import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 import com.samskivert.util.Tuple;
 
-import com.threerings.media.Log;
 import com.threerings.resource.ResourceManager;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Provides a single point of access for image retrieval and caching.  This does not include
@@ -95,7 +96,7 @@ public class ImageManager
 
         // create our image cache
         int icsize = getCacheSize();
-        Log.debug("Creating image cache [size=" + icsize + "k].");
+        log.debug("Creating image cache [size=" + icsize + "k].");
         _ccache = new LRUHashMap(icsize * 1024, new LRUHashMap.ItemSizer() {
             public int computeSize (Object value) {
                 return (int)((CacheRecord)value).getEstimatedMemoryUsage();
@@ -126,7 +127,7 @@ public class ImageManager
      */
     public void clearCache ()
     {
-        Log.info("Clearing image manager cache.");
+        log.info("Clearing image manager cache.");
 
         _ccache.clear();
     }
@@ -265,7 +266,7 @@ public class ImageManager
         // load up the raw image
         BufferedImage image = loadImage(key);
         if (image == null) {
-            Log.warning("Failed to load image " + key + ".");
+            log.warning("Failed to load image " + key + ".");
             // create a blank image instead
             image = new BufferedImage(10, 10, BufferedImage.TYPE_BYTE_INDEXED);
         }
@@ -396,15 +397,14 @@ public class ImageManager
 
         BufferedImage image = null;
         try {
-            Log.debug("Loading image " + key + ".");
+            log.debug("Loading image " + key + ".");
             image = key.daprov.loadImage(key.path);
             if (image == null) {
-                Log.warning("ImageDataProvider.loadImage(" + key + ") returned null.");
+                log.warning("ImageDataProvider.loadImage(" + key + ") returned null.");
             }
 
         } catch (Exception e) {
-            Log.warning("Unable to load image '" + key + "'.");
-            Log.logStackTrace(e);
+            log.warning("Unable to load image '" + key + "'.", e);
 
             // create a blank image in its stead
             image = createImage(1, 1, Transparency.OPAQUE);
@@ -435,7 +435,7 @@ public class ImageManager
             }
             eff = _ccache.getTrackedEffectiveness();
         }
-        Log.info("ImageManager LRU [mem=" + (size / 1024) + "k, size=" + _ccache.size() +
+        log.info("ImageManager LRU [mem=" + (size / 1024) + "k, size=" + _ccache.size() +
             ", hits=" + eff[0] + ", misses=" + eff[1] + ", totalKeys=" + _keySet.size() + "].");
     }
 
@@ -476,7 +476,7 @@ public class ImageManager
                 return cimage;
 
             } catch (Exception re) {
-                Log.warning("Failure recoloring image [source" + _key +
+                log.warning("Failure recoloring image [source" + _key +
                             ", zations=" + StringUtil.toString(zations) + ", error=" + re + "].");
                 // return the uncolorized version
                 return _source;

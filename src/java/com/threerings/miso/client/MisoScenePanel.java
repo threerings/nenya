@@ -69,7 +69,6 @@ import com.threerings.media.tile.TileSet;
 import com.threerings.media.util.AStarPathUtil;
 import com.threerings.media.util.MathUtil;
 import com.threerings.media.util.Path;
-import com.threerings.miso.Log;
 import com.threerings.miso.MisoPrefs;
 import com.threerings.miso.client.DirtyItemList.DirtyItem;
 import com.threerings.miso.data.MisoSceneModel;
@@ -78,6 +77,8 @@ import com.threerings.miso.tile.BaseTile;
 import com.threerings.miso.util.MisoContext;
 import com.threerings.miso.util.MisoSceneMetrics;
 import com.threerings.miso.util.MisoUtil;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Renders a Miso scene for all to see.
@@ -304,7 +305,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         // an eye out for bogosity
         if (duration > 500L) {
             int considered = AStarPathUtil.getConsidered();
-            Log.warning("Considered " + considered + " nodes for path from " +
+            log.warning("Considered " + considered + " nodes for path from " +
                         StringUtil.toString(src) + " to " +
                         StringUtil.toString(dest) +
                         " [duration=" + duration + "].");
@@ -362,7 +363,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         for (SceneBlock block : _blocks.values()) {
             block.computeMemoryUsage(base, fringe, object, usage);
         }
-        Log.info("Scene tile memory usage " +
+        log.info("Scene tile memory usage " +
                  "[scene=" + StringUtil.shortClassName(this) +
                  ", base=" + base.size() + "->" + (usage[0] / 1024) + "k" +
                  ", fringe=" + fringe.size() + "->" + (usage[1] / 1024) + "k" +
@@ -739,7 +740,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             _ulpos.setLocation(_tcoords);
             if (rethink() > 0) {
                 _delayRepaint = mightDelayPaint;
-                Log.info("Got new pending blocks " +
+                log.info("Got new pending blocks " +
                          "[need=" + _visiBlocks.size() +
                          ", of=" + _pendingBlocks +
                          ", view=" + StringUtil.toString(_vbounds) +
@@ -813,7 +814,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             key.x = block.getBounds().x;
             key.y = block.getBounds().y;
             if (!_rethinkOp.blocks.contains(key)) {
-                Log.debug("Flushing block " + block + ".");
+                log.debug("Flushing block " + block + ".");
                 if (_dpanel != null) {
                     _dpanel.blockCleared(block);
                 }
@@ -848,7 +849,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         // recompute our visible object set
         recomputeVisible();
 
-        Log.debug("Rethunk [pending=" + _pendingBlocks + ", visible=" + _visiBlocks.size() + "].");
+        log.debug("Rethunk [pending=" + _pendingBlocks + ", visible=" + _visiBlocks.size() + "].");
         return _visiBlocks.size();
     }
 
@@ -950,7 +951,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         // resolution, recompute our visible object set and show ourselves
         if (_visiBlocks.remove(block) && _visiBlocks.size() == 0) {
             recomputeVisible();
-            Log.info("Restoring repaint... [left=" + _pendingBlocks +
+            log.info("Restoring repaint... [left=" + _pendingBlocks +
                      ", view=" + StringUtil.toString(_vbounds) + "].");
             _delayRepaint = false;
             _remgr.invalidateRegion(_vbounds);
@@ -964,7 +965,7 @@ public class MisoScenePanel extends VirtualMediaPanel
      */
     protected void warnVisible (SceneBlock block, Rectangle sbounds)
     {
-        Log.warning("Block visible during resolution " + block +
+        log.warning("Block visible during resolution " + block +
                     " sbounds:" + StringUtil.toString(sbounds) +
                     " vbounds:" + StringUtil.toString(_vbounds) + ".");
     }
@@ -1556,7 +1557,7 @@ public class MisoScenePanel extends VirtualMediaPanel
                 }
 
             } catch (ArrayIndexOutOfBoundsException e) {
-                Log.warning("Whoops, booched it [tx=" + tx +
+                log.warning("Whoops, booched it [tx=" + tx +
                             ", ty=" + ty + ", tb.x=" + tbounds.x + "].");
                 e.printStackTrace(System.err);
             }

@@ -56,6 +56,8 @@ import com.jme.util.Timer;
 
 import com.threerings.jme.camera.CameraHandler;
 
+import static com.threerings.jme.Log.log;
+
 /**
  * Defines a basic application framework providing integration with the
  * <a href="../presents/package.html">Presents</a> networking system and
@@ -217,7 +219,7 @@ public class JmeApp
                 _failures = 0;
 
             } catch (Throwable t) {
-                Log.logStackTrace(t);
+                log.warning(t);
                 // stick a fork in things if we fail too many times in a row
                 if (++_failures > MAX_SUCCESSIVE_FAILURES) {
                     stop();
@@ -231,7 +233,7 @@ public class JmeApp
         try {
             cleanup();
         } catch (Throwable t) {
-            Log.logStackTrace(t);
+            log.warning(t);
         } finally {
             exit();
         }
@@ -281,7 +283,7 @@ public class JmeApp
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
-                    Log.warning("Error waiting for dialog system, " +
+                    log.warning("Error waiting for dialog system, " +
                                 "using defaults.");
                 }
             }
@@ -427,7 +429,7 @@ public class JmeApp
      */
     protected void reportInitFailure (Throwable t)
     {
-        Log.logStackTrace(t);
+        log.warning(t);
     }
 
     /**

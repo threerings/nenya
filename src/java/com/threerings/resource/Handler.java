@@ -43,6 +43,8 @@ import com.samskivert.util.StringUtil;
 
 import com.threerings.geom.GeomUtil;
 
+import static com.threerings.resource.Log.log;
+
 /**
  * This class is not used directly, except by a registering ResourceManager
  * so that we can load data from the resource manager using URLs of the form
@@ -105,7 +107,7 @@ public class Handler extends URLStreamHandler
                     this.connected = true;
 
                 } catch (IOException ioe) {
-                    Log.warning("Could not find resource [url=" + this.url +
+                    log.warning("Could not find resource [url=" + this.url +
                         ", error=" + ioe.getMessage() + "].");
                     throw ioe; // rethrow
                 }
@@ -144,7 +146,7 @@ public class Handler extends URLStreamHandler
     {
         // we can only do this with PNGs
         if (!path.endsWith(".png")) {
-            Log.warning("Requested sub-tile of non-PNG resource " +
+            log.warning("Requested sub-tile of non-PNG resource " +
                         "[bundle=" + bundle + ", path=" + path +
                         ", dims=" + query + "].");
             return _rmgr.getResource(bundle, path);
@@ -166,7 +168,7 @@ public class Handler extends URLStreamHandler
         } catch (NumberFormatException nfe) {
         }
         if (width <= 0 || height <= 0 || tidx < 0) {
-            Log.warning("Bogus sub-image dimensions [bundle=" + bundle +
+            log.warning("Bogus sub-image dimensions [bundle=" + bundle +
                         ", path=" + path + ", dims=" + query + "].");
             throw new FileNotFoundException(path);
         }

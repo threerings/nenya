@@ -28,6 +28,8 @@ import java.awt.ImageCapabilities;
 import java.awt.Rectangle;
 import java.awt.image.BufferStrategy;
 
+import static com.threerings.media.Log.log;
+
 /**
  * A {@link FrameManager} extension that uses a flip-buffer (via {@link
  * BufferStrategy} to do its rendering.
@@ -45,7 +47,7 @@ public class FlipFrameManager extends FrameManager
             try {
                 _window.createBufferStrategy(2, cap);
             } catch (AWTException ae) {
-                Log.warning("Failed creating flip bufstrat: " + ae + ".");
+                log.warning("Failed creating flip bufstrat: " + ae + ".");
                 // fall back to one without custom capabilities
                 _window.createBufferStrategy(2);
             }
@@ -62,7 +64,7 @@ public class FlipFrameManager extends FrameManager
 
                 // dirty everything if we're not incrementally rendering
                 if (!incremental) {
-                    Log.info("Doing non-incremental render; contents lost " +
+                    log.info("Doing non-incremental render; contents lost " +
                              "[lost=" + _bufstrat.contentsLost() +
                              ", rest=" + _bufstrat.contentsRestored() + "].");
                     _root.getRootPane().revalidate();

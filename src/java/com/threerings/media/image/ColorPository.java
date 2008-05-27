@@ -36,9 +36,10 @@ import com.samskivert.util.HashIntMap;
 import com.samskivert.util.RandomUtil;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.Log;
 import com.threerings.resource.ResourceManager;
 import com.threerings.util.CompiledConfig;
+
+import static com.threerings.media.Log.log;
 
 /**
  * A repository of image recoloration information. It was called the
@@ -81,7 +82,7 @@ public class ColorPository implements Serializable
         {
             // validate the color id
             if (record.colorId > 255) {
-                Log.warning("Refusing to add color record; colorId > 255 " +
+                log.warning("Refusing to add color record; colorId > 255 " +
                             "[class=" + this + ", record=" + record + "].");
             } else {
                 record.cclass = this;
@@ -145,7 +146,7 @@ public class ColorPository implements Serializable
 
             // sanity check
             if (_starters.length < 1) {
-                Log.warning("Requested random starting color from " +
+                log.warning("Requested random starting color from " +
                             "colorless component class " + this + "].");
                 return null;
             }
@@ -362,7 +363,7 @@ public class ColorPository implements Serializable
             try {
                 colorId = crec.getColorId(colorName);
             } catch (ParseException pe) {
-                Log.info("Error getting colorization by name. [error=" + pe + "]");
+                log.info("Error getting colorization by name. [error=" + pe + "]");
                 return null;
             }
 
@@ -387,7 +388,7 @@ public class ColorPository implements Serializable
                 return crec;
             }
         }
-        Log.warning("No such color class [class=" + className + "].");
+        log.warning("No such color class [class=" + className + "].");
         Thread.dumpStack();
         return null;
     }
@@ -402,7 +403,7 @@ public class ColorPository implements Serializable
             // if they request color class zero, we assume they're just
             // decoding a blank colorprint, otherwise we complain
             if (classId != 0) {
-                Log.warning("Requested unknown color class " +
+                log.warning("Requested unknown color class " +
                             "[classId=" + classId +
                             ", colorId=" + colorId + "].");
                 Thread.dumpStack();
@@ -419,7 +420,7 @@ public class ColorPository implements Serializable
     {
         ClassRecord record = getClassRecord(className);
         if (record == null) {
-            Log.warning("Requested unknown color class " +
+            log.warning("Requested unknown color class " +
                 "[className=" + className + ", colorName=" + colorName + "].");
             Thread.dumpStack();
             return null;
@@ -429,7 +430,7 @@ public class ColorPository implements Serializable
         try {
             colorId = record.getColorId(colorName);
         } catch (ParseException pe) {
-            Log.info("Error getting color record by name. [error=" + pe + "]");
+            log.info("Error getting color record by name. [error=" + pe + "]");
             return null;
         }
 
@@ -444,7 +445,7 @@ public class ColorPository implements Serializable
     {
         // validate the class id
         if (record.classId > 255) {
-            Log.warning("Refusing to add class; classId > 255 " + record + ".");
+            log.warning("Refusing to add class; classId > 255 " + record + ".");
         } else {
             _classes.put(record.classId, record);
         }
@@ -459,7 +460,7 @@ public class ColorPository implements Serializable
         try {
             return loadColorPository(rmgr.getResource(CONFIG_PATH));
         } catch (IOException ioe) {
-            Log.warning("Failure loading color pository [path=" + CONFIG_PATH +
+            log.warning("Failure loading color pository [path=" + CONFIG_PATH +
                         ", error=" + ioe + "].");
             return new ColorPository();
         }
@@ -474,7 +475,7 @@ public class ColorPository implements Serializable
         try {
             return (ColorPository)CompiledConfig.loadConfig(source);
         } catch (IOException ioe) {
-            Log.warning("Failure loading color pository: " + ioe + ".");
+            log.warning("Failure loading color pository: " + ioe + ".");
             return new ColorPository();
         }
     }
@@ -488,7 +489,7 @@ public class ColorPository implements Serializable
         try {
             CompiledConfig.saveConfig(path, posit);
         } catch (IOException ioe) {
-            Log.warning("Failure saving color pository " +
+            log.warning("Failure saving color pository " +
                         "[path=" + path + ", error=" + ioe + "].");
         }
     }

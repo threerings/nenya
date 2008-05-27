@@ -34,7 +34,8 @@ import com.jme.input.action.*;
 import com.jme.input.action.InputActionEvent;
 
 import com.threerings.jme.JmeApp;
-import com.threerings.jme.Log;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * Sets up camera controls for moving around from a top-down perspective,

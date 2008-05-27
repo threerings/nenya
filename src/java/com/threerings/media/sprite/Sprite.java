@@ -32,7 +32,7 @@ import com.threerings.media.AbstractMedia;
 import com.threerings.media.util.Path;
 import com.threerings.media.util.Pathable;
 
-import com.threerings.media.Log;
+import static com.threerings.media.Log.log;
 
 /**
  * The sprite class represents a single moveable object in an animated

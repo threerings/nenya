@@ -38,11 +38,12 @@ import com.threerings.media.tile.bundle.BundledTileSetRepository;
 import com.threerings.cast.CharacterManager;
 import com.threerings.cast.bundle.BundledComponentRepository;
 
-import com.threerings.miso.Log;
 import com.threerings.miso.data.SimpleMisoSceneModel;
 import com.threerings.miso.tile.MisoTileManager;
 import com.threerings.miso.tools.xml.SimpleMisoSceneParser;
 import com.threerings.miso.util.MisoContext;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * The ViewerApp is a scene viewing application that allows for trying
@@ -67,7 +68,7 @@ public class ViewerApp
 
         // get the target graphics device
         GraphicsDevice gd = env.getDefaultScreenDevice();
-        Log.info("Graphics device [dev=" + gd +
+        log.info("Graphics device [dev=" + gd +
                  ", mem=" + gd.getAvailableAcceleratedMemory() +
                  ", displayChange=" + gd.isDisplayChangeSupported() +
                  ", fullScreen=" + gd.isFullScreenSupported() + "].");
@@ -75,7 +76,7 @@ public class ViewerApp
         // get the graphics configuration and display mode information
         GraphicsConfiguration gc = gd.getDefaultConfiguration();
         DisplayMode dm = gd.getDisplayMode();
-        Log.info("Display mode [bits=" + dm.getBitDepth() +
+        log.info("Display mode [bits=" + dm.getBitDepth() +
                  ", wid=" + dm.getWidth() + ", hei=" + dm.getHeight() +
                  ", refresh=" + dm.getRefreshRate() + "].");
 
@@ -109,26 +110,25 @@ public class ViewerApp
             SimpleMisoSceneParser parser = new SimpleMisoSceneParser("");
             SimpleMisoSceneModel model = parser.parseScene(args[0]);
             if (model == null) {
-                Log.warning("No miso scene found in scene file " +
+                log.warning("No miso scene found in scene file " +
                             "[path=" + args[0] + "].");
                 System.exit(-1);
             }
             _panel.setSceneModel(model);
 
         } catch (Exception e) {
-            Log.warning("Unable to parse scene [path=" + args[0] + "].");
-            Log.logStackTrace(e);
+            log.warning("Unable to parse scene [path=" + args[0] + "].", e);
             System.exit(-1);
         }
 
         // size and position the window, entering full-screen exclusive
         // mode if available
         if (gd.isFullScreenSupported()) {
-            Log.info("Entering full-screen exclusive mode.");
+            log.info("Entering full-screen exclusive mode.");
             gd.setFullScreenWindow(_frame);
 
         } else {
-            Log.warning("Full-screen exclusive mode not available.");
+            log.warning("Full-screen exclusive mode not available.");
             // _frame.pack();
             _frame.setSize(600, 400);
             SwingUtil.centerWindow(_frame);

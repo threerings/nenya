@@ -29,8 +29,9 @@ import org.apache.commons.digester.Digester;
 import com.samskivert.util.StringUtil;
 import com.samskivert.xml.CallMethodSpecialRule;
 
-import com.threerings.media.Log;
 import com.threerings.media.tile.SwissArmyTileSet;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Parses {@link SwissArmyTileSet} instances from a tileset description. A
@@ -96,7 +97,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
                     if (values.length == 2) {
                         starget.setOffsetPos(new Point(values[0], values[1]));
                     } else {
-                        Log.warning("Invalid 'offsetPos' definition '" +
+                        log.warning("Invalid 'offsetPos' definition '" +
                                     bodyText + "'.");
                     }
                 }
@@ -111,7 +112,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
                     if (values.length == 2) {
                         starget.setGapSize(new Dimension(values[0], values[1]));
                     } else {
-                        Log.warning("Invalid 'gapSize' definition '" +
+                        log.warning("Invalid 'gapSize' definition '" +
                                     bodyText + "'.");
                     }
                 }
@@ -126,21 +127,21 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
 
         // check for a <widths> element
         if (set.getWidths() == null) {
-            Log.warning("Tile set definition missing valid <widths> " +
+            log.warning("Tile set definition missing valid <widths> " +
                         "element [set=" + set + "].");
             valid = false;
         }
 
         // check for a <heights> element
         if (set.getHeights() == null) {
-            Log.warning("Tile set definition missing valid <heights> " +
+            log.warning("Tile set definition missing valid <heights> " +
                         "element [set=" + set + "].");
             valid = false;
         }
 
         // check for a <tileCounts> element
         if (set.getTileCounts() == null) {
-            Log.warning("Tile set definition missing valid <tileCounts> " +
+            log.warning("Tile set definition missing valid <tileCounts> " +
                         "element [set=" + set + "].");
             valid = false;
         }

@@ -37,8 +37,9 @@ import com.jme.util.export.OutputCapsule;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.Log;
 import com.threerings.jme.util.SpatialVisitor;
+
+import static com.threerings.jme.Log.log;
 
 /**
  * A procedural animation that translates the model's textures at a constant velocity.
@@ -54,7 +55,7 @@ public class TextureTranslator extends TextureController
         if (vel != null && vel.length == 2) {
             _velocity = new Vector2f(vel[0], vel[1]);
         } else {
-            Log.warning("Invalid velocity [velocity=" + velstr + "].");
+            log.warning("Invalid velocity [velocity=" + velstr + "].");
         }
     }
     

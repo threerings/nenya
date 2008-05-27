@@ -32,7 +32,7 @@ import com.samskivert.util.QuickSort;
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.tile.TileUtil;
 
-import com.threerings.jme.Log;
+import static com.threerings.jme.Log.log;
 
 /**
  * Computes fringe tile images according to the rules in an associated
@@ -148,7 +148,7 @@ public class TileFringer
 
         BufferedImage source = _isrc.getTileSource(baseType);
         if (source == null) {
-            Log.warning("Missing source tile [type=" + baseType + "].");
+            log.warning("Missing source tile [type=" + baseType + "].");
             return null;
         }
 
@@ -187,7 +187,7 @@ public class TileFringer
         BufferedImage fsimg = (frec == null) ? null :
             _isrc.getFringeSource(frec.name);
         if (fsimg == null) {
-            Log.warning("Missing fringe source image [type=" + fringerType +
+            log.warning("Missing fringe source image [type=" + fringerType +
                         ", hash=" + hashValue + ", frec=" + frec + "].");
             return;
         }
