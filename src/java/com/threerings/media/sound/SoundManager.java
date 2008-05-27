@@ -1010,7 +1010,16 @@ public class SoundManager
     protected float _clipVol = 1f;
 
     /** The cache of recent audio clips . */
-    protected LRUHashMap<SoundKey,byte[][]> _clipCache = new LRUHashMap<SoundKey,byte[][]>(10);
+    protected LRUHashMap<SoundKey, byte[][]> _clipCache =
+        new LRUHashMap<SoundKey, byte[][]>(4 * 1024 * 1024, new LRUHashMap.ItemSizer<byte[][]>() {
+            public int computeSize (byte[][] value) {
+                int total = 0;
+                for (byte[] bs : value) {
+                    total += bs.length;
+                }
+                return total;
+            }
+    });
 
     /** The set of locked audio clips; this is separate from the LRU so
      * that locking clips doesn't booch up an otherwise normal caching
