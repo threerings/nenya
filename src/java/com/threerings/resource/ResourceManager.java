@@ -24,9 +24,6 @@ package com.threerings.resource;
 import java.awt.EventQueue;
 import java.awt.image.BufferedImage;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -47,7 +43,6 @@ import java.util.regex.Pattern;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -665,7 +660,7 @@ public class ResourceManager
      */
     public ResourceBundle[] getResourceSet (String name)
     {
-        return (ResourceBundle[])_sets.get(name);
+        return _sets.get(name);
     }
 
     /**
@@ -705,20 +700,7 @@ public class ResourceManager
         List<ResourceBundle> set = new ArrayList<ResourceBundle>();
         StringTokenizer tok = new StringTokenizer(definition, ":");
         while (tok.hasMoreTokens()) {
-            String path = tok.nextToken().trim();
-            if (setType.equals(FILE_SET_TYPE)) {
-                FileResourceBundle bundle =
-                    new FileResourceBundle(getResourceFile(path), true, _unpack);
-                set.add(bundle);
-                if (bundle.isUnpacked() && bundle.sourceIsReady()) {
-                    continue;
-                }
-                dlist.add(bundle);
-            } else if (setType.equals(NETWORK_SET_TYPE)) {
-                NetworkResourceBundle bundle =
-                    new NetworkResourceBundle(_networkRootPath, path, getResourceList());
-                set.add(bundle);
-            }
+            set.add(createResourceBundle(setType, tok.nextToken().trim(), dlist));
         }
 
         // convert our array list into an array and stick it in the table
@@ -728,6 +710,26 @@ public class ResourceManager
         // if this is our default resource bundle, keep a reference to it
         if (DEFAULT_RESOURCE_SET.equals(setName)) {
             _default = setvec;
+        }
+    }
+
+    /** 
+     * Creates a ResourceBundle based on the supplied definition information.
+     */
+    protected ResourceBundle createResourceBundle (String setType, String path,
+        List<ResourceBundle> dlist)
+    {
+        if (setType.equals(FILE_SET_TYPE)) {
+            FileResourceBundle bundle = new FileResourceBundle(getResourceFile(path), true,
+                _unpack);
+            if (!bundle.isUnpacked() || !bundle.sourceIsReady()) {
+                dlist.add(bundle);
+            }
+            return bundle;
+        } else if (setType.equals(NETWORK_SET_TYPE)) {
+            return new NetworkResourceBundle(_networkRootPath, path, getResourceList());
+        } else {
+            throw new IllegalArgumentException("Unknown set type: " + setType);
         }
     }
 
@@ -874,7 +876,7 @@ public class ResourceManager
     protected ResourceBundle[] _default = new ResourceBundle[0];
 
     /** A table of our resource sets. */
-    protected HashMap _sets = new HashMap();
+    protected HashMap<String, ResourceBundle[]> _sets = new HashMap<String, ResourceBundle[]>();
 
     /** Locale to search for locale-specific resources, if any. */
     protected String _localePrefix = null;
