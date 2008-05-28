@@ -99,14 +99,13 @@ public class MisoScenePanel extends VirtualMediaPanel
         super(ctx.getFrameManager());
         _ctx = ctx;
         _metrics = metrics;
+        _rethinkOp = new RethinkOp(_metrics);
+        _applicator = new TileOpApplicator(_metrics);
 
         // set ourselves up
         setOpaque(true);
         addMouseListener(this);
         addMouseMotionListener(this);
-
-        // handy rectangle
-        _tbounds = new Rectangle(0, 0, _metrics.tilewid, _metrics.tilehei);
 
         // create the resolver if it's not already around
         if (_resolver == null) {
@@ -803,7 +802,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
 
         // compute the intersecting set of blocks
-        applyToTiles(_ibounds, _rethinkOp);
+        _applicator.applyToTiles(_ibounds, _rethinkOp);
 //         Log.info("Influential blocks " +
 //                  StringUtil.toString(_rethinkOp.blocks) + ".");
 
@@ -852,34 +851,39 @@ public class MisoScenePanel extends VirtualMediaPanel
         log.debug("Rethunk [pending=" + _pendingBlocks + ", visible=" + _visiBlocks.size() + "].");
         return _visiBlocks.size();
     }
-
     /**
-     * Called during the {@link #rethink} process, configures {@link
-     * #_ibounds} to contain the bounds of the potentially "influential"
-     * world and {@link #_vibounds} to contain bounds that are used to
-     * determine which blocks should be resolved before making the view
-     * visible.
-     * 
-     * <p> Everything that intersects the influential area will be
-     * resolved on the expectation that it could be scrolled into view at
-     * any time. The influential bounds should be large enough that the
-     * time between a block becoming influential and the time at which it
-     * is resolved is longer than the expected time by which it will be
-     * scrolled into view, otherwise the users will see the man behind the
-     * curtain.
+     * Calls through to {@link #computeInfluentialBounds(Rectangle, Rectangle, Rectangle)} with
+     * _vbounds, _ibounds and _vibounds.
      */
     protected void computeInfluentialBounds ()
     {
-        int infborx = 3*_vbounds.width/4;
-        int infbory = _vbounds.height/2;
-        _ibounds.setBounds(_vbounds.x-infborx, _vbounds.y-infbory,
-                           _vbounds.width+2*infborx,
-                           // we go extra on the height because objects
-                           // below can influence fairly high up
-                           _vbounds.height+3*infbory);
-        _vibounds.setBounds(_vbounds.x-_vbounds.width/4, _vbounds.y,
-                            _vbounds.width+_vbounds.width/2,
-                            _vbounds.height+infbory);
+        computeInfluentialBounds(_vbounds, _ibounds, _vibounds);
+        
+    }
+
+
+    /**
+     * Configures <code>influentialBounds</code> to contain the bounds of the potentially
+     * "influential" world and <code>visibleBlockBounds</code> to contain bounds that are used to
+     * determine which blocks should be resolved before making the view visible.
+     * 
+     * <p> Everything that intersects the influential area will be resolved on the expectation
+     * that it could be scrolled into view at any time. The influential bounds should be large
+     * enough that the time between a block becoming influential and the time at which it is
+     * resolved is longer than the expected time by which it will be scrolled into view, otherwise
+     * the users will see the man behind the curtain.
+     */
+    public static void computeInfluentialBounds (Rectangle visibleBounds,
+        Rectangle influentualBounds, Rectangle visibleBlockBounds)
+    {
+        int infborx = 3 * visibleBounds.width / 4;
+        int infbory = visibleBounds.height / 2;
+        // we go extra on the height because objects below can influence fairly high up
+        influentualBounds.setBounds(visibleBounds.x - infborx, visibleBounds.y - infbory,
+            visibleBounds.width + 2 * infborx, visibleBounds.height + 3 * infbory);
+        visibleBlockBounds.setBounds(visibleBounds.x - visibleBounds.width / 4,
+            visibleBounds.y, visibleBounds.width + visibleBounds.width / 2, 
+            visibleBounds.height + infbory);
     }
 
     /**
@@ -1358,87 +1362,6 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Applies the supplied tile operation to all tiles that intersect the
-     * supplied screen rectangle.
-     */
-    protected void applyToTiles (Rectangle bounds, TileOp op)
-    {
-        // determine which tiles intersect this region: this is going to
-        // be nearly incomprehensible without some sort of diagram; i'll
-        // do what i can to comment it, but you'll want to print out a
-        // scene diagram (docs/miso/scene.ps) and start making notes if
-        // you want to follow along
-
-        // obtain our upper left tile
-        Point tpos = MisoUtil.screenToTile(_metrics, bounds.x, bounds.y, new Point());
-
-        // determine which quadrant of the upper left tile we occupy
-        Point spos = MisoUtil.tileToScreen(_metrics, tpos.x, tpos.y, new Point());
-        boolean left = (bounds.x - spos.x < _metrics.tilehwid);
-        boolean top = (bounds.y - spos.y < _metrics.tilehhei);
-
-        // set up our tile position counters
-        int dx, dy;
-        if (left) {
-            dx = 0; dy = 1;
-        } else {
-            dx = 1; dy = 0;
-        }
-
-        // if we're in the top-half of the tile we need to move up a row,
-        // either forward or back depending on whether we're in the left
-        // or right half of the tile
-        if (top) {
-            if (left) {
-                tpos.x -= 1;
-            } else {
-                tpos.y -= 1;
-            }
-            // we'll need to start zig-zagging the other way as well
-            dx = 1 - dx;
-            dy = 1 - dy;
-        }
-
-        // these will bound our loops
-        int rightx = bounds.x + bounds.width,
-            bottomy = bounds.y + bounds.height;
-
-//         Log.info("Preparing to apply [tpos=" + StringUtil.toString(tpos) +
-//                  ", left=" + left + ", top=" + top +
-//                  ", bounds=" + StringUtil.toString(bounds) +
-//                  ", spos=" + StringUtil.toString(spos) +
-//                  "].");
-
-        // obtain the coordinates of the tile that starts the first row
-        // and loop through, applying to the intersecting tiles
-        MisoUtil.tileToScreen(_metrics, tpos.x, tpos.y, spos);
-        while (spos.y < bottomy) {
-            // set up our row counters
-            int tx = tpos.x, ty = tpos.y;
-            _tbounds.x = spos.x;
-            _tbounds.y = spos.y;
-
-//             Log.info("Applying to row [tx=" + tx + ", ty=" + ty + "].");
-
-            // apply to the tiles in this row
-            while (_tbounds.x < rightx) {
-                op.apply(tx, ty, _tbounds);
-
-                // move one tile to the right
-                tx += 1; ty -= 1;
-                _tbounds.x += _metrics.tilewid;
-            }
-
-            // update our tile coordinates
-            tpos.x += dx; dx = 1-dx;
-            tpos.y += dy; dy = 1-dy;
-
-            // obtain the screen coordinates of the next starting tile
-            MisoUtil.tileToScreen(_metrics, tpos.x, tpos.y, spos);
-        }
-    }
-
-    /**
      * Renders the base and fringe layer tiles that intersect the
      * specified clipping rectangle.
      */
@@ -1446,7 +1369,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         // go through rendering our tiles
         _paintOp.setGraphics(gfx);
-        applyToTiles(clip, _paintOp);
+        _applicator.applyToTiles(clip, _paintOp);
         _paintOp.setGraphics(null);
     }
 
@@ -1482,24 +1405,16 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Computes the fringe tile for the specified coordinate. */
     protected BaseTile computeFringeTile (int tx, int ty)
     {
-        return _ctx.getTileManager().getAutoFringer().getFringeTile(
-            _model, tx, ty, _masks);
+        return _ctx.getTileManager().getAutoFringer().getFringeTile(_model, tx, ty, _masks);
     }
 
     /**
-     * Returns true if we're responding to user input. This is used to
-     * control the display of tooltips and other potential user
-     * interactions. By default we are always responsive.
+     * Returns true if we're responding to user input. This is used to control the display of
+     * tooltips and other potential user interactions. By default we are always responsive.
      */
     protected boolean isResponsive ()
     {
         return true;
-    }
-
-    /** Used with {@link #applyToTiles}. */
-    protected static interface TileOp
-    {
-        public void apply (int tx, int ty, Rectangle tbounds);
     }
 
     /** Used by {@link #paintTiles}. */
@@ -1597,24 +1512,6 @@ public class MisoScenePanel extends VirtualMediaPanel
         protected Font _font = new Font("Arial", Font.PLAIN, 7);
     }
 
-    /** Used by {@link #rethink}. */
-    protected class RethinkOp implements TileOp
-    {
-        public Set<Point> blocks = Sets.newHashSet();
-
-        public void apply (int tx, int ty, Rectangle tbounds) {
-            _key.x = MathUtil.floorDiv(tx, _metrics.blockwid) *
-                _metrics.blockwid;
-            _key.y = MathUtil.floorDiv(ty, _metrics.blockhei) *
-                _metrics.blockhei;
-            if (!blocks.contains(_key)) {
-                blocks.add(new Point(_key.x, _key.y));
-            }
-        }
-
-        protected Point _key = new Point();
-    }
-
     /** Provides access to a few things. */
     protected MisoContext _ctx;
 
@@ -1638,7 +1535,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected Rectangle _vibounds = new Rectangle();
 
     /** Used by {@link #rethink}. */
-    protected RethinkOp _rethinkOp = new RethinkOp();
+    protected RethinkOp _rethinkOp;
 
     /** Contains our scene blocks. See {@link #getBlock} for details. */
     protected HashIntMap<SceneBlock> _blocks = new HashIntMap<SceneBlock>();
@@ -1664,9 +1561,6 @@ public class MisoScenePanel extends VirtualMediaPanel
 
     /** The working sprites list used when calculating dirty regions. */
     protected List<Sprite> _dirtySprites = Lists.newArrayList();
-
-    /** Used when rendering tiles. */
-    protected Rectangle _tbounds;
 
     /** Used to paint tiles. */
     protected PaintTileOp _paintOp = new PaintTileOp();
@@ -1709,6 +1603,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     // used to display debugging information on scene block resolution
     protected JFrame _dframe;
     protected ResolutionView _dpanel;
+    
+    protected TileOpApplicator _applicator;
 
     /** A debug hook that toggles debug rendering of traversable tiles. */
     protected static RuntimeAdjust.BooleanAdjust _traverseDebug =

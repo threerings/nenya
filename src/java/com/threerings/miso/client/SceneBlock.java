@@ -36,40 +36,46 @@ import com.threerings.geom.GeomUtil;
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.ObjectTile;
 import com.threerings.media.tile.Tile;
+import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
 import com.threerings.media.util.MathUtil;
-
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.tile.BaseTile;
+import com.threerings.miso.util.MisoSceneMetrics;
 import com.threerings.miso.util.MisoUtil;
 import com.threerings.miso.util.ObjectSet;
 
 import static com.threerings.miso.Log.log;
 
 /**
- * Contains the base and object tile information on a particular
- * rectangular region of a scene.
+ * Contains the base and object tile information on a particular rectangular region of a scene.
  */
 public class SceneBlock
 {
     /**
-     * Creates a scene block and resolves the base and object tiles that
-     * reside therein.
+     * Creates a scene block belonging to panel in preparation for its later resolution.
      */
-    public SceneBlock (
-        MisoScenePanel panel, int tx, int ty, int width, int height)
+    public SceneBlock (MisoScenePanel panel, int tx, int ty, int width, int height)
     {
-        _panel = panel;
+        this(panel.getSceneModel(), panel.getSceneMetrics(), panel.getTileManager(), tx, ty,
+            width, height);
+    }
+    
+    public SceneBlock (MisoSceneModel model, MisoSceneMetrics metrics, TileManager tileMgr,
+            int tx, int ty, int width, int height)
+    {
+        _model = model;
+        _metrics = metrics;
+        _tileMgr = tileMgr;
         _bounds = new Rectangle(tx, ty, width, height);
         _base = new BaseTile[width*height];
         _fringe = new BaseTile[width*height];
         _covered = new boolean[width*height];
 
         // compute our screen-coordinate footprint polygon
-        _footprint = MisoUtil.getFootprintPolygon(
-            panel.getSceneMetrics(), tx, ty, width, height);
+        _footprint = MisoUtil.getFootprintPolygon(_metrics, tx, ty, width, height);
 
         // the rest of our resolution will happen in resolve()
     }
@@ -88,15 +94,17 @@ public class SceneBlock
      * block resolution thread to allow us to load up our image data
      * without blocking the AWT thread.
      */
-    protected boolean resolve ()
+    public boolean resolve ()
     {
         // if we got canned before we were resolved, go ahead and bail now
-        if (_panel.getBlock(_bounds.x, _bounds.y) != this) {
-            // Log.info("Not resolving abandoned block " + this + ".");
-            _panel.blockAbandoned(this);
-            return false;
+        if (_panel != null) {
+            if (_panel.getBlock(_bounds.x, _bounds.y) != this) {
+                // Log.info("Not resolving abandoned block " + this + ".");
+                _panel.blockAbandoned(this);
+                return false;
+            }
+            _panel.blockResolving(this);
         }
-        _panel.blockResolving(this);
 
         // start with the bounds of the footprint polygon
         Rectangle sbounds = new Rectangle(_footprint.getBounds());
@@ -105,11 +113,10 @@ public class SceneBlock
         // resolve our base tiles
         long now = System.currentTimeMillis();
         int baseCount = 0, fringeCount = 0;
-        MisoSceneModel model = _panel.getSceneModel();
         for (int yy = 0; yy < _bounds.height; yy++) {
             for (int xx = 0; xx < _bounds.width; xx++) {
                 int x = _bounds.x + xx, y = _bounds.y + yy;
-                int fqTileId = model.getBaseTileId(x, y);
+                int fqTileId = _model.getBaseTileId(x, y);
                 if (fqTileId <= 0) {
                     continue;
                 }
@@ -125,7 +132,7 @@ public class SceneBlock
                 }
 
                 // compute the fringe for this tile
-                _fringe[tidx] = _panel.computeFringeTile(x, y);
+                _fringe[tidx] = computeFringeTile(x, y);
                 fringeCount++;
             }
         }
@@ -142,11 +149,11 @@ public class SceneBlock
 
         // resolve our objects
         ObjectSet set = new ObjectSet();
-        model.getObjects(_bounds, set);
+        _model.getObjects(_bounds, set);
         ArrayList<SceneObject> scobjs = new ArrayList<SceneObject>();
         now = System.currentTimeMillis();
         for (int ii = 0, ll = set.size(); ii < ll; ii++) {
-            SceneObject scobj = new SceneObject(_panel, set.get(ii));
+            SceneObject scobj = makeSceneObject(set.get(ii));
             // ignore this object if it failed to resolve
             if (scobj.bounds == null) {
                 continue;
@@ -168,10 +175,10 @@ public class SceneBlock
         _objects = scobjs.toArray(new SceneObject[scobjs.size()]);
 
         // resolve our default tileset
-        int bsetid = model.getDefaultBaseTileSet();
+        int bsetid = _model.getDefaultBaseTileSet();
         try {
             if (bsetid > 0) {
-                _defset = _panel.getTileManager().getTileSet(bsetid);
+                _defset = _tileMgr.getTileSet(bsetid);
             }
         } catch (Exception e) {
             log.warning("Unable to fetch default base tileset [tsid=" + bsetid +
@@ -187,10 +194,22 @@ public class SceneBlock
 
         return true;
     }
+    
+    protected SceneObject makeSceneObject (ObjectInfo info)
+    {
+        return new SceneObject(_metrics, _tileMgr, 
+            _panel == null ? null : _panel.getColorizer(info), info);
+    }
+
+    /** Computes the fringe tile for the specified coordinate. */
+    protected BaseTile computeFringeTile (int tx, int ty)
+    {
+        return _panel == null ? null : _panel.computeFringeTile(tx, ty);
+    }
 
     /**
-     * This is called by the {@link SceneBlockResolver} on the AWT thread
-     * when our resolution has completed. We inform our containing panel.
+     * This is called by the {@link SceneBlockResolver} on the AWT thread when our resolution has
+     * completed. We inform our containing panel.
      */
     protected void wasResolved ()
     {
@@ -292,8 +311,7 @@ public class SceneBlock
             if (fqTileId <= 0) {
                 _base[tidx] = null;
             } else {
-                _base[tidx] = (BaseTile)
-                    _panel.getTileManager().getTile(fqTileId);
+                _base[tidx] = (BaseTile)_tileMgr.getTile(fqTileId);
             }
             // clear out the fringe (it must be recomputed by the caller)
             _fringe[tidx] = null;
@@ -318,7 +336,7 @@ public class SceneBlock
     {
         int tidx = index(tx, ty);
         if (_base[tidx] != null) {
-            _fringe[tidx] = _panel.computeFringeTile(tx, ty);
+            _fringe[tidx] = computeFringeTile(tx, ty);
         }
     }
 
@@ -340,7 +358,7 @@ public class SceneBlock
             }
         }
 
-        _objects = ArrayUtil.append(_objects, new SceneObject(_panel, info));
+        _objects = ArrayUtil.append(_objects, makeSceneObject(info));
 
         // clear out our neighbors array so that the subsequent update
         // causes us to recompute our coverage
@@ -554,8 +572,14 @@ public class SceneBlock
         _covered[index(tx, ty)] = true;
     }
 
-    /** The panel for which we contain a block. */
+    /** The panel for which we contain a block or null if we aren't backed by a panel. */
     protected MisoScenePanel _panel;
+    
+    protected MisoSceneMetrics _metrics;
+    
+    protected MisoSceneModel _model;
+    
+    protected TileManager _tileMgr;
 
     /** The bounds of (in tile coordinates) of this block. */
     protected Rectangle _bounds;

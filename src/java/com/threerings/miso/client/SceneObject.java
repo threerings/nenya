@@ -29,13 +29,15 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.StringUtil;
+
+import com.samskivert.swing.RuntimeAdjust;
 
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.ObjectTile;
+import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileUtil;
-
+import com.threerings.media.tile.TileSet.Colorizer;
 import com.threerings.miso.MisoPrefs;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.util.MisoSceneMetrics;
@@ -59,16 +61,21 @@ public class SceneObject
     public Rectangle bounds;
 
     /**
-     * Creates a scene object for display by the specified panel. The
-     * appropriate object tile is resolved and the object's in-situ bounds
-     * are computed.
+     * Creates a scene object for display by the specified panel. The appropriate object tile is
+     * resolved and the object's in-situ bounds are computed.
      */
     public SceneObject (MisoScenePanel panel, ObjectInfo info)
+    {
+        this(panel.getSceneMetrics(), panel.getTileManager(), panel.getColorizer(info), info);
+    }
+
+    public SceneObject (MisoSceneMetrics metrics, TileManager mgr, Colorizer colorizer,
+            ObjectInfo info)
     {
         this.info = info;
 
         // resolve our object tile
-        refreshObjectTile(panel);
+        refreshObjectTile(metrics, mgr, colorizer);
     }
 
     /**
@@ -241,30 +248,38 @@ public class SceneObject
     }
 
     /**
-     * Reloads and recolorizes our object tile. It is not intended for the
-     * actual object tile used by a scene object to change in its
-     * lifetime, only attributes of that object like its colorizations. So
-     * don't do anything crazy like change our {@link ObjectInfo}'s
+     * Reloads and recolorizes our object tile. It is not intended for the actual object tile used
+     * by a scene object to change in its lifetime, only attributes of that object like its
+     * colorizations. So don't do anything crazy like change our {@link ObjectInfo}'s
      * <code>tileId</code> and call this method or things might break.
      */
     public void refreshObjectTile (MisoScenePanel panel)
     {
+        refreshObjectTile(panel.getSceneMetrics(), panel.getTileManager(),
+            panel.getColorizer(info));
+    }
+    
+    /**
+     * Reloads and recolorizes our object tile. It is not intended for the actual object tile used
+     * by a scene object to change in its lifetime, only attributes of that object like its
+     * colorizations. So don't do anything crazy like change our {@link ObjectInfo}'s
+     * <code>tileId</code> and call this method or things might break.
+     */
+    public void refreshObjectTile (MisoSceneMetrics metrics, TileManager mgr, Colorizer colorizer)
+    {
         int tsid = TileUtil.getTileSetId(info.tileId);
         int tidx = TileUtil.getTileIndex(info.tileId);
         try {
-            tile = (ObjectTile)panel.getTileManager().getTile(
-                tsid, tidx, panel.getColorizer(info));
-            computeInfo(panel.getSceneMetrics());
+            tile = (ObjectTile)mgr.getTile(tsid, tidx, colorizer);
+            computeInfo(metrics);
 
         } catch (NoSuchTileSetException te) {
-            log.warning("Scene contains non-existent object tileset " +
-                        "[info=" + info + "].");
+            log.warning("Scene contains non-existent object tileset [info=" + info + "].");
         }
     }
 
     /**
-     * Computes our screen bounds, tile footprint and other useful cached
-     * metrics.
+     * Computes our screen bounds, tile footprint and other useful cached metrics.
      */
     protected void computeInfo (MisoSceneMetrics metrics)
     {
