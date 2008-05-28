@@ -24,9 +24,9 @@ package com.threerings.resource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.AccessControlException;
 import java.util.HashSet;
 
@@ -73,9 +73,9 @@ public class NetworkResourceBundle extends ResourceBundle
         }
         
         URL resourceUrl = new URL(_bundleURL, path);
-        HttpURLConnection ucon = null;
+        URLConnection ucon = null;
         try {
-            ucon = (HttpURLConnection) resourceUrl.openConnection();
+            ucon = resourceUrl.openConnection();
         } catch (IOException ioe) {
             log.warning("Unable to open connection [url=" + resourceUrl + ", ex=" + ioe + "]");
         }
