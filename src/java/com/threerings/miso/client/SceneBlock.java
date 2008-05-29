@@ -61,6 +61,7 @@ public class SceneBlock
     {
         this(panel.getSceneModel(), panel.getSceneMetrics(), panel.getTileManager(), tx, ty,
             width, height);
+        _panel = panel;
     }
     
     public SceneBlock (MisoSceneModel model, MisoSceneMetrics metrics, TileManager tileMgr,
@@ -213,7 +214,9 @@ public class SceneBlock
      */
     protected void wasResolved ()
     {
-        _panel.blockResolved(this);
+        if (_panel != null) {
+            _panel.blockResolved(this);
+        }
     }
 
     /**
@@ -233,9 +236,8 @@ public class SceneBlock
     }
 
     /**
-     * Returns the bounds of the screen coordinate rectangle that contains
-     * all pixels that are drawn on by all tiles and objects in this
-     * block.
+     * Returns the bounds of the screen coordinate rectangle that contains all pixels that are 
+     * drawn on by all tiles and objects in this block.
      */
     public Rectangle getScreenBounds ()
     {
