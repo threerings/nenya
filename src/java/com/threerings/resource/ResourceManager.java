@@ -720,19 +720,37 @@ public class ResourceManager
         List<ResourceBundle> dlist)
     {
         if (setType.equals(FILE_SET_TYPE)) {
-            FileResourceBundle bundle = new FileResourceBundle(getResourceFile(path), true,
-                _unpack);
+            FileResourceBundle bundle =
+                createFileResourceBundle(getResourceFile(path), true, _unpack);
             if (!bundle.isUnpacked() || !bundle.sourceIsReady()) {
                 dlist.add(bundle);
             }
             return bundle;
         } else if (setType.equals(NETWORK_SET_TYPE)) {
-            return new NetworkResourceBundle(_networkRootPath, path, getResourceList());
+            return createNetworkResourceBundle(_networkRootPath, path, getResourceList());
         } else {
             throw new IllegalArgumentException("Unknown set type: " + setType);
         }
     }
 
+    /**
+     * Creates an appropriate bundle for fetching resources from files.
+     */
+    protected FileResourceBundle createFileResourceBundle(
+        File source, boolean delay, boolean unpack)
+    {
+        return new FileResourceBundle(source, delay, unpack);
+    }
+
+    /**
+     * Creates an appropriate bundle for fetching resources from the network.
+     */
+    protected NetworkResourceBundle createNetworkResourceBundle(
+        String root, String path, HashSet<String> rsrcList)
+    {
+        return new NetworkResourceBundle(root, path, rsrcList);
+    }
+    
     /**
      * Loads an image from the supplied file. Supports {@link FastImageIO} files and formats
      * supported by {@link ImageIO} and will load the appropriate one based on the useFastIO param.
