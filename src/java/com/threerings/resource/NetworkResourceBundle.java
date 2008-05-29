@@ -73,6 +73,11 @@ public class NetworkResourceBundle extends ResourceBundle
         }
         
         URL resourceUrl = new URL(_bundleURL, path);
+        return getResource(resourceUrl);
+    }
+    
+    protected static InputStream getResource(URL resourceUrl)
+    {
         URLConnection ucon = null;
         try {
             ucon = resourceUrl.openConnection();
@@ -83,6 +88,7 @@ public class NetworkResourceBundle extends ResourceBundle
         if (ucon == null) {
             return null;
         }
+        
         try {
             ucon.connect();
             return ucon.getInputStream();
