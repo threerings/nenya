@@ -350,6 +350,17 @@ public class BundledComponentRepository
             }
         }
 
+        // from interface FrameProvider
+        public String getFramePath (CharacterComponent component, String action, String type)
+        {
+            String imgpath = action;
+            if (type != null) {
+                imgpath += "_" + type;
+            }
+            String root = component.componentClass.name + "/" + component.name + "/";
+            return _bundle.getIdent() + root + imgpath + BundleUtil.IMAGE_EXTENSION;
+        }
+
         @Override // from IMImageProvider
         public Mirage getTileImage (String path, Rectangle bounds, Colorization[] zations)
         {

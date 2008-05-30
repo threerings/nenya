@@ -71,6 +71,18 @@ public class CharacterComponent implements Serializable
     }
 
     /**
+     * Returns the path to the image frames for the specified action animation or null if
+     * no animation for the specified action is available for this component.
+     *
+     * @param type null for the normal action frames or one of the custom
+     * action sub-types: {@link StandardActions#SHADOW_TYPE}, etc.
+     */
+    public String getFramePath (String action, String type)
+    {
+        return _frameProvider.getFramePath(this, action, type);
+    }
+
+    /**
      * Returns true if this component is equal to the other component. The
      * comparison is made on <code>componentId</code>.
      */

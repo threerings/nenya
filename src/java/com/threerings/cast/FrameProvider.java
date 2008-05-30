@@ -34,4 +34,12 @@ public interface FrameProvider
      */
     public ActionFrames getFrames (
         CharacterComponent component, String action, String type);
+
+    /**
+     * Returns the file path of the animation frames (in the eight sprite directions) for
+     * the specified action of the specified component. May return null if
+     * the specified action does not exist for the specified component.
+     */
+    public String getFramePath (
+        CharacterComponent component, String action, String type);
 }
