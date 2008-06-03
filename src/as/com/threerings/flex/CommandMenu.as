@@ -125,7 +125,6 @@ public class CommandMenu extends Menu
     {
         _upping = popUpwards;
         _lefting = popLeftwards;
-        _fitting = null;
         var r :Rectangle = trigger.getBounds(trigger.stage);
         show(_lefting ? r.left : r.right, _upping ? r.top : r.bottom);
     }
@@ -138,7 +137,6 @@ public class CommandMenu extends Menu
     {
         _upping = popUpwards;
         _lefting = popLeftwards;
-        _fitting = null;
         show(mx, my);
     }
 
@@ -149,7 +147,6 @@ public class CommandMenu extends Menu
     {
         _upping = popUpwards;
         _lefting = popLeftwards;
-        _fitting = null;
         show(); // our show, with no args, pops at the mouse
     }
 
@@ -247,30 +244,32 @@ public class CommandMenu extends Menu
         var submenu :Menu = IMenuItemRenderer(row).menu;
         var lefting :Boolean = _lefting;
         var upping :Boolean = _upping;
-        if (_fitting != null) {
-            if (submenu.x + submenu.getExplicitOrMeasuredWidth() > _fitting.right) {
-                lefting = true;
-            }
-            if (submenu.y + submenu.getExplicitOrMeasuredHeight() > _fitting.bottom) {
-                upping = true;
-            }
+        var fitting :Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+        if (submenu.x + submenu.getExplicitOrMeasuredWidth() > fitting.right) {
+            lefting = true;
         }
+        if (submenu.y + submenu.getExplicitOrMeasuredHeight() > fitting.bottom) {
+            upping = true;
+        }
+
         if (lefting) {
             submenu.x -= submenu.getExplicitOrMeasuredWidth();
         }
         if (upping) {
-            submenu.y -= (submenu.getExplicitOrMeasuredHeight() - DisplayObject(row).height);
+            var displayObj :DisplayObject = DisplayObject(row);
+            var rowLoc :Point = displayObj.localToGlobal(new Point(row.x, row.y));
+            submenu.y = rowLoc.y - submenu.getExplicitOrMeasuredHeight() + displayObj.height;
         }
-        // if we've poped out of the boundaries, just snap it to the lower right corner
-        if (_fitting != null) {
-            if (submenu.x < _fitting.left) {
-                submenu.x = Math.max(
-                        _fitting.right - submenu.getExplicitOrMeasuredWidth(), _fitting.left);
-            }
-            if (submenu.y < _fitting.top) {
-                submenu.y = Math.max(
-                        _fitting.bottom - submenu.getExplicitOrMeasuredHeight(), _fitting.top);
-            }
+
+        // if we've poped out of the boundaries, just snap it to the lower right corner, or upper
+        // if upping, left if lefting
+        if (submenu.x < fitting.left) {
+            submenu.x = lefting ? 0 : Math.max(
+                    fitting.right - submenu.getExplicitOrMeasuredWidth(), fitting.left);
+        }
+        if (submenu.y < fitting.top) {
+            submenu.y = upping ? 0 : Math.max(
+                    fitting.bottom - submenu.getExplicitOrMeasuredHeight(), fitting.top);
         }
     }
 
@@ -322,7 +321,6 @@ public class CommandMenu extends Menu
     }
 
     protected var _dispatcher :IEventDispatcher;
-    protected var _fitting :Rectangle;
     protected var _lefting :Boolean = false;
     protected var _upping :Boolean = false;
 }
