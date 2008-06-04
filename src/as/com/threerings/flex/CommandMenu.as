@@ -185,7 +185,7 @@ public class CommandMenu extends Menu
             y = y - getExplicitOrMeasuredHeight();
         }
 
-        PopUpUtil.fit(this);
+        PopUpUtil.fitInRect(this, _fitting || screen);
     }
 
     /**
@@ -253,36 +253,16 @@ public class CommandMenu extends Menu
 
         // if we're lefting, upping or fitting make sure our submenu does so as well
         var submenu :Menu = IMenuItemRenderer(row).menu;
-        var lefting :Boolean = _lefting;
-        var upping :Boolean = _upping;
-        var fitting :Rectangle = _fitting != null ? _fitting :
-            new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-        if (submenu.x + submenu.getExplicitOrMeasuredWidth() > fitting.right) {
-            lefting = true;
-        }
-        if (submenu.y + submenu.getExplicitOrMeasuredHeight() > fitting.bottom) {
-            upping = true;
-        }
-
-        if (lefting) {
+        if (_lefting) {
             submenu.x -= submenu.getExplicitOrMeasuredWidth();
         }
-        if (upping) {
+        if (_upping) {
             var displayObj :DisplayObject = DisplayObject(row);
             var rowLoc :Point = displayObj.localToGlobal(new Point(row.x, row.y));
             submenu.y = rowLoc.y - submenu.getExplicitOrMeasuredHeight() + displayObj.height;
         }
 
-        // if we've poped out of the boundaries, just snap it to the lower right corner, or upper
-        // if upping, left if lefting
-        if (submenu.x < fitting.left) {
-            submenu.x = lefting ? fitting.left : Math.max(
-                    fitting.right - submenu.getExplicitOrMeasuredWidth(), fitting.left);
-        }
-        if (submenu.y < fitting.top) {
-            submenu.y = upping ? fitting.top : Math.max(
-                    fitting.bottom - submenu.getExplicitOrMeasuredHeight(), fitting.top);
-        }
+        PopUpUtil.fitInRect(submenu, _fitting || screen);
     }
 
     // from List
