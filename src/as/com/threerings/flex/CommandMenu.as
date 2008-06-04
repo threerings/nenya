@@ -118,6 +118,17 @@ public class CommandMenu extends Menu
     }
 
     /**
+     * Sets a Rectangle (in stage coords) that the menu will attempt to keep submenus positioned 
+     * within.  If a submenu is too large to fit, it will position it in the lower right corner
+     * of this Rectangle (or top if popping upwards, or left if popping leftwards).   This
+     * value defaults to the stage bounds.
+     */
+    public function setBounds (fitting :Rectangle) :void
+    {
+        _fitting = fitting;
+    }
+
+    /**
      * Actually pop up the menu. This can be used instead of show().
      */
     public function popUp (
@@ -244,7 +255,8 @@ public class CommandMenu extends Menu
         var submenu :Menu = IMenuItemRenderer(row).menu;
         var lefting :Boolean = _lefting;
         var upping :Boolean = _upping;
-        var fitting :Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+        var fitting :Rectangle = _fitting != null ? _fitting :
+            new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         if (submenu.x + submenu.getExplicitOrMeasuredWidth() > fitting.right) {
             lefting = true;
         }
@@ -264,11 +276,11 @@ public class CommandMenu extends Menu
         // if we've poped out of the boundaries, just snap it to the lower right corner, or upper
         // if upping, left if lefting
         if (submenu.x < fitting.left) {
-            submenu.x = lefting ? 0 : Math.max(
+            submenu.x = lefting ? fitting.left : Math.max(
                     fitting.right - submenu.getExplicitOrMeasuredWidth(), fitting.left);
         }
         if (submenu.y < fitting.top) {
-            submenu.y = upping ? 0 : Math.max(
+            submenu.y = upping ? fitting.top : Math.max(
                     fitting.bottom - submenu.getExplicitOrMeasuredHeight(), fitting.top);
         }
     }
@@ -323,5 +335,6 @@ public class CommandMenu extends Menu
     protected var _dispatcher :IEventDispatcher;
     protected var _lefting :Boolean = false;
     protected var _upping :Boolean = false;
+    protected var _fitting :Rectangle = null;
 }
 }
