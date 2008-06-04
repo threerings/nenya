@@ -138,12 +138,11 @@ public class CharacterManager
      * should be instantiated instead of the configured default (which is
      * set via {@link #setCharacterClass}).
      */
-    public CharacterSprite getCharacter (CharacterDescriptor desc,
-                                         Class charClass)
+    public <T extends CharacterSprite> T getCharacter (CharacterDescriptor desc,
+        Class<T> charClass)
     {
         try {
-            CharacterSprite sprite = (CharacterSprite)
-                charClass.newInstance();
+            T sprite = charClass.newInstance();
             sprite.init(desc, this);
             return sprite;
 
@@ -436,7 +435,7 @@ public class CharacterManager
     protected LRUHashMap _frameCache;
 
     /** The character class to be created. */
-    protected Class _charClass = CharacterSprite.class;
+    protected Class<CharacterSprite> _charClass = CharacterSprite.class;
 
     /** The action animation cache, if we have one. */
     protected ActionCache _acache;
