@@ -21,6 +21,8 @@
 
 package com.threerings.cast;
 
+import java.util.Set;
+
 /**
  * Provides a mechanism where by a character component can obtain access
  * to its image frames for a particular action in an on demand manner.
@@ -36,10 +38,12 @@ public interface FrameProvider
         CharacterComponent component, String action, String type);
 
     /**
-     * Returns the file path of the animation frames (in the eight sprite directions) for
-     * the specified action of the specified component. May return null if
-     * the specified action does not exist for the specified component.
+     * Returns the file path of the animation frames (in the eight sprite directions) for the
+     * specified action of the specified component. May return a path to the default action or
+     * null if the specified action does not exist for the specified component.
+     * 
+     * @param existentPaths the set of all paths for which there are valid frames.
      */
     public String getFramePath (
-        CharacterComponent component, String action, String type);
+        CharacterComponent component, String action, String type, Set<String> existentPaths);
 }

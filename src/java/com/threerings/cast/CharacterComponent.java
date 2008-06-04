@@ -22,6 +22,7 @@
 package com.threerings.cast;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import com.samskivert.util.StringUtil;
 
@@ -76,10 +77,12 @@ public class CharacterComponent implements Serializable
      *
      * @param type null for the normal action frames or one of the custom
      * action sub-types: {@link StandardActions#SHADOW_TYPE}, etc.
+     * 
+     * @param existentPaths the set of all paths for which there are valid frames.
      */
-    public String getFramePath (String action, String type)
+    public String getFramePath (String action, String type, Set<String> existentPaths)
     {
-        return _frameProvider.getFramePath(this, action, type);
+        return _frameProvider.getFramePath(this, action, type, existentPaths);
     }
 
     /**
