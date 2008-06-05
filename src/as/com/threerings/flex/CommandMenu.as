@@ -23,6 +23,8 @@ package com.threerings.flex {
 
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
+
+import flash.events.Event;
 import flash.events.IEventDispatcher;
 
 import flash.geom.Point;
@@ -96,6 +98,35 @@ public class CommandMenu extends Menu
         menu.setDispatcher(dispatcher);
         Menu.popUpMenu(menu, null, items); // does not actually pop up, but needed.
         return menu;
+    }
+
+    /**
+     * The mx.controls.Menu class overrides setting and getting the verticalScrollPolicy
+     * basically setting the verticalScrollPolicy did nothing, and getting it always returned
+     * ScrollPolicy.OFF.  So that's not going to work if we want the menu to scroll. Here we 
+     * reinstate the verticalScrollPolicy setter, and keep a local copy of the value in a 
+     * protected variable _verticalScrollPolicy.
+     * 
+     * This setter is basically a copy of what ScrollControlBase and ListBase do.
+     */
+    override public function set verticalScrollPolicy (value :String) :void 
+    {
+        var newPolicy :String = value.toLowerCase();
+
+        itemsSizeChanged = true;
+
+        if (_verticalScrollPolicy != newPolicy)
+        {
+            _verticalScrollPolicy = newPolicy;
+            dispatchEvent(new Event("verticalScrollPolicyChanged"));
+        }
+
+        invalidateDisplayList();
+    }
+
+    override public function get verticalScrollPolicy () :String
+    {
+        return _verticalScrollPolicy;
     }
 
     public function CommandMenu ()
@@ -188,6 +219,52 @@ public class CommandMenu extends Menu
         PopUpUtil.fitInRect(this, _fitting || screen);
     }
 
+    /** 
+     * The Menu class overrode configureScrollBars() and made the function do nothing.  That means
+     * the scrollbars don't know how to draw themselves, so here we reinstate configureScrollBars.
+     * This is basically a copy of the same method from the mx.controls.List class.
+     */
+    override protected function configureScrollBars () :void
+    {
+        var rowCount :int = listItems.length;
+        if (rowCount == 0) {
+            return;
+        }
+
+        // if there is more than one row and it is a partial row we don't count it
+        if (rowCount > 1 && 
+            rowInfo[rowCount - 1].y + rowInfo[rowCount - 1].height > listContent.height) {
+            rowCount--;
+        }
+
+        // offset, when added to rowCount, is hte index of the dataProvider item for that row.  
+        // IOW, row 10 in listItems is showing dataProvider item 10 + verticalScrollPosition - 
+        // lockedRowCount - 1
+        var offset :int = verticalScrollPosition - lockedRowCount - 1;
+
+        // don't count filler rows at the bottom either.
+        var fillerRows :int = 0;
+        while (rowCount > 0 && listItems[rowCount - 1].length == 0)
+        {
+            if (collection && rowCount + offset >= collection.length) {
+                rowCount--;
+                fillerRows++;
+            } else {
+                break;
+            }
+        }
+
+        var colCount :int = listItems[0].length;
+        var oldHorizontalScrollBar :Object = horizontalScrollBar;
+        var oldVerticalScrollBar :Object = verticalScrollBar;
+        var roundedWidth :int = Math.round(unscaledWidth);
+        var length :int = collection ? collection.length - lockedRowCount : 0;
+        var numRows :int = rowCount - lockedRowCount;
+
+        setScrollBarProperties(Math.round(listContent.width), roundedWidth, length, numRows);
+        maxVerticalScrollPosition = Math.max(length - numRows, 0);
+    }
+
     /**
      * Callback for MenuEvent.ITEM_CLICK.
      */
@@ -265,6 +342,23 @@ public class CommandMenu extends Menu
         PopUpUtil.fitInRect(submenu, _fitting || screen);
     }
 
+    override protected function measure () :void
+    {
+        super.measure();
+
+        if (measuredHeight > this.maxHeight) {
+            measuredHeight = this.maxHeight;
+        }
+
+        if (verticalScrollPolicy == ScrollPolicy.ON || verticalScrollPolicy == ScrollPolicy.AUTO) {
+            if (verticalScrollBar) {
+                measuredMinWidth = measuredWidth = measuredWidth + verticalScrollBar.minWidth;
+            }
+        }
+
+        commitProperties();
+    }
+
     // from List
     override protected function makeListData (data :Object, uid :String, rowNum :int) :BaseListData
     {
@@ -316,5 +410,6 @@ public class CommandMenu extends Menu
     protected var _lefting :Boolean = false;
     protected var _upping :Boolean = false;
     protected var _fitting :Rectangle = null;
+    protected var _verticalScrollPolicy :String;
 }
 }
