@@ -219,6 +219,14 @@ public class ResourceManager
     }
 
     /**
+     * Returns where we're currently looking for locale-specific resources.
+     */
+    public String getLocalePrefix ()
+    {
+        return _localePrefix;
+    }
+
+    /**
      * Set where we should look for locale-specific resources.
      */
     public void setLocalePrefix (String prefix)
@@ -686,7 +694,7 @@ public class ResourceManager
      *  means that we do not know what's available and we'll have to try all possibilities.  This
      *  is fine for most applications.
      */
-    protected HashSet<String> getResourceList ()
+    public HashSet<String> getResourceList ()
     {
         return null;
     }
