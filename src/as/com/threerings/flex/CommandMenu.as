@@ -46,10 +46,6 @@ import mx.events.MenuEvent;
 
 import mx.managers.PopUpManager;
 
-import mx.utils.ObjectUtil;
-
-import flexlib.controls.ScrollableArrowMenu;
-
 import com.threerings.util.CommandEvent;
 
 import com.threerings.flex.PopUpUtil;
@@ -78,6 +74,15 @@ use namespace mx_internal;
  * ];
  *
  * See "Defining menu structure and data" in the Flex manual for the full list.
+ *
+ * CommandMenu is scrollable.  This can be forced by setting verticalScrollPolicy to 
+ * ScrollPolicy.AUTO or ScrollPolicy.ON and setting the maxHeight.  Also, if the scrolling isn't
+ * forced on, but the menu does not fit within the vertical bounds given (either the stage size by
+ * default, or the height of the rectangle given in setBounds()), scrolling will be turned on
+ * so that none of the content is lost.
+ *
+ * Note: we don't extend flexlib's ScrollableMenu (or its sub-class ScrollableArrowMenu) because it
+ * does some weird stuff in measure() that forces some of our menus down to a very small height...
  */
 public class CommandMenu extends Menu
 {
@@ -216,7 +221,16 @@ public class CommandMenu extends Menu
             y = y - getExplicitOrMeasuredHeight();
         }
 
-        PopUpUtil.fitInRect(this, _fitting || screen);
+        var fitting :Rectangle = _fitting || screen;
+        PopUpUtil.fitInRect(this, fitting);
+
+        // if after fitting as best we can, the menu is outside of the declared bounds, we force
+        // scrolling and set the max height
+        if (y < fitting.y) {
+            verticalScrollPolicy = ScrollPolicy.AUTO;
+            maxHeight = fitting.height;
+            y = fitting.y;
+        }
     }
 
     /** 
@@ -339,7 +353,15 @@ public class CommandMenu extends Menu
             submenu.y = rowLoc.y - submenu.getExplicitOrMeasuredHeight() + displayObj.height;
         }
 
-        PopUpUtil.fitInRect(submenu, _fitting || screen);
+        var fitting :Rectangle = _fitting || screen;
+        PopUpUtil.fitInRect(submenu, fitting);
+        // if after fitting as best we can, the menu is outside of the declared bounds, we force
+        // scrolling and set the max height
+        if (submenu.y < fitting.y) {
+            submenu.verticalScrollPolicy = ScrollPolicy.AUTO;
+            submenu.maxHeight = fitting.height;
+            submenu.y = fitting.y;
+        }
     }
 
     override protected function measure () :void
