@@ -51,6 +51,15 @@ public class CharacterManager
     implements DirectionCodes
 {
     /**
+     * Sets the size of the cache used for composited animation frames. This must be called before
+     * the CharacterManager is created.
+     */
+    public static void setCacheSize (int cacheKilobytes)
+    {
+        _cacheSize.setValue(cacheKilobytes);
+    }
+
+    /**
      * Constructs the character manager.
      */
     public CharacterManager (ImageManager imgr, ComponentRepository crepo)

@@ -36,6 +36,14 @@ import com.threerings.resource.ResourceManager;
  */
 public class ClientImageManager extends ImageManager
 {
+    /**
+     * Sets the size of the image cache. This must be called before the ImageManager is created.
+     */
+    public static void setCacheSize (int cacheKilobytes)
+    {
+        _cacheSize.setValue(cacheKilobytes);
+    }
+
     public ClientImageManager (ResourceManager rmgr, OptimalImageCreator icreator)
     {
         super(rmgr, icreator);
