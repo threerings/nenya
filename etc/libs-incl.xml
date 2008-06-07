@@ -10,6 +10,7 @@
     <include name="commons-logging.jar"/>
     <include name="commons-beanutils.jar"/>
     <include name="google-collect.jar"/>
+    <include name="guice.jar"/>
     <include name="junit4.jar"/>
     <include name="retroweaver-all-1.2.2.jar"/>
     <include name="xml-writer.jar"/>
