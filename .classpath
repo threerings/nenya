@@ -5,5 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/narya"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/xml-writer.jar"/>
+	<classpathentry kind="var" path="EXT_LIBS_DIR/atunit.jar"/>
+	<classpathentry kind="var" path="EXT_LIBS_DIR/guice.jar"/>
 	<classpathentry kind="output" path="tests/dist/classes"/>
 </classpath>
