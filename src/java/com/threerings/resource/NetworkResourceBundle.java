@@ -88,7 +88,6 @@ public class NetworkResourceBundle extends ResourceBundle
         if (ucon == null) {
             return null;
         }
-        log.info("Fetching", "url", resourceUrl);
         
         try {
             ucon.connect();
