@@ -41,7 +41,7 @@ public class ClientImageManager extends ImageManager
      */
     public static void setCacheSize (int cacheKilobytes)
     {
-        _cacheSize.setValue(cacheKilobytes);
+        _runCacheSize = cacheKilobytes;
     }
 
     public ClientImageManager (ResourceManager rmgr, OptimalImageCreator icreator)
@@ -57,7 +57,7 @@ public class ClientImageManager extends ImageManager
     @Override
     public int getCacheSize ()
     {
-        return _cacheSize.getValue();
+        return _runCacheSize;
     }
 
     @Override
@@ -95,6 +95,12 @@ public class ClientImageManager extends ImageManager
     protected static RuntimeAdjust.IntAdjust _cacheSize = new RuntimeAdjust.IntAdjust(
         "Size (in kb of memory used) of the image manager LRU cache [requires restart]",
         "narya.media.image.cache_size", MediaPrefs.config, DEFAULT_CACHE_SIZE);
+    
+    /**
+     * Cache size to be used in this run.  Adjusted by setCacheSize without affecting
+     * the stored value.
+     */
+    protected static int _runCacheSize = _cacheSize.getValue();
 
     /** Controls whether or not we prepare images or use raw versions. */
     protected static RuntimeAdjust.BooleanAdjust _prepareImages = new RuntimeAdjust.BooleanAdjust(

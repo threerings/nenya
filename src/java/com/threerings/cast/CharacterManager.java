@@ -33,7 +33,6 @@ import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 import com.samskivert.util.Tuple;
-
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageManager;
 import com.threerings.util.DirectionCodes;
@@ -56,7 +55,7 @@ public class CharacterManager
      */
     public static void setCacheSize (int cacheKilobytes)
     {
-        _cacheSize.setValue(cacheKilobytes);
+        _runCacheSize = cacheKilobytes;
     }
 
     /**
@@ -76,9 +75,8 @@ public class CharacterManager
         }
 
         // create a cache for our composited action frames
-        int acsize = _cacheSize.getValue();
-        log.debug("Creating action cache [size=" + acsize + "k].");
-        _frameCache = new LRUHashMap(acsize*1024, new LRUHashMap.ItemSizer() {
+        log.debug("Creating action cache [size=" + _runCacheSize + "k].");
+        _frameCache = new LRUHashMap(_runCacheSize * 1024, new LRUHashMap.ItemSizer() {
             public int computeSize (Object value) {
                 return (int)((CompositedMultiFrameImage)
                              value).getEstimatedMemoryUsage();
@@ -183,7 +181,7 @@ public class CharacterManager
             frames = createCompositeFrames(descrip, action);
             _actionFrames.put(key, frames);
         }
-
+        
         // periodically report our frame image cache performance
         if (!_cacheStatThrottle.throttleOp()) {
             long size = getEstimatedCacheMemoryUsage();
@@ -459,4 +457,10 @@ public class CharacterManager
             "Size (in kb of memory used) of the character manager LRU " +
             "action cache [requires restart]", "narya.cast.action_cache_size",
             CastPrefs.config, 32768);
+    
+    /**
+     * Cache size to be used in this run.  Adjusted by setCacheSize without affecting
+     * the stored value.
+     */
+    protected static int _runCacheSize = _cacheSize.getValue();
 }
