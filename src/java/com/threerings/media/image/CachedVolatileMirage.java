@@ -72,7 +72,11 @@ public class CachedVolatileMirage extends VolatileMirage
             BufferedImage source = _imgr.getImage(_source, _zations);
             if (source != null) {
                 gfx = _image.getGraphics();
-                gfx.drawImage(source, -_bounds.x, -_bounds.y, null);
+                // We grab a subimage before drawing because otherwise bufferedimage does all its
+                //  computations across the entire image, including those parts outside the bounds.
+                BufferedImage subImg =
+                    source.getSubimage(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+                gfx.drawImage(subImg, 0, 0, null);
             }
 
         } catch (Exception e) {
