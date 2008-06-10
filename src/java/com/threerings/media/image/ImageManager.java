@@ -2,15 +2,15 @@
 
 package com.threerings.media.image;
 
+import static com.threerings.media.Log.log;
+
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,10 +21,7 @@ import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 import com.samskivert.util.Tuple;
-
 import com.threerings.resource.ResourceManager;
-
-import static com.threerings.media.Log.log;
 
 /**
  * Provides a single point of access for image retrieval and caching.  This does not include
@@ -129,7 +126,9 @@ public class ImageManager
     {
         log.info("Clearing image manager cache.");
 
-        _ccache.clear();
+        synchronized (_ccache) {
+            _ccache.clear();
+        }
     }
 
     /**
@@ -472,7 +471,9 @@ public class ImageManager
             try {
                 BufferedImage cimage = ImageUtil.recolorImage(_source, zations);
                 _colorized.add(new Tuple<Colorization[], BufferedImage>(zations, cimage));
-                cache.adjustSize((int)ImageUtil.getEstimatedMemoryUsage(cimage));
+                synchronized (cache) {
+                    cache.adjustSize((int)ImageUtil.getEstimatedMemoryUsage(cimage));
+                }
                 return cimage;
 
             } catch (Exception re) {
