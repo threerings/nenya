@@ -10,6 +10,7 @@ import flash.utils.getTimer;
 /**
  * Moves a display object along a particular path in a specified amount of time.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public /*abstract*/ class Path
 {
     /**

@@ -8,6 +8,7 @@ import flash.display.DisplayObject;
 /**
  * Adapts mx.effects.easing or Tweener functions for use as a Path.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public class EasingPath extends Path
 {
     /**

@@ -8,6 +8,7 @@ import flash.display.DisplayObject;
 /**
  * Moves a display object along a line path in a specified amount of time.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public class LinePath extends Path
 {
     public function LinePath (target :DisplayObject, xfunc :InterpFunc, yfunc :InterpFunc,

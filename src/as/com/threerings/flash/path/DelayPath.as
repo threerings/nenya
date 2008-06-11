@@ -25,6 +25,7 @@ package com.threerings.flash.path {
  * Doesn't actually move anything, but simply delays in the current position for some period of
  * time. This is generally used with a {@link CompositePath}.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public class DelayPath extends Path
 {
     public function DelayPath (delay :int)

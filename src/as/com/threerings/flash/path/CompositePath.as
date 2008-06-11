@@ -28,6 +28,7 @@ import com.threerings.util.Util;
 /**
  * Executes a series of paths in order.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public class CompositePath extends Path
 {
     /**

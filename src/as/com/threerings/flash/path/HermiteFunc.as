@@ -25,6 +25,7 @@ package com.threerings.flash.path {
  * Interpolates cubically between two values, with beginning and end derivates set
  * to zero. See http://en.wikipedia.org/wiki/Cubic_Hermite_spline for details.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public class HermiteFunc extends InterpFunc
 {
     public function HermiteFunc (start :int, end :int, startSlope :Number = 0, endSlope :Number = 0)

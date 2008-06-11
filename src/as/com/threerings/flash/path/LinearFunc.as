@@ -24,6 +24,7 @@ package com.threerings.flash.path {
 /**
  * Interpolates linearly between two values.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public class LinearFunc extends InterpFunc
 {
     public function LinearFunc (start :int, end :int)

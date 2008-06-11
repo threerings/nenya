@@ -24,6 +24,7 @@ package com.threerings.flash.path {
 /**
  * Used by paths to interpolate between two values.
  */
+[Deprecated(replacement="caurina.transitions.Tweener")]
 public /*abstract*/ class InterpFunc
 {
     public /*abstract*/ function getValue (complete :Number) :Number
