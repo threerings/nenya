@@ -34,6 +34,11 @@ import static com.threerings.miso.Log.log;
  */
 public class SceneBlockResolver extends LoopingThread
 {
+    public SceneBlockResolver ()
+    {
+        super("SceneBlockResolver");
+    }
+    
     /**
      * Queues up a scene block for resolution.
      */

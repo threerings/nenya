@@ -613,6 +613,11 @@ public abstract class FrameManager
     /** Used to effect periodic calls to {@link #tick}. */
     protected class Ticker extends Thread
     {
+        public Ticker ()
+        {
+            super("FrameManagerTicker");
+        }
+        
         public void run ()
         {
             log.info("Frame manager ticker running " +
