@@ -67,11 +67,7 @@ public class TextFieldUtil
         if (formatProps != null) {
             tf.defaultTextFormat = createFormat(formatProps);
         }
-        tf.text = text;
-        if (tf.autoSize != TextFieldAutoSize.NONE) {
-            tf.width = tf.textWidth + WIDTH_PAD;
-            tf.height = tf.textHeight + HEIGHT_PAD;
-        }
+        updateText(tf, text);
 
         return tf;
     }
@@ -97,7 +93,19 @@ public class TextFieldUtil
         var f :TextFormat = field.defaultTextFormat; // this gets a clone of the default fmt
         Util.init(f, props); // update the clone
         field.defaultTextFormat = f; // set it as the new default
-        field.text = field.text; // jiggle the text to update it
+        updateText(field, field.text); // jiggle the text to update it
+    }
+
+    /**
+     * Update the text in the field, automatically resizing it if appropriate.
+     */
+    public static function updateText (field :TextField, text :String) :void
+    {
+        field.text = text;
+        if (field.autoSize != TextFieldAutoSize.NONE) {
+            field.width = field.textWidth + WIDTH_PAD;
+            field.height = field.textHeight + HEIGHT_PAD;
+        }
     }
 
     /**
