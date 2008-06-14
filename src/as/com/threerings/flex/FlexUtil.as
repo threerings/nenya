@@ -21,13 +21,27 @@
 
 package com.threerings.flex {
 
+import mx.controls.Label;
 import mx.controls.Spacer;
 
 /**
- * Wraps a non-Flex component for use in Flex. 
+ * Flex-related utility methods.
  */
 public class FlexUtil
 {
+    /**
+     * How hard would it have been for them to make Label accept an optional text argument?
+     */
+    public static function createLabel (text :String, style :String = null) :Label
+    {
+        var label :Label = new Label();
+        label.text = text;
+        if (style != null) {
+            label.styleName = style;
+        }
+        return label;
+    }
+
     /**
      * How hard would it have been for them make Spacer accept two optional arguments?
      */
