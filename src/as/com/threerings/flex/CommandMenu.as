@@ -138,10 +138,19 @@ public class CommandMenu extends Menu
     {
         super();
 
-        itemRenderer = new ClassFactory(CommandMenuItemRenderer);
+        itemRenderer = new ClassFactory(getItemRenderer());
 
         verticalScrollPolicy = ScrollPolicy.OFF;
         addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
+    }
+
+    /** 
+     * Called in the CommandMenu constructor, this should return the item rendering class for this
+     * CommandMenu.
+     */
+    protected function getItemRenderer () :Class
+    {
+        return CommandMenuItemRenderer;
     }
 
     /**
