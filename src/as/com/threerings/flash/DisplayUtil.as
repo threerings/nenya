@@ -43,21 +43,29 @@ public class DisplayUtil
         container :DisplayObjectContainer, comp :Function = null) :void
     {
         var numChildren :int = container.numChildren;
-        // put all children in an array
-        var children :Array = new Array(numChildren);
+
+        // since it's likely this function will be called frequently on the same
+        // DisplayObjectContainer, keep the Array around so that we're not
+        // re-allocating memory more often than we need to
+        if (_sortDisplayChildrenArray.length != numChildren) {
+            _sortDisplayChildrenArray = new Array(numChildren);
+        }
+
         var ii :int;
         for (ii = 0; ii < numChildren; ii++) {
-            children[ii] = container.getChildAt(ii);
+            _sortDisplayChildrenArray[ii] = container.getChildAt(ii);
         }
 
         // stable sort the array
-        ArrayUtil.stableSort(children, comp);
+        ArrayUtil.stableSort(_sortDisplayChildrenArray, comp);
 
         // set their new indexes
         for (ii = 0; ii < numChildren; ii++) {
-            container.setChildIndex(DisplayObject(children[ii]), ii);
+            container.setChildIndex(DisplayObject(_sortDisplayChildrenArray[ii]), ii);
         }
     }
+
+    private static var _sortDisplayChildrenArray :Array = [];
 
     /**
      * Call the specified function for the display object and all descendants.
