@@ -375,6 +375,37 @@ public class ResourceManager
     }
 
     /**
+     * Given a file within the resource directory, returns a resource path that can be passed to
+     * {@link #getResourceFile} to locate the resource.
+     *
+     * @return a path referencing the specified resource or null if either the resource manager
+     * was never configured with a resource directory or the file is not contained within the
+     * resource directory.
+     */
+    public String getResourcePath (File file)
+    {
+        if (_rdir == null) {
+            return null;
+        }
+        try {
+            String parent = _rdir.getCanonicalPath();
+            if (!parent.endsWith(File.separator)) {
+                parent += File.separator;
+            }
+            String child = file.getCanonicalPath();
+            if (!child.startsWith(parent)) {
+                return null;
+            }
+            String path = child.substring(parent.length());
+            return (File.separatorChar == '/') ? path : path.replace(File.separatorChar, '/');
+
+        } catch (IOException e) {
+            log.warning("Failed to determine resource path [file=" + file + "].", e);
+            return null;
+        }
+    }
+
+    /**
      * Checks to see if the specified bundle exists, is unpacked and is ready to be used.
      */
     public boolean checkBundle (String path)
@@ -721,7 +752,7 @@ public class ResourceManager
         }
     }
 
-    /** 
+    /**
      * Creates a ResourceBundle based on the supplied definition information.
      */
     protected ResourceBundle createResourceBundle (String setType, String path,
@@ -758,7 +789,7 @@ public class ResourceManager
     {
         return new NetworkResourceBundle(root, path, rsrcList);
     }
-    
+
     /**
      * Loads an image from the supplied file. Supports {@link FastImageIO} files and formats
      * supported by {@link ImageIO} and will load the appropriate one based on the useFastIO param.
