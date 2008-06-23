@@ -135,9 +135,12 @@ public class SoundManager
          */
         public float getPan ();
     }
-
+    
     /** The default sound type. */
     public static final SoundType DEFAULT = new SoundType("default");
+
+    /** The default clip cache holds 4 megs. */
+    public static final int DEFAULT_CACHE_SIZE = 4 * 1024 * 1024;
 
     /**
      * Constructs a sound manager.
@@ -148,18 +151,39 @@ public class SoundManager
     }
 
     /**
-     * Constructs a sound manager.
+     * Constructs a sound manager with the default clip cache size.
      *
-     * @param defaultClipBundle
      * @param defaultClipPath The pathname of a sound clip to use as a
      * fallback if another sound clip cannot be located.
      */
     public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath)
     {
+        this(rmgr, defaultClipBundle, defaultClipPath, DEFAULT_CACHE_SIZE);
+    }
+
+    /**
+     * Constructs a sound manager.
+     *
+     * @param defaultClipPath The pathname of a sound clip to use as a
+     * fallback if another sound clip cannot be located.
+     * @param cacheSize the number of bytes of sound clips to cache.
+     */
+    public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath, int cacheSize)
+    {
         // save things off
         _rmgr = rmgr;
         _defaultClipBundle = defaultClipBundle;
         _defaultClipPath = defaultClipPath;
+        _clipCache = 
+            new LRUHashMap<SoundKey, byte[][]>(cacheSize, new LRUHashMap.ItemSizer<byte[][]>() {
+                public int computeSize (byte[][] value) {
+                    int total = 0;
+                    for (byte[] bs : value) {
+                        total += bs.length;
+                    }
+                    return total;
+                }
+        });
     }
 
     /**
@@ -1011,16 +1035,7 @@ public class SoundManager
     protected float _clipVol = 1f;
 
     /** The cache of recent audio clips . */
-    protected LRUHashMap<SoundKey, byte[][]> _clipCache =
-        new LRUHashMap<SoundKey, byte[][]>(4 * 1024 * 1024, new LRUHashMap.ItemSizer<byte[][]>() {
-            public int computeSize (byte[][] value) {
-                int total = 0;
-                for (byte[] bs : value) {
-                    total += bs.length;
-                }
-                return total;
-            }
-    });
+    protected LRUHashMap<SoundKey, byte[][]> _clipCache;
 
     /** The set of locked audio clips; this is separate from the LRU so
      * that locking clips doesn't booch up an otherwise normal caching
