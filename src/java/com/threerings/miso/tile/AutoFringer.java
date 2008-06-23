@@ -26,6 +26,7 @@ import static com.threerings.miso.Log.log;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,10 +73,7 @@ public class AutoFringer
         @Override
         public int hashCode ()
         {
-            int result = 33;
-            for (long key : _fringeId) {
-                result = result * 37 + (int)(key ^ (key >>> 32));
-            }
+            int result = Arrays.hashCode(_fringeId);
             if(_passable) {
                 result++;
             }
@@ -109,7 +107,7 @@ public class AutoFringer
      * Compute and return the fringe tile to be inserted at the specified location.
      */
     public BaseTile getFringeTile (MisoSceneModel scene, int col, int row,
-        Map<FringeTile, FringeTile> fringes)
+        Map<FringeTile, WeakReference<FringeTile>> fringes)
     {
         // get the tileset id of the base tile we are considering
         int underset = adjustTileSetId(scene.getBaseTileId(col, row) >> 16);
@@ -183,7 +181,7 @@ public class AutoFringer
      * Compose a FringeTile out of the various fringe images needed.
      */
     protected FringeTile composeFringeTile (FringerRec[] fringers,
-        Map<FringeTile, FringeTile> fringes, int hashValue, boolean passable)
+        Map<FringeTile, WeakReference<FringeTile>> fringes, int hashValue, boolean passable)
     {
         // sort the array so that higher priority fringers get drawn first
         QuickSort.sort(fringers);
@@ -210,9 +208,12 @@ public class AutoFringer
 
         // If the fringes map contains something with the same fringe identifier, this will pull
         // it out and we can use it instead.
-        FringeTile result = fringes.get(frTile);
+        WeakReference<FringeTile> result = fringes.get(frTile);
         if (result != null) {
-            return result;
+            FringeTile fringe = result.get();
+            if (fringe != null) {
+                return fringe;
+            }
         }
 
         // There's no fringe with he same identifier, so we need to create the tile.
@@ -230,7 +231,7 @@ public class AutoFringer
             }
         }
         frTile.setImage(new BufferedMirage(img));
-        fringes.put(frTile, frTile);
+        fringes.put(frTile, new WeakReference<FringeTile>(frTile));
         return frTile;
     }
 

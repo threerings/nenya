@@ -42,6 +42,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -364,12 +365,11 @@ public class MisoScenePanel extends VirtualMediaPanel
         for (SceneBlock block : _blocks.values()) {
             block.computeMemoryUsage(base, fringe, object, usage);
         }
-        log.info("Scene tile memory usage " +
-                 "[scene=" + StringUtil.shortClassName(this) +
-                 ", base=" + base.size() + "->" + (usage[0] / 1024) + "k" +
-                 ", fringe=" + fringe.size() + "->" + (usage[1] / 1024) + "k" +
-                 ", obj=" + object.size() +
-                 "->" + (usage[2] / 1024) + "k" + "].");
+        log.info("Scene tile memory usage", 
+            "scene", StringUtil.shortClassName(this),
+            "base", base.size() + "->" + (usage[0] / 1024) + "k", 
+            "fringe", fringe.size() + "->" + (usage[1] / 1024) + "k",
+            "obj", object.size() + "->" + (usage[2] / 1024) + "k");
     }
 
     @Override
@@ -1561,7 +1561,8 @@ public class MisoScenePanel extends VirtualMediaPanel
      * fully created FringeTile can be extracted from the map using a tile that contains only
      * what's needed for hashCode and equals: id and passability.
      */
-    protected Map<FringeTile, FringeTile> _fringes = new WeakHashMap<FringeTile, FringeTile>();
+    protected Map<FringeTile, WeakReference<FringeTile>> _fringes =
+        new WeakHashMap<FringeTile, WeakReference<FringeTile>>();
 
     /** The dirty sprites and objects that need to be re-painted. */
     protected DirtyItemList _dirtyItems = new DirtyItemList();
