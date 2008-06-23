@@ -427,7 +427,6 @@ public class SceneBlock
                                     Map<Tile.Key,ObjectTile> objects, long[] usage)
     {
         // account for our base tiles
-        MisoSceneModel model = _panel.getSceneModel();
         for (int yy = 0; yy < _bounds.height; yy++) {
             for (int xx = 0; xx < _bounds.width; xx++) {
                 int x = _bounds.x + xx, y = _bounds.y + yy;

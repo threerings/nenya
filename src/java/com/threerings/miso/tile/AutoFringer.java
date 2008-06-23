@@ -21,40 +21,76 @@
 
 package com.threerings.miso.tile;
 
+import static com.threerings.miso.Log.log;
+
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import com.google.common.collect.Lists;
 
 import com.samskivert.util.CheapIntMap;
 import com.samskivert.util.QuickSort;
 
-import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.BufferedMirage;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.ImageUtil;
-
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.Tile;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
-
 import com.threerings.miso.data.MisoSceneModel;
-
-import static com.threerings.miso.Log.log;
 
 /**
  * Automatically fringes a scene according to the rules in the supplied fringe configuration.
  */
 public class AutoFringer
 {
+
+    public static class FringeTile extends BaseTile
+    {
+        public FringeTile (long[] fringeId, boolean passable)
+        {
+            setPassable(passable);
+            _fringeId = fringeId;
+        }
+
+        @Override
+        public boolean equals (Object obj)
+        {
+            if (!(obj instanceof FringeTile)) {
+                return false;
+            }
+            FringeTile fObj = (FringeTile)obj;
+            return _passable == fObj._passable && Arrays.equals(_fringeId, fObj._fringeId);
+        }
+
+        @Override
+        public int hashCode ()
+        {
+            int result = 33;
+            for (long key : _fringeId) {
+                result = result * 37 + (int)(key ^ (key >>> 32));
+            }
+            if(_passable) {
+                result++;
+            }
+            return result;
+        }
+        
+        /** The fringe keys of the tiles that went into this tile in the order they were drawn. */
+        protected long[] _fringeId;
+    }
+
     /**
-     * Constructs an instance that will fringe according to the rules in
-     * the supplied fringe configuration.
+     * Constructs an instance that will fringe according to the rules in the supplied fringe
+     * configuration.
      */
-    public AutoFringer (FringeConfiguration fringeconf, ImageManager imgr,
-                        TileManager tmgr)
+    public AutoFringer (FringeConfiguration fringeconf, ImageManager imgr, TileManager tmgr)
     {
         _fringeconf = fringeconf;
         _imgr = imgr;
@@ -64,15 +100,16 @@ public class AutoFringer
     /**
      * Returns the fringe configuration used by this fringer.
      */
-    public FringeConfiguration getFringeConf () {
+    public FringeConfiguration getFringeConf ()
+    {
         return _fringeconf;
     }
 
     /**
-     * Compute and return the fringe tile to be inserted at the specified
-     * location.
+     * Compute and return the fringe tile to be inserted at the specified location.
      */
-    public BaseTile getFringeTile (MisoSceneModel scene, int col, int row, Map masks)
+    public BaseTile getFringeTile (MisoSceneModel scene, int col, int row,
+        Map<FringeTile, FringeTile> fringes)
     {
         // get the tileset id of the base tile we are considering
         int underset = adjustTileSetId(scene.getBaseTileId(col, row) >> 16);
@@ -114,12 +151,11 @@ public class AutoFringer
                 // we allow users to splash in the water.
                 if (passable && (btid > 0)) {
                     try {
-                        BaseTile bt = (BaseTile) _tmgr.getTile(btid);
+                        BaseTile bt = (BaseTile)_tmgr.getTile(btid);
                         passable = bt.isPassable();
                     } catch (NoSuchTileSetException nstse) {
-                        log.warning("Autofringer couldn't find a base " +
-                            "set while attempting to figure passability " +
-                            "[error=" + nstse + "].");
+                        log.warning("Autofringer couldn't find a base set while attempting to " + 
+                            "figure passability", nstse);
                     }
                 }
             }
@@ -140,68 +176,90 @@ public class AutoFringer
             }
         }
 
-        BaseTile frTile = new BaseTile();
-        frTile.setPassable(passable);
-        composeFringeTile(frTile, frecs, masks, TileUtil.getTileHash(col, row));
-        return frTile;
+        return composeFringeTile(frecs, fringes, TileUtil.getTileHash(col, row), passable);
     }
 
     /**
      * Compose a FringeTile out of the various fringe images needed.
      */
-    protected void composeFringeTile (Tile frTile, FringerRec[] fringers, Map masks, int hashValue)
+    protected FringeTile composeFringeTile (FringerRec[] fringers,
+        Map<FringeTile, FringeTile> fringes, int hashValue, boolean passable)
     {
         // sort the array so that higher priority fringers get drawn first
         QuickSort.sort(fringers);
 
-        BufferedImage ftimg = null;
+        // Generate an identifier for the fringe tile being created as an array of the keys of its
+        // component tiles in the order they'll be drawn in the fringe tile.
+        List<Long> keys = Lists.newArrayList();
         for (int ii = 0; ii < fringers.length; ii++) {
             int[] indexes = getFringeIndexes(fringers[ii].bits);
+            FringeConfiguration.FringeTileSetRecord tsr = _fringeconf.getFringe(
+                fringers[ii].baseset, hashValue);
+            int fringeset = tsr.fringe_tsid;
+            for (int jj = 0; jj < indexes.length; jj++) {
+                // Add a key for this tile as a long containing its base tile, the fringe set it's
+                // working with and the index used in that set.
+                keys.add((((long)fringers[ii].baseset) << 32) + (fringeset << 16) + indexes[jj]);
+            }
+        }
+        long[] fringeId = new long[keys.size()];
+        for (int ii = 0; ii < fringeId.length; ii++) {
+            fringeId[ii] = keys.get(ii);
+        }
+        FringeTile frTile = new FringeTile(fringeId, passable);
+
+        // If the fringes map contains something with the same fringe identifier, this will pull
+        // it out and we can use it instead.
+        FringeTile result = fringes.get(frTile);
+        if (result != null) {
+            return result;
+        }
+
+        // There's no fringe with he same identifier, so we need to create the tile.
+        BufferedImage img = null;
+        for (int ii = 0; ii < fringers.length; ii++) {
+            int[] indexes = getFringeIndexes(fringers[ii].bits);
+            FringeConfiguration.FringeTileSetRecord tsr = _fringeconf.getFringe(
+                fringers[ii].baseset, hashValue);
             for (int jj = 0; jj < indexes.length; jj++) {
                 try {
-                    ftimg = getTileImage(ftimg, fringers[ii].baseset, indexes[jj], masks, hashValue);
+                    img = getTileImage(img, tsr, fringers[ii].baseset, indexes[jj], hashValue);
                 } catch (NoSuchTileSetException nstse) {
-                    log.warning("Autofringer couldn't find a needed tileset [error=" + nstse + "].");
+                    log.warning("Autofringer couldn't find a needed tileset", nstse);
                 }
             }
         }
-
-        frTile.setImage(new BufferedMirage(ftimg));
+        frTile.setImage(new BufferedMirage(img));
+        fringes.put(frTile, frTile);
+        return frTile;
     }
 
     /**
      * Retrieve or compose an image for the specified fringe.
      */
-    protected BufferedImage getTileImage (BufferedImage ftimg, int baseset, int index,
-                                          Map masks, int hashValue)
+    protected BufferedImage getTileImage (BufferedImage img,
+        FringeConfiguration.FringeTileSetRecord tsr, int baseset, int index, int hashValue)
         throws NoSuchTileSetException
     {
-        FringeConfiguration.FringeTileSetRecord tsr = _fringeconf.getFringe(baseset, hashValue);
         int fringeset = tsr.fringe_tsid;
         TileSet fset = _tmgr.getTileSet(fringeset);
-
         if (!tsr.mask) {
             // oh good, this is easy
             Tile stamp = fset.getTile(index);
-            return stampTileImage(stamp, ftimg, stamp.getWidth(), stamp.getHeight());
+            return stampTileImage(stamp, img, stamp.getWidth(), stamp.getHeight());
         }
 
-        // otherwise, it's a mask.. look for it in the cache..
-        Long maskkey = Long.valueOf((((long) baseset) << 32) + (fringeset << 16) + index);
-        BufferedImage img = (BufferedImage)masks.get(maskkey);
-        if (img == null) {
-            BufferedImage fsrc = fset.getRawTileImage(index);
-            BufferedImage bsrc = _tmgr.getTileSet(baseset).getRawTileImage(0);
-            img = ImageUtil.composeMaskedImage(_imgr, fsrc, bsrc);
-            masks.put(maskkey, img);
-        }
-        ftimg = stampTileImage(img, ftimg, img.getWidth(null), img.getHeight(null));
+        // otherwise, it's a mask..
+        BufferedImage fsrc = _tmgr.getTileSet(fringeset).getRawTileImage(index);
+        BufferedImage bsrc = _tmgr.getTileSet(baseset).getRawTileImage(0);
+        BufferedImage mask = ImageUtil.composeMaskedImage(_imgr, fsrc, bsrc);
 
-        return ftimg;
+        return stampTileImage(mask, img, mask.getWidth(null), mask.getHeight(null));
     }
 
     /** Helper function for {@link #getTileImage}. */
-    protected BufferedImage stampTileImage (Object stamp, BufferedImage ftimg, int width, int height)
+    protected BufferedImage stampTileImage (Object stamp, BufferedImage ftimg, int width,
+        int height)
     {
         // create the target image if necessary
         if (ftimg == null) {
@@ -247,17 +305,16 @@ public class AutoFringer
             return new int[0];
         }
 
-        ArrayList indexes = new ArrayList();
+        ArrayList<Integer> indexes = Lists.newArrayList();
         int weebits = 0;
-        for (int ii=(start + 1) % NUM_FRINGEBITS; ii != start;
-             ii = (ii + 1) % NUM_FRINGEBITS) {
+        for (int ii = (start + 1) % NUM_FRINGEBITS; ii != start; ii = (ii + 1) % NUM_FRINGEBITS) {
 
             if (((1 << ii) & bits) != 0) {
                 weebits |= (1 << ii);
             } else if (weebits != 0) {
                 index = BITS_TO_INDEX[weebits];
                 if (index != -1) {
-                    indexes.add(Integer.valueOf(index));
+                    indexes.add(index);
                 }
                 weebits = 0;
             }
@@ -265,31 +322,33 @@ public class AutoFringer
         if (weebits != 0) {
             index = BITS_TO_INDEX[weebits];
             if (index != -1) {
-                indexes.add(Integer.valueOf(index));
+                indexes.add(index);
             }
         }
 
         int[] ret = new int[indexes.size()];
-        for (int ii=0; ii < ret.length; ii++) {
-            ret[ii] = ((Integer) indexes.get(ii)).intValue();
+        for (int ii = 0; ii < ret.length; ii++) {
+            ret[ii] = indexes.get(ii);
         }
         return ret;
     }
 
     /**
-     * Allow subclasses to apply arbitrary modifications to tileset ids for
-     * whatever nefarious purposes they may have.
+     * Allow subclasses to apply arbitrary modifications to tileset ids for whatever nefarious
+     * purposes they may have.
      */
-    protected int adjustTileSetId (int tileSetId) {
+    protected int adjustTileSetId (int tileSetId)
+    {
         // by default, nothing.
         return tileSetId;
     }
 
     /**
-     * A record for holding information about a particular fringe as we're
-     * computing what it will look like.
+     * A record for holding information about a particular fringe as we're computing what it will
+     * look like.
      */
-    static protected class FringerRec implements Comparable
+    static protected class FringerRec
+        implements Comparable<FringerRec>
     {
         int baseset;
         int priority;
@@ -301,15 +360,16 @@ public class AutoFringer
             priority = pri;
         }
 
-        public int compareTo (Object o)
+        public int compareTo (FringerRec o)
         {
-            return priority - ((FringerRec) o).priority;
+            return priority - o.priority;
         }
 
+        @Override
         public String toString ()
         {
-            return "[base=" + baseset + ", pri=" + priority +
-                ", bits=" + Integer.toString(bits, 16) + "]";
+            return "[base=" + baseset + ", pri=" + priority + ", bits="
+                + Integer.toString(bits, 16) + "]";
         }
     }
 
@@ -327,8 +387,7 @@ public class AutoFringer
 
     protected static final int NUM_FRINGEBITS = 8;
 
-    // A matrix mapping adjacent tiles to which fringe bits 
-    // they affect.
+    // A matrix mapping adjacent tiles to which fringe bits they affect.
     // (x and y are offset by +1, since we can't have -1 as an array index)
     // again, see docs/miso/fringebits.png
     //
@@ -339,9 +398,8 @@ public class AutoFringer
     };
 
     /**
-     * The fringe tiles we use. These are the 17 possible tiles made
-     * up of continuous fringebits sections.
-     * Huh? see docs/miso/fringebits.png
+     * The fringe tiles we use. These are the 17 possible tiles made up of continuous fringebits
+     * sections. Huh? see docs/miso/fringebits.png
      */
     protected static final int[] FRINGETILES = {
         SOUTHEAST,

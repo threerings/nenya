@@ -21,6 +21,8 @@
 
 package com.threerings.miso.client;
 
+import static com.threerings.miso.Log.log;
+
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -40,11 +42,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -53,12 +55,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import com.samskivert.util.HashIntMap;
+import com.samskivert.util.StringUtil;
+
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.RadialMenu;
 import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.swing.event.CommandEvent;
-import com.samskivert.util.HashIntMap;
-import com.samskivert.util.StringUtil;
 
 import com.threerings.media.VirtualMediaPanel;
 import com.threerings.media.sprite.Sprite;
@@ -74,11 +77,10 @@ import com.threerings.miso.client.DirtyItemList.DirtyItem;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.tile.BaseTile;
+import com.threerings.miso.tile.AutoFringer.FringeTile;
 import com.threerings.miso.util.MisoContext;
 import com.threerings.miso.util.MisoSceneMetrics;
 import com.threerings.miso.util.MisoUtil;
-
-import static com.threerings.miso.Log.log;
 
 /**
  * Renders a Miso scene for all to see.
@@ -141,7 +143,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         _blocks.clear();
         _vizobjs.clear();
-        _masks.clear();
+        _fringes.clear();
         if (_dpanel != null) {
             _dpanel.newScene();
         }
@@ -366,7 +368,7 @@ public class MisoScenePanel extends VirtualMediaPanel
                  "[scene=" + StringUtil.shortClassName(this) +
                  ", base=" + base.size() + "->" + (usage[0] / 1024) + "k" +
                  ", fringe=" + fringe.size() + "->" + (usage[1] / 1024) + "k" +
-                 ", fmasks=" + _masks.size() + ", obj=" + object.size() +
+                 ", obj=" + object.size() +
                  "->" + (usage[2] / 1024) + "k" + "].");
     }
 
@@ -858,7 +860,6 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected void computeInfluentialBounds ()
     {
         computeInfluentialBounds(_vbounds, _ibounds, _vibounds);
-        
     }
 
 
@@ -1405,7 +1406,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Computes the fringe tile for the specified coordinate. */
     protected BaseTile computeFringeTile (int tx, int ty)
     {
-        return _ctx.getTileManager().getAutoFringer().getFringeTile(_model, tx, ty, _masks);
+        return _ctx.getTileManager().getAutoFringer().getFringeTile(_model, tx, ty, _fringes);
     }
 
     /**
@@ -1553,8 +1554,14 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** A list of the potentially visible objects in the scene. */
     protected List<SceneObject> _vizobjs = Lists.newArrayList();
 
-    /** For computing fringe tiles. */
-    protected Map _masks = Maps.newHashMap();
+    /**
+     * Map of active fringe tiles. Scene blocks have hard references to fringe tiles in this map
+     * for the tiles they're using, so the blocks coming in and out of the influential bounds
+     * determines which tiles remain in the map. The map is from FringeTile to FringeTile so a
+     * fully created FringeTile can be extracted from the map using a tile that contains only
+     * what's needed for hashCode and equals: id and passability.
+     */
+    protected Map<FringeTile, FringeTile> _fringes = new WeakHashMap<FringeTile, FringeTile>();
 
     /** The dirty sprites and objects that need to be re-painted. */
     protected DirtyItemList _dirtyItems = new DirtyItemList();
