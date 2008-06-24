@@ -44,6 +44,15 @@ public class ClientImageManager extends ImageManager
         _runCacheSize = cacheKilobytes;
     }
 
+    /**
+     * Sets if images should be recreated in the graphics context's preferred format before
+     * rendering. This must be called before the ImageManager is created.
+     */
+    public static void setPrepareImages (boolean prepareImages)
+    {
+        _runPrepareImages = prepareImages;
+    }
+
     public ClientImageManager (ResourceManager rmgr, OptimalImageCreator icreator)
     {
         super(rmgr, icreator);
@@ -75,7 +84,7 @@ public class ClientImageManager extends ImageManager
             src = getImage(key, zations);
             bounds = new Rectangle(0, 0, src.getWidth(), src.getHeight());
 
-        } else if (!_prepareImages.getValue()) {
+        } else if (!_runPrepareImages) {
             src = getImage(key, zations);
             percentageOfDataBuffer =
                 (bounds.width * bounds.height)/(float)(src.getHeight() * src.getWidth());
@@ -84,7 +93,7 @@ public class ClientImageManager extends ImageManager
 
         if (_runBlank.getValue()) {
             return new BlankMirage(bounds.width, bounds.height);
-        } else if (_prepareImages.getValue()) {
+        } else if (_runPrepareImages) {
             return new CachedVolatileMirage(this, key, bounds, zations);
         } else {
             return new BufferedMirage(src, percentageOfDataBuffer);
@@ -106,6 +115,11 @@ public class ClientImageManager extends ImageManager
     protected static RuntimeAdjust.BooleanAdjust _prepareImages = new RuntimeAdjust.BooleanAdjust(
         "Cause image manager to optimize all images for display.",
         "narya.media.image.prep_images", MediaPrefs.config, true);
+
+    /**
+     * If images should be prepared for the graphics context in this run.
+     */
+    protected static boolean _runPrepareImages = _prepareImages.getValue();
 
     /** A debug toggle for running entirely without rendering images. */
     protected static RuntimeAdjust.BooleanAdjust _runBlank = new RuntimeAdjust.BooleanAdjust(

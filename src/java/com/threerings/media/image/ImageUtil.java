@@ -446,8 +446,7 @@ public class ImageUtil
         } else {
             // otherwise composite them by rendering them with an alpha
             // rule
-            BufferedImage target = isrc.createImage(
-                wid, hei, Transparency.TRANSLUCENT);
+            BufferedImage target = isrc.createImage(wid, hei, Transparency.TRANSLUCENT);
             Graphics2D g2 = target.createGraphics();
             try {
                 g2.drawImage(mask, 0, 0, null);
@@ -484,8 +483,7 @@ public class ImageUtil
         //  But it's something to consider)
 
         // composite them by rendering them with an alpha rule
-        BufferedImage target = isrc.createImage(
-            wid, hei, Transparency.TRANSLUCENT);
+        BufferedImage target = isrc.createImage(wid, hei, Transparency.TRANSLUCENT);
         Graphics2D g2 = target.createGraphics();
         try {
             g2.setColor(Color.BLACK); // whatever, really
