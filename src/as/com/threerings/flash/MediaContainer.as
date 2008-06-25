@@ -45,6 +45,8 @@ import flash.events.TextEvent;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
+import flash.net.URLRequest;
+
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 
@@ -53,7 +55,7 @@ import flash.system.LoaderContext;
 import flash.system.Security;
 import flash.system.SecurityDomain;
 
-import flash.net.URLRequest;
+import flash.utils.ByteArray;
 
 import com.threerings.util.Log;
 import com.threerings.util.StringUtil;
@@ -152,6 +154,22 @@ public class MediaContainer extends Sprite
             showNewMedia(url);
             didShowNewMedia();
         }
+    }
+
+    /**
+     * Set the media to display as a ByteArray.
+     */
+    public function setMediaBytes (bytes :ByteArray) :void
+    {
+        if (_media != null) {
+            shutdown(false);
+        }
+        _url = null;
+
+        willShowNewMedia();
+        startedLoading();
+        initLoader().loadBytes(bytes, getContext(null));
+        didShowNewMedia();
     }
 
     /**
@@ -492,6 +510,10 @@ public class MediaContainer extends Sprite
      */
     protected function isImage (url :String) :Boolean
     {
+        if (url == null) {
+            return false;
+        }
+
         // look at the last 4 characters in the lowercased url
         switch (url.toLowerCase().slice(-4)) {
         case ".png":
