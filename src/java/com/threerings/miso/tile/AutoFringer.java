@@ -74,7 +74,7 @@ public class AutoFringer
         public int hashCode ()
         {
             int result = arrayHashCode(_fringeId);
-            if(_passable) {
+            if (_passable) {
                 result++;
             }
             return result;
@@ -84,9 +84,11 @@ public class AutoFringer
          * Replaces Arrays.hashCode(long a[]) in AutoFringer.hashCode().
          * Arrays.hashCode(long a[]) is undefined for Java 1.4, and this is client code.
          */
-        protected int arrayHashCode(long a[]) {
-            if (a == null)
+        protected int arrayHashCode (long a[])
+        {
+            if (a == null) {
                 return 0;
+            }
      
             int result = 1;
             for (long element : a) {
