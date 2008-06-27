@@ -73,10 +73,27 @@ public class AutoFringer
         @Override
         public int hashCode ()
         {
-            int result = Arrays.hashCode(_fringeId);
+            int result = arrayHashCode(_fringeId);
             if(_passable) {
                 result++;
             }
+            return result;
+        }
+        
+        /**
+         * Replaces Arrays.hashCode(long a[]) in AutoFringer.hashCode().
+         * Arrays.hashCode(long a[]) is undefined for Java 1.4, and this is client code.
+         */
+        protected int arrayHashCode(long a[]) {
+            if (a == null)
+                return 0;
+     
+            int result = 1;
+            for (long element : a) {
+                int elementHash = (int)(element ^ (element >>> 32));
+                result = 31 * result + elementHash;
+            }
+     
             return result;
         }
         
