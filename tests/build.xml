@@ -171,6 +171,7 @@
       <classpath refid="classpath"/>
       <sysproperty key="test_dir" value="${test.dir}"/>
       <sysproperty key="resource_dir" value="${test.dir}/rsrc"/>
+      <sysproperty key="no_unpack_resources" value="true"/>
       <formatter type="brief" usefile="false"/>
       <batchtest>
         <fileset dir="${src.dir}">

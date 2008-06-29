@@ -8,7 +8,7 @@ import com.threerings.util.unsafe.Unsafe;
 /**
  * Does something extraordinary.
  */
-public class UIDTest
+public class UIDTestApp
 {
     public static void main (String[] args)
     {

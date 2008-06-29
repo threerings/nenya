@@ -24,7 +24,7 @@ import com.threerings.jme.sprite.LineSegmentPath;
 /**
  * Used for testing paths.
  */
-public class PathTest extends JmeApp
+public class PathTestApp extends JmeApp
 {
     protected void initRoot ()
     {
@@ -136,7 +136,7 @@ public class PathTest extends JmeApp
     public static void main (String[] args)
     {
         LoggingSystem.getLogger().setLevel(Level.OFF);
-        PathTest test = new PathTest();
+        PathTestApp test = new PathTestApp();
         if (!test.init()) {
             System.exit(-1);
         }

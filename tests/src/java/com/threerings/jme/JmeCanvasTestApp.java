@@ -16,11 +16,11 @@ import com.jme.scene.shape.Box;
 /**
  * Tests the JME/AWT integration bits.
  */
-public class JmeCanvasTest extends JmeCanvasApp
+public class JmeCanvasTestApp extends JmeCanvasApp
 {
     public static void main (String[] args)
     {
-        final JmeCanvasTest app = new JmeCanvasTest();
+        final JmeCanvasTestApp app = new JmeCanvasTestApp();
         JFrame frame = new JFrame("JmeCanvasTest");
         frame.getContentPane().add(app.getCanvas(), BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,7 +50,7 @@ public class JmeCanvasTest extends JmeCanvasApp
         _geom.updateRenderState();
     }
 
-    protected JmeCanvasTest ()
+    protected JmeCanvasTestApp ()
     {
         super(800, 600);
     }

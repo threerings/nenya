@@ -27,7 +27,7 @@ public class JabberServer extends CrowdServer
         super.init(injector);
 
         // create a single location
-        _place = plreg.createPlace(new JabberConfig());
+        _place = _plreg.createPlace(new JabberConfig());
         log.info("Created chat room " + _place.where() + ".");
     }
 
