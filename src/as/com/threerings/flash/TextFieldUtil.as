@@ -21,21 +21,17 @@
 
 package com.threerings.flash {
 
+import com.threerings.util.StringUtil;
+import com.threerings.util.Util;
+
 import flash.events.Event;
 import flash.events.MouseEvent;
-
 import flash.filters.GlowFilter;
-
 import flash.system.Capabilities;
 import flash.system.System;
-
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
-import flash.text.TextFieldType;
 import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
-
-import com.threerings.util.Util;
 
 public class TextFieldUtil
 {
@@ -44,6 +40,56 @@ public class TextFieldUtil
 
     /** A fudge factor that must be added to a TextField's textHeight when setting the height. */
     public static const HEIGHT_PAD :int = 4;
+
+    /**
+     * Ensures that a single-line TextField is not wider than the specified width, and
+     * truncates it with the truncation string if is. If the TextField is truncated,
+     * it will be resized to its new textWidth.
+     *
+     * @param width the maximum pixel width of the TextField. If tf.width > width,
+     * the text inside the TextField will be truncated, and will have the truncation string
+     * appended.
+     * @param truncationString the string to append to the end of the TextField if it exceeds
+     * the specified width.
+     * @return true if truncation took place
+     */
+    public static function setMaximumTextWidth (tf :TextField, width :Number, truncationString :String = "...") :Boolean
+    {
+        if (tf.numLines > 1) {
+            // We only operate on single-line TextFields
+            return false;
+        }
+
+        // TextField.textWidth doesn't account for scale, so account for it here
+        width /= tf.scaleX;
+
+        var truncated :Boolean;
+        if (tf.textWidth > width && tf.text.length > 0) {
+            // subtract the width of our truncationString from our target width
+            var tmp :String = tf.text;
+            tf.text = truncationString;
+            width -= tf.textWidth;
+            tf.text = tmp;
+
+            // Drop characters from our string until we hit our target width.
+            // Flash doesn't appear to provide a nicer way to get text metrics than
+            // sticking stuff in a TextField and calling textWidth.
+            do {
+                tf.text = tf.text.substr(0, tf.text.length - 1);
+            } while (tf.textWidth > width && tf.text.length > 0);
+
+            // strip whitespace characters from the end of the truncated string
+            tf.text = StringUtil.trimEnd(tf.text);
+
+            tf.appendText(truncationString);
+            truncated = true;
+
+            tf.width = tf.textWidth + WIDTH_PAD;
+            tf.height = tf.textHeight + HEIGHT_PAD;
+        }
+
+        return truncated;
+    }
 
     /**
      * Create a TextField.
