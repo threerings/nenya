@@ -741,11 +741,13 @@ public class MisoScenePanel extends VirtualMediaPanel
             _ulpos.setLocation(_tcoords);
             if (rethink() > 0) {
                 _delayRepaint = mightDelayPaint;
-                log.info("Got new pending blocks " +
-                         "[need=" + _visiBlocks.size() +
-                         ", of=" + _pendingBlocks +
-                         ", view=" + StringUtil.toString(_vbounds) +
-                         ", delay=" + _delayRepaint + "].");
+                // If this is a complete repaint, turn off visibility while we're resolving to
+                // keep child components or media panels from drawing.
+                if (_delayRepaint) {
+                    setVisible(false);
+                }
+                log.info("Got new pending blocks", "need", _visiBlocks.size(), "of",
+                    _pendingBlocks, "view", StringUtil.toString(_vbounds), "delay", _delayRepaint);
             }
         }
     }
@@ -956,9 +958,11 @@ public class MisoScenePanel extends VirtualMediaPanel
         // resolution, recompute our visible object set and show ourselves
         if (_visiBlocks.remove(block) && _visiBlocks.size() == 0) {
             recomputeVisible();
-            log.info("Restoring repaint... [left=" + _pendingBlocks +
-                     ", view=" + StringUtil.toString(_vbounds) + "].");
+            log.info("Restoring repaint... ", "left", _pendingBlocks, "view",
+                StringUtil.toString(_vbounds));
             _delayRepaint = false;
+            // Need to restore visibility as it may have been turned of as a result of the delay
+            setVisible(true);
             _remgr.invalidateRegion(_vbounds);
         }
     }
