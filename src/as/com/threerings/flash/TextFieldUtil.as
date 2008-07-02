@@ -64,26 +64,23 @@ public class TextFieldUtil
         width /= tf.scaleX;
 
         var truncated :Boolean;
-        if (tf.textWidth > width && tf.text.length > 0) {
-            // subtract the width of our truncationString from our target width
-            var tmp :String = tf.text;
-            tf.text = truncationString;
-            width -= tf.textWidth;
-            tf.text = tmp;
-
+        var setText :String = tf.text;
+        while (tf.textWidth + WIDTH_PAD > width && setText.length > 0) {
             // Drop characters from our string until we hit our target width.
             // Flash doesn't appear to provide a nicer way to get text metrics than
             // sticking stuff in a TextField and calling textWidth.
-            do {
-                tf.text = tf.text.substr(0, tf.text.length - 1);
-            } while (tf.textWidth > width && tf.text.length > 0);
+            setText = setText.substr(0, setText.length - 1);
+            tf.text = setText + truncationString;
 
-            // strip whitespace characters from the end of the truncated string
-            tf.text = StringUtil.trimEnd(tf.text);
-
-            tf.appendText(truncationString);
             truncated = true;
+        }
 
+        if (truncated) {
+            // strip whitespace characters from the end of the truncated string
+            setText = StringUtil.trimEnd(setText);
+            tf.text = setText + truncationString;
+
+            // resize the TextField
             tf.width = tf.textWidth + WIDTH_PAD;
             tf.height = tf.textHeight + HEIGHT_PAD;
         }
