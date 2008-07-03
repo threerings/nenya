@@ -111,11 +111,13 @@ public class MisoScenePanel extends VirtualMediaPanel
         addMouseMotionListener(this);
 
         // create the resolver if it's not already around
+        _resolver = _resolvers.get(_ctx);
         if (_resolver == null) {
             _resolver = new SceneBlockResolver();
             _resolver.setDaemon(true);
             _resolver.setPriority(Thread.MIN_PRIORITY);
             _resolver.start();
+            _resolvers.put(_ctx, _resolver);
         }
     }
 
@@ -1609,8 +1611,12 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Flags indicating which features we should show in the scene. */
     protected int _showFlags = 0;
 
-    /** A scene block resolver shared by all scene panels. */
-    protected static SceneBlockResolver _resolver;
+    /** The scene block resolver for this scene panel's context. */
+    protected SceneBlockResolver _resolver;
+    
+    /** Scene block resolvers shared by all scene panels in a context. */
+    protected static Map<MisoContext, SceneBlockResolver> _resolvers =
+        new WeakHashMap<MisoContext, SceneBlockResolver>();
 
     // used to display debugging information on scene block resolution
     protected JFrame _dframe;
