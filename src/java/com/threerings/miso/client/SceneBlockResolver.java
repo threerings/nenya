@@ -44,15 +44,14 @@ public class SceneBlockResolver extends LoopingThread
      */
     public void resolveBlock (SceneBlock block, boolean hipri)
     {
-        log.debug("Queueing block for resolution " + block +
-                  " (" + hipri + ").");
+        log.debug("Queueing block for resolution", "block", block, "hipri", hipri);
         if (hipri) {
             _queue.prepend(block);
         } else {
             _queue.append(block);
         }
     }
-
+    
     /**
      * Temporarily suspends the scene block resolution thread.
      */
@@ -79,10 +78,10 @@ public class SceneBlockResolver extends LoopingThread
         return _queue.size();
     }
 
-    // documentation inherited
+    @Override
     public void iterate ()
     {
-        final SceneBlock block = (SceneBlock)_queue.get();
+        final SceneBlock block = _queue.get();
 
         while (!_resolving) {
             synchronized (this) {
@@ -116,10 +115,9 @@ public class SceneBlockResolver extends LoopingThread
                     // let the block's panel know that it is resolved
                     block.wasResolved();
                     // report statistics
-//                     if (report) {
-//                         Log.info("Resolution histogram " +
-//                                  _histo.summarize() + ".");
-//                     }
+//                    if (report) {
+//                        log.info("Resolution histogram " + _histo.summarize() + ".");
+//                    }
                 }
             });
 
@@ -129,7 +127,7 @@ public class SceneBlockResolver extends LoopingThread
     }
 
     /** The invoker's queue of units to be executed. */
-    protected Queue _queue = new Queue();
+    protected Queue<SceneBlock> _queue = new Queue<SceneBlock>();
 
     /** Indicates whether or not we are resolving or suspended. */
     protected boolean _resolving = true;
