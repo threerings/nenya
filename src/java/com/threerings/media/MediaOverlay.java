@@ -24,6 +24,7 @@ package com.threerings.media;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.util.List;
 import javax.swing.JRootPane;
 
 import com.threerings.media.animation.Animation;
@@ -122,6 +123,15 @@ public class MediaOverlay
     }
 
     /**
+     * Adds a dirty region to this overlay. Note: control of the rectangle is granted to our
+     * underlying {@link RegionManager} which may bend, fold or mutilate it.
+     */
+    public void addDirtyRegion (Rectangle rect)
+    {
+        _metamgr.getRegionManager().addDirtyRegion(rect);
+    }
+
+    /**
      * Called by the {@link FrameManager} to propagate our dirty regions to the active repaint
      * manager so that it can repaint the underlying components just prior to our painting our
      * media. This will be followed by a call to {@link #paint} after the components have been
@@ -130,13 +140,13 @@ public class MediaOverlay
     public void propagateDirtyRegions (ActiveRepaintManager repmgr, JRootPane root)
     {
         if (_metamgr.needsPaint()) {
-            // this will clear out our dirty regions, so we need to keep these around for our
-            // subsequent call to paint
-            _dirty = _metamgr.getRegionManager().getDirtyRegions();
-            for (int ii = 0; ii < _dirty.length; ii++) {
-                Rectangle dirty = _dirty[ii];
+            // tell the repaint manager about our raw (unmerged) dirty regions so that it can dirty
+            // only components that are actually impacted
+            List<Rectangle> dlist = _metamgr.getRegionManager().peekDirtyRegions();
+            for (int ii = 0, ll = dlist.size(); ii < ll; ii++) {
+                Rectangle dirty = dlist.get(ii);
                 repmgr.addDirtyRegion(root, dirty.x - root.getX(), dirty.y - root.getY(), 
-                    dirty.width, dirty.height);
+                                      dirty.width, dirty.height);
             }
         }
     }
@@ -149,16 +159,17 @@ public class MediaOverlay
      */
     public boolean paint (Graphics2D gfx)
     {
-        if (_dirty != null) {
-            for (int ii = 0; ii < _dirty.length; ii++) {
-                gfx.setClip(_dirty[ii]);
-                _metamgr.paintMedia(gfx, MediaConstants.BACK, _dirty[ii]);
-                _metamgr.paintMedia(gfx, MediaConstants.FRONT, _dirty[ii]);
-            }
-            _dirty = null;
-            return true;
+        if (!_metamgr.getRegionManager().haveDirtyRegions()) {
+            return false;
         }
-        return false;
+
+        Rectangle[] dirty = _metamgr.getRegionManager().getDirtyRegions();
+        for (int ii = 0; ii < dirty.length; ii++) {
+            gfx.setClip(dirty[ii]);
+            _metamgr.paintMedia(gfx, MediaConstants.BACK, dirty[ii]);
+            _metamgr.paintMedia(gfx, MediaConstants.FRONT, dirty[ii]);
+        }
+        return true;
     }
 
     // from interface MediaHost

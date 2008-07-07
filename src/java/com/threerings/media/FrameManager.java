@@ -524,8 +524,8 @@ public abstract class FrameManager
             }
         }
 
-        // if we have a media overlay, give that a chance to propagate dirty regions to the active
-        // repaint manager for areas it dirtied during this tick
+        // if we have a media overlay, give that a chance to propagate its dirty regions to the
+        // active repaint manager for areas it dirtied during this tick
         if (_overlay != null) {
             _overlay.propagateDirtyRegions(_repainter, _root.getRootPane());
         }
@@ -560,6 +560,12 @@ public abstract class FrameManager
             renderLayer(g, bounds, lpane, clipped, JLayeredPane.MODAL_LAYER);
             renderLayer(g, bounds, lpane, clipped, JLayeredPane.POPUP_LAYER);
             renderLayer(g, bounds, lpane, clipped, JLayeredPane.DRAG_LAYER);
+        }
+
+        // if we have a MediaOverlay, let it know that any sprites in this region need to be
+        // repainted as the components beneath them have just been redrawn
+        if (_overlay != null) {
+            _overlay.addDirtyRegion(new Rectangle(bounds));
         }
     }
 

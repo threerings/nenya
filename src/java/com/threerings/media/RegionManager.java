@@ -119,6 +119,16 @@ public class RegionManager
     }
 
     /**
+     * Returns our unmerged list of dirty regions. <em>Do not</em> modify the returned list. It's
+     * just for peeking. Unlike {@link #getDirtyRegions}, this does not clear out the list of dirty
+     * regions and prepare for the next frame.
+     */
+    public List<Rectangle> peekDirtyRegions ()
+    {
+        return _dirty;
+    }
+
+    /**
      * Merges all outstanding dirty regions into a single list of rectangles and returns that to
      * the caller. Interally, the list of accumulated dirty regions is cleared out and prepared for
      * the next frame.
