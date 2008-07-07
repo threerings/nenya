@@ -124,7 +124,7 @@ public class MediaOverlay
     /**
      * Called by the {@link FrameManager} to propagate our dirty regions to the active repaint
      * manager so that it can repaint the underlying components just prior to our painting our
-     * media. This will be followe by a call to {@link paint} after the components have been
+     * media. This will be followed by a call to {@link #paint} after the components have been
      * repainted.
      */
     public void propagateDirtyRegions (ActiveRepaintManager repmgr, JRootPane root)
