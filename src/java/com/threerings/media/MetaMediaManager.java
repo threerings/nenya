@@ -85,6 +85,14 @@ public class MetaMediaManager
     }
 
     /**
+     * Returns the region manager used to coordiante our dirty regions.
+     */
+    public RegionManager getRegionManager ()
+    {
+        return _remgr;
+    }
+
+    /**
      * Returns true if we are paused, false if we are running normally.
      */
     public boolean isPaused ()
@@ -191,14 +199,6 @@ public class MetaMediaManager
     public void clearAnimations ()
     {
         _animmgr.clearMedia();
-    }
-
-    /**
-     * Returns the region manager used to coordiante our dirty regions.
-     */
-    public RegionManager getRegionManager ()
-    {
-        return _remgr;
     }
 
     /**
