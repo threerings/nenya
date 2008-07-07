@@ -23,8 +23,9 @@ package com.threerings.media;
 
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.samskivert.util.StringUtil;
 
 import static com.threerings.resource.Log.log;
@@ -124,15 +125,15 @@ public class RegionManager
      */
     public Rectangle[] getDirtyRegions ()
     {
-        ArrayList merged = new ArrayList();
+        List<Rectangle> merged = Lists.newArrayList();
 
         for (int ii = _dirty.size() - 1; ii >= 0; ii--) {
             // pop the next rectangle from the dirty list
-            Rectangle mr = (Rectangle)_dirty.remove(ii);
+            Rectangle mr = _dirty.remove(ii);
 
             // merge in any overlapping rectangles
             for (int jj = ii - 1; jj >= 0; jj--) {
-                Rectangle r = (Rectangle)_dirty.get(jj);
+                Rectangle r = _dirty.get(jj);
                 if (mr.intersects(r)) {
                     // remove the overlapping rectangle from the list
                     _dirty.remove(jj);
@@ -152,5 +153,5 @@ public class RegionManager
     }
 
     /** A list of dirty rectangles. */
-    protected ArrayList _dirty = new ArrayList();
+    protected List<Rectangle> _dirty = Lists.newArrayList();
 }
