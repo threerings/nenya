@@ -38,9 +38,10 @@ import javax.swing.JTextField;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.ListUtil;
@@ -139,7 +140,7 @@ public class ActiveRepaintManager extends RepaintManager
         }
 
         // if this component is already dirty, simply expand their existing dirty rectangle
-        Rectangle drect = (Rectangle)_dirty.get(comp);
+        Rectangle drect = _dirty.get(comp);
         if (drect != null) {
             drect.add(x, y);
             drect.add(x+width, y+height);
@@ -189,7 +190,7 @@ public class ActiveRepaintManager extends RepaintManager
     // documentation inherited
     public synchronized Rectangle getDirtyRegion (JComponent comp)
     {
-        Rectangle drect = (Rectangle)_dirty.get(comp);
+        Rectangle drect = _dirty.get(comp);
         // copy the rectangle if we found one, otherwise create an empty rectangle because we don't
         // want them leaving empty handed
         return (drect == null) ? new Rectangle(0, 0, 0, 0) : new Rectangle(drect);
@@ -244,7 +245,7 @@ public class ActiveRepaintManager extends RepaintManager
             }
 
             // otherwise, swap our hashmaps
-            HashMap tmap = _spare;
+            Map<JComponent,Rectangle> tmap = _spare;
             _spare = _dirty;
             _dirty = tmap;
         }
@@ -253,12 +254,12 @@ public class ActiveRepaintManager extends RepaintManager
         // in such a case, the dirty rectangle for the parent component is expanded to contain the
         // dirty rectangle of the child and the child is removed from the repaint list (painting
         // the parent will repaint the child)
-        Iterator iter = _spare.entrySet().iterator();
+        Iterator<Map.Entry<JComponent,Rectangle>> iter = _spare.entrySet().iterator();
       PRUNE:
         while (iter.hasNext()) {
-            Entry entry = (Entry)iter.next();
-            JComponent comp = (JComponent)entry.getKey();
-            Rectangle drect = (Rectangle)entry.getValue();
+            Map.Entry<JComponent,Rectangle> entry = iter.next();
+            JComponent comp = entry.getKey();
+            Rectangle drect = entry.getValue();
             int x = comp.getX() + drect.x, y = comp.getY() + drect.y;
 
             // climb up the parent hierarchy, looking for the first opaque parent as well as the
@@ -270,7 +271,7 @@ public class ActiveRepaintManager extends RepaintManager
                 }
 
                 // check to see if this parent is dirty
-                Rectangle prect = (Rectangle)_spare.get(c);
+                Rectangle prect = _spare.get(c);
                 if (prect != null) {
                     // that we were going to merge it with its parent and blow it away
                     drect.x = x;
@@ -304,9 +305,9 @@ public class ActiveRepaintManager extends RepaintManager
         // and calling paint() on the associated root component
         iter = _spare.entrySet().iterator();
         while (iter.hasNext()) {
-            Entry entry = (Entry)iter.next();
-            JComponent comp = (JComponent)entry.getKey();
-            Rectangle drect = (Rectangle)entry.getValue();
+            Map.Entry<JComponent,Rectangle> entry = iter.next();
+            JComponent comp = entry.getKey();
+            Rectangle drect = entry.getValue();
 
             // get the root component, adjust the clipping (dirty) rectangle and obtain the bounds
             // of the client in absolute coordinates
@@ -444,10 +445,10 @@ public class ActiveRepaintManager extends RepaintManager
     protected Object[] _invalid;
 
     /** A mapping of invalid rectangles for each widget that is dirty. */
-    protected HashMap _dirty = new HashMap();
+    protected Map<JComponent,Rectangle> _dirty = Maps.newHashMap();
 
     /** A spare hashmap that we swap in while repainting dirty components in the old hashmap. */
-    protected HashMap _spare = new HashMap();
+    protected Map<JComponent,Rectangle> _spare = Maps.newHashMap();
 
     /** Used to compute dirty components' bounds. */
     protected Rectangle _cbounds = new Rectangle();

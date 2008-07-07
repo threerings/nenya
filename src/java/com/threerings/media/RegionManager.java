@@ -147,9 +147,7 @@ public class RegionManager
             merged.add(mr);
         }
 
-        Rectangle[] rects = new Rectangle[merged.size()];
-        merged.toArray(rects);
-        return rects;
+        return merged.toArray(new Rectangle[merged.size()]);
     }
 
     /** A list of dirty rectangles. */
