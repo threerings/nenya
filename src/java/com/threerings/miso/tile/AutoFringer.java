@@ -51,7 +51,6 @@ import com.threerings.miso.data.MisoSceneModel;
  */
 public class AutoFringer
 {
-
     public static class FringeTile extends BaseTile
     {
         public FringeTile (long[] fringeId, boolean passable)
@@ -73,32 +72,16 @@ public class AutoFringer
         @Override
         public int hashCode ()
         {
-            int result = arrayHashCode(_fringeId);
+            int result = 33; // can't use Arrays.hashCode(long) as it's 1.5 only
+            for (long key : _fringeId) {
+                result = result * 37 + (int)(key ^ (key >>> 32));
+            }
             if (_passable) {
                 result++;
             }
             return result;
         }
-        
-        /**
-         * Replaces Arrays.hashCode(long a[]) in AutoFringer.hashCode().
-         * Arrays.hashCode(long a[]) is undefined for Java 1.4, and this is client code.
-         */
-        protected int arrayHashCode (long a[])
-        {
-            if (a == null) {
-                return 0;
-            }
-     
-            int result = 1;
-            for (long element : a) {
-                int elementHash = (int)(element ^ (element >>> 32));
-                result = 31 * result + elementHash;
-            }
-     
-            return result;
-        }
-        
+
         /** The fringe keys of the tiles that went into this tile in the order they were drawn. */
         protected long[] _fringeId;
     }
@@ -171,7 +154,7 @@ public class AutoFringer
                         BaseTile bt = (BaseTile)_tmgr.getTile(btid);
                         passable = bt.isPassable();
                     } catch (NoSuchTileSetException nstse) {
-                        log.warning("Autofringer couldn't find a base set while attempting to " + 
+                        log.warning("Autofringer couldn't find a base set while attempting to " +
                             "figure passability", nstse);
                     }
                 }
