@@ -23,6 +23,7 @@ package com.threerings.media;
 
 import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -209,6 +210,14 @@ public class VirtualMediaPanel extends MediaPanel
         findRootBounds();
     }
 
+    @Override
+    protected void addObscurerDirtyRegion (Rectangle region)
+    {
+        // Adjust for any scrolling we're currently doing.
+        super.addObscurerDirtyRegion(
+            new Rectangle(region.x - _dx, region.y - _dy, region.width, region.height));
+    }
+
     /**
      * Determines the absolute screen coordinates at which this panel is
      * located and stores them for reference later when rendering.  This
@@ -380,7 +389,7 @@ public class VirtualMediaPanel extends MediaPanel
                     // HACK when it throws an exception trying to do the
                     // copy area, just repaint everything
                     dirty = new Rectangle[] { new Rectangle(_vbounds) };
-                }    
+                }
             } else {
                 gfx.copyArea(cx, cy,
                              width - Math.abs(_dx),

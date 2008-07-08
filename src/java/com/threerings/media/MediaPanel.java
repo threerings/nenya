@@ -24,6 +24,7 @@ package com.threerings.media;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
@@ -80,6 +81,14 @@ import static com.threerings.media.Log.log;
 public class MediaPanel extends JComponent
     implements FrameParticipant, MediaConstants, MediaHost
 {
+    public interface Obscurer
+    {
+        /**
+         * Returns the region obscured by the obscurer, in screen coords.
+         */
+        public Rectangle getObscured ();
+    }
+
     /**
      * Constructs a media panel.
      */
@@ -336,6 +345,8 @@ public class MediaPanel extends JComponent
             _tickPaintPending = false;
         }
 
+        addObscurerDirtyRegions();
+
         // if we have no invalid rects, there's no need to repaint
         if (!_metamgr.getRegionManager().haveDirtyRegions()) {
             return;
@@ -344,6 +355,7 @@ public class MediaPanel extends JComponent
         // get our dirty rectangles and delegate the main painting to a method that can be more
         // easily overridden
         Rectangle[] dirty = _metamgr.getRegionManager().getDirtyRegions();
+
         _metamgr.noteDirty(dirty.length);
         try {
             paint(gfx, dirty);
@@ -353,6 +365,49 @@ public class MediaPanel extends JComponent
 
         // render our performance debugging if it's enabled
         _metamgr.paintPerf(gfx);
+    }
+
+    /**
+     * Adds an element that could be obscuring the panel and thus requires extra redrawing.
+     */
+    public void addObscurer (Obscurer obscurer) {
+        if (_obscurerList == null) {
+            _obscurerList = new ArrayList<Obscurer>();
+        }
+        _obscurerList.add(obscurer);
+    }
+
+    /**
+     * Removes an obscuring element.
+     */
+    public void removeObscurer (Obscurer obscurer) {
+        if (_obscurerList != null) {
+            _obscurerList.remove(obscurer);
+        }
+    }
+
+    /**
+     * Add dirty regions for all our obscurers.
+     */
+    protected void addObscurerDirtyRegions ()
+    {
+        if (_obscurerList != null) {
+            for (Obscurer obscurer : _obscurerList) {
+
+                Rectangle obscured = obscurer.getObscured();
+                Point pt = new Point(obscured.x, obscured.y);
+                SwingUtilities.convertPointFromScreen(pt, this);
+                addObscurerDirtyRegion(new Rectangle(pt.x, pt.y, obscured.width, obscured.height));
+            }
+        }
+    }
+
+    /**
+     * Adds the particular region as dirty.
+     */
+    protected void addObscurerDirtyRegion (Rectangle region)
+    {
+        dirtyScreenRect(region);
     }
 
     /**
@@ -628,4 +683,8 @@ public class MediaPanel extends JComponent
 
     /** The number of action/hover sprites being managed. */
     protected int _actionSpriteCount;
+
+    /** Anyone registered as someone who might obscure the media panel (and thus require extra
+     * redrawing. */
+    protected ArrayList<Obscurer> _obscurerList;
 }
