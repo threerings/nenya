@@ -32,6 +32,17 @@ import flash.geom.Rectangle;
 public class DisplayUtil
 {
     /**
+     * Sets the top-left pixel of a DisplayObject to the given location, taking the
+     * object's bounds into account.
+     */
+    public static function positionBounds (disp :DisplayObject, x :Number, y :Number) :void
+    {
+        var bounds :Rectangle = disp.getBounds(disp);
+        disp.x = x - bounds.left;
+        disp.y = y - bounds.top;
+    }
+
+    /**
      * Sorts a container's children, using ArrayUtil.stableSort.
      *
      * comp is a function that takes two DisplayObjects, and returns int -1 if the first
