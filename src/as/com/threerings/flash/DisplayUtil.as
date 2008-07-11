@@ -244,44 +244,6 @@ public class DisplayUtil
         return dumpHierarchy0(top);
     }
 
-    /** Helper function for sortDisplayChildren. */
-    private static function qsortDisplayChildren (
-        container :DisplayObjectContainer, left :int, right :int, comp :Function) :void
-    {
-        if (right - left > 1) { // containers of size 0 or 1 are already sorted
-
-            // arbitrarily choose the element in the middle of the sort list as the pivot element
-            var pivotIndex :int = left + ((right - left) / 2);
-
-            pivotIndex = partitionDisplayChildren(container, left, right, pivotIndex, comp);
-            qsortDisplayChildren(container, left, pivotIndex - 1, comp);
-            qsortDisplayChildren(container, pivotIndex + 1, right, comp);
-        }
-    }
-
-    /** Helper function for qsortDisplayChildren. */
-    private static function partitionDisplayChildren (
-        container :DisplayObjectContainer, left :int, right :int, pivotIndex :int, comp :Function) :int
-    {
-        var pivotObj :DisplayObject = container.getChildAt(pivotIndex);
-
-        container.swapChildrenAt(pivotIndex, right); // move pivot to end
-
-        var storeIndex :int = left;
-
-        for (var i :int = left; i < right; ++i) {
-            var thisObj :DisplayObject = container.getChildAt(i);
-            if (0 > comp(thisObj, pivotObj)) {
-                container.swapChildrenAt(i, storeIndex);
-                storeIndex += 1;
-            }
-        }
-
-        container.swapChildrenAt(storeIndex, right);
-
-        return storeIndex;
-    }
-
     /**
      * Internal worker method for findInHierarchy.
      */
