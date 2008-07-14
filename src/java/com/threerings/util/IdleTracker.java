@@ -89,6 +89,7 @@ public abstract class IdleTracker
 
         // register an interval to periodically check our last activity time
         new Interval(rqueue) {
+            @Override
             public void expired () {
                 checkIdle();
             }

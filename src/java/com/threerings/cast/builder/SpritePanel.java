@@ -55,7 +55,7 @@ public class SpritePanel extends JPanel
         _model.addListener(this);
     }
 
-    // documentation inherited
+    @Override
     public void paintComponent (Graphics g)
     {
         super.paintComponent(g);
@@ -67,7 +67,7 @@ public class SpritePanel extends JPanel
         }
     }
 
-    // documentation inherited
+    @Override
     public void doLayout ()
     {
         super.doLayout();

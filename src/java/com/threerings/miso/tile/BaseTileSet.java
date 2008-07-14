@@ -52,20 +52,20 @@ public class BaseTileSet extends SwissArmyTileSet
         return _passable;
     }
 
-    // documentation inherited
+    @Override
     protected Tile createTile ()
     {
         return new BaseTile();
     }
 
-    // documentation inherited
+    @Override
     protected void initTile (Tile tile, int tileIndex, Colorization[] zations)
     {
         super.initTile(tile, tileIndex, zations);
         ((BaseTile)tile).setPassable(_passable[tileIndex]);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

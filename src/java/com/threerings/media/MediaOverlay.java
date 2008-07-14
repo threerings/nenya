@@ -21,7 +21,6 @@
 
 package com.threerings.media;
 
-import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.List;

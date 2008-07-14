@@ -22,14 +22,9 @@
 package com.threerings.cast;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Transparency;
-
 import com.threerings.media.image.ImageManager;
-import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
@@ -46,41 +41,43 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
         super(imgr, sources, action, orient);
     }
 
-    // documentation inherited from interface
+    @Override
     public int getWidth (int index) {
         return _sources[0].frames.getFrames(_orient).getWidth(index);
     }
 
-    // documentation inherited from interface
+    @Override
     public int getHeight (int index) {
         return _sources[0].frames.getFrames(_orient).getHeight(index);
     }
 
+    @Override
     public int getXOrigin (int index) {
         return _sources[0].frames.getXOrigin(_orient, index);
     }
 
+    @Override
     public int getYOrigin (int index) {
         return _sources[0].frames.getYOrigin(_orient, index);
     }
 
-    // documentation inherited from interface
+    @Override
     public void paintFrame (Graphics2D g, int index, int x, int y) {
         _images[index].paint(g, x + getX(index), y + getY(index));
     }
 
-    // documentation inherited from interface
+    @Override
     public boolean hitTest (int index, int x, int y) {
         return _images[index].hitTest(x + getX(index), y + getY(index));
     }
 
-    // documentation inherited from interface TrimmedMultiFrameImage
+    @Override
     public void getTrimmedBounds (int index, Rectangle bounds) {
         bounds.setBounds(getX(index), getY(index), _images[index].getWidth(),
             _images[index].getHeight());
     }
 
-    // documentation inherited
+    @Override
     protected CompositedMirage createCompositedMirage (int index)
     {
         return new MaskedMirage(index);
@@ -95,7 +92,7 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
             super(index);
         }
 
-        // documentation inherited
+        @Override
         protected Rectangle combineBounds (Rectangle bounds, Rectangle tbounds)
         {
             if (bounds.width == 0 && bounds.height == 0) {
@@ -106,7 +103,7 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
             return bounds;
         }
 
-        // documentation inherited
+        @Override
         protected void refreshVolatileImage ()
         {
             Graphics2D g = (Graphics2D)_image.getGraphics();

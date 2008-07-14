@@ -24,8 +24,6 @@ package com.threerings.tools;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
@@ -67,6 +65,7 @@ public class CompiledConfigTask extends Task
         _filesets.add(set);
     }
 
+    @Override
     public void execute () throws BuildException
     {
         // instantiate and sanity check the parser class

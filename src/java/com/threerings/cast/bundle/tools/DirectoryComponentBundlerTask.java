@@ -27,8 +27,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.threerings.util.FileUtil;
-
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TrimmedTileSet;
 
@@ -38,7 +36,7 @@ import com.threerings.media.tile.TrimmedTileSet;
  */
 public class DirectoryComponentBundlerTask extends ComponentBundlerTask
 {
-    @Override // documentation inherited.
+    @Override
     protected OutputStream createOutputStream (File target)
         throws IOException
     {
@@ -48,7 +46,7 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
 
 
 
-    @Override // documentation inherited
+    @Override
     protected OutputStream nextEntry (OutputStream lastEntry, String path)
         throws IOException
     {
@@ -61,21 +59,21 @@ public class DirectoryComponentBundlerTask extends ComponentBundlerTask
         return new FileOutputStream(file);
     }
 
-    @Override // documentation inherited
+    @Override
     protected boolean skipEntry (String path, long newest)
     {
         File file = new File(_target, path);
         return (file.lastModified() > newest);
     }
 
-    @Override // documentation inherited
+    @Override
     protected TrimmedTileSet trim (TileSet aset, OutputStream fout)
         throws IOException
     {
         return TrimmedTileSet.trimTileSet(aset, fout, "png");
     }
 
-    @Override // documentation inherited
+    @Override
     protected boolean skipIfTargetNewer ()
     {
         // We have to check modification later on a file-by-file basis, so cannot skip.

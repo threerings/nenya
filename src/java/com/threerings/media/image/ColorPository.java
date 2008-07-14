@@ -164,9 +164,7 @@ public class ColorPository implements Serializable
             return (ColorRecord) colors.get(defaultId);
         }
 
-        /**
-         * Returns a string representation of this instance.
-         */
+        @Override
         public String toString ()
         {
             return "[id=" + classId + ", name=" + name + ", source=#" +
@@ -232,9 +230,7 @@ public class ColorPository implements Serializable
                                     cclass.range, offsets);
         }
 
-        /**
-         * Returns a string representation of this instance.
-         */
+        @Override
         public String toString ()
         {
             return "[id=" + colorId + ", name=" + name +

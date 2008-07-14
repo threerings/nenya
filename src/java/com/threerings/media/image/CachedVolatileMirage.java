@@ -56,7 +56,7 @@ public class CachedVolatileMirage extends VolatileMirage
         createVolatileImage();
     }
 
-    // documentation inherited
+    @Override
     protected int getTransparency ()
     {
         BufferedImage source = _imgr.getImage(_source, _zations);
@@ -64,7 +64,7 @@ public class CachedVolatileMirage extends VolatileMirage
             source.getColorModel().getTransparency();
     }
 
-    // documentation inherited
+    @Override
     protected void refreshVolatileImage ()
     {
         Graphics gfx = null;
@@ -89,7 +89,7 @@ public class CachedVolatileMirage extends VolatileMirage
         }
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

@@ -624,6 +624,7 @@ public abstract class FrameManager
             super("FrameManagerTicker");
         }
         
+        @Override
         public void run ()
         {
             log.info("Frame manager ticker running " +

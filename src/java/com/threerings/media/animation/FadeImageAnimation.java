@@ -42,7 +42,7 @@ public class FadeImageAnimation extends FadeAnimation
         _image = image;
     }
 
-    // documentation inherited
+    @Override
     protected void paintAnimation (Graphics2D gfx)
     {
         _image.paint(gfx, _bounds.x, _bounds.y);

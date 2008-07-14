@@ -68,6 +68,7 @@ public class ClassRuleSet extends RuleSetBase
     /**
      * Adds the necessary rules to the digester to parse our classes.
      */
+    @Override
     public void addRuleInstances (Digester digester)
     {
         // this creates the appropriate instance when we encounter a

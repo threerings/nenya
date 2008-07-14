@@ -93,9 +93,7 @@ public class CharacterDescriptor
         _xlations = xlations;
     }
 
-    /**
-     * Compute a sensible hashcode for this object.
-     */
+    @Override
     public int hashCode ()
     {
         int code = 0, clength = _components.length;
@@ -105,9 +103,7 @@ public class CharacterDescriptor
         return code;
     }
 
-    /**
-     * Compares this character descriptor to another.
-     */
+    @Override
     public boolean equals (Object other)
     {
         if (!(other instanceof CharacterDescriptor)) {
@@ -145,9 +141,7 @@ public class CharacterDescriptor
         return Arrays.equals(_xlations, odesc._xlations);
     }
 
-    /**
-     * Returns a string representation of this character descriptor.
-     */
+    @Override
     public String toString ()
     {
         return "[cids=" + StringUtil.toString(_components) +

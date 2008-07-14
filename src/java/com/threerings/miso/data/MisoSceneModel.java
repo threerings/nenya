@@ -110,9 +110,7 @@ public abstract class MisoSceneModel extends SimpleStreamableObject
      */
     public abstract boolean removeObject (ObjectInfo info);
 
-    /**
-     * Creates a copy of this scene model.
-     */
+    @Override
     public Object clone ()
     {
         try {

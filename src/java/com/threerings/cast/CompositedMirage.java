@@ -1,8 +1,5 @@
 package com.threerings.cast;
 
-import java.util.Comparator;
-
-import com.threerings.cast.CompositedActionFrames.ComponentFrames;
 import com.threerings.media.image.Mirage;
 
 public interface CompositedMirage

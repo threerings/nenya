@@ -21,21 +21,13 @@
 
 package com.threerings.media.animation;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Image;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.Transparency;
-
 import java.awt.image.BufferedImage;
 
 import com.threerings.media.image.Mirage;
-import com.threerings.media.sprite.Sprite;
-import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LinearTimeFunction;
 import com.threerings.media.util.TimeFunction;
 
@@ -100,10 +92,7 @@ public class ScaleAnimation extends Animation
         return new Rectangle(corner.x, corner.y, size.x, size.y);
     }
 
-    /**
-     * Compute the bounds to use to render the animation's image
-     * right now.
-     */
+    @Override
     public Rectangle getBounds ()
     {
         return getBounds(_scale, _center, _image);
@@ -126,7 +115,7 @@ public class ScaleAnimation extends Animation
         return new Point(center.x - size.x/2, center.y - size.y/2);
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         // Compute the new scaling value
@@ -147,13 +136,13 @@ public class ScaleAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _scaleFunc.fastForward(timeDelta);
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         // Compute the bounding box to render this image

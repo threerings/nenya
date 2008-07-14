@@ -170,6 +170,7 @@ public class RecolorImage extends JPanel
 
         // listen for mouse clicks
         images.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed (MouseEvent event) {
                 RecolorImage.this.mousePressed(event);
             }

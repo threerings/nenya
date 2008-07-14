@@ -876,6 +876,7 @@ public class ResourceManager
             _obs = obs;
         }
 
+        @Override
         public void run ()
         {
             try {

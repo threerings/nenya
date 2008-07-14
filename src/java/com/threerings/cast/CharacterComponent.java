@@ -85,10 +85,7 @@ public class CharacterComponent implements Serializable
         return _frameProvider.getFramePath(this, action, type, existentPaths);
     }
 
-    /**
-     * Returns true if this component is equal to the other component. The
-     * comparison is made on <code>componentId</code>.
-     */
+    @Override
     public boolean equals (Object other)
     {
         if (other instanceof CharacterComponent) {
@@ -98,9 +95,7 @@ public class CharacterComponent implements Serializable
         }
     }
 
-    /**
-     * Returns a string representation of this character component.
-     */
+    @Override
     public String toString ()
     {
         return StringUtil.fieldsToString(this);

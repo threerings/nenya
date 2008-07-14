@@ -23,14 +23,7 @@ package com.threerings.media.tile.bundle.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.FileSet;
-
-import com.threerings.media.tile.tools.MapFileTileSetIDBroker;
 
 /**
  * Ant task for creating tileset bundles that are placed in a specified directory instead
@@ -46,21 +39,21 @@ public class DirectoryTileSetBundlerTask extends TileSetBundlerTask
         _deployDir = deployDir;
     }
 
-    @Override // documentation inherited
+    @Override
     public void execute () throws BuildException
     {
         ensureSet(_deployDir, "Must specify the path to which we want to deploy tileset files.");
         super.execute();
     }
 
-    @Override // documentation inherited
+    @Override
     protected TileSetBundler createBundler ()
         throws IOException
     {
         return new DirectoryTileSetBundler(_config);
     }
 
-    @Override // documentation inherited
+    @Override
     protected String getTargetPath (File fromDir, String path)
     {
         File xmlFile = new File(path.replace(fromDir.getPath(), _deployDir.getPath()));

@@ -66,7 +66,7 @@ public class ExplodeAnimation extends Animation
          * should continue until all pieces are outside the bounds. */
         public long delay;
 
-        /** Returns a string representation of this instance. */
+        @Override
         public String toString ()
         {
             return StringUtil.fieldsToString(this);
@@ -156,7 +156,7 @@ public class ExplodeAnimation extends Animation
         _angle = 0.0f;
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         if (_start > 0) {
@@ -165,7 +165,7 @@ public class ExplodeAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         if (_start == 0) {
@@ -218,7 +218,7 @@ public class ExplodeAnimation extends Animation
         invalidate();
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         Shape oclip = gfx.getClip();
@@ -270,7 +270,7 @@ public class ExplodeAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

@@ -36,26 +36,26 @@ import com.threerings.media.tile.util.TileSetTrimmer;
  */
 public class TrimmedTileSet extends TileSet
 {
-    // documentation inherited
+    @Override
     public int getTileCount ()
     {
         return _obounds.length;
     }
 
-    // documentation inherited
+    @Override
     public Rectangle computeTileBounds (int tileIndex, Rectangle bounds)
     {
         bounds.setBounds(_obounds[tileIndex]);
         return bounds;
     }
 
-    // documentation inherited
+    @Override
     protected Tile createTile ()
     {
         return new TrimmedTile();
     }
 
-    // documentation inherited
+    @Override
     protected void initTile (Tile tile, int tileIndex, Colorization[] zations)
     {
         super.initTile(tile, tileIndex, zations);

@@ -38,13 +38,13 @@ import com.samskivert.util.StringUtil;
  */
 public class SwissArmyTileSet extends TileSet
 {
-    // documentation inherited
+    @Override
     public int getTileCount ()
     {
         return _numTiles;
     }
 
-    // documentation inherited
+    @Override
     public Rectangle computeTileBounds (int tileIndex, Rectangle bounds)
     {
         // find the row number containing the sought-after tile
@@ -156,7 +156,7 @@ public class SwissArmyTileSet extends TileSet
         _gapSize = gapSize;
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

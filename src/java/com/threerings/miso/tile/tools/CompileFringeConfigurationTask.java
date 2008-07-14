@@ -55,6 +55,7 @@ public class CompileFringeConfigurationTask extends Task
         _target = target;
     }
 
+    @Override
     public void execute () throws BuildException
     {
         // make sure the source file exists

@@ -22,15 +22,8 @@
 package com.threerings.media;
 
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.Window;
 import javax.swing.JApplet;
-import javax.swing.RepaintManager;
-
-import static com.threerings.media.Log.log;
 
 /**
  * When using the {@link FrameManager} in an Applet, one must use this

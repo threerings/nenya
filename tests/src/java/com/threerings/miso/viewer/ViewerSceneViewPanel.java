@@ -75,14 +75,14 @@ public class ViewerSceneViewPanel extends MisoScenePanel
 	PerformanceMonitor.register(this, "paint", 1000);
     }
 
-    // documentation inherited
+    @Override
     public void setSceneModel (MisoSceneModel model)
     {
         super.setSceneModel(model);
         log.info("Using " + model + ".");
     }
 
-    // documentation inherited
+    @Override
     public void doLayout ()
     {
         super.doLayout();
@@ -135,7 +135,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics g)
     {
 	super.paint(g);
@@ -148,7 +148,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
         log.info(name + " [ticks=" + ticks + "].");
     }
 
-    // documentation inherited
+    @Override
     public void mousePressed (MouseEvent e)
     {
         super.mousePressed(e);

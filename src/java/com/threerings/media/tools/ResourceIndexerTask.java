@@ -1,6 +1,5 @@
 package com.threerings.media.tools;
 
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,7 +28,7 @@ public class ResourceIndexerTask extends Task
         _indexFile = file;
     }
     
-    @Override // documentation inherited
+    @Override
     public void execute () throws BuildException
     {
         PrintWriter fout = null;

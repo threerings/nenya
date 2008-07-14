@@ -34,7 +34,7 @@ import com.threerings.geom.GeomUtil;
  */
 public class UniformTileSet extends TileSet
 {
-    // documentation inherited
+    @Override
     public int getTileCount ()
     {
         BufferedImage tsimg = getRawTileSetImage();
@@ -43,7 +43,7 @@ public class UniformTileSet extends TileSet
         return perRow * perCol;
     }
 
-    // documentation inherited
+    @Override
     public Rectangle computeTileBounds (int tileIndex, Rectangle bounds)
     {
         BufferedImage tsimg = getRawTileSetImage();
@@ -83,7 +83,7 @@ public class UniformTileSet extends TileSet
         return _height;
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

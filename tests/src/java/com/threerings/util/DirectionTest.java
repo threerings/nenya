@@ -35,6 +35,7 @@ public class DirectionTest extends TestCase
         super(DirectionTest.class.getName());
     }
 
+    @Override
     public void runTest ()
     {
         int orient = NORTH;

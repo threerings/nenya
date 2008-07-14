@@ -43,14 +43,14 @@ public class TiledArea extends JComponent
         setOpaque(true);
     }
 
-    // documentation inherited
+    @Override
     public void paintComponent (Graphics g)
     {
         super.paintComponent(g);
         _tiler.paint(g, 0, 0, getWidth(), getHeight());
     }
 
-    // documentation inherited
+    @Override
     public Dimension getPreferredSize ()
     {
         return new Dimension(_tiler.getNaturalWidth(),

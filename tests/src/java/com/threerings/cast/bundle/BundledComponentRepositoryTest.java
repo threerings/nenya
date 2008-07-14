@@ -38,6 +38,7 @@ public class BundledComponentRepositoryTest extends TestCase
         super(BundledComponentRepositoryTest.class.getName());
     }
 
+    @Override
     public void runTest ()
     {
         try {

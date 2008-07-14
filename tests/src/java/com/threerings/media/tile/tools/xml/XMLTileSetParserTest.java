@@ -35,6 +35,7 @@ public class XMLTileSetParserTest extends TestCase
         super(XMLTileSetParserTest.class.getName());
     }
 
+    @Override
     public void runTest ()
     {
         HashMap sets = new HashMap();

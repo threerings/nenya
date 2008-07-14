@@ -32,25 +32,25 @@ public abstract class VirtualMisoSceneModel extends MisoSceneModel
     {
     }
 
-    // documentation inherited from interface
+    @Override
     public boolean setBaseTile (int fqTileId, int x, int y)
     {
         throw new UnsupportedOperationException();
     }
 
-    // documentation inherited from interface
+    @Override
     public boolean addObject (ObjectInfo info)
     {
         throw new UnsupportedOperationException();
     }
 
-    // documentation inherited from interface
+    @Override
     public void updateObject (ObjectInfo info)
     {
         throw new UnsupportedOperationException();
     }
 
-    // documentation inherited from interface
+    @Override
     public boolean removeObject (ObjectInfo info)
     {
         throw new UnsupportedOperationException();

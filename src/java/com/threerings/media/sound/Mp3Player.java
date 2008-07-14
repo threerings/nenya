@@ -43,7 +43,7 @@ import static com.threerings.media.Log.log;
  */
 public class Mp3Player extends MusicPlayer
 {
-    @Override // documentation inherited
+    @Override
     public void init ()
     {
         // TODO: some stuff needs to move here, like setting up the line
@@ -51,18 +51,19 @@ public class Mp3Player extends MusicPlayer
         // out (the format might always be known..).
     }
 
-    @Override // documentation inherited
+    @Override
     public void shutdown ()
     {
     }
 
-    @Override // documentation inherited
+    @Override
     public void start (final InputStream stream)
         throws Exception
     {
         // TODO: some stuff needs to come out of here and into init/shutdown
         // but we'll deal with all that later, d00d.
         _player = new Thread("narya mp3 relay") {
+            @Override
             public void run () {
                 AudioInputStream inStream = null;
                 try {
@@ -119,13 +120,13 @@ public class Mp3Player extends MusicPlayer
         _player.start();
     }
 
-    @Override // documentation inherited
+    @Override
     public void stop ()
     {
         _player = null;
     }
 
-    @Override // documentation inherited
+    @Override
     public void setVolume (float volume)
     {
         // TODO : line won't be null when we initialize it in the right place

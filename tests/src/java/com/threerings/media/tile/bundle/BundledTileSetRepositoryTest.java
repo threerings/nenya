@@ -37,6 +37,7 @@ public class BundledTileSetRepositoryTest extends TestCase
         super(BundledTileSetRepositoryTest.class.getName());
     }
 
+    @Override
     public void runTest ()
     {
         try {

@@ -38,7 +38,7 @@ public class SmoothBobblePath extends BobblePath
         super(dx, dy, duration, updateFreq);
     }
 
-    // documentation inherited
+    @Override
     public void init (Pathable pable, long tickstamp)
     {
         super.init(pable, tickstamp);
@@ -49,7 +49,7 @@ public class SmoothBobblePath extends BobblePath
         _oldy = _sy;
     }
 
-    // documentation inherited
+    @Override
     public boolean tick (Pathable pable, long tickStamp)
     {
         // see if we need to stop

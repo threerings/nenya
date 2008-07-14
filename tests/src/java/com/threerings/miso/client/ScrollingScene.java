@@ -76,29 +76,35 @@ public class ScrollingScene extends MisoSceneModel
         }
     }
 
+    @Override
     public int getBaseTileId (int x, int y)
     {
         return -1;
     }
 
+    @Override
     public boolean setBaseTile (int fqTileId, int x, int y)
     {
         return false;
     }
 
+    @Override
     public boolean addObject (ObjectInfo info)
     {
         return true;
     }
 
+    @Override
     public void getObjects (Rectangle region, ObjectSet set)
     {
     }
 
+    @Override
     public void updateObject (ObjectInfo info)
     {
     }
 
+    @Override
     public boolean removeObject (ObjectInfo info)
     {
         return false;

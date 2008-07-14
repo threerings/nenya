@@ -131,7 +131,7 @@ public class ObjectInfo extends SimpleStreamableObject
                 sx != 0 || sy != 0 || zations != 0);
     }
 
-    // documentation inherited
+    @Override
     public boolean equals (Object other)
     {
         if (other instanceof ObjectInfo) {
@@ -142,13 +142,13 @@ public class ObjectInfo extends SimpleStreamableObject
         }
     }
 
-    // documentation inherited
+    @Override
     public int hashCode ()
     {
         return x ^ y ^ tileId;
     }
 
-    // documentation inherited
+    @Override
     public Object clone ()
     {
         try {

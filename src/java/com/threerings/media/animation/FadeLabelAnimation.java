@@ -29,8 +29,6 @@ import java.awt.RenderingHints;
 import com.samskivert.swing.Label;
 import com.samskivert.swing.util.SwingUtil;
 
-import static com.threerings.media.Log.log;
-
 /**
  * Does something extraordinary.
  */
@@ -54,7 +52,7 @@ public class FadeLabelAnimation extends FadeAnimation
         _antiAliased = antiAliased;
     }
 
-    // documentation inherited
+    @Override
     protected void init ()
     {
         super.init();
@@ -78,7 +76,7 @@ public class FadeLabelAnimation extends FadeAnimation
         _bounds.height = size.height;
     }
 
-    // documentation inherited
+    @Override
     protected void paintAnimation (Graphics2D gfx)
     {
         Object ohints = null;

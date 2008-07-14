@@ -21,7 +21,6 @@
 
 package com.threerings.cast;
 
-import java.awt.Color;
 import java.io.Serializable;
 
 import com.samskivert.util.ArrayIntSet;
@@ -95,7 +94,7 @@ public class ComponentClass implements Serializable
             return priority;
         }
 
-        /** Generates a string representation of this instance. */
+        @Override
         public String toString ()
         {
             return "[pri=" + renderPriority + ", action=" + action +
@@ -196,6 +195,7 @@ public class ComponentClass implements Serializable
     /**
      * Classes with the same name are the same.
      */
+    @Override
     public boolean equals (Object other)
     {
         if (other instanceof ComponentClass) {
@@ -208,14 +208,13 @@ public class ComponentClass implements Serializable
     /**
      * Hashcode is based on component class name.
      */
+    @Override
     public int hashCode ()
     {
         return name.hashCode();
     }
 
-    /**
-     * Returns a string representation of this component class.
-     */
+    @Override
     public String toString ()
     {
         StringBuilder buf = new StringBuilder("[");

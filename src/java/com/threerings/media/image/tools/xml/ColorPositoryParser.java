@@ -40,13 +40,13 @@ import com.threerings.media.image.ColorPository;
  */
 public class ColorPositoryParser extends CompiledConfigParser
 {
-    // documentation inherited
+    @Override
     protected Serializable createConfigObject ()
     {
         return new ColorPository();
     }
 
-    // documentation inherited
+    @Override
     protected void addRules (Digester digest)
     {
         // create and configure class record instances
@@ -58,6 +58,7 @@ public class ColorPositoryParser extends CompiledConfigParser
         // create and configure color record instances
         prefix += "/color";
         digest.addRule(prefix, new Rule() {
+            @Override
             public void begin (String namespace, String name,
                                Attributes attributes) throws Exception {
                 // we want to inherit settings from the color class when
@@ -68,6 +69,7 @@ public class ColorPositoryParser extends CompiledConfigParser
                 digester.push(record);
             }
 
+            @Override
             public void end (String namespace, String name) throws Exception {
                 digester.pop();
             }

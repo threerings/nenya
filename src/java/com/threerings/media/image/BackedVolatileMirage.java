@@ -48,13 +48,13 @@ public class BackedVolatileMirage extends VolatileMirage
         createVolatileImage();
     }
 
-    // documentation inherited
+    @Override
     protected int getTransparency ()
     {
         return _source.getColorModel().getTransparency();
     }
 
-    // documentation inherited
+    @Override
     protected void refreshVolatileImage ()
     {
         Graphics gfx = null;
@@ -70,7 +70,7 @@ public class BackedVolatileMirage extends VolatileMirage
         }
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

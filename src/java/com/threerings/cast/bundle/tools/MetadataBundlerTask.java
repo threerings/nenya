@@ -81,6 +81,7 @@ public class MetadataBundlerTask extends Task
     /**
      * Performs the actual work of the task.
      */
+    @Override
     public void execute ()
         throws BuildException
     {

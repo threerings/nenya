@@ -24,12 +24,9 @@ package com.threerings.media.animation;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.threerings.media.AbstractMediaManager;
 import com.threerings.media.MediaPanel;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.animation.Animation;
-import com.threerings.media.animation.AnimationAdapter;
-import com.threerings.media.animation.AnimationObserver;
 
 /**
  * A Sprite that wraps an animation so that a sequence of frames can be easily
@@ -47,12 +44,13 @@ public class AnimationSprite extends Sprite
         _owner = owner;
     }
 
+    @Override
     public void init ()
     {
         _anim.init(_mgr);
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         super.tick(tickStamp);
@@ -67,21 +65,21 @@ public class AnimationSprite extends Sprite
         }
     }
 
-    // documentation inherited.
+    @Override
     public void setLocation (int x, int y)
     {
         _anim.setLocation(x - _oxoff, y - _oyoff);
         super.setLocation(x, y);
     }
 
-    // documentation inherited
+    @Override
     public void willStart (long tickStamp)
     {
         super.willStart(tickStamp);
         _anim.willStart(tickStamp);
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx) {
         // Nothing to paint for ourselves.
 

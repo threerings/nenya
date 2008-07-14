@@ -192,7 +192,7 @@ public class ObjectTile extends Tile
         _constraints = constraints;
     }
     
-    // documentation inherited
+    @Override
     public void toString (StringBuilder buf)
     {
         super.toString(buf);

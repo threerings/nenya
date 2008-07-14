@@ -51,13 +51,13 @@ public class FringeConfigurationParser extends CompiledConfigParser
     }
 
 
-    // documentation inherited
+    @Override
     protected Serializable createConfigObject ()
     {
         return new FringeConfiguration();
     }
 
-    // documentation inherited
+    @Override
     protected void addRules (Digester digest)
     {
         // configure top-level constraints
@@ -84,6 +84,7 @@ public class FringeConfigurationParser extends CompiledConfigParser
         vrule = new ValidatedSetNextRule("addFringeRecord", val) {
             // parse the fringe record, converting tileset names to
             // tileset ids
+            @Override
             public void begin (String namespace, String lname, Attributes attrs)
                 throws Exception
             {
@@ -133,6 +134,7 @@ public class FringeConfigurationParser extends CompiledConfigParser
         };
         vrule = new ValidatedSetNextRule("addTileset", val) {
             // parse the fringe tilesetrecord, converting tileset names to ids
+            @Override
             public void begin (String namespace, String lname, Attributes attrs)
                 throws Exception
             {

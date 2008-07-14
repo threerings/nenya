@@ -373,6 +373,7 @@ public class CharacterManager
         // multi-frame image that does the necessary shadow magic
         ComponentFrames[] svec = sources.toArray(new ComponentFrames[sources.size()]);
         cframes.frames = new CompositedActionFrames(_imgr, _frameCache, action, svec) {
+            @Override
             protected CompositedMultiFrameImage createFrames (int orient) {
                 return new CompositedShadowImage(
                     _imgr, _sources, _action, orient, cclass.shadowAlpha);
@@ -399,6 +400,7 @@ public class CharacterManager
         }
         ComponentFrames[] mvec = sources.toArray(new ComponentFrames[sources.size()]);
         return new CompositedActionFrames(_imgr, _frameCache, action, mvec) {
+            @Override
             protected CompositedMultiFrameImage createFrames (int orient) {
                 return new CompositedMaskedImage(_imgr, _sources, _action, orient);
             }

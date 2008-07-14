@@ -83,6 +83,7 @@ public abstract class TileSetRuleSet
      * should register themselves relative to the <code>_prefix</code>
      * member).
      */
+    @Override
     public void addRuleInstances (Digester digester)
     {
         // this creates the appropriate instance when we encounter a

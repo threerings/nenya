@@ -754,6 +754,7 @@ public class Quantize {
                         SQUARES[((color >>  0) & 0xFF) - b + MAX_RGB]);
             }
 
+            @Override
             public String toString() {
                 StringBuilder buf = new StringBuilder();
                 if (parent == this) {

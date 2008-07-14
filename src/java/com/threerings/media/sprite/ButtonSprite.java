@@ -24,8 +24,6 @@ package com.threerings.media.sprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-
 import com.samskivert.swing.Label;
 import com.samskivert.swing.util.SwingUtil;
 
@@ -247,7 +245,7 @@ public class ButtonSprite extends Sprite
         return _pressed;
     }
     
-    // documentation inherited
+    @Override
     protected void init ()
     {
         super.init();
@@ -267,7 +265,7 @@ public class ButtonSprite extends Sprite
         updateBounds();
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         Color baseTextColor = _label.getTextColor(),

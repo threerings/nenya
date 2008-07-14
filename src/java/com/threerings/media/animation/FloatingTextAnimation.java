@@ -91,7 +91,7 @@ public class FloatingTextAnimation extends Animation
         return _label;
     }
 
-    // documentation inherited
+    @Override
     public void setLocation (int x, int y)
     {
         super.setLocation(x, y);
@@ -119,7 +119,7 @@ public class FloatingTextAnimation extends Animation
         _floatPeriod = floatPeriod;
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         boolean invalid = false;
@@ -172,7 +172,7 @@ public class FloatingTextAnimation extends Animation
         _finished = (msecs >= _floatPeriod);
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         if (_start > 0) {
@@ -180,7 +180,7 @@ public class FloatingTextAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         Composite ocomp = gfx.getComposite();
@@ -203,7 +203,7 @@ public class FloatingTextAnimation extends Animation
         _label.render(gfx, x, y);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

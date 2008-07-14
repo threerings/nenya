@@ -41,12 +41,13 @@ import static com.threerings.miso.Log.log;
  */
 public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
 {
-    // documentation inherited
+    @Override
     public void addRuleInstances (Digester digester)
     {
         super.addRuleInstances(digester);
 
         digester.addRule(_path + "/passable", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target) {
                     int[] values = StringUtil.parseIntArray(bodyText);
                     boolean[] passable = new boolean[values.length];
@@ -59,7 +60,7 @@ public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
     }
 
-    // documentation inherited
+    @Override
     public boolean isValid (Object target)
     {
         BaseTileSet set = (BaseTileSet)target;
@@ -75,7 +76,7 @@ public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
         return valid;
     }
 
-    // documentation inherited
+    @Override
     protected Class getTileSetClass ()
     {
         return BaseTileSet.class;

@@ -41,14 +41,11 @@ import java.util.ArrayList;
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.event.AncestorAdapter;
 import com.samskivert.swing.event.CommandEvent;
-import com.samskivert.util.StringUtil;
-
 import com.threerings.media.timer.MediaTimer;
 
 import com.threerings.media.animation.Animation;
 import com.threerings.media.animation.AnimationManager;
 
-import com.threerings.media.sprite.ButtonSprite;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 
@@ -104,9 +101,11 @@ public class MediaPanel extends JComponent
 
         // participate in the frame when we're visible
         addAncestorListener(new AncestorAdapter() {
+            @Override
             public void ancestorAdded (AncestorEvent event) {
                 _metamgr.getFrameManager().registerFrameParticipant(MediaPanel.this);
             }
+            @Override
             public void ancestorRemoved (AncestorEvent event) {
                 _metamgr.getFrameManager().removeFrameParticipant(MediaPanel.this);
             }
@@ -298,7 +297,7 @@ public class MediaPanel extends JComponent
         return this;
     }
 
-    @Override // from JComponent
+    @Override
     public void setOpaque (boolean opaque)
     {
         if (!opaque) {
@@ -308,7 +307,7 @@ public class MediaPanel extends JComponent
         super.setOpaque(true);
     }
 
-    @Override // from JComponent
+    @Override
     public void repaint (long tm, int x, int y, int width, int height)
     {
         if (width > 0 && height > 0) {
@@ -316,7 +315,7 @@ public class MediaPanel extends JComponent
         }
     }
 
-    @Override // from JComponent
+    @Override
     public void paint (Graphics g)
     {
         Graphics2D gfx = (Graphics2D)g;
@@ -567,7 +566,7 @@ public class MediaPanel extends JComponent
     /** Handles ActionSprite/HoverSprite/ArmingSprite manipulation. */
     protected class ActionSpriteHandler extends MouseInputAdapter
     {
-        // documentation inherited
+        @Override
         public void mousePressed (MouseEvent me)
         {
             if (_activeSprite == null) {
@@ -583,7 +582,7 @@ public class MediaPanel extends JComponent
             }
         }
 
-        // documentation inherited
+        @Override
         public void mouseReleased (MouseEvent me)
         {
             if (_activeSprite instanceof ArmingSprite) {
@@ -616,7 +615,7 @@ public class MediaPanel extends JComponent
             mouseMoved(me);
         }
 
-        // documentation inherited
+        @Override
         public void mouseDragged (MouseEvent me)
         {
             if (_activeSprite instanceof ArmingSprite) {
@@ -625,7 +624,7 @@ public class MediaPanel extends JComponent
             }
         }
 
-        // documentation inherited
+        @Override
         public void mouseMoved (MouseEvent me)
         {
             Sprite s = getHit(me);

@@ -36,7 +36,7 @@ import static com.threerings.media.Log.log;
  */
 public class FlipFrameManager extends FrameManager
 {
-    // from FrameManager
+    @Override
     protected void paint (long tickStamp)
     {
         // create our buffer strategy if we don't already have one
@@ -92,13 +92,13 @@ public class FlipFrameManager extends FrameManager
         } while (_bufstrat.contentsLost());
     }
 
-    // from FrameManager
+    @Override
     protected Graphics2D createGraphics ()
     {
         return (Graphics2D)_bufstrat.getDrawGraphics();
     }
 
-    // from FrameManager
+    @Override
     protected void restoreFromBack (Rectangle dirty)
     {
         // nothing doing

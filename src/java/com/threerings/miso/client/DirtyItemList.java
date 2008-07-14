@@ -343,7 +343,7 @@ public class DirtyItemList
             obj = null;
         }
 
-        // documentation inherited
+        @Override
         public boolean equals (Object other)
         {
             // we're never equal to something that's not our kind
@@ -356,15 +356,13 @@ public class DirtyItemList
             return obj.equals(b.obj);
         }
 
-        // documentation inherited
+        @Override
         public int hashCode ()
         {
             return obj.hashCode();
         }
 
-        /**
-         * Returns a string representation of the dirty item.
-         */
+        @Override
         public String toString ()
         {
             StringBuilder buf = new StringBuilder();

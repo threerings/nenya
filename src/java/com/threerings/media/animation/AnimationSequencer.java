@@ -113,7 +113,7 @@ public class AnimationSequencer extends Animation
         _lastStamp = 0;
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         if (_lastStamp == 0) {
@@ -148,19 +148,19 @@ public class AnimationSequencer extends Animation
 //         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         // don't care
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _lastStamp += timeDelta;
     }
 
-    // documentation inherited
+    @Override
     public void viewLocationDidChange (int dx, int dy)
     {
         super.viewLocationDidChange(dx, dy);
@@ -259,11 +259,13 @@ public class AnimationSequencer extends Animation
             tick(when);
         }
 
+        @Override
         public void animationCompleted (Animation anim, long when)
         {
             fireCompletion(when);
         }
 
+        @Override
         public String toString ()
         {
             return "[anim=" + StringUtil.shortClassName(_anim) +

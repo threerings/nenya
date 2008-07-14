@@ -206,6 +206,7 @@ public class BundledComponentRepository
     public Iterator enumerateComponentIds (final ComponentClass compClass)
     {
         return new Predicate<Integer>() {
+            @Override
             public boolean isMatch (Integer input) {
                 CharacterComponent comp = (CharacterComponent)_components.get(input);
                 return comp.componentClass.equals(compClass);
@@ -365,7 +366,7 @@ public class BundledComponentRepository
             return _bundle.getIdent() + root + imgpath + BundleUtil.IMAGE_EXTENSION;
         }
 
-        @Override // from IMImageProvider
+        @Override
         public Mirage getTileImage (String path, Rectangle bounds, Colorization[] zations)
         {
             // we don't need our images prepared for screen rendering

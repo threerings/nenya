@@ -70,6 +70,7 @@ public class ActionRuleSet extends RuleSetBase
     /**
      * Adds the necessary rules to the digester to parse our actions.
      */
+    @Override
     public void addRuleInstances (Digester digester)
     {
         // this creates the appropriate instance when we encounter a
@@ -85,6 +86,7 @@ public class ActionRuleSet extends RuleSetBase
                          new SetFieldRule("framesPerSecond"));
 
         CallMethodSpecialRule origin = new CallMethodSpecialRule() {
+            @Override
             public void parseAndSet (String bodyText, Object target)
                 throws Exception {
                 int[] coords = StringUtil.parseIntArray(bodyText);
@@ -100,6 +102,7 @@ public class ActionRuleSet extends RuleSetBase
         digester.addRule(_prefix + ACTION_PATH + "/origin", origin);
 
         CallMethodSpecialRule orient = new CallMethodSpecialRule() {
+            @Override
             public void parseAndSet (String bodyText, Object target)
                 throws Exception {
                 ActionSequence seq = ((ActionSequence)target);

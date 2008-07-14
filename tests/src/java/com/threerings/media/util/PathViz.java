@@ -57,7 +57,7 @@ public class PathViz extends MediaPanel
         sprite.move(path);
     }
 
-    // documentation inherited from interface
+    @Override
     public void paintBetween (Graphics2D gfx, Rectangle dirtyRect)
     {
         super.paintBetween(gfx, dirtyRect);
@@ -66,6 +66,7 @@ public class PathViz extends MediaPanel
         _spritemgr.renderSpritePaths(gfx);
     }
 
+    @Override
     public Dimension getPreferredSize ()
     {
         return new Dimension(300, 300);
@@ -94,6 +95,7 @@ public class PathViz extends MediaPanel
             _oyoff = 16;
         }
 
+        @Override
         public void paint (Graphics2D gfx)
         {
             gfx.setColor(Color.blue);

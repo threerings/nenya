@@ -204,7 +204,7 @@ public class ArcPath extends TimedPath
         gfx.drawArc(x, y, width-1, height-1, 360-sangle, -delta);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

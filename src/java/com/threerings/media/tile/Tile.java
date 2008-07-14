@@ -45,6 +45,7 @@ public class Tile // implements Cloneable
             this.zations = zations;
         }
 
+        @Override
         public boolean equals (Object other) {
             if (other instanceof Key) {
                 Key okey = (Key)other;
@@ -56,6 +57,7 @@ public class Tile // implements Cloneable
             }
         }
 
+        @Override
         public int hashCode () {
             int code = (tileSet == null) ? tileIndex :
                 (tileSet.hashCode() ^ tileIndex);
@@ -140,9 +142,7 @@ public class Tile // implements Cloneable
 //         }
 //     }
 
-    /**
-     * Return a string representation of this tile.
-     */
+    @Override
     public String toString ()
     {
         StringBuilder buf = new StringBuilder("[");
@@ -162,6 +162,7 @@ public class Tile // implements Cloneable
     }
 
     /** Decrement total tile memory by our value. */
+    @Override
     protected void finalize ()
     {
         if (_mirage != null) {

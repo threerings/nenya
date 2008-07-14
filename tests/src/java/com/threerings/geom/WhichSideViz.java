@@ -45,12 +45,14 @@ public class WhichSideViz extends JPanel
         addMouseMotionListener(this);
     }
 
+    @Override
     public void doLayout ()
     {
         super.doLayout();
         _center = new Point(getWidth() / 2, getHeight() / 2);
     }
 
+    @Override
     public void paintComponent (Graphics g)
     {
         super.paintComponent(g);

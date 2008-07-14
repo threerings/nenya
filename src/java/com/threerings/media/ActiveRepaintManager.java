@@ -43,7 +43,6 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
@@ -68,7 +67,7 @@ public class ActiveRepaintManager extends RepaintManager
         _root = root;
     }
 
-    // documentation inherited
+    @Override
     public synchronized void addInvalidComponent (JComponent comp) 
     {
         Component vroot = null;
@@ -128,7 +127,7 @@ public class ActiveRepaintManager extends RepaintManager
         }
     }
 
-    // documentation inherited
+    @Override
     public synchronized void addDirtyRegion (JComponent comp, int x, int y, int width, int height) 
     {
         // ignore invalid requests
@@ -187,7 +186,7 @@ public class ActiveRepaintManager extends RepaintManager
         return null;
     }
 
-    // documentation inherited
+    @Override
     public synchronized Rectangle getDirtyRegion (JComponent comp)
     {
         Rectangle drect = _dirty.get(comp);
@@ -196,7 +195,7 @@ public class ActiveRepaintManager extends RepaintManager
         return (drect == null) ? new Rectangle(0, 0, 0, 0) : new Rectangle(drect);
     }
 
-    // documentation inherited
+    @Override
     public synchronized void markCompletelyClean (JComponent comp)
     {
         _dirty.remove(comp);

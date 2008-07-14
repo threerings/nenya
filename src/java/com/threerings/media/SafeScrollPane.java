@@ -51,7 +51,7 @@ public class SafeScrollPane extends JScrollPane
         }
     }
 
-    // documentation inherited
+    @Override
     public Dimension getPreferredSize ()
     {
         Dimension d = super.getPreferredSize();
@@ -66,9 +66,11 @@ public class SafeScrollPane extends JScrollPane
         return d;
     }
 
+    @Override
     protected JViewport createViewport ()
     {
         JViewport vp = new JViewport() {
+            @Override
             public void setViewPosition (Point p) {
                 super.setViewPosition(p);
                 // simple scroll mode results in setViewPosition causing

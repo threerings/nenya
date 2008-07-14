@@ -32,8 +32,6 @@ import com.samskivert.util.RandomUtil;
 import com.threerings.media.animation.Animation;
 import com.threerings.media.image.Mirage;
 
-import static com.threerings.media.Log.log;
-
 /**
  * Displays a set of spark images originating from a specified position
  * and flying outward in random directions, fading out as they go, for a
@@ -126,20 +124,20 @@ public class SparkAnimation extends Animation
         return (RandomUtil.getInt(2) == 0) ? -1 : 1;
     }
 
-    // documentation inherited
+    @Override
     protected void willStart (long stamp)
     {
         super.willStart(stamp);
         _start = stamp;
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _start += timeDelta;
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         // figure out the distance the chunks have travelled
@@ -184,7 +182,7 @@ public class SparkAnimation extends Animation
         invalidate();
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         Shape oclip = gfx.getClip();
@@ -206,7 +204,7 @@ public class SparkAnimation extends Animation
         gfx.setClip(oclip);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

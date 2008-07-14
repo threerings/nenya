@@ -21,16 +21,12 @@
 
 package com.threerings.media;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
 import javax.swing.JComponent;
-
-import com.samskivert.util.Interval;
-import com.samskivert.util.ResultListener;
 
 import com.threerings.media.image.Mirage;
 import com.threerings.media.util.MultiFrameImage;
@@ -85,14 +81,14 @@ public class HourglassView extends TimerView
         _changeThreshold = 1.0f / _bounds.height;
     }
 
-    // documentation inherited
+    @Override
     public void changeComplete (float complete)
     {
         super.changeComplete(complete);
         setSandTrickleY();
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         // Let the parent handle its stuff
@@ -111,7 +107,7 @@ public class HourglassView extends TimerView
         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx, float completed)
     {
         // Handle processing from parent class

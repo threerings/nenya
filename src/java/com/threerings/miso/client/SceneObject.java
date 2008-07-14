@@ -323,9 +323,7 @@ public class SceneObject
 //                  ", sbounds=" + StringUtil.toString(bounds) + "].");
     }
 
-    /**
-     * Returns a string representation of this instance.
-     */
+    @Override
     public String toString ()
     {
         return info + "[" + StringUtil.toString(bounds) + "]";

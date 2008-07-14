@@ -124,7 +124,7 @@ public class TilePath extends LineSegmentPath
         return (long)(_estimPixels / _vel);
     }
 
-    // documentation inherited
+    @Override
     public void addNode (int x, int y, int dir)
     {
         super.addNode(x, y, dir);

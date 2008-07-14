@@ -27,8 +27,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
-import java.awt.image.*;
-
 import com.threerings.media.image.Mirage;
 
 import com.threerings.media.util.MultiFrameImage;
@@ -149,7 +147,7 @@ public class OrientableImageSprite extends ImageSprite
         );
     }
     
-    // Documentation inherited.
+    @Override
     protected void accomodateFrame (int frameIdx, int width, int height)
     {
         Area area = new Area(
@@ -166,7 +164,7 @@ public class OrientableImageSprite extends ImageSprite
         _bounds = area.getBounds();
     }
     
-    // Documentation inherited.
+    @Override
     public void setOrientation (int orient)
     {
         super.setOrientation(orient);
@@ -174,7 +172,7 @@ public class OrientableImageSprite extends ImageSprite
         layout();
     }
     
-    // Documentation inherited.
+    @Override
     public void paint (Graphics2D graphics)
     {
         AffineTransform at = graphics.getTransform();

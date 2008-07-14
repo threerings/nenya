@@ -70,7 +70,7 @@ public class LabelSprite extends Sprite
         _bounds.height = size.height;
     }
     
-    // documentation inherited
+    @Override
     protected void init ()
     {
         super.init();
@@ -84,7 +84,7 @@ public class LabelSprite extends Sprite
         updateBounds();        
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         _label.render(gfx, _bounds.x, _bounds.y);

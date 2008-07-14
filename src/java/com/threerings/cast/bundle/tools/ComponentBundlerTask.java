@@ -129,6 +129,7 @@ public class ComponentBundlerTask extends Task
     /**
      * Performs the actual work of the task.
      */
+    @Override
     public void execute () throws BuildException
     {
         // make sure everything was set up properly
@@ -158,6 +159,7 @@ public class ComponentBundlerTask extends Task
 
         // create an image provider for loading our component images
         ImageProvider improv = new SimpleCachingImageProvider() {
+            @Override
             protected BufferedImage loadImage (String path)
                 throws IOException {
                 return ImageIO.read(new File(path));

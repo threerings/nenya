@@ -23,7 +23,6 @@ package com.threerings.media;
 
 import java.awt.Graphics2D;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -101,6 +100,7 @@ public class VirtualMediaPanel extends MediaPanel
      * Returns the bounds of the viewport in virtual coordinates. The
      * returned rectangle must <em>not</em> be modified.
      */
+    @Override
     public Rectangle getViewBounds ()
     {
         return _vbounds;
@@ -150,6 +150,7 @@ public class VirtualMediaPanel extends MediaPanel
      * coordinates before they are dispatched to any of the mouse
      * listeners.
      */
+    @Override
     protected void processMouseEvent (MouseEvent event)
     {
         event.translatePoint(_vbounds.x, _vbounds.y);
@@ -161,6 +162,7 @@ public class VirtualMediaPanel extends MediaPanel
      * coordinates before they are dispatched to any of the mouse
      * listeners.
      */
+    @Override
     protected void processMouseMotionEvent (MouseEvent event)
     {
         event.translatePoint(_vbounds.x, _vbounds.y);
@@ -172,13 +174,14 @@ public class VirtualMediaPanel extends MediaPanel
      * coordinates before they are dispatched to any of the mouse
      * listeners.
      */
+    @Override
     protected void processMouseWheelEvent (MouseWheelEvent event)
     {
         event.translatePoint(_vbounds.x, _vbounds.y);
         super.processMouseWheelEvent(event);
     }
 
-    // documentation inherited
+    @Override
     protected void dirtyScreenRect (Rectangle rect)
     {
         // translate the screen rect into happy coordinates
@@ -186,7 +189,7 @@ public class VirtualMediaPanel extends MediaPanel
         _metamgr.getRegionManager().addDirtyRegion(rect);
     }
 
-    // documentation inherited
+    @Override
     public void doLayout ()
     {
         super.doLayout();
@@ -196,7 +199,7 @@ public class VirtualMediaPanel extends MediaPanel
         findRootBounds();
     }
 
-    // documentation inherited
+    @Override
     public void setBounds (int x, int y, int width, int height)
     {
         super.setBounds(x, y, width, height);
@@ -230,7 +233,7 @@ public class VirtualMediaPanel extends MediaPanel
         FrameManager.getRoot(this, _abounds);
     }
 
-    // documentation inherited
+    @Override
     protected void didTick (long tickStamp)
     {
         super.didTick(tickStamp);
@@ -356,7 +359,7 @@ public class VirtualMediaPanel extends MediaPanel
         setViewLocation(nx, ny);
     }
 
-    // documentation inherited
+    @Override
     protected void paint (Graphics2D gfx, Rectangle[] dirty)
     {
         // if we're scrolling, go ahead and do the business
@@ -410,14 +413,14 @@ public class VirtualMediaPanel extends MediaPanel
         gfx.translate(_vbounds.x, _vbounds.y);
     }
 
-    // documentation inherited
+    @Override
     protected void constrainToBounds (Rectangle dirty)
     {
         SwingUtilities.computeIntersection(
             _vbounds.x, _vbounds.y, getWidth(), getHeight(), dirty);
     }
 
-    // documentation inherited
+    @Override
     protected void paintBehind (Graphics2D gfx, Rectangle dirtyRect)
     {
         // if we have a background image specified, tile it!

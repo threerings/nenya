@@ -94,7 +94,7 @@ public class KeyboardManagerApp
         public static final String MOVE_RIGHT = "move_right";
         public static final String DROP = "drop";
 
-        // documentation inherited
+        @Override
         public boolean handleAction (ActionEvent action)
         {
             String cmd = action.getActionCommand();

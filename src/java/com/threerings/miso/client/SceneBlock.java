@@ -473,9 +473,7 @@ public class SceneBlock
         }
     }
 
-    /**
-     * Returns a string representation of this instance.
-     */
+    @Override
     public String toString ()
     {
         int bx = MathUtil.floorDiv(_bounds.x, _bounds.width);

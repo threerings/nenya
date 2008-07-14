@@ -37,7 +37,7 @@ public class BlankAnimation extends Animation
         _duration = duration;
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         if (_start == 0) {
@@ -49,7 +49,7 @@ public class BlankAnimation extends Animation
         _finished = (timestamp - _start >= _duration);
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         if (_start > 0) {
@@ -57,7 +57,7 @@ public class BlankAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         // nothing doing

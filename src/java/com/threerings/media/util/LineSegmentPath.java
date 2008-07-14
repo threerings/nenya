@@ -320,7 +320,7 @@ public class LineSegmentPath
         }
     }
 
-    // documentation inherited
+    @Override
     public String toString ()
     {
         return StringUtil.toString(_nodes.iterator());

@@ -56,9 +56,7 @@ public class ActionSequence implements Serializable
      * action. */
     public int[] orients;
 
-    /**
-     * Returns a string representation of this action sequence.
-     */
+    @Override
     public String toString ()
     {
         return "[name=" + name + ", framesPerSecond=" + framesPerSecond +

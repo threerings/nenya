@@ -27,7 +27,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import com.threerings.media.image.ImageManager;
-import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
@@ -48,31 +47,33 @@ public class CompositedShadowImage extends CompositedMultiFrameImage
             AlphaComposite.SRC_OVER, shadowAlpha);
     }
 
-    // documentation inherited from interface
+    @Override
     public int getWidth (int index) {
         return _sources[0].frames.getFrames(_orient).getWidth(index);
     }
 
-    // documentation inherited from interface
+    @Override
     public int getHeight (int index) {
         return _sources[0].frames.getFrames(_orient).getHeight(index);
     }
 
+    @Override
     public int getXOrigin (int index) {
         return _sources[0].frames.getXOrigin(_orient, index);
     }
 
+    @Override
     public int getYOrigin (int index) {
         return _sources[0].frames.getYOrigin(_orient, index);
     }
     
-    @Override // documentation inherited
+    @Override
     protected CompositedMirage createCompositedMirage (int index) {
         // Always use a CompositedVolatileMirage for ShadowImage since we need to draw into it.
         return new CompositedVolatileMirage(index);
     }
 
-    // documentation inherited from interface
+    @Override
     public void paintFrame (Graphics2D g, int index, int x, int y) {
         Composite ocomp = g.getComposite();
         g.setComposite(_shadowAlpha);
@@ -80,12 +81,12 @@ public class CompositedShadowImage extends CompositedMultiFrameImage
         g.setComposite(ocomp);
     }
 
-    // documentation inherited from interface
+    @Override
     public boolean hitTest (int index, int x, int y) {
         return _images[index].hitTest(x + getX(index), y + getY(index));
     }
 
-    // documentation inherited from interface TrimmedMultiFrameImage
+    @Override
     public void getTrimmedBounds (int index, Rectangle bounds) {
         bounds.setBounds(getX(index), getY(index), _images[index].getWidth(),
             _images[index].getHeight());

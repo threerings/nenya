@@ -65,9 +65,7 @@ public class TrailingAverage
         return (end > 0) ? (value/end) : 0;
     }
 
-    /**
-     * Returns the current trailing average value as a string.
-     */
+    @Override
     public String toString ()
     {
         return Integer.toString(value());

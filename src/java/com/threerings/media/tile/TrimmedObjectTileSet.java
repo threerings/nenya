@@ -42,13 +42,13 @@ import com.threerings.media.tile.util.TileSetTrimmer;
 public class TrimmedObjectTileSet extends TileSet
     implements RecolorableTileSet
 {
-    // documentation inherited
+    @Override
     public int getTileCount ()
     {
         return _bounds.length;
     }
 
-    // documentation inherited
+    @Override
     public Rectangle computeTileBounds (int tileIndex, Rectangle bounds)
     {
         bounds.setBounds(_bounds[tileIndex]);
@@ -120,7 +120,7 @@ public class TrimmedObjectTileSet extends TileSet
         return _ometrics[tileIdx].height;
     }
 
-    // documentation inherited
+    @Override
     protected Colorization[] getColorizations (int tileIndex, Colorizer rizer)
     {
         Colorization[] zations = null;
@@ -133,13 +133,13 @@ public class TrimmedObjectTileSet extends TileSet
         return zations;
     }
 
-    // documentation inherited
+    @Override
     protected Tile createTile ()
     {
         return new ObjectTile();
     }
 
-    // documentation inherited
+    @Override
     protected void initTile (Tile tile, int tileIndex, Colorization[] zations)
     {
         super.initTile(tile, tileIndex, zations);
@@ -157,7 +157,7 @@ public class TrimmedObjectTileSet extends TileSet
         }
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
@@ -272,7 +272,7 @@ public class TrimmedObjectTileSet extends TileSet
         /** The constraints associated with this object. */
         public String[] constraints;
 
-        /** Generates a string representation of this instance. */
+        @Override
         public String toString ()
         {
             return StringUtil.fieldsToString(this);

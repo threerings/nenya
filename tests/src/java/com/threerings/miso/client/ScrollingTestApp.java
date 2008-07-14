@@ -138,6 +138,7 @@ public class ScrollingTestApp
         }
 
         _ship.addSpriteObserver(new PathAdapter() {
+            @Override
             public void pathCompleted (Sprite sprite, Path path, long when) {
                 // keep scrolling for a spell
                 if (++_sidx < DX.length) {

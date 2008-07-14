@@ -53,10 +53,12 @@ public class SimpleMisoSceneRuleSet implements NestableRuleSet
         // this creates the appropriate instance when we encounter our
         // prefix tag
         dig.addRule(prefix, new Rule() {
+            @Override
             public void begin (String namespace, String name,
                                Attributes attributes) throws Exception {
                 digester.push(createMisoSceneModel());
             }
+            @Override
             public void end (String namespace, String name) throws Exception {
                 digester.pop();
             }
@@ -78,6 +80,7 @@ public class SimpleMisoSceneRuleSet implements NestableRuleSet
         dig.addRule(prefix + "/objects/object", new SetPropertyFieldsRule());
 
         dig.addRule(prefix + "/objects", new CallMethodSpecialRule() {
+            @Override
             public void parseAndSet (String bodyText, Object target)
                 throws Exception
             {

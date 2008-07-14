@@ -31,7 +31,7 @@ public class LinearTimeFunction extends TimeFunction
         super(start, end, duration);
     }
 
-    // documentation inherited
+    @Override
     protected int computeValue (int dt)
     {
         int dv = (_end - _start);

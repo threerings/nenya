@@ -50,10 +50,7 @@ public class SpriteAnimation extends Animation
         _sprite.addSpriteObserver(this);
     }
 
-    /**
-     * Derived classes can override tick if they want to end the animation
-     * in some other way than the sprite completing a path.
-     */
+    @Override
     public void tick (long timestamp)
     {
         // start the sprite moving on its path on our first tick
@@ -64,7 +61,7 @@ public class SpriteAnimation extends Animation
         }
     }    
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         // nothing for now
@@ -82,7 +79,7 @@ public class SpriteAnimation extends Animation
         _finished = true;
     }
 
-    // documentation inherited
+    @Override
     protected void didFinish (long tickStamp)
     {
         super.didFinish(tickStamp);

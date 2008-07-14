@@ -105,14 +105,14 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         objectInfo = new ObjectInfo[0];
     }
 
-    // documentation inherited
+    @Override
     public int getBaseTileId (int col, int row)
     {
         int index = getIndex(col, row);
         return (index == -1) ? 0 : baseTileIds[index];
     }
 
-    // documentation inherited
+    @Override
     public boolean setBaseTile (int fqBaseTileId, int col, int row)
     {
         int index = getIndex(col, row);
@@ -123,7 +123,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         return true;
     }
 
-    // documentation inherited
+    @Override
     public void getObjects (Rectangle region, ObjectSet set)
     {
         // first look for intersecting interesting objects
@@ -143,7 +143,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         }
     }
 
-    // documentation inherited
+    @Override
     public boolean addObject (ObjectInfo info)
     {
         if (info.isInteresting()) {
@@ -156,7 +156,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         return true;
     }
 
-    // documentation inherited
+    @Override
     public void updateObject (ObjectInfo info)
     {
         // not efficient, but this is only done in editing situations
@@ -164,7 +164,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         addObject(info);
     }
 
-    // documentation inherited
+    @Override
     public boolean removeObject (ObjectInfo info)
     {
         // look for it in the interesting info array
@@ -186,7 +186,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         return false;
     }
 
-    // documentation inherited
+    @Override
     public Object clone ()
     {
         SimpleMisoSceneModel model = (SimpleMisoSceneModel)super.clone();

@@ -35,7 +35,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 
-import com.threerings.util.FileUtil;
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
 import com.threerings.media.tile.TileSet;
@@ -59,7 +58,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
         super(configPath);
     }
 
-    @Override // documentation inherited
+    @Override
     public boolean createBundle (
         File target, TileSetBundle bundle, ImageProvider improv, String imageBase, long newestMod)
         throws IOException
@@ -164,7 +163,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
         }
     }
 
-    @Override // documentation inherited
+    @Override
     protected boolean skipIfTargetNewer ()
     {
         // We have to check modification later on a file-by-file basis, so cannot skip.

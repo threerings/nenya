@@ -313,6 +313,7 @@ public class TileSetBundler
 
         // create an image provider for loading our tileset images
         SimpleCachingImageProvider improv = new SimpleCachingImageProvider() {
+            @Override
             protected BufferedImage loadImage (String path)
                 throws IOException {
                 return ImageIO.read(new File(bundleDesc.getParent(), path));
@@ -486,6 +487,7 @@ public class TileSetBundler
             this.ruleset = ruleset;
         }
 
+        @Override
         public String toString ()
         {
             return "[path=" + path + ", ruleset=" + ruleset + "]";

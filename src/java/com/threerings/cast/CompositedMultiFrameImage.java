@@ -277,13 +277,13 @@ public class CompositedMultiFrameImage
             return bounds;
         }
         
-        // documentation inherited
+        @Override
         protected int getTransparency ()
         {
             return Transparency.BITMASK;
         }
 
-        // documentation inherited
+        @Override
         protected void refreshVolatileImage ()
         {
 //             long start = System.currentTimeMillis();

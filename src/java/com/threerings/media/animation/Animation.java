@@ -62,7 +62,7 @@ public abstract class Animation extends AbstractMedia
         _finished = false;
     }
 
-    // documentation inherited
+    @Override
     public void setLocation (int x, int y)
     {
         if (_bounds.x == x && _bounds.y == y) {
@@ -79,7 +79,7 @@ public abstract class Animation extends AbstractMedia
         invalidateAfterChange(obounds);
     }
 
-    // documentation inherited
+    @Override
     protected void willStart (long tickStamp)
     {
         super.willStart(tickStamp);

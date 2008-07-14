@@ -47,9 +47,7 @@ public class PathNode
         this.dir = dir;
     }
 
-    /**
-     * Return a string representation of this path node.
-     */
+    @Override
     public String toString ()
     {
         StringBuilder buf = new StringBuilder();

@@ -27,7 +27,6 @@ import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 

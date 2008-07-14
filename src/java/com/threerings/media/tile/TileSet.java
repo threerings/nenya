@@ -35,9 +35,6 @@ import com.threerings.media.image.Colorization;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.image.BufferedMirage;
-import com.threerings.media.util.MultiFrameImage;
-import com.threerings.media.util.MultiFrameImageImpl;
-
 import static com.threerings.media.Log.log;
 
 /**
@@ -350,9 +347,7 @@ public abstract class TileSet
         }
     }
 
-    /**
-     * Generates a string representation of the tileset information.
-     */
+    @Override
     public String toString ()
     {
         StringBuilder buf = new StringBuilder("[");

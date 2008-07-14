@@ -26,8 +26,6 @@ import java.awt.Graphics2D;
 
 import com.samskivert.util.RandomUtil;
 
-import static com.threerings.media.Log.log;
-
 /**
  * Bobble a Pathable.
  */

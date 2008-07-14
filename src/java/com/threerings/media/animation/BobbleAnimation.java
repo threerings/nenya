@@ -60,7 +60,7 @@ public class BobbleAnimation extends Animation
         _duration = duration;
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         // grab our ending time on our first tick
@@ -78,19 +78,19 @@ public class BobbleAnimation extends Animation
         _y = _sy + dy * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _end += timeDelta;
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         _image.paint(gfx, _x, _y);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

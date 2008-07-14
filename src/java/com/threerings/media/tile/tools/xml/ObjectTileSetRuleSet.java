@@ -60,7 +60,7 @@ import com.threerings.util.DirectionUtil;
  */
 public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 {
-    // documentation inherited
+    @Override
     public void addRuleInstances (Digester digester)
     {
         super.addRuleInstances(digester);
@@ -68,6 +68,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
         digester.addRule(
             _path + "/objectWidths",
             new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] widths = StringUtil.parseIntArray(bodyText);
@@ -78,6 +79,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
         digester.addRule(
             _path + "/objectHeights",
             new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] heights = StringUtil.parseIntArray(bodyText);
@@ -87,6 +89,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         digester.addRule(
             _path + "/xOrigins", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] xorigins = StringUtil.parseIntArray(bodyText);
@@ -96,6 +99,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         digester.addRule(
             _path + "/yOrigins", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] yorigins = StringUtil.parseIntArray(bodyText);
@@ -106,6 +110,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
         digester.addRule(
             _path + "/priorities",
             new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     byte[] prios = StringUtil.parseByteArray(bodyText);
@@ -115,6 +120,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         digester.addRule(
             _path + "/zations", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     String[] zations = StringUtil.parseStringArray(bodyText);
@@ -124,6 +130,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         digester.addRule(
             _path + "/xspots", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     short[] xspots = StringUtil.parseShortArray(bodyText);
@@ -133,6 +140,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         digester.addRule(
             _path + "/yspots", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     short[] yspots = StringUtil.parseShortArray(bodyText);
@@ -142,6 +150,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 
         digester.addRule(
             _path + "/sorients", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     ObjectTileSet set = (ObjectTileSet)target;
@@ -167,6 +176,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
         digester.addRule(
             _path + "/constraints",
                 new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     String[] constrs = StringUtil.parseStringArray(
@@ -180,7 +190,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
             });
     }
 
-    // documentation inherited
+    @Override
     protected Class getTileSetClass ()
     {
         return ObjectTileSet.class;

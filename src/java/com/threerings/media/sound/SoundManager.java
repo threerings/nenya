@@ -92,7 +92,7 @@ public class SoundManager
             _strname = strname;
         }
 
-        @Override // documentation inherited
+        @Override
         public String toString ()
         {
             return _strname;
@@ -343,6 +343,7 @@ public class SoundManager
             final SoundKey skey = new SoundKey(PLAY, pkgPath, key, delay, _clipVol, pan);
             if (delay > 0) {
                 new Interval() {
+                    @Override
                     public void expired () {
                         addToPlayQueue(skey);
                     }
@@ -420,6 +421,7 @@ public class SoundManager
         // and if we need a new thread, add it
         if (add) {
             Thread spooler = new Thread("narya SoundManager line spooler") {
+                @Override
                 public void run () {
                     spoolerRun();
                 }
@@ -993,19 +995,19 @@ public class SoundManager
             return (stamp + MAX_SOUND_DELAY < System.currentTimeMillis());
         }
 
-        @Override // documentation inherited
+        @Override
         public String toString ()
         {
             return "SoundKey{cmd=" + cmd + ", pkgPath=" + pkgPath + ", key=" + key + "}";
         }
 
-        @Override // documentation inherited
+        @Override
         public int hashCode ()
         {
             return pkgPath.hashCode() ^ key.hashCode();
         }
 
-        @Override // documentation inherited
+        @Override
         public boolean equals (Object o)
         {
             if (o instanceof SoundKey) {

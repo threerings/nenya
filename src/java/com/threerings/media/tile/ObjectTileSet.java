@@ -200,7 +200,7 @@ public class ObjectTileSet extends SwissArmyTileSet
         return _zations;
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
@@ -216,7 +216,7 @@ public class ObjectTileSet extends SwissArmyTileSet
         buf.append(", constraints=").append(StringUtil.toString(_constraints));
     }
 
-    // documentation inherited
+    @Override
     protected Colorization[] getColorizations (int tileIndex, Colorizer rizer)
     {
         Colorization[] zations = null;
@@ -229,13 +229,13 @@ public class ObjectTileSet extends SwissArmyTileSet
         return zations;
     }
 
-    // documentation inherited
+    @Override
     protected Tile createTile ()
     {
         return new ObjectTile();
     }
 
-    // documentation inherited
+    @Override
     protected void initTile (Tile tile, int tileIndex, Colorization[] zations)
     {
         super.initTile(tile, tileIndex, zations);

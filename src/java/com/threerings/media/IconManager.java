@@ -24,10 +24,6 @@ package com.threerings.media;
 import java.io.IOException;
 import java.util.Properties;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 

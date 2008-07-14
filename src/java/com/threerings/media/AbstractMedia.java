@@ -235,9 +235,7 @@ public abstract class AbstractMedia
         }
     }
 
-    /**
-     * Dumps this media to a String object.
-     */
+    @Override
     public String toString ()
     {
         StringBuilder buf = new StringBuilder();

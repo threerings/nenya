@@ -141,7 +141,7 @@ public class CharacterSprite extends ImageSprite
         updateActionFrames();
     }
 
-    // documentation inherited
+    @Override
     public void setOrientation (int orient)
     {
         if (orient < 0 || orient >= FINE_DIRECTION_COUNT) {
@@ -158,7 +158,7 @@ public class CharacterSprite extends ImageSprite
         }
     }
 
-    // documentation inherited
+    @Override
     public boolean hitTest (int x, int y)
     {
         // the irect adjustments are to account for our decorations
@@ -166,7 +166,7 @@ public class CharacterSprite extends ImageSprite
                 _frames.hitTest(_frameIdx, x - _ibounds.x, y - _ibounds.y));
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         // composite our action frames if something since the last call to
@@ -178,14 +178,14 @@ public class CharacterSprite extends ImageSprite
         compositeActionFrames();
     }
 
-    // documentation inherited
+    @Override
     public void cancelMove ()
     {
         super.cancelMove();
         halt();
     }
 
-    // documentation inherited
+    @Override
     public void pathBeginning ()
     {
         super.pathBeginning();
@@ -195,14 +195,14 @@ public class CharacterSprite extends ImageSprite
         setActionSequence(getFollowingPathAction());
     }
 
-    // documentation inherited
+    @Override
     public void pathCompleted (long timestamp)
     {
         super.pathCompleted(timestamp);
         halt();
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         if (_frames != null) {
@@ -289,7 +289,7 @@ public class CharacterSprite extends ImageSprite
         }
     }
 
-    // documentation inherited
+    @Override
     protected boolean tickPath (long tickStamp)
     {
         boolean moved = super.tickPath(tickStamp);
@@ -299,7 +299,7 @@ public class CharacterSprite extends ImageSprite
         return moved;
     }
 
-    // documentation inherited
+    @Override
     protected void updateRenderOrigin ()
     {
         super.updateRenderOrigin();
@@ -309,7 +309,7 @@ public class CharacterSprite extends ImageSprite
         _ibounds.y = _bounds.y + _ioff.y;
     }
 
-    // documentation inherited
+    @Override
     protected void accomodateFrame (int frameIdx, int width, int height)
     {
         // this will update our width and height

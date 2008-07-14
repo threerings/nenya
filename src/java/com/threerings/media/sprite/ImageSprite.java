@@ -89,7 +89,7 @@ public class ImageSprite extends Sprite
         this(new SingleFrameImageImpl(image));
     }
 
-    // documentation inherited
+    @Override
     protected void init ()
     {
         super.init();
@@ -104,6 +104,7 @@ public class ImageSprite extends Sprite
      * and if there is a non-transparent pixel in the sprite's image at
      * the specified point, false if not.
      */
+    @Override
     public boolean hitTest (int x, int y)
     {
         // first check to see that we're in the sprite's bounds and that
@@ -239,7 +240,7 @@ public class ImageSprite extends Sprite
         _bounds.height = height;
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         if (_frames != null) {
@@ -258,7 +259,7 @@ public class ImageSprite extends Sprite
         }
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         // if we have no frames, we're hosulated (to use a Greenwell term)
@@ -303,7 +304,7 @@ public class ImageSprite extends Sprite
         setFrameIndex(nfidx, false);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

@@ -51,7 +51,7 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
         _tilesetPath = tilesetPath;
     }
     
-    // documentation inherited
+    @Override
     public void addRuleInstances (Digester digester)
     {
         super.addRuleInstances(digester);
@@ -62,7 +62,7 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
             new Class[] { java.lang.Integer.TYPE });
     }
 
-    // documentation inherited
+    @Override
     public boolean isValid (Object target)
     {
         UniformTileSet set = (UniformTileSet)target;
@@ -85,7 +85,7 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
         return valid;
     }
 
-    // documentation inherited
+    @Override
     protected Class getTileSetClass ()
     {
         return UniformTileSet.class;

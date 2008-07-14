@@ -21,15 +21,12 @@
 
 package com.threerings.media.image;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
-
-import static com.threerings.media.Log.log;
 
 /**
  * Draws a mirage combined with an arbitrary AffineTransform.

@@ -50,6 +50,7 @@ public class ResolutionView extends JPanel
         _metrics = panel.getSceneMetrics();
     }
 
+    @Override
     public Dimension getPreferredSize ()
     {
         return new Dimension(TILE_SIZE*MAX_WIDTH, TILE_SIZE*MAX_HEIGHT);
@@ -102,6 +103,7 @@ public class ResolutionView extends JPanel
         glyph.color = color;
     }
 
+    @Override
     public synchronized void paintComponent (Graphics g)
     {
         super.paintComponent(g);

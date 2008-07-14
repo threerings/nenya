@@ -30,10 +30,6 @@ import java.awt.Window;
 
 import javax.swing.JFrame;
 
-import com.samskivert.util.StringUtil;
-
-import static com.threerings.media.Log.log;
-
 /**
  * When using the {@link FrameManager}, one must use this top-level frame
  * class.
@@ -89,6 +85,7 @@ public class ManagedJFrame extends JFrame
      * We catch paint requests and forward them on to the repaint
      * infrastructure.
      */
+    @Override
     public void paint (Graphics g)
     {
         update(g);
@@ -98,6 +95,7 @@ public class ManagedJFrame extends JFrame
      * We catch update requests and forward them on to the repaint
      * infrastructure.
      */
+    @Override
     public void update (Graphics g)
     {
         Shape clip = g.getClip();

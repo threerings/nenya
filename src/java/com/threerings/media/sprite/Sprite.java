@@ -32,8 +32,6 @@ import com.threerings.media.AbstractMedia;
 import com.threerings.media.util.Path;
 import com.threerings.media.util.Pathable;
 
-import static com.threerings.media.Log.log;
-
 /**
  * The sprite class represents a single moveable object in an animated
  * view. A sprite has a position and orientation within the view, and can
@@ -147,7 +145,7 @@ public abstract class Sprite extends AbstractMedia
         return _orient;
     }
 
-    // documentation inherited
+    @Override
     public void setLocation (int x, int y)
     {
         if (x == _ox && y == _oy) {
@@ -169,7 +167,7 @@ public abstract class Sprite extends AbstractMedia
         invalidateAfterChange(obounds);
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         gfx.drawRect(_bounds.x, _bounds.y, _bounds.width-1, _bounds.height-1);
@@ -296,7 +294,7 @@ public abstract class Sprite extends AbstractMedia
         }
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         tickPath(tickStamp);
@@ -325,7 +323,7 @@ public abstract class Sprite extends AbstractMedia
         return (_path == null) ? true : _path.tick(this, tickStamp);
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         // fast forward any path we're following
@@ -363,7 +361,7 @@ public abstract class Sprite extends AbstractMedia
         removeObserver(obs);
     }
 
-    // documentation inherited
+    @Override
     public void viewLocationDidChange (int dx, int dy)
     {
         if (_renderOrder >= HUD_LAYER) {
@@ -371,14 +369,14 @@ public abstract class Sprite extends AbstractMedia
         }
     }
 
-    // documentation inherited
+    @Override
     protected void shutdown ()
     {
         super.shutdown();
         cancelMove(); // cancel any active path
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

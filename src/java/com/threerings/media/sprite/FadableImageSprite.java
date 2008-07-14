@@ -108,7 +108,7 @@ public class FadableImageSprite extends OrientableImageSprite
         _fadeInDuration = _fadeOutDuration = (long)(pathDuration * fadePortion);
     }
 
-    // Documentation inherited.
+    @Override
     public void tick (long tickStamp)
     {
         super.tick(tickStamp);
@@ -158,7 +158,7 @@ public class FadableImageSprite extends OrientableImageSprite
         }
     }
 
-    // Documentation inherited.
+    @Override
     public void pathCompleted (long timestamp)
     {
         super.pathCompleted(timestamp);
@@ -183,7 +183,7 @@ public class FadableImageSprite extends OrientableImageSprite
         _fadeOutDuration = -1;
     }
 
-    // Documentation inherited.
+    @Override
     public void paint (Graphics2D gfx)
     {
         if (_alphaComposite.getAlpha() < 1.0f) {

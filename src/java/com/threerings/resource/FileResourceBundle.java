@@ -78,13 +78,13 @@ public class FileResourceBundle extends ResourceBundle
         }
     }
 
-    @Override // from ResourceBundle
+    @Override
     public String getIdent ()
     {
         return _source.getPath();
     }
 
-    @Override // from ResourceBundle
+    @Override
     public InputStream getResource (String path)
         throws IOException
     {
@@ -94,7 +94,7 @@ public class FileResourceBundle extends ResourceBundle
         return (rfile == null) ? null : new FileInputStream(rfile);
     }
 
-    @Override // from ResourceBundle
+    @Override
     public BufferedImage getImageResource (String path, boolean useFastIO)
         throws IOException
     {
@@ -282,9 +282,7 @@ public class FileResourceBundle extends ResourceBundle
         }
     }
 
-    /**
-     * Returns a string representation of this resource bundle.
-     */
+    @Override
     public String toString ()
     {
         try {
@@ -384,6 +382,7 @@ public class FileResourceBundle extends ResourceBundle
 
         // add a hook to blow away the temp directory when we exit
         Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
             public void run () {
                 log.info("Clearing narya temp cache '" + _tmpdir + "'.");
                 FileUtil.recursiveDelete(_tmpdir);

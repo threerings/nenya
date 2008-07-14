@@ -77,7 +77,7 @@ public class LinePath extends TimedPath
         }
     }
 
-    // documentation inherited
+    @Override
     public void init (Pathable pable, long timestamp)
     {
         super.init(pable, timestamp);
@@ -119,7 +119,7 @@ public class LinePath extends TimedPath
         gfx.drawLine(_source.x, _source.y, _dest.x, _dest.y);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);

@@ -60,6 +60,7 @@ public class PathSequence
     {
         _pable = pable;
         _pableRep = new DelegatingPathable(_pable) {
+            @Override
             public void pathCompleted (long timeStamp) {
                 long initStamp;
                 // if we just finished a timed path, we can figure out how

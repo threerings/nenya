@@ -55,6 +55,7 @@ public class CompositedActionFrames
             this.frames = frames;
         }
 
+        @Override
         public String toString () {
             return ccomp + ":" + frames;
         }
@@ -162,12 +163,14 @@ public class CompositedActionFrames
             return CompositedActionFrames.this;
         }
 
+        @Override
         public boolean equals (Object other) {
             CompositedFramesKey okey = (CompositedFramesKey)other;
             return ((getOwner() == okey.getOwner()) &&
                     (_orient == okey._orient));
         }
 
+        @Override
         public int hashCode () {
             return CompositedActionFrames.this.hashCode() ^ _orient;
         }

@@ -33,7 +33,6 @@ import com.samskivert.util.SortableArrayList;
 
 import com.threerings.media.AbstractMedia;
 import com.threerings.media.AbstractMediaManager;
-import com.threerings.media.MediaHost;
 
 /**
  * The sprite manager manages the sprites running about in the game.
@@ -247,7 +246,7 @@ public class SpriteManager extends AbstractMediaManager
 //        }
 //    }
 
-    @Override // from AbstractMediaManager
+    @Override
     protected SortableArrayList<? extends AbstractMedia> createMediaList ()
     {
         return (_sprites = new SortableArrayList<Sprite>());

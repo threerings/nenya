@@ -118,15 +118,13 @@ public class Colorization
         return true;
     }
 
-    // documentation inherited
+    @Override
     public int hashCode ()
     {
         return colorizationId ^ rootColor.hashCode();
     }
 
-    /**
-     * Compares this colorization to another based on id.
-     */
+    @Override
     public boolean equals (Object other)
     {
         if (other instanceof Colorization) {
@@ -136,9 +134,7 @@ public class Colorization
         }
     }
 
-    /**
-     * Returns a string representation of this colorization.
-     */
+    @Override
     public String toString ()
     {
         return String.valueOf(colorizationId);

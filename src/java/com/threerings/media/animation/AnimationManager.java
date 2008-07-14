@@ -25,7 +25,6 @@ import com.samskivert.util.SortableArrayList;
 
 import com.threerings.media.AbstractMedia;
 import com.threerings.media.AbstractMediaManager;
-import com.threerings.media.MediaHost;
 
 /**
  * Manages a collection of animations, ticking them when the animation manager itself is ticked and
@@ -51,7 +50,7 @@ public class AnimationManager extends AbstractMediaManager
         removeMedia(anim);
     }
 
-    @Override // from AbstractMediaManager
+    @Override
     protected void tickAllMedia (long tickStamp)
     {
         super.tickAllMedia(tickStamp);
@@ -70,7 +69,7 @@ public class AnimationManager extends AbstractMediaManager
         }
     }
 
-    @Override // from AbstractMediaManager
+    @Override
     protected SortableArrayList<? extends AbstractMedia> createMediaList ()
     {
         return (_anims = new SortableArrayList<Animation>());

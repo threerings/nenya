@@ -59,6 +59,7 @@ public class AnimationArranger
 
     /** Automatically removes avoid animations when they're done. */
     protected AnimationAdapter _avoidAnimObs = new AnimationAdapter() {
+        @Override
         public void animationCompleted (Animation anim, long when) {
             if (!_avoidAnims.remove(anim)) {
                 log.warning("Couldn't remove avoid animation?! " + anim + ".");

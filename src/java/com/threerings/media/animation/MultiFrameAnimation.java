@@ -64,17 +64,14 @@ public class MultiFrameAnimation extends Animation
         reset();
     }
 
-    // documentation inherited
+    @Override
     public Rectangle getBounds ()
     {
         // fill in the bounds with our current animation frame's bounds
         return _bounds;
     }
 
-    /**
-     * If this animation has run to completion, it can be reset to prepare
-     * it for another go.
-     */
+    @Override
     public void reset ()
     {
         super.reset();
@@ -90,7 +87,7 @@ public class MultiFrameAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         int fidx = _seeker.tick(tickStamp);
@@ -119,13 +116,13 @@ public class MultiFrameAnimation extends Animation
         _bounds.height = _frames.getHeight(_fidx);
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         _frames.paintFrame(gfx, _fidx, _bounds.x, _bounds.y);
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _seeker.fastForward(timeDelta);

@@ -21,14 +21,10 @@
 
 package com.threerings.media.animation;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import com.threerings.media.effects.FadeEffect;
-
-import static com.threerings.media.Log.log;
 
 /**
  * An animation that displays an image fading from one alpha level to
@@ -52,7 +48,7 @@ public abstract class FadeAnimation extends Animation
         _effect = new FadeEffect(alpha, step, target);
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         if (_effect.tick(timestamp)) {
@@ -61,7 +57,7 @@ public abstract class FadeAnimation extends Animation
         }
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         _effect.beforePaint(gfx);
@@ -69,7 +65,7 @@ public abstract class FadeAnimation extends Animation
         _effect.afterPaint(gfx);
     }
 
-    // documentation inherited
+    @Override
     protected void willStart (long tickStamp)
     {
         super.willStart(tickStamp);

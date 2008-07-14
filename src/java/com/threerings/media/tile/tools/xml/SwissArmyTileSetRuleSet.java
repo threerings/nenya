@@ -55,13 +55,14 @@ import static com.threerings.media.Log.log;
  */
 public class SwissArmyTileSetRuleSet extends TileSetRuleSet
 {
-    // documentation inherited
+    @Override
     public void addRuleInstances (Digester digester)
     {
         super.addRuleInstances(digester);
 
         digester.addRule(
             _path + "/widths", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] widths = StringUtil.parseIntArray(bodyText);
@@ -71,6 +72,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
 
         digester.addRule(
             _path + "/heights", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] heights = StringUtil.parseIntArray(bodyText);
@@ -81,6 +83,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
         digester.addRule(
             _path + "/tileCounts",
             new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] tileCounts = StringUtil.parseIntArray(bodyText);
@@ -90,6 +93,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
 
         digester.addRule(
             _path + "/offsetPos", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] values = StringUtil.parseIntArray(bodyText);
@@ -105,6 +109,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
 
         digester.addRule(
             _path + "/gapSize", new CallMethodSpecialRule() {
+                @Override
                 public void parseAndSet (String bodyText, Object target)
                 {
                     int[] values = StringUtil.parseIntArray(bodyText);
@@ -119,7 +124,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
             });
     }
 
-    // documentation inherited
+    @Override
     public boolean isValid (Object target)
     {
         SwissArmyTileSet set = (SwissArmyTileSet)target;
@@ -149,7 +154,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
         return valid;
     }
 
-    // documentation inherited
+    @Override
     protected Class getTileSetClass ()
     {
         return SwissArmyTileSet.class;

@@ -48,7 +48,7 @@ public class BlendAnimation extends Animation
         _tfunc = new LinearTimeFunction(0, 100  * fades, delay * fades);
     }
 
-    // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         // check to see if our blend level has changed
@@ -64,13 +64,13 @@ public class BlendAnimation extends Animation
         invalidate();
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _tfunc.fastForward(timeDelta);
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         int index = _level / 100;

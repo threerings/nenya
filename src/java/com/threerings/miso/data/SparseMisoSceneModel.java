@@ -223,6 +223,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
             return true;
         }
 
+        @Override
         public Object clone () {
             try {
                 Section section = (Section)super.clone();
@@ -237,6 +238,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
             }
         }
 
+        @Override
         public String toString () {
             return ((width == 0) ? "<no bounds>" :
                     (width + "x" + (baseTileIds.length/width))) +
@@ -330,33 +332,33 @@ public class SparseMisoSceneModel extends MisoSceneModel
         }
     }
 
-    // documentation inherited
+    @Override
     public int getBaseTileId (int col, int row)
     {
         Section sec = getSection(col, row, false);
         return (sec == null) ? -1 : sec.getBaseTileId(col, row);
     }
 
-    // documentation inherited
+    @Override
     public boolean setBaseTile (int fqBaseTileId, int col, int row)
     {
         getSection(col, row, true).setBaseTile(col, row, fqBaseTileId);
         return true;
     }
 
-    // documentation inherited
+    @Override
     public void setDefaultBaseTileSet (int tileSetId)
     {
         defTileSet = tileSetId;
     }
 
-    // documentation inherited
+    @Override
     public int getDefaultBaseTileSet ()
     {
         return defTileSet;
     }
 
-    // documentation inherited
+    @Override
     public void getObjects (Rectangle region, ObjectSet set)
     {
         int minx = MathUtil.floorDiv(region.x, swidth)*swidth;
@@ -373,13 +375,13 @@ public class SparseMisoSceneModel extends MisoSceneModel
         }
     }
 
-    // documentation inherited
+    @Override
     public boolean addObject (ObjectInfo info)
     {
         return getSection(info.x, info.y, true).addObject(info);
     }
 
-    // documentation inherited
+    @Override
     public void updateObject (ObjectInfo info)
     {
         // not efficient, but this is only done in editing situations
@@ -387,7 +389,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
         addObject(info);
     }
 
-    // documentation inherited
+    @Override
     public boolean removeObject (ObjectInfo info)
     {
         Section sec = getSection(info.x, info.y, false);
@@ -417,7 +419,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
         return _sections.values().iterator();
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         super.toString(buf);
@@ -449,7 +451,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
         return sect;
     }
 
-    // documentation inherited
+    @Override
     public Object clone ()
     {
         SparseMisoSceneModel model = (SparseMisoSceneModel)super.clone();

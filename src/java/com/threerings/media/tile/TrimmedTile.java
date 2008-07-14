@@ -44,19 +44,19 @@ public class TrimmedTile extends Tile
         _tbounds = tbounds;
     }
 
-    // documentation inherited
+    @Override
     public int getWidth ()
     {
         return _tbounds.width;
     }
 
-    // documentation inherited
+    @Override
     public int getHeight ()
     {
         return _tbounds.height;
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx, int x, int y)
     {
         _mirage.paint(gfx, x + _tbounds.x, y + _tbounds.y);
@@ -71,13 +71,13 @@ public class TrimmedTile extends Tile
         tbounds.setBounds(_tbounds.x, _tbounds.y, _mirage.getWidth(), _mirage.getHeight());
     }
 
-    // documentation inherited
+    @Override
     public boolean hitTest (int x, int y)
     {
         return super.hitTest(x - _tbounds.x, y - _tbounds.y);
     }
 
-    // documentation inherited
+    @Override
     protected void toString (StringBuilder buf)
     {
         buf.append(", tbounds=").append(StringUtil.toString(_tbounds));

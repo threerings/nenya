@@ -35,7 +35,7 @@ import static com.threerings.media.Log.log;
  */
 public class BackFrameManager extends FrameManager
 {
-    // from FrameManager
+    @Override
     protected void paint (long tickStamp)
     {
         // start out assuming we can do an incremental render
@@ -99,13 +99,13 @@ public class BackFrameManager extends FrameManager
         } while (_backimg.contentsLost());
     }
 
-    // from FrameManager
+    @Override
     protected Graphics2D createGraphics ()
     {
         return _backimg.createGraphics();
     }
 
-    // from FrameManager
+    @Override
     protected void restoreFromBack (Rectangle dirty)
     {
         if (_fgfx == null || _backimg == null) {

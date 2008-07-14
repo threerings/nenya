@@ -76,7 +76,7 @@ public class RainAnimation extends Animation
         _duration = duration;
     }
 
-    // documentation inherited
+    @Override
     public void tick (long tickStamp)
     {
         // grab our ending time on our first tick
@@ -96,13 +96,13 @@ public class RainAnimation extends Animation
         invalidate();
     }
 
-    // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         _end += timeDelta;
     }
 
-    // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         gfx.setColor(Color.white);

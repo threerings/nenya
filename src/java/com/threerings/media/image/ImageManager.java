@@ -47,11 +47,13 @@ public class ImageManager
             this.path = path;
         }
 
+        @Override
         public int hashCode ()
         {
             return path.hashCode() ^ daprov.getIdent().hashCode();
         }
 
+        @Override
         public boolean equals (Object other)
         {
             if (other == null || !(other instanceof ImageKey)) {
@@ -63,6 +65,7 @@ public class ImageManager
                     (okey.path.equals(path)));
         }
 
+        @Override
         public String toString ()
         {
             return daprov.getIdent() + ":" + path;
@@ -495,6 +498,7 @@ public class ImageManager
             return usage;
         }
 
+        @Override
         public String toString ()
         {
             return "[key=" + _key + ", wid=" + _source.getWidth() + ", hei=" + _source.getHeight() +

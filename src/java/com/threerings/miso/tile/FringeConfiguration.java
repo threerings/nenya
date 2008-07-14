@@ -62,7 +62,7 @@ public class FringeConfiguration implements Serializable
             return ((base_tsid != 0) && (priority > 0));
         }
 
-        /** Generates a string representation of this instance. */
+        @Override
         public String toString ()
         {
             return "[base_tsid=" + base_tsid + ", priority=" + priority +
@@ -91,7 +91,7 @@ public class FringeConfiguration implements Serializable
             return (fringe_tsid != 0);
         }
 
-        /** Generates a string representation of this instance. */
+        @Override
         public String toString ()
         {
             return "[fringe_tsid=" + fringe_tsid + ", mask=" + mask + "]";

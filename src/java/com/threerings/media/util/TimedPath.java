@@ -71,9 +71,7 @@ public abstract class TimedPath implements Path
         // nothing doing
     }
 
-    /**
-     * Generates a string representation of this instance.
-     */
+    @Override
     public String toString ()
     {
         StringBuilder buf = new StringBuilder("[");

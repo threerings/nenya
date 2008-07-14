@@ -54,7 +54,7 @@ public class DelayPath extends TimedPath
         _source = source;
     }
 
-    // documentation inherited
+    @Override
     public void init (Pathable pable, long timestamp)
     {
         super.init(pable, timestamp);
