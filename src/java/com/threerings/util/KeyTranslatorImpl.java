@@ -69,8 +69,7 @@ public class KeyTranslatorImpl implements KeyTranslator
      * @param repeatDelay the delay in milliseconds before auto-repeating
      * key press events will be generated for the key.
      */
-    public void addPressCommand (
-        int keyCode, String command, int rate, long repeatDelay)
+    public void addPressCommand (int keyCode, String command, int rate, long repeatDelay)
     {
         KeyRecord krec = getKeyRecord(keyCode);
         krec.pressCommand = command;
@@ -80,8 +79,7 @@ public class KeyTranslatorImpl implements KeyTranslator
 
     /**
      * Adds a mapping from a key release to an action command string.
-     * Overwrites any existing mapping that may already have been
-     * registered.
+     * Overwrites any existing mapping that may already have been registered.
      */
     public void addReleaseCommand (int keyCode, String command)
     {
@@ -95,7 +93,7 @@ public class KeyTranslatorImpl implements KeyTranslator
      */
     protected KeyRecord getKeyRecord (int keyCode)
     {
-        KeyRecord krec = (KeyRecord)_keys.get(keyCode);
+        KeyRecord krec = _keys.get(keyCode);
         if (krec == null) {
             krec = new KeyRecord();
             _keys.put(keyCode, krec);
@@ -103,61 +101,59 @@ public class KeyTranslatorImpl implements KeyTranslator
         return krec;
     }
 
-    // documentation inherited
+    // documentation inherited from interface KeyTranslator
     public boolean hasCommand (int keyCode)
     {
         return (_keys.get(keyCode) != null);
     }
 
-    // documentation inherited
+    // documentation inherited from interface KeyTranslator
     public String getPressCommand (int keyCode)
     {
-        KeyRecord krec = (KeyRecord)_keys.get(keyCode);
+        KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? null : krec.pressCommand;
     }
 
-    // documentation inherited
+    // documentation inherited from interface KeyTranslator
     public String getReleaseCommand (int keyCode)
     {
-        KeyRecord krec = (KeyRecord)_keys.get(keyCode);
+        KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? null : krec.releaseCommand;
     }
 
-    // documentation inherited
+    // documentation inherited from interface KeyTranslator
     public int getRepeatRate (int keyCode)
     {
-        KeyRecord krec = (KeyRecord)_keys.get(keyCode);
+        KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? DEFAULT_REPEAT_RATE : krec.repeatRate;
     }
 
-    // documentation inherited
+    // documentation inherited from interface KeyTranslator
     public long getRepeatDelay (int keyCode)
     {
-        KeyRecord krec = (KeyRecord)_keys.get(keyCode);
+        KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? DEFAULT_REPEAT_DELAY : krec.repeatDelay;
     }
 
-    // documentation inherited
-    public Iterator enumeratePressCommands ()
+    // documentation inherited from interface KeyTranslator
+    public Iterator<String> enumeratePressCommands ()
     {
-        ArrayList commands = new ArrayList();
-        Iterator iter = _keys.values().iterator();
-        while (iter.hasNext()) {
-            KeyRecord krec = (KeyRecord)iter.next();
-            commands.add(krec.pressCommand);
+        ArrayList<String> commands = new ArrayList<String>();
+        for (KeyRecord rec : _keys.values()) {
+            commands.add(rec.pressCommand);
         }
+        
         return commands.iterator();
     }
 
-    // documentation inherited
-    public Iterator enumerateReleaseCommands ()
+    // documentation inherited from interface KeyTranslator
+    public Iterator<String> enumerateReleaseCommands ()
     {
-        ArrayList commands = new ArrayList();
-        Iterator iter = _keys.values().iterator();
-        while (iter.hasNext()) {
-            KeyRecord krec = (KeyRecord)iter.next();
-            commands.add(krec.releaseCommand);
+        ArrayList<String> commands = new ArrayList<String>();
+        for (KeyRecord rec : _keys.values()) {
+            commands.add(rec.releaseCommand);
         }
+        
         return commands.iterator();
     }
 
@@ -169,8 +165,7 @@ public class KeyTranslatorImpl implements KeyTranslator
         /** The command to be posted when the key is released. */
         public String releaseCommand;
 
-        /** The rate in presses per second at which the key is to be
-         * auto-repeated. */
+        /** The rate in presses per second at which the key is to be auto-repeated. */
         public int repeatRate;
 
         /** The delay in milliseconds that must expire with the key still
@@ -179,12 +174,11 @@ public class KeyTranslatorImpl implements KeyTranslator
     }
 
     /** The keys for which commands are registered. */
-    protected HashIntMap _keys = new HashIntMap();
+    protected HashIntMap<KeyRecord> _keys = new HashIntMap<KeyRecord>();
 
     /** The default key press repeat rate. */
     protected static final int DEFAULT_REPEAT_RATE = 5;
 
-    /** The default delay in milliseconds before auto-repeated key presses
-     * will begin. */
+    /** The default delay in milliseconds before auto-repeated key presses will begin. */
     protected static final long DEFAULT_REPEAT_DELAY = 500L;
 }

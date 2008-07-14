@@ -47,23 +47,20 @@ import com.threerings.util.keybd.Keyboard;
 import static com.threerings.NenyaLog.log;
 
 /**
- * The keyboard manager observes keyboard actions on a particular
- * component and posts commands associated with the key presses to the
- * {@link Controller} hierarchy.  It allows specifying the key repeat
- * rate, and will begin repeating a key immediately after it is held down
- * rather than depending on the system-specific key repeat delay/rate.
+ * The keyboard manager observes keyboard actions on a particular component and posts commands
+ * associated with the key presses to the {@link Controller} hierarchy.  It allows specifying the
+ * key repeat rate, and will begin repeating a key immediately after it is held down rather than
+ * depending on the system-specific key repeat delay/rate.
  */
 public class KeyboardManager
     implements KeyEventDispatcher, AncestorListener, WindowFocusListener
 {
     /**
-     * An interface to be implemented by those that care to be notified
-     * whenever an event (either a key press or a key release) occurs for
-     * any key while the keyboard manager is active.  We use this custom
-     * interface rather than the more standard {@link
-     * java.awt.event.KeyListener} interface so that we needn't create key
-     * pressed and released event objects each time a (potentially
-     * artificially-generated) event occurs.
+     * An interface to be implemented by those that care to be notified whenever an event (either a
+     * key press or a key release) occurs for any key while the keyboard manager is active.  We use
+     * this custom interface rather than the more standard {@link java.awt.event.KeyListener}
+     * interface so that we needn't create key pressed and released event objects each time a
+     * (potentially artificially-generated) event occurs.
      */
     public interface KeyObserver
     {
@@ -74,9 +71,9 @@ public class KeyboardManager
     }
 
     /**
-     * Constructs a keyboard manager that is initially disabled.  The
-     * keyboard manager should not be enabled until it has been supplied
-     * with a target component and translator via {@link #setTarget}.
+     * Constructs a keyboard manager that is initially disabled.  The keyboard manager should not
+     * be enabled until it has been supplied with a target component and translator via
+     * {@link #setTarget}.
      */
     public KeyboardManager ()
     {
@@ -86,9 +83,8 @@ public class KeyboardManager
     }
 
     /**
-     * Resets the keyboard manager, clearing any target and key translator
-     * in use and disabling the keyboard manager if it is currently
-     * active.
+     * Resets the keyboard manager, clearing any target and key translator in use and disabling the
+     * keyboard manager if it is currently active.
      */
     public void reset ()
     {
@@ -99,13 +95,11 @@ public class KeyboardManager
     }
 
     /**
-     * Initializes the keyboard manager with the supplied target component
-     * and key translator and disables the keyboard manager if it is
-     * currently active.
+     * Initializes the keyboard manager with the supplied target component and key translator and
+     * disables the keyboard manager if it is currently active.
      *
      * @param target the component whose keyboard events are to be observed.
-     * @param xlate the key translator used to map keyboard events to
-     * controller action commands.
+     * @param xlate the key translator used to map keyboard events to controller action commands.
      */
     public void setTarget (JComponent target, KeyTranslator xlate)
     {
@@ -117,8 +111,8 @@ public class KeyboardManager
     }
 
     /**
-     * Registers a key observer that will be notified of all key events
-     * while the keyboard manager is active.
+     * Registers a key observer that will be notified of all key events while the keyboard manager
+     * is active.
      */
     public void registerKeyObserver (KeyObserver obs)
     {
@@ -126,8 +120,8 @@ public class KeyboardManager
     }
 
     /**
-     * Removes the supplied key observer from the list of observers to be
-     * notified of all key events while the keyboard manager is active.
+     * Removes the supplied key observer from the list of observers to be notified of all key
+     * events while the keyboard manager is active.
      */
     public void removeKeyObserver (KeyObserver obs)
     {
@@ -204,9 +198,8 @@ public class KeyboardManager
     }
 
     /**
-     * Sets the expected delay in milliseconds between each key
-     * press/release event the keyboard manager should expect to receive
-     * while a key is repeating.
+     * Sets the expected delay in milliseconds between each key press/release event the keyboard
+     * manager should expect to receive while a key is repeating.
      */
     public void setRepeatDelay (long delay)
     {
@@ -214,21 +207,20 @@ public class KeyboardManager
     }
 
     /**
-     * Releases all keys and ceases any hot repeating action that may be
-     * going on.
+     * Releases all keys and ceases any hot repeating action that may be going on.
      */
     public void releaseAllKeys ()
     {
         long now = System.currentTimeMillis();
-        Iterator iter = _keys.elements();
+        Iterator<KeyInfo> iter = _keys.elements();
         while (iter.hasNext()) {
-            ((KeyInfo)iter.next()).release(now);
+            iter.next().release(now);
         }
     }
 
     /**
-     * Called when the keyboard manager gains focus and should begin
-     * handling keys again if it was previously enabled.
+     * Called when the keyboard manager gains focus and should begin handling keys again if it was
+     * previously enabled.
      */
     protected void gainedFocus ()
     {
@@ -242,8 +234,7 @@ public class KeyboardManager
     }
 
     /**
-     * Called when the keyboard manager loses focus and should cease
-     * handling keys.
+     * Called when the keyboard manager loses focus and should cease handling keys.
      */
     protected void lostFocus ()
     {
@@ -299,7 +290,7 @@ public class KeyboardManager
         boolean hasCommand = _xlate.hasCommand(keyCode);
         if (hasCommand) {
             // get the info object for this key, creating one if necessary
-            KeyInfo info = (KeyInfo)_keys.get(keyCode);
+            KeyInfo info = _keys.get(keyCode);
             if (info == null) {
                 info = new KeyInfo(keyCode);
                 _keys.put(keyCode, info);
@@ -310,8 +301,7 @@ public class KeyboardManager
         }
 
         // notify any key observers of the key press
-        notifyObservers(KeyEvent.KEY_PRESSED, e.getKeyCode(),
-                        RunAnywhere.getWhen(e));
+        notifyObservers(KeyEvent.KEY_PRESSED, e.getKeyCode(), RunAnywhere.getWhen(e));
 
         return hasCommand;
     }
@@ -327,29 +317,25 @@ public class KeyboardManager
         logKey("keyReleased", e);
 
         // get the info object for this key
-        KeyInfo info = (KeyInfo)_keys.get(e.getKeyCode());
+        KeyInfo info = _keys.get(e.getKeyCode());
         if (info != null) {
             // remember the last time we received a key release
             info.setReleaseTime(RunAnywhere.getWhen(e));
         }
 
         // notify any key observers of the key release
-        notifyObservers(KeyEvent.KEY_RELEASED, e.getKeyCode(),
-                        RunAnywhere.getWhen(e));
+        notifyObservers(KeyEvent.KEY_RELEASED, e.getKeyCode(), RunAnywhere.getWhen(e));
 
         return (info != null);
     }
 
     /**
-     * Notifies all registered key observers of the supplied key event.
-     * This method provides a thread-safe manner in which to notify the
-     * observers, which is necessary since the {@link KeyInfo} objects do
-     * various antics from the interval manager thread whilst we may do
-     * other notification from the AWT thread when normal key events are
-     * handled.
+     * Notifies all registered key observers of the supplied key event. This method provides a
+     * thread-safe manner in which to notify the observers, which is necessary since the
+     * {@link KeyInfo} objects do various antics from the interval manager thread whilst we may do
+     * other notification from the AWT thread when normal key events are handled.
      */
-    protected synchronized void notifyObservers (
-        int id, int keyCode, long timestamp)
+    protected synchronized void notifyObservers (int id, int keyCode, long timestamp)
     {
         _keyOp.init(id, keyCode, timestamp);
         _observers.apply(_keyOp);
@@ -362,7 +348,7 @@ public class KeyboardManager
     {
         if (DEBUG_EVENTS) {
             int keyCode = e.getKeyCode();
-            log.info(msg + " [key=" + KeyEvent.getKeyText(keyCode) + "].");
+            log.info(msg, "key", KeyEvent.getKeyText(keyCode));
         }
     }
 
@@ -444,7 +430,7 @@ public class KeyboardManager
                 _scheduled = true;
 
                 if (DEBUG_EVENTS) {
-                    log.info("Pressing key [key=" + _keyText + "].");
+                    log.info("Pressing key", "key", _keyText);
                 }
             }
 
@@ -480,16 +466,15 @@ public class KeyboardManager
             // infrequently.
             if (_lastPress == _lastRelease) {
                 if (DEBUG_EVENTS) {
-                    log.warning("Insta-releasing key due to equal key " +
-                                "press/release times [key=" + _keyText + "].");
+                    log.warning("Insta-releasing key due to equal key press/release times",
+                        "key", _keyText);
                 }
                 release(time);
             }
         }
 
         /**
-         * Releases the key if pressed and cancels any active key repeat
-         * interval.
+         * Releases the key if pressed and cancels any active key repeat interval.
          */
         public synchronized void release (long timestamp)
         {
@@ -499,7 +484,7 @@ public class KeyboardManager
             }
 
             if (DEBUG_EVENTS) {
-                log.info("Releasing key [key=" + _keyText + "].");
+                log.info("Releasing key", "key", _keyText);
             }
 
             // remove the repeat interval
@@ -517,7 +502,7 @@ public class KeyboardManager
             _lastPress = _lastRelease = 0;
         }
 
-        // documentation inherited
+        @Override
         public synchronized void expired ()
         {
             long now = System.currentTimeMillis();
@@ -525,9 +510,8 @@ public class KeyboardManager
             long deltaRelease = now - _lastRelease;
 
             if (KeyboardManager.DEBUG_INTERVAL) {
-                log.info("Interval [key=" + _keyText +
-                         ", deltaPress=" + deltaPress +
-                         ", deltaRelease=" + deltaRelease + "].");
+                log.info("Interval",
+                    "key", _keyText, "deltaPress", deltaPress, "deltaRelease", deltaRelease);
             }
 
             // handle a normal interval where we either (a) create a
@@ -543,8 +527,7 @@ public class KeyboardManager
 //                         _siid = IntervalManager.register(
 //                             this, delay, Long.valueOf(_lastPress), false);
 //                         if (KeyboardManager.DEBUG_INTERVAL) {
-//                             log.info("Registered sub-interval " +
-//                                      "[id=" + _siid + "].");
+//                             log.info("Registered sub-interval", "id", _siid);
 //                         }
 
 //                     } else {
@@ -595,8 +578,7 @@ public class KeyboardManager
         **/
 
         /**
-         * Posts the press command for this key and notifies all key
-         * observers of the key press.
+         * Posts the press command for this key and notifies all key observers of the key press.
          */
         protected void postPress (long timestamp)
         {
@@ -605,8 +587,7 @@ public class KeyboardManager
         }
 
         /**
-         * Posts the release command for this key and notifies all key
-         * observers of the key release.
+         * Posts the release command for this key and notifies all key observers of the key release.
          */
         protected void postRelease (long timestamp)
         {
@@ -614,7 +595,7 @@ public class KeyboardManager
             Controller.postAction(_target, _releaseCommand);
         }
 
-        /** Returns a string representation of the key info object. */
+        @Override
         public String toString ()
         {
             return "[key=" + _keyText + "]";
@@ -649,7 +630,7 @@ public class KeyboardManager
     }
 
     /** An observer operation to notify observers of a key event. */
-    protected static class KeyObserverOp implements ObserverList.ObserverOp
+    protected static class KeyObserverOp implements ObserverList.ObserverOp<KeyObserver>
     {
         /** Initialized the operation with its parameters. */
         public void init (int id, int keyCode, long timestamp)
@@ -660,9 +641,9 @@ public class KeyboardManager
         }
 
         // documentation inherited from interface ObserverList.ObserverOp
-        public boolean apply (Object observer)
+        public boolean apply (KeyObserver observer)
         {
-            ((KeyObserver)observer).handleKeyEvent(_id, _keyCode, _timestamp);
+            observer.handleKeyEvent(_id, _keyCode, _timestamp);
             return true;
         }
 
@@ -690,7 +671,7 @@ public class KeyboardManager
     protected long _repeatDelay = DEFAULT_REPEAT_DELAY;
 
     /** A hashtable mapping key codes to {@link KeyInfo} objects. */
-    protected HashIntMap _keys = new HashIntMap();
+    protected HashIntMap<KeyInfo> _keys = new HashIntMap<KeyInfo>();
 
     /** Whether the keyboard manager currently has the keyboard focus. */
     protected boolean _focus;
@@ -710,13 +691,11 @@ public class KeyboardManager
     protected KeyTranslator _xlate;
 
     /** The list of key observers. */
-    protected ObserverList _observers =
-        new ObserverList(ObserverList.FAST_UNSAFE_NOTIFY);
+    protected ObserverList _observers = new ObserverList(ObserverList.FAST_UNSAFE_NOTIFY);
 
     /** The operation used to notify observers of actual key events. */
     protected KeyObserverOp _keyOp = new KeyObserverOp();
 
-    /** Whether native key auto-repeating was enabled when the keyboard
-     * manager was last enabled. */
+    /** Whether native key auto-repeating was enabled when the keyboard manager was last enabled. */
     protected boolean _nativeRepeat;
 }
