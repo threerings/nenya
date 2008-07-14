@@ -333,7 +333,11 @@ public class MediaContainer extends Sprite
                 } catch (ioe :IOError) {
                     // ignore
                 }
-                loader.unload();
+                try {
+                    loader.unload();
+                } catch (e :Error) {
+                    // ignore
+                }
                 dispatchEvent(new Event(Event.UNLOAD));
 
                 removeChild(loader);
