@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties version="1">
+  <includeClasses>
+    <classEntry path="com.threerings.flash.AlphaFade"/>
+    <classEntry path="com.threerings.flash.Animation"/>
+    <classEntry path="com.threerings.flash.AnimationImpl"/>
+    <classEntry path="com.threerings.flash.AnimationManager"/>
+    <classEntry path="com.threerings.flash.CameraSnapshotter"/>
+    <classEntry path="com.threerings.flash.ClearingTextField"/>
+    <classEntry path="com.threerings.flash.ColorUtil"/>
+    <classEntry path="com.threerings.flash.DisablingButton"/>
+    <classEntry path="com.threerings.flash.DisplayUtil"/>
+    <classEntry path="com.threerings.flash.Easing"/>
+    <classEntry path="com.threerings.flash.FPSDisplay"/>
+    <classEntry path="com.threerings.flash.FilterUtil"/>
+    <classEntry path="com.threerings.flash.FloatingTextAnimation"/>
+    <classEntry path="com.threerings.flash.FrameSprite"/>
+    <classEntry path="com.threerings.flash.GraphicsUtil"/>
+    <classEntry path="com.threerings.flash.ImageUtil"/>
+    <classEntry path="com.threerings.flash.KeyRepeatLimiter"/>
+    <classEntry path="com.threerings.flash.MathUtil"/>
+    <classEntry path="com.threerings.flash.MediaContainer"/>
+    <classEntry path="com.threerings.flash.MenuUtil"/>
+    <classEntry path="com.threerings.flash.SimpleTextButton"/>
+    <classEntry path="com.threerings.flash.Siner"/>
+    <classEntry path="com.threerings.flash.SiningTextAnimation"/>
+    <classEntry path="com.threerings.flash.TextCharAnimation"/>
+    <classEntry path="com.threerings.flash.TextFieldUtil"/>
+    <classEntry path="com.threerings.flash.Vector2"/>
+    <classEntry path="com.threerings.flash.Vector3"/>
+    <classEntry path="com.threerings.flash.VideoDisplayer"/>
+    <classEntry path="com.threerings.flex.AmbidextrousList"/>
+    <classEntry path="com.threerings.flex.ChatControl"/>
+    <classEntry path="com.threerings.flex.ChatDisplayBox"/>
+    <classEntry path="com.threerings.flex.ChatInput"/>
+    <classEntry path="com.threerings.flex.CommandButton"/>
+    <classEntry path="com.threerings.flex.CommandCheckBox"/>
+    <classEntry path="com.threerings.flex.CommandLinkButton"/>
+    <classEntry path="com.threerings.flex.CommandMenu"/>
+    <classEntry path="com.threerings.flex.CursorManager"/>
+    <classEntry path="com.threerings.flex.FlexUtil"/>
+    <classEntry path="com.threerings.flex.FlexWrapper"/>
+    <classEntry path="com.threerings.flex.FunctionEffect"/>
+    <classEntry path="com.threerings.flex.FunctionEffectInstance"/>
+    <classEntry path="com.threerings.flex.GridUtil"/>
+    <classEntry path="com.threerings.flex.KeyboardManager"/>
+    <classEntry path="com.threerings.flex.LabeledSlider"/>
+    <classEntry path="com.threerings.flex.LazyContainer"/>
+    <classEntry path="com.threerings.flex.LazyTabNavigator"/>
+    <classEntry path="com.threerings.flex.PopUpUtil"/>
+    <classEntry path="com.threerings.flex.ScrollBox"/>
+    <classEntry path="com.threerings.flex.menuClasses.CommandListData"/>
+    <classEntry path="com.threerings.flex.menuClasses.CommandMenuItemRenderer"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
