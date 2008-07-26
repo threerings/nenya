@@ -109,7 +109,7 @@ public class SceneBlockResolver extends LoopingThread
             }
 
             // queue it up on the AWT thread to complete its resolution
-            final boolean report = (_queue.size() == 0);
+//             final boolean report = (_queue.size() == 0);
             EventQueue.invokeLater(new Runnable() {
                 public void run () {
                     // let the block's panel know that it is resolved

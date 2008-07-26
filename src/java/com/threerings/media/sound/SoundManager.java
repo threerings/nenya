@@ -675,7 +675,6 @@ public class SoundManager
         throws IOException, UnsupportedAudioFileException
     {
         byte[][] data;
-        boolean verbose = _verbose.getValue();
         synchronized (_clipCache) {
             // if we're testing, clear all non-locked sounds every time
             if (isTesting()) {

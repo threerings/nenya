@@ -114,7 +114,7 @@ public class SpritePanel extends JPanel
     {
         if (_sprite != null) {
             Dimension d = getSize();
-            int swid = _sprite.getWidth(), shei = _sprite.getHeight();
+            int shei = _sprite.getHeight();
             int x = d.width / 2, y = (d.height + shei) / 2;
             _sprite.setLocation(x, y);
         }

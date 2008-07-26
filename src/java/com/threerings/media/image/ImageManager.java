@@ -332,16 +332,12 @@ public class ImageManager
     public Mirage getMirage (ImageKey key, Rectangle bounds, Colorization[] zations)
     {
         BufferedImage src = null;
-
-        float percentageOfDataBuffer = 1;
         if (bounds == null) {
             // if they specified no bounds, we need to load up the raw image and determine its
             // bounds so that we can pass those along to the created mirage
             src = getImage(key, zations);
             bounds = new Rectangle(0, 0, src.getWidth(), src.getHeight());
-
         }
-
         return new CachedVolatileMirage(this, key, bounds, zations);
 
     }

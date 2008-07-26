@@ -122,7 +122,7 @@ public class FastImageIO
             IntBuffer ibuf = mbuf.asIntBuffer();
             int width = ibuf.get();
             int height = ibuf.get();
-            int tpixel = ibuf.get();
+            /* int tpixel = */ ibuf.get();
             int msize = ibuf.get();
 
             if (width > Short.MAX_VALUE || width < 0 ||

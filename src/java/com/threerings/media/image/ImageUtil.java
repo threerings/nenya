@@ -143,13 +143,11 @@ public class ImageUtil
         // convert the colors to HSV
         float[] hsv = new float[3];
         int[] fhsv = new int[3];
-        int tpixel = -1;
         for (int i = 0; i < size; i++) {
             int value = rgbs[i];
 
             // don't fiddle with alpha pixels
             if ((value & 0xFF000000) == 0) {
-                tpixel = i;
                 continue;
             }
 

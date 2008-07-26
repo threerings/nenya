@@ -74,7 +74,6 @@ public class Mp3Player extends MusicPlayer
                     return;
                 }
 
-                AudioFormat sourceFormat = inStream.getFormat();
                 AudioFormat.Encoding targetEnc = AudioFormat.Encoding.PCM_SIGNED;
 
                 inStream = AudioSystem.getAudioInputStream(targetEnc, inStream);

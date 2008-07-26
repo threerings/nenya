@@ -199,7 +199,6 @@ public class BundledTileSetRepository
         throws NoSuchTileSetException, PersistenceException
     {
         waitForBundles();
-        TileSet tset = null;
         Integer tsid = (Integer)_namemap.get(setName);
         if (tsid != null) {
             return getTileSet(tsid.intValue());

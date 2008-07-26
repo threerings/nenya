@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.Iterator;
 
 import com.threerings.resource.FileResourceBundle;
-import com.threerings.resource.ResourceManager;
 import com.threerings.resource.ResourceBundle;
 
 import com.threerings.media.tile.TileSet;
@@ -48,10 +47,6 @@ public class DumpBundle
             System.err.println(usage);
             System.exit(-1);
         }
-
-        // create a resource and image manager in case they want to dump
-        // the tiles
-        ResourceManager rmgr = new ResourceManager("rsrc");
 
         for (int i = 0; i < args.length; i++) {
             // oh the hackery

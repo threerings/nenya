@@ -371,9 +371,7 @@ public class TimerView
         // Add error to the render completion percent if the interpolation
         // hasn't finished yet
         _renderComplete = _complete;
-        float error = _renderOffset;
         if (_renderOffsetTime + _transitionTime > now) {
-
             _renderComplete += _renderOffset *
                 (1f - (now - _renderOffsetTime) / (float) _transitionTime);
             _renderComplete = Math.max(0f, Math.min(1f, _renderComplete));
