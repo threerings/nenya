@@ -35,24 +35,48 @@ public interface KeyTranslator
      * or both.
      */
     public boolean hasCommand (int keyCode);
+    
+    /**
+     * Returns whether there is an action command for the key corresponding to the given character
+     * in the case of a keyTyped event corresponding to it.
+     */
+    public boolean hasCommand (char ch);
 
     /**
      * Returns the action command string associated with a key press of the key corresponding to
      * the given key code, or <code>null</code> if there is no associated command.
      */
     public String getPressCommand (int keyCode);
+    
+    /**
+     * Returns the action command string associated with a key press of the given character,
+     * or <code>null</code> if there is no associated command.
+     */
+    public String getPressCommand (char ch);
 
     /**
      * Returns the action command string associated with a key release of the key corresponding to
      * the given key code, or <code>null</code> if there is no associated command.
      */
     public String getReleaseCommand (int keyCode);
-
+    
+    /**
+     * Returns the action command string associated with a key release of the given character,
+     * or <code>null</code> if there is no associated command.
+     */
+    public String getReleaseCommand (char ch);
+    
     /**
      * Returns the number of times each second that key presses are to be automatically repeated
      * while the key is held down, or <code>0</code> to disable auto-repeat for the key.
      */
     public int getRepeatRate (int keyCode);
+    
+    /**
+     * Returns the number of times each second that key presses are to be automatically repeated
+     * while the key is held down, or <code>0</code> to disable auto-repeat for the key.
+     */
+    public int getRepeatRate (char ch);
 
     /**
      * Returns the delay in milliseconds before generating auto-repeated key press events for the
@@ -60,6 +84,12 @@ public interface KeyTranslator
      */
     public long getRepeatDelay (int keyCode);
 
+    /**
+     * Returns the delay in milliseconds before generating auto-repeated key press events for the
+     * specified key.
+     */
+    public long getRepeatDelay (char ch);
+    
     /**
      * Returns an iterator that iterates over the available press commands.
      */

@@ -21,14 +21,15 @@
 
 package com.threerings.util;
 
+import static com.threerings.NenyaLog.log;
+
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.JComponent;
@@ -41,10 +42,7 @@ import com.samskivert.util.HashIntMap;
 import com.samskivert.util.Interval;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.RunAnywhere;
-
 import com.threerings.util.keybd.Keyboard;
-
-import static com.threerings.NenyaLog.log;
 
 /**
  * The keyboard manager observes keyboard actions on a particular component and posts commands
@@ -78,8 +76,7 @@ public class KeyboardManager
     public KeyboardManager ()
     {
         // capture low-level keyboard events via the keyboard focus manager
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().
-            addKeyEventDispatcher(this);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
     }
 
     /**
@@ -187,9 +184,10 @@ public class KeyboardManager
                 // note whether key auto-repeating was enabled
                 _nativeRepeat = Keyboard.isKeyRepeatEnabled();
 
-                // disable native key auto-repeating so that we can
-                // definitively ascertain key pressed/released events
-                Keyboard.setKeyRepeat(false);
+                // Disable native key auto-repeating so that we can definitively ascertain key
+                // pressed/released events.
+                // Or not, if we've discovered we don't want to.
+                Keyboard.setKeyRepeat(!_shouldDisableNativeRepeat);
             }
         }
 
@@ -270,6 +268,9 @@ public class KeyboardManager
         case KeyEvent.KEY_RELEASED:
             return keyReleased(e);
 
+        case KeyEvent.KEY_TYPED:
+            return keyTyped(e);
+            
         default:
             return false;
         }
@@ -305,7 +306,47 @@ public class KeyboardManager
 
         return hasCommand;
     }
+    
+    /**
+     * Called when Swing notifies us that a key has been typed while the
+     * keyboard manager is active.
+     *
+     * @return true to swallow the key event
+     */
+    protected boolean keyTyped (KeyEvent e)
+    {
+        logKey("keyTyped", e);
 
+        // get the action command associated with this key
+        char keyChar = e.getKeyChar();
+        boolean hasCommand = _xlate.hasCommand(keyChar);
+        if (hasCommand) {
+            // Okay, we're clearly doing actions based on key typing, so we're going to need native
+            // keyboard repeating turned on. Oh well.
+            if (_shouldDisableNativeRepeat) {
+                _shouldDisableNativeRepeat = false;
+            
+                if (Keyboard.isAvailable()) {
+                    Keyboard.setKeyRepeat(!_shouldDisableNativeRepeat);
+                }
+            }
+            
+            KeyInfo info = _chars.get(keyChar);
+            if (info == null) {
+                info = new KeyInfo(keyChar);
+                _keys.put(keyChar, info);
+            }
+            
+            // remember the last time this key was pressed
+            info.setPressTime(RunAnywhere.getWhen(e));
+        }
+
+        // notify any key observers of the key press
+        notifyObservers(KeyEvent.KEY_TYPED, e.getKeyChar(), RunAnywhere.getWhen(e));
+
+        return hasCommand;
+    }
+    
     /**
      * Called when Swing notifies us that a key has been released while
      * the keyboard manager is active.
@@ -406,6 +447,20 @@ public class KeyboardManager
             int rate = _xlate.getRepeatRate(_keyCode);
             _pressDelay = (rate == 0) ? 0 : (1000L / rate);
             _repeatDelay = _xlate.getRepeatDelay(_keyCode);
+        }
+        
+        /**
+         * Constructs a key info object for the given character.
+         */
+        public KeyInfo (char keyChar)
+        {
+            _keyChar = keyChar;
+            _keyText = KeyEvent.getKeyText(_keyChar);
+            _pressCommand = _xlate.getPressCommand(_keyChar);
+            _releaseCommand = _xlate.getReleaseCommand(_keyChar);
+            int rate = _xlate.getRepeatRate(_keyChar);
+            _pressDelay = (rate == 0) ? 0 : (1000L / rate);
+            _repeatDelay = _xlate.getRepeatDelay(_keyChar);
         }
 
         /**
@@ -536,8 +591,15 @@ public class KeyboardManager
 //                     }
 
             } else if (_lastPress != 0 && _pressCommand != null) {
-                // post the key press command again
-                postPress(now);
+                if (_keyCode != KeyEvent.VK_UNDEFINED) {
+                    // post the key press command again
+                    postPress(now);
+                } else {
+                    // We're dealing with a key typed event, so we don't really know what's going
+                    // on, so we'll pretend we released it now, and hope the native keyboard repeat
+                    // takes care of us.
+                    postRelease(now);
+                }
             }
         }
 
@@ -582,7 +644,11 @@ public class KeyboardManager
          */
         protected void postPress (long timestamp)
         {
-            notifyObservers(KeyEvent.KEY_PRESSED, _keyCode, timestamp);
+            if (_keyCode != KeyEvent.VK_UNDEFINED) {
+                notifyObservers(KeyEvent.KEY_PRESSED, _keyCode, timestamp);
+            } else {
+                notifyObservers(KeyEvent.KEY_TYPED, _keyChar, timestamp);
+            }
             Controller.postAction(_target, _pressCommand);
         }
 
@@ -591,7 +657,11 @@ public class KeyboardManager
          */
         protected void postRelease (long timestamp)
         {
-            notifyObservers(KeyEvent.KEY_RELEASED, _keyCode, timestamp);
+            if (_keyCode != KeyEvent.VK_UNDEFINED) {
+                notifyObservers(KeyEvent.KEY_RELEASED, _keyCode, timestamp);
+            } else {
+                // TODO: Something telling observers about our character somehow?
+            }
             Controller.postAction(_target, _releaseCommand);
         }
 
@@ -619,8 +689,11 @@ public class KeyboardManager
         /** A text representation of this key. */
         protected String _keyText;
 
-        /** The key code associated with this key info object. */
-        protected int _keyCode;
+        /** The key code associated with this key info object, if any. */
+        protected int _keyCode = KeyEvent.VK_UNDEFINED;
+        
+        /** The character associated with this key info object, if any. */
+        protected char _keyChar;
 
         /** The milliseconds to sleep between sending repeat key commands. */
         protected long _pressDelay;
@@ -672,6 +745,9 @@ public class KeyboardManager
 
     /** A hashtable mapping key codes to {@link KeyInfo} objects. */
     protected HashIntMap<KeyInfo> _keys = new HashIntMap<KeyInfo>();
+    
+    /** A hashtable mapping characters to {@link KeyInfo} objects. */
+    protected HashMap<Character,KeyInfo> _chars = new HashMap<Character,KeyInfo>();
 
     /** Whether the keyboard manager currently has the keyboard focus. */
     protected boolean _focus;
@@ -698,4 +774,10 @@ public class KeyboardManager
 
     /** Whether native key auto-repeating was enabled when the keyboard manager was last enabled. */
     protected boolean _nativeRepeat;
+    
+    /** Whether we want to disable native key auto-repeating. If we're dealing with wacky keys that
+     * send only key typed events, we might need to fall back to letting that happen so things work
+     * right.
+     */
+    protected boolean _shouldDisableNativeRepeat = true;
 }
