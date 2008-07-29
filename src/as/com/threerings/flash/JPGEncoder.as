@@ -7,17 +7,20 @@
 */
 package com.threerings.flash
 {
-
+    
 import flash.geom.*;
 import flash.display.*;
 import flash.utils.*;
 
 /**
- * Class that converts BitmapData into a valid JPEG
+ * Class for compressing bitmaps into jpegs.  Each instance may only be used for a single image.
+ * When the encoder is constructed, the headers are generated, but no pixel encoding is done.
+ * Subsequent calls to 'process' will encode pixels for a specified length of time.  Once the
+ * encoding is done (determined by process returning true, or a call to isComplete), the jpeg data
+ * can be accessed via getJpeg.
  */		
 public class JPGEncoder
 {
-
 	// Static table initialization
 
 	private var ZigZag:Array = [
@@ -207,39 +210,33 @@ public class JPGEncoder
 		}
 	}
 
-	// IO functions
-
-	private var byteout:ByteArray;
-	private var bytenew:int = 0;
-	private var bytepos:int = 7;
-
 	private function writeBits(bs:BitString):void
 	{
 		var value:int = bs.val;
 		var posval:int = bs.len-1;
 		while ( posval >= 0 ) {
 			if (value & uint(1 << posval) ) {
-				bytenew |= uint(1 << bytepos);
+				_bytenew |= uint(1 << _bytepos);
 			}
 			posval--;
-			bytepos--;
-			if (bytepos < 0) {
-				if (bytenew == 0xFF) {
+			_bytepos--;
+			if (_bytepos < 0) {
+				if (_bytenew == 0xFF) {
 					writeByte(0xFF);
 					writeByte(0);
 				}
 				else {
-					writeByte(bytenew);
+					writeByte(_bytenew);
 				}
-				bytepos=7;
-				bytenew=0;
+				_bytepos=7;
+				_bytenew=0;
 			}
 		}
 	}
 
 	private function writeByte(value:int):void
 	{
-		byteout.writeByte(value);
+		_byteout.writeByte(value);
 	}
 
 	private function writeWord(value:int):void
@@ -542,16 +539,17 @@ public class JPGEncoder
 	}
 
 	/**
-	 * Constructor for JPEGEncoder class
-	 *
-	 * @param quality The quality level between 1 and 100 that detrmines the
-	 * level of compression used in the generated JPEG
-	 * @langversion ActionScript 3.0
-	 * @playerversion Flash 9.0
-	 * @tiptext
+	 * Construct a new JPGEncoder object.
+	 * 
+	 * @param image The image to encode
+	 * @param quality Quality level between 1 and 100 determining the level of compression.s
+	 * @param pixelGranularity The minumum number of pixels to process at a time.
 	 */		
-	public function JPGEncoder(quality:Number = 50)
+	public function JPGEncoder(image :BitmapData, quality :Number = 50, pixelGranularity :int = 100)
 	{
+	    _image = image;
+	    _pixelGranularity = pixelGranularity;
+	    
 		if (quality <= 0) {
 			quality = 1;
 		}
@@ -568,58 +566,138 @@ public class JPGEncoder
 		initHuffmanTbl();
 		initCategoryNumber();
 		initQuantTables(sf);
+		
+		writeHeader();
+		initializeEncoding();	    
 	}
-
+	
 	/**
-	 * Created a JPEG image from the specified BitmapData
-	 *
-	 * @param image The BitmapData that will be converted into the JPEG format.
-	 * @return a ByteArray representing the JPEG encoded image data.
-	 * @langversion ActionScript 3.0
-	 * @playerversion Flash 9.0
-	 * @tiptext
-	 */	
-	public function encode(image:BitmapData):ByteArray
+	 * Write the jpeg header into the byte array for output.
+	 */
+	protected function writeHeader () :void
 	{
 		// Initialize bit writer
-		byteout = new ByteArray();
-		bytenew=0;
-		bytepos=7;
+		_bytenew=0;
+		_bytepos=7;
 
 		// Add JPEG headers
 		writeWord(0xFFD8); // SOI
 		writeAPP0();
 		writeDQT();
-		writeSOF0(image.width,image.height);
+		writeSOF0(_image.width,_image.height);
 		writeDHT();
-		writeSOS();
-
-
-		// Encode 8x8 macroblocks
-		var DCY:Number=0;
-		var DCU:Number=0;
-		var DCV:Number=0;
-		bytenew=0;
-		bytepos=7;
-		for (var ypos:int=0; ypos<image.height; ypos+=8) {
-			for (var xpos:int=0; xpos<image.width; xpos+=8) {
-				RGB2YUV(image, xpos, ypos);
-				DCY = processDU(YDU, fdtbl_Y, DCY, YDC_HT, YAC_HT);
-				DCU = processDU(UDU, fdtbl_UV, DCU, UVDC_HT, UVAC_HT);
-				DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
+		writeSOS();	    
+	}
+	
+	protected function initializeEncoding () :void {
+	    // Encode 8x8 macroblocks
+		_bytenew=0;
+		_bytepos=7;		
+	}
+	
+	/**
+	 * Encode a specified number of pixels.  Fewer pixels will be encoded if the end of the image
+	 * is reached first.
+	 */	
+	protected function encodePixels (unitSize: int) :void
+	{			    		                
+	    for (var count :int = 0; !pixelsDone && count < unitSize; count++) {
+		                
+			RGB2YUV(_image, _xpos, _ypos);
+			_DCY = processDU(YDU, fdtbl_Y, _DCY, YDC_HT, YAC_HT);
+			_DCU = processDU(UDU, fdtbl_UV, _DCU, UVDC_HT, UVAC_HT);
+			_DCV = processDU(VDU, fdtbl_UV, _DCV, UVDC_HT, UVAC_HT);
+				
+            _xpos += 8;
+			
+			// If we have moved past the end of the line, move to the next one.
+			if (_xpos >= _image.width) {
+                _xpos = 0;			
+    			_ypos += 8;
+    			
+    			// If we have moved past the last line, we are done.
+    			if (_ypos >= _image.height) {
+    			    pixelsDone = true;
+    			}		    
 			}
 		}
-
+	}
+	
+	/**
+	 * Add the EOI marker to the end of the buffer, and make the result available to the consumer
+	 * of this class.
+	 */
+	protected function completeEncoding () :void
+	{
 		// Do the bit alignment of the EOI marker
-		if ( bytepos >= 0 ) {
+		if ( _bytepos >= 0 ) {
 			var fillbits:BitString = new BitString();
-			fillbits.len = bytepos+1;
-			fillbits.val = (1<<(bytepos+1))-1;
+			fillbits.len = _bytepos+1;
+			fillbits.val = (1<<(_bytepos+1))-1;
 			writeBits(fillbits);
 		}
 
 		writeWord(0xFFD9); //EOI
-		return byteout;
+		_encodedJpeg = _byteout;	    
 	}
+	
+	/**
+	 * Return true if the encoding is complete.
+	 */
+	public function isComplete () :Boolean
+	{
+	    return null != _encodedJpeg;
+	}
+	
+	/**
+	 * Work on encoding the image for a specified number of milliseconds.  Return true if there
+	 * is no more processing to do.
+	 */
+	public function process (timeSlice :int) :Boolean
+	{	
+	    const endTime :int = getTimer() + timeSlice;
+	    while (! pixelsDone && getTimer() < endTime) {
+	        encodePixels(_pixelGranularity);
+	    }
+	    
+	    if (pixelsDone) {
+	        completeEncoding();
+	        return true;
+	    }
+	    
+	    return false;
+	}
+
+	/**
+	 * Return a byte array containing the encoded jpeg.
+	 */
+	public function getJpeg () :ByteArray
+	{
+	    return _encodedJpeg;
+	}
+    
+    /** The image to encode **/
+    protected var _image :BitmapData;
+
+    /** Byte array to contain the resuling jpg **/
+    protected var _encodedJpeg :ByteArray;
+
+    /** Byte array to contain the jpg while encoding is in progress. **/
+    protected var _byteout :ByteArray = new ByteArray();
+
+	// Used to keep track of the positon of the writer in the byte array
+	protected var _bytenew:int = 0;
+	protected var _bytepos:int = 7;
+
+    // State for the pixel block encoding process
+	protected var _DCY:Number=0;
+	protected var _DCU:Number=0;
+	protected var _DCV:Number=0;
+	protected var _ypos :int = 0;
+	protected var _xpos :int = 0;
+	protected var pixelsDone:Boolean = false;		
+	
+	/** The minumum number of pixels that will be processed at a time. **/
+	protected var _pixelGranularity :int;
 }
 }
