@@ -60,7 +60,8 @@ public class BundledComponentRepositoryTest extends TestCase
 
             Iterator iter = repo.enumerateComponentClasses();
             while (iter.hasNext()) {
-                ComponentClass cclass = (ComponentClass)iter.next();
+                // ComponentClass cclass = (ComponentClass)
+                iter.next();
 //                 System.out.println("IDs [" + cclass + "]: " +
 //                                    StringUtil.toString(
 //                                        repo.enumerateComponentIds(cclass)));
