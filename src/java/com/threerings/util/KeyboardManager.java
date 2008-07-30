@@ -38,10 +38,12 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 import com.samskivert.swing.Controller;
+import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.Interval;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.RunAnywhere;
+import com.threerings.media.MediaPrefs;
 import com.threerings.util.keybd.Keyboard;
 
 /**
@@ -387,7 +389,7 @@ public class KeyboardManager
      */
     protected void logKey (String msg, KeyEvent e)
     {
-        if (DEBUG_EVENTS) {
+        if (DEBUG_EVENTS || _debugTyping.getValue()) {
             int keyCode = e.getKeyCode();
             log.info(msg, "key", KeyEvent.getKeyText(keyCode));
         }
@@ -455,12 +457,21 @@ public class KeyboardManager
         public KeyInfo (char keyChar)
         {
             _keyChar = keyChar;
-            _keyText = KeyEvent.getKeyText(_keyChar);
+            _keyText = "" +_keyChar;
             _pressCommand = _xlate.getPressCommand(_keyChar);
             _releaseCommand = _xlate.getReleaseCommand(_keyChar);
             int rate = _xlate.getRepeatRate(_keyChar);
             _pressDelay = (rate == 0) ? 0 : (1000L / rate);
             _repeatDelay = _xlate.getRepeatDelay(_keyChar);
+        }
+        
+        /**
+         * Returns true if we're based off a character & key typed events rather than a keycode
+         * and key pressed/released events.
+         */
+        public boolean isCharacterBased ()
+        {
+            return _keyCode == KeyEvent.VK_UNDEFINED;
         }
 
         /**
@@ -468,6 +479,19 @@ public class KeyboardManager
          */
         public synchronized void setPressTime (long time)
         {
+            if (_debugTyping.getValue()) {
+                log.info("setPressTime",
+                    "time", time,
+                    "this", this,
+                    "lastPress", _lastPress,
+                    "lastRelease", _lastRelease,
+                    "pressCommand", _pressCommand,
+                    "releaseCommand", _releaseCommand,
+                    "pressDelay", _pressDelay,
+                    "repeatDelay", _repeatDelay,
+                    "scheduled", _scheduled);
+            }
+            
             if (_lastPress == 0 && _pressCommand != null) {
                 // post the initial key press command
                 postPress(time);
@@ -500,6 +524,19 @@ public class KeyboardManager
         {
             release(time);
             _lastRelease = time;
+            
+            if (_debugTyping.getValue()) {
+                log.info("setReleaseTime",
+                    "time", time,
+                    "this", this,
+                    "lastPress", _lastPress,
+                    "lastRelease", _lastRelease,
+                    "pressCommand", _pressCommand,
+                    "releaseCommand", _releaseCommand,
+                    "pressDelay", _pressDelay,
+                    "repeatDelay", _repeatDelay,
+                    "scheduled", _scheduled);
+            }
 
             // handle key release events received so quickly after the key
             // press event that the press/release times are exactly equal
@@ -533,6 +570,19 @@ public class KeyboardManager
          */
         public synchronized void release (long timestamp)
         {
+            if (_debugTyping.getValue()) {
+                log.info("release",
+                    "time", timestamp,
+                    "this", this,
+                    "lastPress", _lastPress,
+                    "lastRelease", _lastRelease,
+                    "pressCommand", _pressCommand,
+                    "releaseCommand", _releaseCommand,
+                    "pressDelay", _pressDelay,
+                    "repeatDelay", _repeatDelay,
+                    "scheduled", _scheduled);
+            }
+            
             // bail if we're not currently pressed
             if (_lastPress == 0) {
                 return;
@@ -563,12 +613,27 @@ public class KeyboardManager
             long now = System.currentTimeMillis();
             long deltaPress = now - _lastPress;
             long deltaRelease = now - _lastRelease;
+            
+            if (_debugTyping.getValue()) {
+                log.info("expired",
+                    "time", now,
+                    "this", this,
+                    "lastPress", _lastPress,
+                    "lastRelease", _lastRelease,
+                    "pressCommand", _pressCommand,
+                    "releaseCommand", _releaseCommand,
+                    "pressDelay", _pressDelay,
+                    "repeatDelay", _repeatDelay,
+                    "scheduled", _scheduled,
+                    "deltaPress", deltaPress,
+                    "deltaRelease", deltaRelease);
+            }
 
             if (KeyboardManager.DEBUG_INTERVAL) {
                 log.info("Interval",
                     "key", _keyText, "deltaPress", deltaPress, "deltaRelease", deltaRelease);
             }
-
+            
             // handle a normal interval where we either (a) create a
             // sub-interval if we can't yet determine definitively
             // whether the key is still down, (b) cease repeating if
@@ -590,10 +655,12 @@ public class KeyboardManager
                     release(now);
 //                     }
 
-            } else if (_lastPress != 0 && _pressCommand != null) {
-                if (_keyCode != KeyEvent.VK_UNDEFINED) {
-                    // post the key press command again
-                    postPress(now);
+            } else if (_lastPress != 0) {
+                if (!isCharacterBased()) {
+                    if (_pressCommand != null) {
+                        // post the key press command again
+                        postPress(now);
+                    }
                 } else {
                     // We're dealing with a key typed event, so we don't really know what's going
                     // on, so we'll pretend we released it now, and hope the native keyboard repeat
@@ -644,7 +711,20 @@ public class KeyboardManager
          */
         protected void postPress (long timestamp)
         {
-            if (_keyCode != KeyEvent.VK_UNDEFINED) {
+            if (_debugTyping.getValue()) {
+                log.info("postPress",
+                    "time", timestamp,
+                    "this", this,
+                    "lastPress", _lastPress,
+                    "lastRelease", _lastRelease,
+                    "pressCommand", _pressCommand,
+                    "releaseCommand", _releaseCommand,
+                    "pressDelay", _pressDelay,
+                    "repeatDelay", _repeatDelay,
+                    "scheduled", _scheduled);
+            }
+            
+            if (!isCharacterBased()) {
                 notifyObservers(KeyEvent.KEY_PRESSED, _keyCode, timestamp);
             } else {
                 notifyObservers(KeyEvent.KEY_TYPED, _keyChar, timestamp);
@@ -657,7 +737,20 @@ public class KeyboardManager
          */
         protected void postRelease (long timestamp)
         {
-            if (_keyCode != KeyEvent.VK_UNDEFINED) {
+            if (_debugTyping.getValue()) {
+                log.info("postRelease",
+                    "time", timestamp,
+                    "this", this,
+                    "lastPress", _lastPress,
+                    "lastRelease", _lastRelease,
+                    "pressCommand", _pressCommand,
+                    "releaseCommand", _releaseCommand,
+                    "pressDelay", _pressDelay,
+                    "repeatDelay", _repeatDelay,
+                    "scheduled", _scheduled);
+            }
+            
+            if (!isCharacterBased()) {
                 notifyObservers(KeyEvent.KEY_RELEASED, _keyCode, timestamp);
             } else {
                 // TODO: Something telling observers about our character somehow?
@@ -668,7 +761,7 @@ public class KeyboardManager
         @Override
         public String toString ()
         {
-            return "[key=" + _keyText + "]";
+            return "[key=" + _keyText + ", charBased=" + isCharacterBased() + "]";
         }
 
         /** True if we are a scheduled interval. */
@@ -780,4 +873,9 @@ public class KeyboardManager
      * right.
      */
     protected boolean _shouldDisableNativeRepeat = true;
+    
+    /** A debug hook that toggles excessive logging to help debug keyTyped behavior. */
+    protected static RuntimeAdjust.BooleanAdjust _debugTyping = new RuntimeAdjust.BooleanAdjust(
+        "Toggles key typed debugging", "nerya.util.keyboard",
+        MediaPrefs.config, false);
 }

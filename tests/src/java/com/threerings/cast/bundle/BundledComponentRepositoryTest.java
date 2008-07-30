@@ -24,7 +24,6 @@ package com.threerings.cast.bundle;
 import java.awt.Component;
 import java.util.Iterator;
 
-import com.threerings.cast.ComponentClass;
 import com.threerings.media.image.ClientImageManager;
 import com.threerings.resource.ResourceManager;
 
