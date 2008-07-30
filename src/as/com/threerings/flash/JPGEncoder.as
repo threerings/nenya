@@ -20,7 +20,7 @@ import flash.utils.*;
  * can be accessed via getJpeg.
  */		
 public class JPGEncoder
-{
+{    
 	// Static table initialization
 
 	private var ZigZag:Array = [
@@ -700,4 +700,13 @@ public class JPGEncoder
 	/** The minumum number of pixels that will be processed at a time. **/
 	protected var _pixelGranularity :int;
 }
+}
+
+/**
+ * Helper class originally separate 
+ */
+class BitString
+{
+	public var len:int = 0;
+	public var val:int = 0;
 }
