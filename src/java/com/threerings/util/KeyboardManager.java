@@ -336,7 +336,7 @@ public class KeyboardManager
             KeyInfo info = _chars.get(keyChar);
             if (info == null) {
                 info = new KeyInfo(keyChar);
-                _keys.put(keyChar, info);
+                _chars.put(keyChar, info);
             }
             
             // remember the last time this key was pressed
@@ -497,7 +497,7 @@ public class KeyboardManager
                 postPress(time);
             }
 
-            if (!_scheduled && _pressDelay > 0) {
+            if (!_scheduled && (_pressDelay > 0 || isCharacterBased())) {
                 // register an interval to post the key press command
                 // until the key is decidedly released
                 if (_repeatDelay > 0) {
@@ -634,26 +634,10 @@ public class KeyboardManager
                     "key", _keyText, "deltaPress", deltaPress, "deltaRelease", deltaRelease);
             }
             
-            // handle a normal interval where we either (a) create a
-            // sub-interval if we can't yet determine definitively
-            // whether the key is still down, (b) cease repeating if
-            // we're certain the key is now up, or (c) repeat the key
+            // cease repeating if we're certain the key is now up, or repeat the key
             // command if we're certain the key is still down
             if (_lastRelease != _lastPress) {
-//                     if (deltaRelease < _repeatDelay) {
-//                         // register a one-shot sub-interval to
-//                         // definitively check whether the key was released
-//                         long delay = _repeatDelay - deltaRelease;
-//                         _siid = IntervalManager.register(
-//                             this, delay, Long.valueOf(_lastPress), false);
-//                         if (KeyboardManager.DEBUG_INTERVAL) {
-//                             log.info("Registered sub-interval", "id", _siid);
-//                         }
-
-//                     } else {
-                    // we know the key was released, so cease repeating
-                    release(now);
-//                     }
+                release(now);
 
             } else if (_lastPress != 0) {
                 if (!isCharacterBased()) {
@@ -665,46 +649,10 @@ public class KeyboardManager
                     // We're dealing with a key typed event, so we don't really know what's going
                     // on, so we'll pretend we released it now, and hope the native keyboard repeat
                     // takes care of us.
-                    postRelease(now);
-                }
-            }
-        }
-
-/*
- * Old stuff- sub interval stuff was commented out prior to my
- * reworking of Interval, I'll be damned if I'm going to convert this
- * code that wasn't even being used.
-            } else if (id == _siid) {
-                // handle the sub-interval that checks whether the key has
-                // really been released since the normal interval expired
-                // at an inopportune time for a definitive check
-
-                // clear out the non-recurring sub-interval identifier
-                _siid = -1;
-
-                // make sure the key hasn't been pressed again since the
-                // sub-interval was registered
-                if (_lastPress != ((Long)arg).longValue()) {
-                    if (KeyboardManager.DEBUG_INTERVAL) {
-                        log.warning("Key pressed since sub-interval was " +
-                                    "registered, aborting release check " +
-                                    "[key=" + _keyText + "].");
-                    }
-                    return;
-                }
-
-                // provide the last word on whether the key was released
-                if ((_lastRelease != _lastPress) &&
-                    deltaRelease >= _repeatDelay) {
                     release(now);
-
-                } else if (_pressCommand != null) {
-                    // post the key command again
-                    postPress(now);
                 }
             }
         }
-        **/
 
         /**
          * Posts the press command for this key and notifies all key observers of the key press.
@@ -750,11 +698,7 @@ public class KeyboardManager
                     "scheduled", _scheduled);
             }
             
-            if (!isCharacterBased()) {
-                notifyObservers(KeyEvent.KEY_RELEASED, _keyCode, timestamp);
-            } else {
-                // TODO: Something telling observers about our character somehow?
-            }
+            notifyObservers(KeyEvent.KEY_RELEASED, _keyCode, timestamp);
             Controller.postAction(_target, _releaseCommand);
         }
 
@@ -876,6 +820,6 @@ public class KeyboardManager
     
     /** A debug hook that toggles excessive logging to help debug keyTyped behavior. */
     protected static RuntimeAdjust.BooleanAdjust _debugTyping = new RuntimeAdjust.BooleanAdjust(
-        "Toggles key typed debugging", "nerya.util.keyboard",
+        "Toggles key typed debugging", "nenya.util.keyboard",
         MediaPrefs.config, false);
 }
