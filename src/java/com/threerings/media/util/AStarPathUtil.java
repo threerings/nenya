@@ -408,7 +408,7 @@ public class AStarPathUtil
      * A class that represents a single traversable node in the tile array
      * along with its current A*-specific search information.
      */
-    protected static class Node implements Comparable
+    protected static class Node implements Comparable<Node>
     {
         /** The node coordinates. */
         public int x, y;
@@ -435,9 +435,9 @@ public class AStarPathUtil
             id = _nextid++;
         }
 
-        public int compareTo (Object o)
+        public int compareTo (Node o)
         {
-            int bf = ((Node)o).f;
+            int bf = o.f;
 
             // since the set contract is fulfilled using the equality results
             // returned here, and we'd like to allow multiple nodes with
@@ -446,7 +446,7 @@ public class AStarPathUtil
             // unique node id since it will return a consistent ordering for
             // the objects.
             if (f == bf) {
-                return (this == o) ? 0 : (id - ((Node)o).id);
+                return (this == o) ? 0 : (id - o.id);
             }
 
             return f - bf;

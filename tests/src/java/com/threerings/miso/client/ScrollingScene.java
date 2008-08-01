@@ -49,10 +49,10 @@ public class ScrollingScene extends MisoSceneModel
     {
         // locate the water tileset
         TileSetRepository tsrepo = ctx.getTileManager().getTileSetRepository();
-        Iterator iter = tsrepo.enumerateTileSets();
+        Iterator<TileSet> iter = tsrepo.enumerateTileSets();
         String tsname = null;
         while (iter.hasNext()) {
-            TileSet tset = (TileSet)iter.next();
+            TileSet tset = iter.next();
             // yay for built-in regex support!
             if (tset.getName().matches(".*[Ww]ater.*") &&
                 tset instanceof BaseTileSet) {

@@ -24,6 +24,7 @@ package com.threerings.cast.bundle;
 import java.awt.Component;
 import java.util.Iterator;
 
+import com.threerings.cast.ComponentClass;
 import com.threerings.media.image.ClientImageManager;
 import com.threerings.resource.ResourceManager;
 
@@ -57,7 +58,7 @@ public class BundledComponentRepositoryTest extends TestCase
 //             System.out.println("Action sets: " + StringUtil.toString(
 //                                    repo._actionSets.values().iterator()));
 
-            Iterator iter = repo.enumerateComponentClasses();
+            Iterator<ComponentClass> iter = repo.enumerateComponentClasses();
             while (iter.hasNext()) {
                 // ComponentClass cclass = (ComponentClass)
                 iter.next();

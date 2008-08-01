@@ -339,18 +339,16 @@ public class RecolorImage extends JPanel
             }
 
             _classList.removeAllItems();
-            Iterator iter = _colRepo.enumerateClasses();
-            ArrayList names = new ArrayList();
+            Iterator<ColorPository.ClassRecord> iter = _colRepo.enumerateClasses();
+            ArrayList<String> names = new ArrayList<String>();
             while (iter.hasNext()) {
-                String str = ((ColorPository.ClassRecord)iter.next()).name;
+                String str = iter.next().name;
                 names.add(str);
             }
 
             Collections.sort(names);
-
-            iter = names.iterator();
-            while (iter.hasNext()) {
-                _classList.addItem(iter.next());
+            for (String name : names) {
+                _classList.addItem(name);
             }
 
             _classList.setSelectedIndex(0);

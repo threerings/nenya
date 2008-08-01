@@ -42,7 +42,8 @@ public class AnimationArranger
     public void positionAvoidAnimation (Animation anim, Rectangle viewBounds)
     {
         Rectangle abounds = new Rectangle(anim.getBounds());
-        ArrayList avoidables = (ArrayList) _avoidAnims.clone();
+        @SuppressWarnings("unchecked") ArrayList<Animation> avoidables = 
+            (ArrayList<Animation>) _avoidAnims.clone();
         // if we are able to place it somewhere, do so
         if (SwingUtil.positionRect(abounds, viewBounds, avoidables)) {
             anim.setLocation(abounds.x, abounds.y);
@@ -55,7 +56,7 @@ public class AnimationArranger
     }
 
     /** The animations that other animations may wish to avoid. */
-    protected ArrayList _avoidAnims = new ArrayList();
+    protected ArrayList<Animation> _avoidAnims = new ArrayList<Animation>();
 
     /** Automatically removes avoid animations when they're done. */
     protected AnimationAdapter _avoidAnimObs = new AnimationAdapter() {

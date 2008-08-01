@@ -21,7 +21,8 @@
 
 package com.threerings.cast;
 
-import com.samskivert.util.LRUHashMap;
+import java.util.Map;
+
 import com.samskivert.util.StringUtil;
 
 import com.threerings.media.image.ImageManager;
@@ -66,8 +67,9 @@ public class CompositedActionFrames
      * source frames and colorization configuration. The actual component
      * frame images will not be composited until they are requested.
      */
-    public CompositedActionFrames (ImageManager imgr, LRUHashMap frameCache,
-                                   String action, ComponentFrames[] sources)
+    public CompositedActionFrames (
+        ImageManager imgr, Map<CompositedFramesKey, CompositedMultiFrameImage> frameCache,
+        String action, ComponentFrames[] sources)
     {
         // sanity check
         if (sources == null || sources.length == 0) {
@@ -98,7 +100,7 @@ public class CompositedActionFrames
     {
         _key.setOrient(orient);
         CompositedMultiFrameImage cmfi =
-            (CompositedMultiFrameImage)_frameCache.get(_key);
+            _frameCache.get(_key);
         if (cmfi == null) {
             cmfi = createFrames(orient);
             _frameCache.put(new CompositedFramesKey(orient), cmfi);
@@ -183,7 +185,7 @@ public class CompositedActionFrames
     protected ImageManager _imgr;
 
     /** Used to cache our composited action frame images. */
-    protected LRUHashMap _frameCache;
+    protected Map<CompositedFramesKey, CompositedMultiFrameImage> _frameCache;
 
     /** The action for which we're compositing frames. */
     protected String _action;

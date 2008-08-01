@@ -501,14 +501,13 @@ public class SceneBlock
      * Links this block to its neighbors; informs neighboring blocks of
      * object coverage.
      */
-    protected void update (IntMap blocks)
+    protected void update (IntMap<SceneBlock> blocks)
     {
         boolean recover = false;
 
         // link up to our neighbors
         for (int ii = 0; ii < DX.length; ii++) {
-            SceneBlock neigh = (SceneBlock)
-                blocks.get(neighborKey(DX[ii], DY[ii]));
+            SceneBlock neigh = blocks.get(neighborKey(DX[ii], DY[ii]));
             if (neigh != _neighbors[ii]) {
                 _neighbors[ii] = neigh;
                 // if we're linking up to a neighbor for the first time;
@@ -546,14 +545,14 @@ public class SceneBlock
     /**
      * Sets the footprint of this object tile
      */
-    protected void setCovered (IntMap blocks, SceneObject scobj)
+    protected void setCovered (IntMap<SceneBlock> blocks, SceneObject scobj)
     {
         int endx = scobj.info.x - scobj.tile.getBaseWidth() + 1;
         int endy = scobj.info.y - scobj.tile.getBaseHeight() + 1;
 
         for (int xx = scobj.info.x; xx >= endx; xx--) {
             for (int yy = scobj.info.y; yy >= endy; yy--) {
-                SceneBlock block = (SceneBlock)blocks.get(blockKey(xx, yy));
+                SceneBlock block = blocks.get(blockKey(xx, yy));
                 if (block != null) {
                     block.setCovered(xx, yy);
                 }

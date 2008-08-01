@@ -56,14 +56,14 @@ public class ComponentPanel extends JPanel
      */
     protected void addClassEditors (BuilderModel model, String cprefix)
     {
-        List classes = model.getComponentClasses();
+        List<ComponentClass> classes = model.getComponentClasses();
         int size = classes.size();
         for (int ii = 0; ii < size; ii++) {
-            ComponentClass cclass = (ComponentClass)classes.get(ii);
+            ComponentClass cclass = classes.get(ii);
             if (!cclass.name.startsWith(cprefix)) {
                 continue;
             }
-            List ccomps = model.getComponents(cclass);
+            List<Integer> ccomps = model.getComponents(cclass);
             if (ccomps.size() > 0) {
                 add(new ClassEditor(model, cclass, ccomps));
             } else {

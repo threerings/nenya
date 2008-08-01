@@ -30,6 +30,7 @@ import com.samskivert.util.StringUtil;
 import com.samskivert.xml.CallMethodSpecialRule;
 
 import com.threerings.media.tile.SwissArmyTileSet;
+import com.threerings.media.tile.TileSet;
 
 import static com.threerings.media.Log.log;
 
@@ -155,7 +156,7 @@ public class SwissArmyTileSetRuleSet extends TileSetRuleSet
     }
 
     @Override
-    protected Class getTileSetClass ()
+    protected Class<? extends TileSet> getTileSetClass ()
     {
         return SwissArmyTileSet.class;
     }

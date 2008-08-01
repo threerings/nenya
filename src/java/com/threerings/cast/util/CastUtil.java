@@ -46,7 +46,7 @@ public class CastUtil
         String gender, ComponentRepository crepo)
     {
         // get all available classes
-        ArrayList classes = new ArrayList();
+        ArrayList<ComponentClass> classes = new ArrayList<ComponentClass>();
         for (int i = 0; i < CLASSES.length; i++) {
             String cname = gender + "/" + CLASSES[i];
             ComponentClass cclass = crepo.getComponentClass(cname);
@@ -59,7 +59,7 @@ public class CastUtil
             }
 
             // make sure there are some components in this class
-            Iterator iter = crepo.enumerateComponentIds(cclass);
+            Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
             if (!iter.hasNext()) {
                 log.info("Skipping class for which we have no components " +
                          "[class=" + cclass + "].");
@@ -73,17 +73,17 @@ public class CastUtil
         int size = classes.size();
         int components[] = new int[size];
         for (int ii = 0; ii < size; ii++) {
-            ComponentClass cclass = (ComponentClass)classes.get(ii);
+            ComponentClass cclass = classes.get(ii);
 
             // get the components available for this class
-            ArrayList choices = new ArrayList();
-            Iterator iter = crepo.enumerateComponentIds(cclass);
+            ArrayList<Integer> choices = new ArrayList<Integer>();
+            Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
             CollectionUtil.addAll(choices, iter);
 
             // choose a random component
             if (choices.size() > 0) {
                 int idx = RandomUtil.getInt(choices.size());
-                components[ii] = ((Integer)choices.get(idx)).intValue();
+                components[ii] = choices.get(idx).intValue();
             } else {
                 log.info("Have no components in class [class=" + cclass + "].");
             }

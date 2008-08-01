@@ -24,6 +24,7 @@ package com.threerings.media.tile;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 
 import com.samskivert.util.LRUHashMap;
 
@@ -42,7 +43,7 @@ public abstract class SimpleCachingImageProvider implements ImageProvider
     // documentation inherited from interface
     public BufferedImage getTileSetImage (String path, Colorization[] zations)
     {
-        BufferedImage image = (BufferedImage)_cache.get(path);
+        BufferedImage image = _cache.get(path);
         if (image == null) {
             try {
                 image = loadImage(path);
@@ -69,5 +70,5 @@ public abstract class SimpleCachingImageProvider implements ImageProvider
     protected abstract BufferedImage loadImage (String path)
         throws IOException;
 
-    protected LRUHashMap _cache = new LRUHashMap(10);
+    protected Map<String, BufferedImage> _cache = new LRUHashMap<String, BufferedImage>(10);
 }

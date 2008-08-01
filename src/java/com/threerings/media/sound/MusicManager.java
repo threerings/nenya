@@ -195,7 +195,7 @@ public class MusicManager
         }
         String music = names[RandomUtil.getInt(names.length)];
 
-        Class playerClass = getMusicPlayerClass(music);
+        Class<?> playerClass = getMusicPlayerClass(music);
 
         // if we don't have a player for this song, play the next song
         if (playerClass == null) {
@@ -246,7 +246,7 @@ public class MusicManager
     /**
      * Get the appropriate music player for the specified music file.
      */
-    protected static Class getMusicPlayerClass (String path)
+    protected static Class<?> getMusicPlayerClass (String path)
     {
         path = path.toLowerCase();
 

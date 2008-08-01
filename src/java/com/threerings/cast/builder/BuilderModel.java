@@ -65,14 +65,14 @@ public class BuilderModel
     {
         int size = _listeners.size();
         for (int ii = 0; ii < size; ii++) {
-            ((BuilderModelListener)_listeners.get(ii)).modelChanged(event);
+            _listeners.get(ii).modelChanged(event);
         }
     }
 
     /**
      * Returns a list of the available component classes.
      */
-    public List getComponentClasses ()
+    public List<ComponentClass> getComponentClasses ()
     {
         return Collections.unmodifiableList(_classes);
     }
@@ -80,11 +80,11 @@ public class BuilderModel
     /**
      * Returns the list of components available in the specified class.
      */
-    public List getComponents (ComponentClass cclass)
+    public List<Integer> getComponents (ComponentClass cclass)
     {
-        List list = (List)_components.get(cclass);
+        List<Integer> list = _components.get(cclass);
         if (list == null) {
-            list = new ArrayList();
+            list = new ArrayList<Integer>();
         }
         return list;
     }
@@ -95,9 +95,9 @@ public class BuilderModel
     public int[] getSelectedComponents ()
     {
         int[] values = new int[_selected.size()];
-        Iterator iter = _selected.values().iterator();
+        Iterator<Integer> iter = _selected.values().iterator();
         for (int i = 0; iter.hasNext(); i++) {
-            values[i] = ((Integer)iter.next()).intValue();
+            values[i] = iter.next().intValue();
         }
         return values;
     }
@@ -122,14 +122,14 @@ public class BuilderModel
 
         for (int ii = 0; ii < _classes.size(); ii++) {
             // get the list of components available for this class
-            ComponentClass cclass = (ComponentClass)_classes.get(ii);
-            Iterator iter = crepo.enumerateComponentIds(cclass);
+            ComponentClass cclass = _classes.get(ii);
+            Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
 
             while (iter.hasNext()) {
-                Integer cid = (Integer)iter.next();
-                ArrayList clist = (ArrayList)_components.get(cclass);
+                Integer cid = iter.next();
+                ArrayList<Integer> clist = _components.get(cclass);
                 if (clist == null) {
-                    _components.put(cclass, clist = new ArrayList());
+                    _components.put(cclass, clist = new ArrayList<Integer>());
                 }
 
                 clist.add(cid);
@@ -138,14 +138,14 @@ public class BuilderModel
     }
 
     /** The currently selected character components. */
-    protected HashMap _selected = new HashMap();
+    protected HashMap<ComponentClass, Integer> _selected = new HashMap<ComponentClass, Integer>();
 
     /** The hashtable of available component ids for each class. */
-    protected HashMap _components = new HashMap();
+    protected HashMap<ComponentClass, ArrayList<Integer>> _components = new HashMap<ComponentClass, ArrayList<Integer>>();
 
     /** The list of all available component classes. */
-    protected ArrayList _classes = new ArrayList();
+    protected ArrayList<ComponentClass> _classes = new ArrayList<ComponentClass>();
 
     /** The model listeners. */
-    protected ArrayList _listeners = new ArrayList();
+    protected ArrayList<BuilderModelListener> _listeners = new ArrayList<BuilderModelListener>();
 }

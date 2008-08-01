@@ -48,7 +48,7 @@ public class FringeConfiguration implements Serializable
         public int priority;
 
         /** A list of the possible tilesets that can be used for fringing. */
-        public ArrayList tilesets = new ArrayList();
+        public ArrayList<FringeTileSetRecord> tilesets = new ArrayList<FringeTileSetRecord>();
 
         /** Used when parsing the tilesets definitions. */
         public void addTileset (FringeTileSetRecord record)
@@ -117,7 +117,7 @@ public class FringeConfiguration implements Serializable
      */
     public int fringesOn (int first, int second)
     {
-        FringeRecord f1 = (FringeRecord) _frecs.get(first);
+        FringeRecord f1 = _frecs.get(first);
 
         // we better have a fringe record for the first
         if (null != f1) {
@@ -125,7 +125,7 @@ public class FringeConfiguration implements Serializable
             // it had better have some tilesets defined
             if (f1.tilesets.size() > 0) {
 
-                FringeRecord f2 = (FringeRecord) _frecs.get(second);
+                FringeRecord f2 = _frecs.get(second);
 
                 // and we only fringe if second doesn't exist or has a lower
                 // priority
@@ -144,13 +144,13 @@ public class FringeConfiguration implements Serializable
      */
     public FringeTileSetRecord getFringe (int baseset, int hashValue)
     {
-        FringeRecord f = (FringeRecord) _frecs.get(baseset);
-        return (FringeTileSetRecord) f.tilesets.get(
+        FringeRecord f = _frecs.get(baseset);
+        return f.tilesets.get(
             hashValue % f.tilesets.size());
     }
 
     /** The mapping from base tileset id to fringerecord. */
-    protected HashIntMap _frecs = new HashIntMap();
+    protected HashIntMap<FringeRecord> _frecs = new HashIntMap<FringeRecord>();
 
     /** Increase this value when object's serialized state is impacted by
      * a class change (modification of fields, inheritance). */

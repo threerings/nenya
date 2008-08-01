@@ -55,7 +55,7 @@ public class TilePath extends LineSegmentPath
      * coordinates.
      */
     public TilePath (MisoSceneMetrics metrics, Sprite sprite,
-                     List tiles, int destx, int desty)
+                     List<Point> tiles, int destx, int desty)
     {
         // constrain destination pixels to fine coordinates
         Point fpos = new Point();
@@ -74,7 +74,7 @@ public class TilePath extends LineSegmentPath
         Point spos = new Point();
         int size = tiles.size();
         for (int ii = 1; ii < size - 1; ii++) {
-            Point next = (Point)tiles.get(ii);
+            Point next = tiles.get(ii);
 
             // determine the direction from previous to next node
             int dir = MisoUtil.getIsoDirection(prev.x, prev.y, next.x, next.y);

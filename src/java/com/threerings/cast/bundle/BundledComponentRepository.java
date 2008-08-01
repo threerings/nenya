@@ -28,12 +28,15 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
-import com.samskivert.util.HashIntMap;
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.IntIntMap;
+import com.samskivert.util.IntMap;
+import com.samskivert.util.IntMaps;
 import com.samskivert.util.Predicate;
 import com.samskivert.util.Tuple;
 
@@ -94,24 +97,30 @@ public class BundledComponentRepository
             int rcount = (rbundles == null) ? 0 : rbundles.length;
             for (int i = 0; i < rcount; i++) {
                 if (_actions == null) {
-                    _actions = (HashMap)BundleUtil.loadObject(
-                        rbundles[i], BundleUtil.ACTIONS_PATH, true);
+                    @SuppressWarnings("unchecked") Map<String, ActionSequence> amap =
+                        (Map<String, ActionSequence>)BundleUtil.loadObject(
+                            rbundles[i], BundleUtil.ACTIONS_PATH, true);
+                    _actions = amap;
                 }
                 if (_actionSets == null) {
-                    _actionSets = (HashMap)BundleUtil.loadObject(
-                        rbundles[i], BundleUtil.ACTION_SETS_PATH, true);
+                    @SuppressWarnings("unchecked") Map<String, TileSet> asets = 
+                        (Map<String, TileSet>)BundleUtil.loadObject(
+                            rbundles[i], BundleUtil.ACTION_SETS_PATH, true);
+                    _actionSets = asets;
                 }
                 if (_classes == null) {
-                    _classes = (HashMap)BundleUtil.loadObject(
-                        rbundles[i], BundleUtil.CLASSES_PATH, true);
+                    @SuppressWarnings("unchecked") Map<String, ComponentClass> cmap =
+                        (Map<String, ComponentClass>)BundleUtil.loadObject(
+                            rbundles[i], BundleUtil.CLASSES_PATH, true);
+                    _classes = cmap;
                 }
             }
 
             // now go back and load up all of the component information
             for (int i = 0; i < rcount; i++) {
-                HashIntMap comps = null;
-                comps = (HashIntMap)BundleUtil.loadObject(
-                    rbundles[i], BundleUtil.COMPONENTS_PATH, true);
+                @SuppressWarnings("unchecked") IntMap<Tuple<String, String>> comps = 
+                    (IntMap<Tuple<String, String>>)BundleUtil.loadObject(
+                        rbundles[i], BundleUtil.COMPONENTS_PATH, true);
                 if (comps == null) {
                     continue;
                 }
@@ -120,11 +129,11 @@ public class BundledComponentRepository
                 FrameProvider fprov = new ResourceBundleProvider(_imgr, rbundles[i]);
 
                 // now create char. component instances for each component in the serialized table
-                Iterator iter = comps.keySet().iterator();
+                Iterator<Integer> iter = comps.keySet().iterator();
                 while (iter.hasNext()) {
-                    int componentId = ((Integer)iter.next()).intValue();
-                    Tuple info = (Tuple)comps.get(componentId);
-                    createComponent(componentId, (String)info.left, (String)info.right, fprov);
+                    int componentId = iter.next().intValue();
+                    Tuple<String, String> info = comps.get(componentId);
+                    createComponent(componentId, info.left, info.right, fprov);
                 }
             }
 
@@ -136,10 +145,10 @@ public class BundledComponentRepository
         // if we failed to load our classes or actions, create empty hashtables so that we can
         // safely enumerate our emptiness
         if (_actions == null) {
-            _actions = new HashMap();
+            _actions = Maps.newHashMap();
         }
         if (_classes == null) {
-            _classes = new HashMap();
+            _classes = Maps.newHashMap();
         }
     }
 
@@ -158,7 +167,7 @@ public class BundledComponentRepository
     public CharacterComponent getComponent (int componentId)
         throws NoSuchComponentException
     {
-        CharacterComponent component = (CharacterComponent)_components.get(componentId);
+        CharacterComponent component = _components.get(componentId);
         if (component == null) {
             throw new NoSuchComponentException(componentId);
         }
@@ -170,12 +179,12 @@ public class BundledComponentRepository
         throws NoSuchComponentException
     {
         // look up the list for that class
-        ArrayList comps = (ArrayList)_classComps.get(className);
+        ArrayList<CharacterComponent> comps = _classComps.get(className);
         if (comps != null) {
             // scan the list for the named component
             int ccount = comps.size();
             for (int i = 0; i < ccount; i++) {
-                CharacterComponent comp = (CharacterComponent)comps.get(i);
+                CharacterComponent comp = comps.get(i);
                 if (comp.name.equals(compName)) {
                     return comp;
                 }
@@ -187,28 +196,28 @@ public class BundledComponentRepository
     // documentation inherited
     public ComponentClass getComponentClass (String className)
     {
-        return (ComponentClass)_classes.get(className);
+        return _classes.get(className);
     }
 
     // documentation inherited
-    public Iterator enumerateComponentClasses ()
+    public Iterator<ComponentClass> enumerateComponentClasses ()
     {
         return _classes.values().iterator();
     }
 
     // documentation inherited
-    public Iterator enumerateActionSequences ()
+    public Iterator<ActionSequence> enumerateActionSequences ()
     {
         return _actions.values().iterator();
     }
 
     // documentation inherited
-    public Iterator enumerateComponentIds (final ComponentClass compClass)
+    public Iterator<Integer> enumerateComponentIds (final ComponentClass compClass)
     {
         return new Predicate<Integer>() {
             @Override
             public boolean isMatch (Integer input) {
-                CharacterComponent comp = (CharacterComponent)_components.get(input);
+                CharacterComponent comp = _components.get(input);
                 return comp.componentClass.equals(compClass);
             }
         }.filter(_components.keySet().iterator());
@@ -221,7 +230,7 @@ public class BundledComponentRepository
         int componentId, String cclass, String cname, FrameProvider fprov)
     {
         // look up the component class information
-        ComponentClass clazz = (ComponentClass)_classes.get(cclass);
+        ComponentClass clazz = _classes.get(cclass);
         if (clazz == null) {
             log.warning("Non-existent component class [class=" + cclass + ", name=" + cname +
                         ", id=" + componentId + "].");
@@ -235,9 +244,9 @@ public class BundledComponentRepository
         _components.put(componentId, component);
 
         // we have a hash of lists for mapping components by class/name
-        ArrayList comps = (ArrayList)_classComps.get(cclass);
+        ArrayList<CharacterComponent> comps = _classComps.get(cclass);
         if (comps == null) {
-            comps = new ArrayList();
+            comps = new ArrayList<CharacterComponent>();
             _classComps.put(cclass, comps);
         }
         if (!comps.contains(component)) {
@@ -280,7 +289,7 @@ public class BundledComponentRepository
         public ActionFrames getFrames (CharacterComponent component, String action, String type)
         {
             // obtain the action sequence definition for this action
-            ActionSequence actseq = (ActionSequence)_actions.get(action);
+            ActionSequence actseq = _actions.get(action);
             if (actseq == null) {
                 log.warning("Missing action sequence definition [action=" + action +
                             ", component=" + component + "].");
@@ -300,9 +309,9 @@ public class BundledComponentRepository
 
             // look to see if this tileset is already cached (as the custom action or the default
             // action)
-            TileSet aset = (TileSet)_setcache.get(cpath);
+            TileSet aset = _setcache.get(cpath);
             if (aset == null) {
-                aset = (TileSet)_setcache.get(dpath);
+                aset = _setcache.get(dpath);
                 if (aset != null) {
                     // save ourselves a lookup next time
                     _setcache.put(cpath, aset);
@@ -384,7 +393,7 @@ public class BundledComponentRepository
         protected ResourceBundle _bundle;
 
         /** Cache of tilesets loaded from our bundle. */
-        protected HashMap _setcache = new HashMap();
+        protected Map<String, TileSet> _setcache = Maps.newHashMap();
     }
 
     /**
@@ -527,19 +536,19 @@ public class BundledComponentRepository
     protected ImageManager _imgr;
 
     /** A table of action sequences. */
-    protected HashMap _actions;
+    protected Map<String, ActionSequence> _actions;
 
     /** A table of action sequence tilesets. */
-    protected HashMap _actionSets;
+    protected Map<String, TileSet> _actionSets;
 
     /** A table of component classes. */
-    protected HashMap _classes;
+    protected Map<String, ComponentClass> _classes;
 
     /** A table of component lists indexed on classname. */
-    protected HashMap _classComps = new HashMap();
+    protected Map<String, ArrayList<CharacterComponent>> _classComps = Maps.newHashMap();
 
     /** The component table. */
-    protected HashIntMap _components = new HashIntMap();
+    protected IntMap<CharacterComponent> _components = IntMaps.newHashIntMap();
 
     /** Whether or not we wipe our bundles on any failure. */
     protected boolean _wipeOnFailure;

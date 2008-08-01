@@ -23,6 +23,7 @@ package com.threerings.media.tile.tools.xml;
 
 import org.apache.commons.digester.Digester;
 
+import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.UniformTileSet;
 
 import static com.threerings.media.Log.log;
@@ -86,7 +87,7 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
     }
 
     @Override
-    protected Class getTileSetClass ()
+    protected Class<? extends TileSet> getTileSetClass ()
     {
         return UniformTileSet.class;
     }

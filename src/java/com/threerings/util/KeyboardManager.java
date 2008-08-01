@@ -804,7 +804,7 @@ public class KeyboardManager
     protected KeyTranslator _xlate;
 
     /** The list of key observers. */
-    protected ObserverList _observers = new ObserverList(ObserverList.FAST_UNSAFE_NOTIFY);
+    protected ObserverList<KeyObserver> _observers = ObserverList.newFastUnsafe();
 
     /** The operation used to notify observers of actual key events. */
     protected KeyObserverOp _keyOp = new KeyObserverOp();

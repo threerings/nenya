@@ -13,9 +13,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
@@ -97,9 +99,10 @@ public class ImageManager
         // create our image cache
         int icsize = getCacheSize();
         log.debug("Creating image cache [size=" + icsize + "k].");
-        _ccache = new LRUHashMap(icsize * 1024, new LRUHashMap.ItemSizer() {
-            public int computeSize (Object value) {
-                return (int)((CacheRecord)value).getEstimatedMemoryUsage();
+        _ccache = new LRUHashMap<ImageKey, CacheRecord>(
+                icsize * 1024, new LRUHashMap.ItemSizer<CacheRecord>() {
+            public int computeSize (CacheRecord value) {
+                return (int)value.getEstimatedMemoryUsage();
             }
         });
         _ccache.setTracking(true);
@@ -257,7 +260,7 @@ public class ImageManager
     {
         CacheRecord crec = null;
         synchronized (_ccache) {
-            crec = (CacheRecord)_ccache.get(key);
+            crec = _ccache.get(key);
         }
         if (crec != null) {
 //             Log.info("Cache hit [key=" + key + ", crec=" + crec + "].");
@@ -360,7 +363,7 @@ public class ImageManager
             return _defaultProvider;
         }
 
-        ImageDataProvider dprov = (ImageDataProvider)_providers.get(rset);
+        ImageDataProvider dprov = _providers.get(rset);
         if (dprov == null) {
             dprov = new ImageDataProvider() {
                 public BufferedImage loadImage (String path)
@@ -427,9 +430,9 @@ public class ImageManager
 
         int[] eff = null;
         synchronized (_ccache) {
-            Iterator iter = _ccache.values().iterator();
+            Iterator<CacheRecord> iter = _ccache.values().iterator();
             while (iter.hasNext()) {
-                size += ((CacheRecord)iter.next()).getEstimatedMemoryUsage();
+                size += iter.next().getEstimatedMemoryUsage();
             }
             eff = _ccache.getTrackedEffectiveness();
         }
@@ -446,7 +449,7 @@ public class ImageManager
             _source = source;
         }
 
-        public BufferedImage getImage (Colorization[] zations, LRUHashMap cache)
+        public BufferedImage getImage (Colorization[] zations, LRUHashMap<ImageKey, CacheRecord> cache)
         {
             if (zations == null) {
                 return _source;
@@ -513,10 +516,10 @@ public class ImageManager
     protected OptimalImageCreator _icreator;
 
     /** A cache of loaded images. */
-    protected LRUHashMap _ccache;
+    protected LRUHashMap<ImageKey, CacheRecord> _ccache;
 
     /** The set of all keys we've ever seen. */
-    protected HashSet _keySet = new HashSet();
+    protected HashSet<ImageKey> _keySet = new HashSet<ImageKey>();
 
     /** Throttle our cache status logging to once every 300 seconds. */
     protected Throttle _cacheStatThrottle = new Throttle(1, 300000L);
@@ -532,7 +535,7 @@ public class ImageManager
     };
 
     /** Data providers for different resource sets. */
-    protected HashMap _providers = new HashMap();
+    protected Map<String, ImageDataProvider> _providers = Maps.newHashMap();
 
     /** Default amount of data we'll store in our image cache. */
     protected static int DEFAULT_CACHE_SIZE = 32768;

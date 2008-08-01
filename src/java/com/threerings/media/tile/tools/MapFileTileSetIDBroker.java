@@ -60,14 +60,14 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
             _nextTileSetID = readInt(bin);
             _storedTileSetID = _nextTileSetID;
             // read in our mappings
-            _map = new HashMap();
+            _map = new HashMap<String, Integer>();
             readMapFile(bin, _map);
 
             bin.close();
 
         } catch (FileNotFoundException fnfe) {
             // create a blank map if our map file doesn't exist
-            _map = new HashMap();
+            _map = new HashMap<String, Integer>();
 
         } catch (Exception e) {
             // other errors are more fatal
@@ -91,7 +91,7 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
     public int getTileSetID (String tileSetName)
         throws PersistenceException
     {
-        Integer tsid = (Integer)_map.get(tileSetName);
+        Integer tsid = _map.get(tileSetName);
         if (tsid == null) {
             tsid = Integer.valueOf(++_nextTileSetID);
             _map.put(tileSetName, tsid);
@@ -135,7 +135,7 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
      * Reads in a mapping from strings to integers, which should have been
      * written via {@link #writeMapFile}.
      */
-    public static void readMapFile (BufferedReader bin, HashMap map)
+    public static void readMapFile (BufferedReader bin, HashMap<String, Integer> map)
         throws IOException
     {
         String line;
@@ -159,14 +159,14 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
      * Writes out a mapping from strings to integers in a manner that can
      * be read back in via {@link #readMapFile}.
      */
-    public static void writeMapFile (BufferedWriter bout, HashMap map)
+    public static void writeMapFile (BufferedWriter bout, HashMap<String, Integer> map)
         throws IOException
     {
         String[] lines = new String[map.size()];
-        Iterator iter = map.keySet().iterator();
+        Iterator<String> iter = map.keySet().iterator();
         for (int ii = 0; iter.hasNext(); ii++) {
-            String key = (String)iter.next();
-            Integer value = (Integer)map.get(key);
+            String key = iter.next();
+            Integer value = map.get(key);
             lines[ii] = key + SEP_STR + value;
         }
         QuickSort.sort(lines);
@@ -184,7 +184,7 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
      */
     protected boolean renameTileSet (String oldName, String newName)
     {
-        Integer tsid = (Integer)_map.get(oldName);
+        Integer tsid = _map.get(oldName);
         if (tsid != null) {
             _map.put(newName, tsid);
             // fudge our stored tileset ID so that we flush ourselves when
@@ -201,7 +201,7 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
      * Used by {@link DumpTileSetMap} to enumerate our tileset ID
      * mappings.
      */
-    protected Iterator enumerateMappings ()
+    protected Iterator<String> enumerateMappings ()
     {
         return _map.keySet().iterator();
     }
@@ -216,7 +216,7 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
     protected int _storedTileSetID;
 
     /** Our mapping from tileset names to ids. */
-    protected HashMap _map;
+    protected HashMap<String, Integer> _map;
 
     /** The character we use to separate tileset name from code in the map
      * file. */

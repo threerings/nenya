@@ -23,7 +23,6 @@ package com.threerings.cast.bundle.tools;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.samskivert.util.HashIntMap;
@@ -51,19 +50,19 @@ public class DumpBundle
             try {
                 ResourceBundle bundle = new FileResourceBundle(file);
 
-                HashMap actions = (HashMap)BundleUtil.loadObject(
+                HashMap<?, ?> actions = (HashMap<?, ?>)BundleUtil.loadObject(
                     bundle, BundleUtil.ACTIONS_PATH, false);
                 dumpTable("actions: ", actions);
 
-                HashMap actionSets = (HashMap)BundleUtil.loadObject(
+                HashMap<?, ?> actionSets = (HashMap<?, ?>)BundleUtil.loadObject(
                     bundle, BundleUtil.ACTION_SETS_PATH, false);
                 dumpTable("actionSets: ", actionSets);
 
-                HashMap classes = (HashMap)BundleUtil.loadObject(
+                HashMap<?, ?> classes = (HashMap<?, ?>)BundleUtil.loadObject(
                     bundle, BundleUtil.CLASSES_PATH, false);
                 dumpTable("classes: ", classes);
 
-                HashIntMap comps = (HashIntMap)BundleUtil.loadObject(
+                HashIntMap<?> comps = (HashIntMap<?>)BundleUtil.loadObject(
                     bundle, BundleUtil.COMPONENTS_PATH, false);
                 dumpTable("components: ", comps);
 
@@ -75,11 +74,10 @@ public class DumpBundle
         }
     }
 
-    protected static void dumpTable (String prefix, Map table)
+    protected static void dumpTable (String prefix, Map<?, ?> table)
     {
         if (table != null) {
-            Iterator iter = table.entrySet().iterator();
-            System.out.println(prefix + StringUtil.toString(iter));
+            System.out.println(prefix + StringUtil.toString(table.entrySet().iterator()));
         }
     }        
 }

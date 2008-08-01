@@ -22,6 +22,7 @@
 package com.threerings.media;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.Icon;
@@ -110,7 +111,7 @@ public class IconManager
     {
         try {
             // see if the tileset is already loaded
-            TileSet set = (TileSet)_icons.get(iconSet);
+            TileSet set = _icons.get(iconSet);
 
             // load it up if not
             if (set == null) {
@@ -166,7 +167,7 @@ public class IconManager
     protected String _rsrcSet;
 
     /** A cache of our icon tilesets. */
-    protected LRUHashMap _icons = new LRUHashMap(ICON_CACHE_SIZE);
+    protected Map<String, TileSet> _icons = new LRUHashMap<String, TileSet>(ICON_CACHE_SIZE);
     
     /** The suffix we append to an icon set name to obtain the tileset
      * image path configuration parameter. */

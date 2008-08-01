@@ -299,7 +299,7 @@ public class VirtualMediaPanel extends MediaPanel
     {
         // inform our view trackers
         for (int ii = 0, ll = _trackers.size(); ii < ll; ii++) {
-            ((ViewTracker)_trackers.get(ii)).viewLocationDidChange(dx, dy);
+            _trackers.get(ii).viewLocationDidChange(dx, dy);
         }
 
         // pass the word on to our sprite/anim managers via the meta manager
@@ -459,5 +459,5 @@ public class VirtualMediaPanel extends MediaPanel
     protected Rectangle _abounds = new Rectangle();
 
     /** A list of entities to be informed when the view scrolls. */
-    protected ArrayList _trackers = new ArrayList();
+    protected ArrayList<ViewTracker> _trackers = new ArrayList<ViewTracker>();
 }

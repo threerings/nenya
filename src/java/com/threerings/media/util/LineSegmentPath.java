@@ -84,7 +84,7 @@ public class LineSegmentPath
      * Constructs a line segment path with the specified list of points.
      * An arbitrary direction will be assigned to the starting node.
      */
-    public LineSegmentPath (List points)
+    public LineSegmentPath (List<Point> points)
     {
         createPath(points);
     }
@@ -331,12 +331,12 @@ public class LineSegmentPath
      * its starting position to the given destination coordinates
      * following the given list of screen coordinates.
      */
-    protected void createPath (List points)
+    protected void createPath (List<Point> points)
     {
         Point last = null;
         int size = points.size();
         for (int ii = 0; ii < size; ii++) {
-            Point p = (Point)points.get(ii);
+            Point p = points.get(ii);
 
             int dir = (ii == 0) ? NORTH : DirectionUtil.getDirection(last, p);
             addNode(p.x, p.y, dir);
@@ -349,14 +349,14 @@ public class LineSegmentPath
      */
     protected PathNode getNextNode ()
     {
-        return (PathNode)_niter.next();
+        return _niter.next();
     }        
 
     /** The nodes that make up the path. */
     protected ArrayList<PathNode> _nodes = new ArrayList<PathNode>();
 
     /** We use this when moving along this path. */
-    protected Iterator _niter;
+    protected Iterator<PathNode> _niter;
 
     /** When moving, the pathable's source path node. */
     protected PathNode _src;

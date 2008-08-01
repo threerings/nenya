@@ -234,7 +234,7 @@ public interface AnimationFrameSequencer extends FrameSequencer
         protected Animation _animation;
 
         /** Used to dispatch {@link SequencedAnimationObserver#frameReached}. */
-        protected static class FrameReachedOp implements ObserverList.ObserverOp
+        protected static class FrameReachedOp implements ObserverList.ObserverOp<Object>
         {
             public FrameReachedOp (Animation anim, long when,
                                    int frameIdx, int frameSeq) {

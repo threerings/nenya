@@ -42,7 +42,7 @@ public class DumpColorPository
         try {
             ColorPository pos = ColorPository.loadColorPository(
                 new FileInputStream(args[0]));
-            Iterator iter = pos.enumerateClasses();
+            Iterator<ColorPository.ClassRecord> iter = pos.enumerateClasses();
             while (iter.hasNext()) {
                 System.out.println(iter.next());
             }

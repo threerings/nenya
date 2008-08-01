@@ -387,7 +387,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /** Used to dispatch {@link PathObserver#pathCancelled}. */
-    protected static class CancelledOp implements ObserverList.ObserverOp
+    protected static class CancelledOp implements ObserverList.ObserverOp<Object>
     {
         public CancelledOp (Sprite sprite, Path path) {
             _sprite = sprite;
@@ -406,7 +406,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /** Used to dispatch {@link PathObserver#pathCompleted}. */
-    protected static class CompletedOp implements ObserverList.ObserverOp
+    protected static class CompletedOp implements ObserverList.ObserverOp<Object>
     {
         public CompletedOp (Sprite sprite, Path path, long when) {
             _sprite = sprite;

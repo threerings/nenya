@@ -123,7 +123,7 @@ public abstract class Animation extends AbstractMedia
     protected boolean _finished = false;
 
     /** Used to dispatch {@link AnimationObserver#animationStarted}. */
-    protected static class AnimStartedOp implements ObserverList.ObserverOp
+    protected static class AnimStartedOp implements ObserverList.ObserverOp<Object>
     {
         public AnimStartedOp (Animation anim, long when) {
             _anim = anim;
@@ -140,7 +140,7 @@ public abstract class Animation extends AbstractMedia
     }
 
     /** Used to dispatch {@link AnimationObserver#animationCompleted}. */
-    protected static class AnimCompletedOp implements ObserverList.ObserverOp
+    protected static class AnimCompletedOp implements ObserverList.ObserverOp<Object>
     {
         public AnimCompletedOp (Animation anim, long when) {
             _anim = anim;

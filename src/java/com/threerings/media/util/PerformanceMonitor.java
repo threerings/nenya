@@ -22,6 +22,9 @@
 package com.threerings.media.util;
 
 import java.util.HashMap;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 import com.threerings.media.timer.MediaTimer;
 import com.threerings.media.timer.NanoTimer;
@@ -58,10 +61,10 @@ public class PerformanceMonitor
     public static void register (PerformanceObserver obs, String name, long delta)
     {
         // get the observer's action hashtable
-        HashMap actions = (HashMap)_observers.get(obs);
+        Map<String, PerformanceAction> actions = _observers.get(obs);
         if (actions == null) {
             // create it if it didn't exist
-            _observers.put(obs, actions = new HashMap());
+            _observers.put(obs, actions = new HashMap<String, PerformanceAction>());
         }
 
         // add the action to the set we're tracking
@@ -77,7 +80,7 @@ public class PerformanceMonitor
     public static void unregister (PerformanceObserver obs, String name)
     {
         // get the observer's action hashtable
-        HashMap actions = (HashMap)_observers.get(obs);
+        Map<String, PerformanceAction> actions = _observers.get(obs);
         if (actions == null) {
             log.warning("Attempt to unregister by unknown observer " +
                         "[observer=" + obs + ", name=" + name + "].");
@@ -85,7 +88,7 @@ public class PerformanceMonitor
         }
 
         // attempt to remove the specified action
-        PerformanceAction action = (PerformanceAction)actions.remove(name);
+        PerformanceAction action = actions.remove(name);
         if (action == null) {
             log.warning("Attempt to unregister unknown action " +
                         "[observer=" + obs + ", name=" + name + "].");
@@ -108,7 +111,7 @@ public class PerformanceMonitor
     public static void tick (PerformanceObserver obs, String name)
     {
         // get the observer's action hashtable
-        HashMap actions = (HashMap)_observers.get(obs);
+        Map<String, PerformanceAction> actions = _observers.get(obs);
         if (actions == null) {
             log.warning("Attempt to tick by unknown observer " +
                         "[observer=" + obs + ", name=" + name + "].");
@@ -116,7 +119,7 @@ public class PerformanceMonitor
         }
 
         // get the specified action
-        PerformanceAction action = (PerformanceAction)actions.get(name);
+        PerformanceAction action = actions.get(name);
         if (action == null) {
             log.warning("Attempt to tick unknown value " +
                         "[observer=" + obs + ", name=" + name + "].");
@@ -144,7 +147,8 @@ public class PerformanceMonitor
     }
 
     /** The observers monitoring some set of actions. */
-    protected static HashMap _observers = new HashMap();
+    protected static Map<PerformanceObserver, Map<String, PerformanceAction>> _observers = 
+        Maps.newHashMap();
 
     /** Used to obtain high resolution time stamps. */
     protected static MediaTimer _timer = new NanoTimer();

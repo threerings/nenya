@@ -46,7 +46,7 @@ public class ComponentClass implements Serializable
     /** Used to effect custom render orders for particular actions,
      * orientations, etc. */
     public static class PriorityOverride
-        implements Comparable, Serializable
+        implements Comparable<PriorityOverride>, Serializable
     {
         /** The overridden render priority value. */
         public int renderPriority;
@@ -69,11 +69,10 @@ public class ComponentClass implements Serializable
         }
 
         // documentation inherited from interface
-        public int compareTo (Object other)
+        public int compareTo (PriorityOverride po)
         {
             // overrides with both an action and an orientation should
             // come first in the list
-            PriorityOverride po = (PriorityOverride)other;
             int pri = priority(), opri = po.priority();
             if (pri == opri) {
                 return hashCode() - po.hashCode();
@@ -150,7 +149,7 @@ public class ComponentClass implements Serializable
         // closest match
         int ocount = (_overrides != null) ? _overrides.size() : 0;
         for (int ii = 0; ii < ocount; ii++) {
-            PriorityOverride over = (PriorityOverride)_overrides.get(ii);
+            PriorityOverride over = _overrides.get(ii);
             // based on the way the overrides are sorted, the first match
             // is the most specific and the one we want
             if (over.matches(action, orientation)) {
@@ -168,7 +167,7 @@ public class ComponentClass implements Serializable
     public void addPriorityOverride (PriorityOverride override)
     {
         if (_overrides == null) {
-            _overrides = new ComparableArrayList();
+            _overrides = new ComparableArrayList<PriorityOverride>();
         }
         _overrides.insertSorted(override);
     }
@@ -235,7 +234,7 @@ public class ComponentClass implements Serializable
     }
 
     /** A list of render priority overrides. */
-    protected ComparableArrayList _overrides;
+    protected ComparableArrayList<PriorityOverride> _overrides;
 
     /** Increase this value when object's serialized state is impacted by
      * a class change (modification of fields, inheritance). */

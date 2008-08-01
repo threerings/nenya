@@ -645,7 +645,7 @@ public class MediaPanel extends JComponent
          */
         protected Sprite getHit (MouseEvent me)
         {
-            ArrayList list = new ArrayList();
+            ArrayList<Sprite> list = new ArrayList<Sprite>();
             getSpriteManager().getHitSprites(list, me.getX(), me.getY());
             for (int ii = 0, nn = list.size(); ii < nn; ii++) {
                 Object o = list.get(ii);

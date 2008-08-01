@@ -177,7 +177,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
             return -1;
         }
 
-        public void getAllObjects (ArrayList list) {
+        public void getAllObjects (ArrayList<ObjectInfo> list) {
             for (ObjectInfo info : objectInfo) {
                 list.add(info);
             }
@@ -276,10 +276,10 @@ public class SparseMisoSceneModel extends MisoSceneModel
      * Adds all interesting {@link ObjectInfo} records in this scene to
      * the supplied list.
      */
-    public void getInterestingObjects (ArrayList list)
+    public void getInterestingObjects (ArrayList<ObjectInfo> list)
     {
-        for (Iterator iter = getSections(); iter.hasNext(); ) {
-            Section sect = (Section)iter.next();
+        for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
+            Section sect = iter.next();
             for (int oo = 0; oo < sect.objectInfo.length; oo++) {
                 list.add(sect.objectInfo[oo]);
             }
@@ -289,12 +289,10 @@ public class SparseMisoSceneModel extends MisoSceneModel
     /**
      * Adds all {@link ObjectInfo} records in this scene to the supplied list.
      */
-    public void getAllObjects (ArrayList list)
+    public void getAllObjects (ArrayList<ObjectInfo> list)
     {
-        for (Iterator iter = getSections(); iter.hasNext(); ) {
-            Section sect = (Section)iter.next();
-
-            sect.getAllObjects(list);
+        for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
+            iter.next().getAllObjects(list);
         }
     }
 
@@ -314,8 +312,8 @@ public class SparseMisoSceneModel extends MisoSceneModel
      */
     public void visitObjects (ObjectVisitor visitor, boolean interestingOnly)
     {
-        for (Iterator iter = getSections(); iter.hasNext(); ) {
-            Section sect = (Section)iter.next();
+        for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
+            Section sect = iter.next();
             for (int oo = 0; oo < sect.objectInfo.length; oo++) {
                 ObjectInfo oinfo = sect.objectInfo[oo];
                 visitor.visit(oinfo);

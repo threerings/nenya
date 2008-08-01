@@ -22,7 +22,7 @@
 package com.threerings.miso.data;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.IntListUtil;
@@ -259,8 +259,8 @@ public class SimpleMisoSceneModel extends MisoSceneModel
      * Populates the interesting and uninteresting parts of a miso scene
      * model given lists of {@link ObjectInfo} records for each.
      */
-    public static void populateObjects (SimpleMisoSceneModel model,
-                                        ArrayList ilist, ArrayList ulist)
+    public static void populateObjects (
+        SimpleMisoSceneModel model, List<ObjectInfo> ilist, List<ObjectInfo> ulist)
     {
         // set up the uninteresting arrays
         int ucount = ulist.size();
@@ -268,7 +268,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         model.objectXs = new short[ucount];
         model.objectYs = new short[ucount];
         for (int ii = 0; ii < ucount; ii++) {
-            ObjectInfo info = (ObjectInfo)ulist.get(ii);
+            ObjectInfo info = ulist.get(ii);
             model.objectTileIds[ii] = info.tileId;
             model.objectXs[ii] = (short)info.x;
             model.objectYs[ii] = (short)info.y;

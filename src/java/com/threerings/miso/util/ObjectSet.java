@@ -163,7 +163,7 @@ public class ObjectSet
 
     /** We simply sort the objects in order of their hash code. We don't
      * care about their order, it exists only to support binary search. */
-    protected static final Comparator INFO_COMP = new Comparator() {
+    protected static final Comparator<Object> INFO_COMP = new Comparator<Object>() {
         public int compare (Object o1, Object o2) {
             ObjectInfo do1 = (ObjectInfo)o1;
             ObjectInfo do2 = (ObjectInfo)o2;

@@ -42,7 +42,7 @@ public class Sounds
      * a <code>sounds.properties</code> file in the
      * <code>com.threerings.happy.fun</code> package.
      */
-    protected static String getPackagePath (Class clazz)
+    protected static String getPackagePath (Class<?> clazz)
     {
         return clazz.getPackage().getName().replace('.', '/') + "/";
     }

@@ -26,6 +26,8 @@ import java.util.Iterator;
 
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.HashIntMap;
+import com.samskivert.util.IntMap;
+
 import com.threerings.resource.ResourceBundle;
 import com.threerings.resource.ResourceManager;
 
@@ -88,8 +90,8 @@ public class BundledTileSetRepository
             return;
         }
 
-        HashIntMap idmap = new HashIntMap();
-        HashMap namemap = new HashMap();
+        HashIntMap<TileSet> idmap = new HashIntMap<TileSet>();
+        HashMap<String, Integer> namemap = new HashMap<String, Integer>();
 
         // iterate over the resource bundles in the set, loading up the
         // tileset bundles in each resource bundle
@@ -118,7 +120,7 @@ public class BundledTileSetRepository
      * Extracts the tileset bundle from the supplied resource bundle
      * and registers it.
      */
-    protected void addBundle (HashIntMap idmap, HashMap namemap,
+    protected void addBundle (HashIntMap<TileSet> idmap, HashMap<String, Integer> namemap,
         ResourceBundle bundle)
     {
         try {
@@ -137,17 +139,16 @@ public class BundledTileSetRepository
      * Adds the tilesets in the supplied bundle to our tileset mapping
      * tables. Any tilesets with the same name or id will be overwritten.
      */
-    protected void addBundle (HashIntMap idmap, HashMap namemap,
+    protected void addBundle (HashIntMap<TileSet> idmap, HashMap<String, Integer> namemap,
                               TileSetBundle bundle)
     {
         IMImageProvider improv = (_imgr == null) ?
             null : new IMImageProvider(_imgr, bundle);
 
         // map all of the tilesets in this bundle
-        for (Iterator iter = bundle.entrySet().iterator(); iter.hasNext(); ) {
-            HashIntMap.Entry entry = (HashIntMap.Entry)iter.next();
-            Integer tsid = (Integer)entry.getKey();
-            TileSet tset = (TileSet)entry.getValue();
+        for (IntMap.IntEntry<TileSet> entry : bundle.intEntrySet()) {
+            Integer tsid = entry.getKey();
+            TileSet tset = entry.getValue();
             tset.setImageProvider(improv);
             idmap.put(tsid.intValue(), tset);
             namemap.put(tset.getName(), tsid);
@@ -155,7 +156,7 @@ public class BundledTileSetRepository
     }
 
     // documentation inherited from interface
-    public Iterator enumerateTileSetIds ()
+    public Iterator<Integer> enumerateTileSetIds ()
         throws PersistenceException
     {
         waitForBundles();
@@ -163,7 +164,7 @@ public class BundledTileSetRepository
     }
 
     // documentation inherited from interface
-    public Iterator enumerateTileSets ()
+    public Iterator<TileSet> enumerateTileSets ()
         throws PersistenceException
     {
         waitForBundles();
@@ -175,7 +176,7 @@ public class BundledTileSetRepository
         throws NoSuchTileSetException, PersistenceException
     {
         waitForBundles();
-        TileSet tset = (TileSet)_idmap.get(tileSetId);
+        TileSet tset = _idmap.get(tileSetId);
         if (tset == null) {
             throw new NoSuchTileSetException(tileSetId);
         }
@@ -187,7 +188,7 @@ public class BundledTileSetRepository
         throws NoSuchTileSetException, PersistenceException
     {
         waitForBundles();
-        Integer tsid = (Integer)_namemap.get(setName);
+        Integer tsid = _namemap.get(setName);
         if (tsid != null) {
             return tsid.intValue();
         }
@@ -199,7 +200,7 @@ public class BundledTileSetRepository
         throws NoSuchTileSetException, PersistenceException
     {
         waitForBundles();
-        Integer tsid = (Integer)_namemap.get(setName);
+        Integer tsid = _namemap.get(setName);
         if (tsid != null) {
             return getTileSet(tsid.intValue());
         }
@@ -222,8 +223,8 @@ public class BundledTileSetRepository
     protected ImageManager _imgr;
 
     /** A mapping from tileset id to tileset. */
-    protected HashIntMap _idmap;
+    protected HashIntMap<TileSet> _idmap;
 
     /** A mapping from tileset name to tileset id. */
-    protected HashMap _namemap;
+    protected HashMap<String, Integer> _namemap;
 }

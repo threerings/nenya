@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.HashMap;
 
+import com.threerings.media.tile.TileSet;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 
@@ -38,7 +40,7 @@ public class XMLTileSetParserTest extends TestCase
     @Override
     public void runTest ()
     {
-        HashMap sets = new HashMap();
+        HashMap<String, TileSet> sets = new HashMap<String, TileSet>();
 
         XMLTileSetParser parser = new XMLTileSetParser();
         // add some rulesets
@@ -51,7 +53,7 @@ public class XMLTileSetParserTest extends TestCase
             parser.loadTileSets(TILESET_PATH, sets);
 
             // print them out
-            Iterator iter = sets.values().iterator();
+            Iterator<TileSet> iter = sets.values().iterator();
             while (iter.hasNext()) {
                 iter.next();
                 // System.out.println(iter.next());

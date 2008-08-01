@@ -31,6 +31,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.Deflater;
@@ -98,10 +99,10 @@ public class MetadataBundlerTask extends Task
         try {
 
             // parse our metadata
-            Tuple tuple = parseActions();
-            HashMap actions = (HashMap)tuple.left;
-            HashMap actionSets = (HashMap)tuple.right;
-            HashMap classes = parseClasses();
+            Tuple<Map<String, ActionSequence>, Map<String, TileSet>> tuple = parseActions();
+            Map<String, ActionSequence> actions = tuple.left;
+            Map<String, TileSet> actionSets = tuple.right;
+            Map<String, ComponentClass> classes = parseClasses();
 
             fout = createOutputStream(_target);
 
@@ -174,7 +175,7 @@ public class MetadataBundlerTask extends Task
         digester.addSetNext(ruleSet.getPath(), "add", Object.class.getName());
     }
 
-    protected Tuple parseActions ()
+    protected Tuple<Map<String, ActionSequence>, Map<String, TileSet>> parseActions ()
         throws BuildException
     {
         // scan through the XML once to read the actions
@@ -183,13 +184,13 @@ public class MetadataBundlerTask extends Task
         arules.setPrefix("actions");
         digester.addRuleSet(arules);
         digester.addSetNext("actions" + ActionRuleSet.ACTION_PATH, "add", Object.class.getName());
-        ArrayList actlist = parseList(digester, _actionDef);
+        ArrayList<?> actlist = parseList(digester, _actionDef);
 
         // now go through a second time reading the tileset info
         digester = new Digester();
         addTileSetRuleSet(digester, new SwissArmyTileSetRuleSet());
         addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
-        ArrayList setlist = parseList(digester, _actionDef);
+        ArrayList<?> setlist = parseList(digester, _actionDef);
 
         // sanity check
         if (actlist.size() != setlist.size()) {
@@ -199,8 +200,8 @@ public class MetadataBundlerTask extends Task
         }
 
         // now create our mappings
-        HashMap actmap = new HashMap();
-        HashMap setmap = new HashMap();
+        Map<String, ActionSequence> actmap = new HashMap<String, ActionSequence>();
+        Map<String, TileSet> setmap = new HashMap<String, TileSet>();
 
         // create the action map
         for (int i = 0; i < setlist.size(); i++) {
@@ -218,10 +219,10 @@ public class MetadataBundlerTask extends Task
             setmap.put(act.name, set);
         }
 
-        return new Tuple(actmap, setmap);
+        return new Tuple<Map<String, ActionSequence>, Map<String, TileSet>>(actmap, setmap);
     }
 
-    protected HashMap parseClasses ()
+    protected Map<String, ComponentClass> parseClasses ()
         throws BuildException
     {
         // load up our action and class info
@@ -234,8 +235,8 @@ public class MetadataBundlerTask extends Task
         digester.addSetNext("classes" + ClassRuleSet.CLASS_PATH,
                             "add", Object.class.getName());
 
-        ArrayList setlist = parseList(digester, _classDef);
-        HashMap clmap = new HashMap();
+        ArrayList<?> setlist = parseList(digester, _classDef);
+        Map<String, ComponentClass> clmap = new HashMap<String, ComponentClass>();
 
         // create the action map
         for (int i = 0; i < setlist.size(); i++) {
@@ -246,14 +247,14 @@ public class MetadataBundlerTask extends Task
         return clmap;
     }
 
-    protected ArrayList parseList (Digester digester, String path)
+    protected ArrayList<?> parseList (Digester digester, String path)
         throws BuildException
     {
         try {
             FileInputStream fin = new FileInputStream(path);
             BufferedInputStream bin = new BufferedInputStream(fin);
 
-            ArrayList setlist = new ArrayList();
+            ArrayList<Object> setlist = new ArrayList<Object>();
             digester.push(setlist);
 
             // now fire up the digester to parse the stream

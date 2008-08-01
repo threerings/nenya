@@ -27,6 +27,7 @@ import com.samskivert.util.StringUtil;
 import com.samskivert.xml.CallMethodSpecialRule;
 
 import com.threerings.media.tile.ObjectTileSet;
+import com.threerings.media.tile.TileSet;
 
 import com.threerings.util.DirectionUtil;
 
@@ -191,7 +192,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
     }
 
     @Override
-    protected Class getTileSetClass ()
+    protected Class<? extends TileSet> getTileSetClass ()
     {
         return ObjectTileSet.class;
     }

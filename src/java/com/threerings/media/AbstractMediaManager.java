@@ -24,8 +24,10 @@ package com.threerings.media;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+
+import com.google.common.collect.Lists;
 
 import com.samskivert.util.SortableArrayList;
 import com.samskivert.util.ObserverList.ObserverOp;
@@ -265,9 +267,9 @@ public abstract class AbstractMediaManager
     /**
      * Queues the notification for dispatching after we've ticked all the media.
      */
-    public void queueNotification (ObserverList observers, ObserverOp event)
+    public void queueNotification (ObserverList<Object> observers, ObserverOp<Object> event)
     {
-        _notify.add(new Tuple<ObserverList,ObserverOp>(observers, event));
+        _notify.add(new Tuple<ObserverList<Object>,ObserverOp<Object>>(observers, event));
     }
 
     /** Type safety jockeying. */
@@ -279,7 +281,7 @@ public abstract class AbstractMediaManager
     protected void dispatchNotifications ()
     {
         for (int ii = 0, nn = _notify.size(); ii < nn; ii++) {
-            Tuple<ObserverList,ObserverOp> tuple = _notify.get(ii);
+            Tuple<ObserverList<Object>,ObserverOp<Object>> tuple = _notify.get(ii);
             tuple.left.apply(tuple.right);
         }
         _notify.clear();
@@ -299,8 +301,7 @@ public abstract class AbstractMediaManager
     protected RegionManager _remgr;
 
     /** List of observers to notify at the end of the tick. */
-    protected ArrayList<Tuple<ObserverList,ObserverOp>> _notify =
-        new ArrayList<Tuple<ObserverList,ObserverOp>>();
+    protected List<Tuple<ObserverList<Object>,ObserverOp<Object>>> _notify = Lists.newArrayList();
 
     /** Our render-order sorted list of media. */
     @SuppressWarnings("unchecked") protected SortableArrayList<AbstractMedia> _media =

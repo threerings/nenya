@@ -42,8 +42,7 @@ public class ClassEditor extends JPanel implements ChangeListener
     /**
      * Constructs a class editor.
      */
-    public ClassEditor (
-        BuilderModel model, ComponentClass cclass, List components)
+    public ClassEditor (BuilderModel model, ComponentClass cclass, List<Integer> components)
     {
         _model = model;
         _components = components;
@@ -92,7 +91,7 @@ public class ClassEditor extends JPanel implements ChangeListener
      */
     protected void setSelectedComponent (int idx)
     {
-        int cid = ((Integer)_components.get(idx)).intValue();
+        int cid = _components.get(idx).intValue();
         _model.setSelectedComponent(_cclass, cid);
     }
 
@@ -100,7 +99,7 @@ public class ClassEditor extends JPanel implements ChangeListener
     protected ComponentClass _cclass;
 
     /** The components selectable via this editor. */
-    protected List _components;
+    protected List<Integer> _components;
 
     /** The label denoting the currently selected component index. */
     protected JLabel _clabel;

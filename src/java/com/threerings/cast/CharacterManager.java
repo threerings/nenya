@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
@@ -38,6 +40,7 @@ import com.threerings.media.image.ImageManager;
 import com.threerings.util.DirectionCodes;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
+import com.threerings.cast.CompositedActionFrames.CompositedFramesKey;
 
 import static com.threerings.cast.Log.log;
 
@@ -68,18 +71,18 @@ public class CharacterManager
         _crepo = crepo;
 
         // populate our actions table
-        Iterator iter = crepo.enumerateActionSequences();
+        Iterator<ActionSequence> iter = crepo.enumerateActionSequences();
         while (iter.hasNext()) {
-            ActionSequence action = (ActionSequence)iter.next();
+            ActionSequence action = iter.next();
             _actions.put(action.name, action);
         }
 
         // create a cache for our composited action frames
         log.debug("Creating action cache [size=" + _runCacheSize + "k].");
-        _frameCache = new LRUHashMap(_runCacheSize * 1024, new LRUHashMap.ItemSizer() {
-            public int computeSize (Object value) {
-                return (int)((CompositedMultiFrameImage)
-                             value).getEstimatedMemoryUsage();
+        _frameCache = new LRUHashMap<CompositedFramesKey, CompositedMultiFrameImage>(
+                _runCacheSize * 1024, new LRUHashMap.ItemSizer<CompositedMultiFrameImage>() {
+            public int computeSize (CompositedMultiFrameImage value) {
+                return (int)value.getEstimatedMemoryUsage();
             }
         });
         _frameCache.setTracking(true); // TODO
@@ -100,16 +103,8 @@ public class CharacterManager
      * @exception IllegalArgumentException thrown if the supplied class
      * does not derive from {@link CharacterSprite}.
      */
-    public void setCharacterClass (Class charClass)
+    public void setCharacterClass (Class<? extends CharacterSprite> charClass)
     {
-        // sanity check
-        if (!CharacterSprite.class.isAssignableFrom(charClass)) {
-            String errmsg = "Requested to use character sprite class that " +
-                "does not derive from CharacterSprite " +
-                "[class=" + charClass.getName() + "].";
-            throw new IllegalArgumentException(errmsg);
-        }
-
         // make a note of it
         _charClass = charClass;
     }
@@ -173,8 +168,8 @@ public class CharacterManager
         CharacterDescriptor descrip, String action)
         throws NoSuchComponentException
     {
-        Tuple key = new Tuple(descrip, action);
-        ActionFrames frames = (ActionFrames)_actionFrames.get(key);
+        Tuple<CharacterDescriptor, String> key = new Tuple<CharacterDescriptor, String>(descrip, action);
+        ActionFrames frames = _actionFrames.get(key);
         if (frames == null) {
             // this doesn't actually composite the images, but prepares an
             // object to be able to do so
@@ -223,7 +218,7 @@ public class CharacterManager
      */
     public ActionSequence getActionSequence (String action)
     {
-        return (ActionSequence)_actions.get(action);
+        return _actions.get(action);
     }
 
     /**
@@ -233,10 +228,9 @@ public class CharacterManager
     protected long getEstimatedCacheMemoryUsage ()
     {
         long size = 0;
-        Iterator iter = _frameCache.values().iterator();
+        Iterator<CompositedMultiFrameImage> iter = _frameCache.values().iterator();
         while (iter.hasNext()) {
-            size += ((CompositedMultiFrameImage)
-                     iter.next()).getEstimatedMemoryUsage();
+            size += iter.next().getEstimatedMemoryUsage();
         }
         return size;
     }
@@ -434,17 +428,18 @@ public class CharacterManager
     protected ComponentRepository _crepo;
 
     /** A table of our action sequences. */
-    protected HashMap _actions = new HashMap();
+    protected Map<String, ActionSequence> _actions = Maps.newHashMap();
 
     /** A table of composited action sequences (these don't reference the
      * actual image data directly and thus take up little memory). */
-    protected HashMap _actionFrames = new HashMap();
+    protected Map<Tuple<CharacterDescriptor, String>, ActionFrames> _actionFrames = 
+        Maps.newHashMap();
 
     /** A cache of composited animation frames. */
-    protected LRUHashMap _frameCache;
+    protected LRUHashMap<CompositedFramesKey, CompositedMultiFrameImage> _frameCache;
 
     /** The character class to be created. */
-    protected Class<CharacterSprite> _charClass = CharacterSprite.class;
+    protected Class<? extends CharacterSprite> _charClass = CharacterSprite.class;
 
     /** The action animation cache, if we have one. */
     protected ActionCache _acache;

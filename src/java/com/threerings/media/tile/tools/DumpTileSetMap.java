@@ -39,13 +39,11 @@ public class DumpTileSetMap
         }
 
         try {
-            MapFileTileSetIDBroker broker =
-                new MapFileTileSetIDBroker(new File(args[0]));
-            Iterator iter = broker.enumerateMappings();
+            MapFileTileSetIDBroker broker = new MapFileTileSetIDBroker(new File(args[0]));
+            Iterator<String> iter = broker.enumerateMappings();
             while (iter.hasNext()) {
                 String tsname = iter.next().toString();
-                System.out.println(tsname + " => " +
-                                   broker.getTileSetID(tsname));
+                System.out.println(tsname + " => " + broker.getTileSetID(tsname));
             }
 
         } catch (PersistenceException pe) {

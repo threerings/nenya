@@ -40,7 +40,7 @@ import com.threerings.media.tile.TileSet;
  * A tileset bundle is used to load up tilesets by id from a persistent bundle of tilesets stored
  * on the local filesystem.
  */
-public class TileSetBundle extends HashIntMap
+public class TileSetBundle extends HashIntMap<TileSet>
     implements Serializable, ImageDataProvider
 {
     /**
@@ -65,13 +65,13 @@ public class TileSetBundle extends HashIntMap
      */
     public final TileSet getTileSet (int tileSetId)
     {
-        return (TileSet)get(tileSetId);
+        return get(tileSetId);
     }
 
     /**
      * Enumerates the tileset ids in this tileset bundle.
      */
-    public Iterator enumerateTileSetIds ()
+    public Iterator<Integer> enumerateTileSetIds ()
     {
         return keySet().iterator();
     }
@@ -79,7 +79,7 @@ public class TileSetBundle extends HashIntMap
     /**
      * Enumerates the tilesets in this tileset bundle.
      */
-    public Iterator enumerateTileSets ()
+    public Iterator<TileSet> enumerateTileSets ()
     {
         return values().iterator();
     }
@@ -103,9 +103,7 @@ public class TileSetBundle extends HashIntMap
     {
         out.writeInt(size());
 
-        Iterator entries = intEntrySet().iterator();
-        while (entries.hasNext()) {
-            IntEntry entry = (IntEntry)entries.next();
+        for (IntEntry<TileSet> entry : intEntrySet()) {
             out.writeInt(entry.getIntKey());
             out.writeObject(entry.getValue());
         }

@@ -40,7 +40,7 @@ public class PathSequence
      */
     public PathSequence (Path first, Path second)
     {
-        this(new ArrayList());
+        this(new ArrayList<Path>());
         _paths.add(first);
         _paths.add(second);
     }
@@ -50,7 +50,7 @@ public class PathSequence
      * Note: Paths may be added to the end of the list while
      * the pathable is still traversing earlier paths!
      */
-    public PathSequence (List paths)
+    public PathSequence (List<Path> paths)
     {
         _paths = paths;
     }
@@ -119,7 +119,7 @@ public class PathSequence
             _pable.pathCompleted(tickStamp);
 
         } else {
-            _curPath = (Path) _paths.remove(0);
+            _curPath = _paths.remove(0);
             _lastInit = initStamp;
 
             _curPath.init(_pableRep, initStamp);
@@ -128,7 +128,7 @@ public class PathSequence
     }
 
     /** The list of paths. */
-    protected List _paths;
+    protected List<Path> _paths;
 
     /** The timestamp at which we last inited a path. */
     protected long _lastInit;

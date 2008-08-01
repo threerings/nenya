@@ -602,11 +602,11 @@ public class ImageUtil
      * Returns the estimated memory usage in bytes for all buffered images
      * in the supplied iterator.
      */
-    public static long getEstimatedMemoryUsage (Iterator iter)
+    public static long getEstimatedMemoryUsage (Iterator<BufferedImage> iter)
     {
         long size = 0;
         while (iter.hasNext()) {
-            BufferedImage image = (BufferedImage)iter.next();
+            BufferedImage image = iter.next();
             size += getEstimatedMemoryUsage(image);
         }
         return size;

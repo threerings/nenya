@@ -71,7 +71,7 @@ public class CompiledConfigTask extends Task
         // instantiate and sanity check the parser class
         Object pobj = null;
         try {
-            Class pclass = Class.forName(_parser);
+            Class<?> pclass = Class.forName(_parser);
             pobj = pclass.newInstance();
         } catch (Exception e) {
             throw new BuildException("Error instantiating config parser", e);

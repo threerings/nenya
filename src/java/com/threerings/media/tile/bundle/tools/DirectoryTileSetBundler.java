@@ -66,9 +66,9 @@ public class DirectoryTileSetBundler extends TileSetBundler
         try {
             // write all of the image files to the bundle's target path, converting the
             // tilesets to trimmed tilesets in the process
-            Iterator iditer = bundle.enumerateTileSetIds();
+            Iterator<Integer> iditer = bundle.enumerateTileSetIds();
             while (iditer.hasNext()) {
-                int tileSetId = ((Integer)iditer.next()).intValue();
+                int tileSetId = iditer.next().intValue();
                 TileSet set = bundle.getTileSet(tileSetId);
                 String imagePath = set.getImagePath();
 

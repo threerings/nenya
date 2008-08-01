@@ -95,7 +95,7 @@ public class ResolutionView extends JPanel
     protected void assignColor (SceneBlock block, Color color)
     {
         IntTuple key = blockKey(block);
-        BlockGlyph glyph = (BlockGlyph)_blocks.get(key);
+        BlockGlyph glyph = _blocks.get(key);
         if (glyph == null) {
             glyph = new BlockGlyph(_metrics, key.left, key.right);
             _blocks.put(key, glyph);
@@ -117,8 +117,8 @@ public class ResolutionView extends JPanel
         gfx.scale(0.25, 0.25);
 
         // draw our block glyphs
-        for (Iterator iter = _blocks.values().iterator(); iter.hasNext(); ) {
-            ((BlockGlyph)iter.next()).paint(gfx);
+        for (Iterator<BlockGlyph> iter = _blocks.values().iterator(); iter.hasNext(); ) {
+            iter.next().paint(gfx);
         }
 
         // draw the view bounds
@@ -158,7 +158,7 @@ public class ResolutionView extends JPanel
 
     protected MisoScenePanel _panel;
     protected MisoSceneMetrics _metrics;
-    protected HashMap _blocks = new HashMap();
+    protected HashMap<IntTuple, BlockGlyph> _blocks = new HashMap<IntTuple, BlockGlyph>();
 
     protected static final int TILE_SIZE = 10;
     protected static final int MAX_WIDTH = 30;

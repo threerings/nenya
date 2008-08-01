@@ -84,14 +84,15 @@ public class SimpleMisoSceneRuleSet implements NestableRuleSet
             public void parseAndSet (String bodyText, Object target)
                 throws Exception
             {
-                ArrayList ilist = (ArrayList)target;
-                ArrayList ulist = new ArrayList();
+                @SuppressWarnings("unchecked") ArrayList<ObjectInfo> ilist = 
+                    (ArrayList<ObjectInfo>)target;
+                ArrayList<ObjectInfo> ulist = new ArrayList<ObjectInfo>();
                 SimpleMisoSceneModel model = (SimpleMisoSceneModel)
                     digester.peek(1);
 
                 // filter interesting and uninteresting into two lists
                 for (int ii = 0; ii < ilist.size(); ii++) {
-                    ObjectInfo info = (ObjectInfo)ilist.get(ii);
+                    ObjectInfo info = ilist.get(ii);
                     if (!info.isInteresting()) {
                         ilist.remove(ii--);
                         ulist.add(info);

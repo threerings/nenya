@@ -41,17 +41,14 @@ public class ModeUtil
      * desired mode is also used.
      */
     public static DisplayMode getDisplayMode (
-        GraphicsDevice gd, int width, int height,
-        int desiredDepth, int minimumDepth)
+        GraphicsDevice gd, int width, int height, int desiredDepth, int minimumDepth)
     {
         DisplayMode[] modes = gd.getDisplayModes();
         final int ddepth = desiredDepth;
 
         // we sort modes in order of desirability
-        Comparator mcomp = new Comparator () {
-            public int compare (Object o1, Object o2) {
-                DisplayMode m1 = (DisplayMode)o1;
-                DisplayMode m2 = (DisplayMode)o2;
+        Comparator<DisplayMode> mcomp = new Comparator<DisplayMode>() {
+            public int compare (DisplayMode m1, DisplayMode m2) {
                 int bd1 = m1.getBitDepth(), bd2 = m2.getBitDepth();
                 int rr1 = m1.getRefreshRate(), rr2 = m2.getRefreshRate();
 
@@ -73,7 +70,7 @@ public class ModeUtil
         };
 
         // but we only add modes that meet our minimum requirements
-        TreeSet mset = new TreeSet(mcomp);
+        TreeSet<DisplayMode> mset = new TreeSet<DisplayMode>(mcomp);
         for (int i = 0; i < modes.length; i++) {
             if (modes[i].getWidth() == width &&
                 modes[i].getHeight() == height &&
@@ -83,7 +80,7 @@ public class ModeUtil
             }
         }
 
-        return (mset.size() > 0) ? (DisplayMode)mset.first() : null;
+        return (mset.size() > 0) ? mset.first() : null;
     }
 
     /**

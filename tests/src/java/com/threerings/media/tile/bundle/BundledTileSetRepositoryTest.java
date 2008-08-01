@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.util.Iterator;
 
 import com.threerings.media.image.ClientImageManager;
+import com.threerings.media.tile.TileSet;
 import com.threerings.resource.ResourceManager;
 
 import junit.framework.Test;
@@ -46,7 +47,7 @@ public class BundledTileSetRepositoryTest extends TestCase
                 null, "config/resource/manager.properties", null);
             BundledTileSetRepository repo = new BundledTileSetRepository(
                 rmgr, new ClientImageManager(rmgr, (Component)null), "tilesets");
-            Iterator sets = repo.enumerateTileSets();
+            Iterator<TileSet> sets = repo.enumerateTileSets();
             while (sets.hasNext()) {
                 sets.next();
 //                 System.out.println(sets.next());

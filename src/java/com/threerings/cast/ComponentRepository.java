@@ -55,17 +55,17 @@ public interface ComponentRepository
      * Iterates over the {@link ComponentClass} instances representing all
      * available character component classes.
      */
-    public Iterator enumerateComponentClasses ();
+    public Iterator<ComponentClass> enumerateComponentClasses ();
 
     /**
      * Iterates over the {@link ActionSequence} instances representing
      * every available action sequence.
      */
-    public Iterator enumerateActionSequences ();
+    public Iterator<ActionSequence> enumerateActionSequences ();
 
     /**
      * Iterates over the component ids of all components in the specified
      * class.
      */
-    public Iterator enumerateComponentIds (ComponentClass compClass);
+    public Iterator<Integer> enumerateComponentIds (ComponentClass compClass);
 }

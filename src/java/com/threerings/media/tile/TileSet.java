@@ -25,8 +25,10 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
@@ -35,6 +37,8 @@ import com.threerings.media.image.Colorization;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.image.BufferedMirage;
+import com.threerings.media.tile.Tile.Key;
+
 import static com.threerings.media.Log.log;
 
 /**
@@ -205,9 +209,9 @@ public abstract class TileSet
             _key.tileSet = this;
             _key.tileIndex = tileIndex;
             _key.zations = zations;
-            SoftReference sref = (SoftReference)_atiles.get(_key);
+            SoftReference<Tile> sref = _atiles.get(_key);
             if (sref != null) {
-                tile = (Tile)sref.get();
+                tile = sref.get();
             }
         }
 
@@ -217,7 +221,7 @@ public abstract class TileSet
             tile.key = new Tile.Key(this, tileIndex, zations);
             initTile(tile, tileIndex, zations);
             synchronized (_atiles) {
-                _atiles.put(tile.key, new SoftReference(tile));
+                _atiles.put(tile.key, new SoftReference<Tile>(tile));
             }
         }
 
@@ -372,10 +376,10 @@ public abstract class TileSet
         int asize = 0;
         synchronized (_atiles) {
             // first total up the active tiles
-            Iterator iter = _atiles.values().iterator();
+            Iterator<SoftReference<Tile>> iter = _atiles.values().iterator();
             while (iter.hasNext()) {
-                SoftReference sref = (SoftReference)iter.next();
-                Tile tile = (Tile)sref.get();
+                SoftReference<Tile> sref = iter.next();
+                Tile tile = sref.get();
                 if (tile != null) {
                     asize++;
                     amem += tile.getEstimatedMemoryUsage();
@@ -415,7 +419,7 @@ public abstract class TileSet
     private static final long serialVersionUID = 1;
 
     /** A map containing weak references to all "active" tiles. */
-    protected static HashMap _atiles = new HashMap();
+    protected static Map<Key, SoftReference<Tile>> _atiles = Maps.newHashMap();
 
     /** A key used to look things up in the cache without creating craploads of keys unduly. */
     protected static Tile.Key _key = new Tile.Key(null, 0, null);

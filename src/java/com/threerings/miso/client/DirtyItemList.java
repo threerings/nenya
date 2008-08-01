@@ -79,7 +79,7 @@ public class DirtyItemList
      */
     public DirtyItem get (int idx)
     {
-        return (DirtyItem)_items.get(idx);
+        return _items.get(idx);
     }
 
     /**
@@ -121,9 +121,9 @@ public class DirtyItemList
             _items.clear();
           POS_LOOP:
             for (int ii = 0; ii < size; ii++) {
-                DirtyItem item = (DirtyItem)_ditems.get(ii);
+                DirtyItem item = _ditems.get(ii);
                 for (int rr = _items.size()-1; rr >= 0; rr--) {
-                    DirtyItem pitem = (DirtyItem)_items.get(rr);
+                    DirtyItem pitem = _items.get(rr);
                     // if we render in front of this item, insert
                     // ourselves immediately following it
                     if (_rcomp.compare(item, pitem) > 0) {
@@ -145,8 +145,8 @@ public class DirtyItemList
         if (DEBUG_SORT) {
             log.info("Sorted for render [items=" + toString(_items) + "].");
             for (int ii = 0, ll = _items.size()-1; ii < ll; ii++) {
-                DirtyItem a = (DirtyItem)_items.get(ii);
-                DirtyItem b = (DirtyItem)_items.get(ii+1);
+                DirtyItem a = _items.get(ii);
+                DirtyItem b = _items.get(ii+1);
                 if (_rcomp.compare(a, b) > 0) {
                     log.warning("Invalid ordering [a=" + a + ", b=" + b + "].");
                 }
@@ -163,7 +163,7 @@ public class DirtyItemList
     {
         int icount = _items.size();
         for (int ii = 0; ii < icount; ii++) {
-            DirtyItem item = (DirtyItem)_items.get(ii);
+            DirtyItem item = _items.get(ii);
             item.paint(gfx);
             item.clear();
             _freelist.add(item);
@@ -177,7 +177,7 @@ public class DirtyItemList
     public void clear ()
     {
         for (int icount = _items.size(); icount > 0; icount--) {
-            DirtyItem item = (DirtyItem)_items.remove(0);
+            DirtyItem item = _items.remove(0);
             item.clear();
             _freelist.add(item);
         }
@@ -198,7 +198,7 @@ public class DirtyItemList
     protected DirtyItem getDirtyItem ()
     {
         if (_freelist.size() > 0) {
-            return (DirtyItem)_freelist.remove(0);
+            return _freelist.remove(0);
         } else {
             return new DirtyItem();
         }
@@ -232,12 +232,12 @@ public class DirtyItemList
      * Returns an abbreviated string representation of the given dirty
      * items. See {@link #toString(DirtyItem)}.
      */
-    protected static String toString (SortableArrayList items)
+    protected static String toString (SortableArrayList<DirtyItem> items)
     {
         StringBuilder buf = new StringBuilder();
         buf.append("[");
         for (int ii = 0; ii < items.size(); ii++) {
-            DirtyItem item = (DirtyItem)items.get(ii);
+            DirtyItem item = items.get(ii);
             toString(buf, item);
             if (ii < (items.size() - 1)) {
                 buf.append(", ");
@@ -381,7 +381,7 @@ public class DirtyItemList
      * A comparator class for use in sorting dirty items in ascending
      * origin x- or y-axis coordinate order.
      */
-    protected static class OriginComparator implements Comparator
+    protected static class OriginComparator implements Comparator<DirtyItem>
     {
         /**
          * Constructs an origin comparator that sorts dirty items in
@@ -394,11 +394,8 @@ public class DirtyItemList
         }
 
         // documentation inherited
-        public int compare (Object a, Object b)
+        public int compare (DirtyItem da, DirtyItem db)
         {
-            DirtyItem da = (DirtyItem)a;
-            DirtyItem db = (DirtyItem)b;
-
             // if they don't overlap, sort them normally
             if (_axis == X_AXIS) {
                 if (da.ox != db.ox) {
@@ -425,14 +422,11 @@ public class DirtyItemList
      * suitable for rendering in the isometric view with proper visual
      * results.
      */
-    protected class RenderComparator implements Comparator
+    protected class RenderComparator implements Comparator<DirtyItem>
     {
         // documentation inherited
-        public int compare (Object a, Object b)
+        public int compare (DirtyItem da, DirtyItem db)
         {
-            DirtyItem da = (DirtyItem)a;
-            DirtyItem db = (DirtyItem)b;
-
             // if the two objects are scene objects and they overlap, we
             // compare them solely based on their human assigned priority
             if ((da.obj instanceof SceneObject) &&
@@ -490,8 +484,8 @@ public class DirtyItemList
         protected int comparePartitioned (int axis, DirtyItem da, DirtyItem db)
         {
             // prepare for the partitioning check
-            SortableArrayList sitems;
-            Comparator comp;
+            SortableArrayList<DirtyItem> sitems;
+            Comparator<DirtyItem> comp;
             boolean swapped = false;
             switch (axis) {
             case X_AXIS:
@@ -543,7 +537,7 @@ public class DirtyItemList
             // check each potentially partitioning item
             int startidx = aidx + 1, endidx = startidx + size;
             for (int pidx = startidx; pidx < endidx; pidx++) {
-                DirtyItem dp = (DirtyItem)sitems.get(pidx);
+                DirtyItem dp = sitems.get(pidx);
                 if (dp.obj instanceof Sprite) {
                     // sprites can't partition things
                     continue;
@@ -652,22 +646,22 @@ public class DirtyItemList
     }
 
     /** The list of dirty items. */
-    protected SortableArrayList _items = new SortableArrayList();
+    protected SortableArrayList<DirtyItem> _items = new SortableArrayList<DirtyItem>();
 
     /** The list of dirty items sorted by x-position. */
-    protected SortableArrayList _xitems = new SortableArrayList();
+    protected SortableArrayList<DirtyItem> _xitems = new SortableArrayList<DirtyItem>();
 
     /** The list of dirty items sorted by y-position. */
-    protected SortableArrayList _yitems = new SortableArrayList();
+    protected SortableArrayList<DirtyItem> _yitems = new SortableArrayList<DirtyItem>();
 
     /** The list of dirty items sorted by rear-depth. */
-    protected SortableArrayList _ditems = new SortableArrayList();
+    protected SortableArrayList<DirtyItem> _ditems = new SortableArrayList<DirtyItem>();
 
     /** The render comparator we'll use for our final, magical sort. */
-    protected Comparator _rcomp = new RenderComparator();
+    protected Comparator<DirtyItem> _rcomp = new RenderComparator();
 
     /** Unused dirty items. */
-    protected ArrayList _freelist = new ArrayList();
+    protected ArrayList<DirtyItem> _freelist = new ArrayList<DirtyItem>();
 
     /** Whether to log debug info when comparing pairs of dirty items. */
     protected static final boolean DEBUG_COMPARE = false;
@@ -681,20 +675,17 @@ public class DirtyItemList
 
     /** The comparator used to sort dirty items in ascending origin
      * x-coordinate order. */
-    protected static final Comparator ORIGIN_X_COMP =
-        new OriginComparator(X_AXIS);
+    protected static final Comparator<DirtyItem> ORIGIN_X_COMP = new OriginComparator(X_AXIS);
 
     /** The comparator used to sort dirty items in ascending origin
      * y-coordinate order. */
-    protected static final Comparator ORIGIN_Y_COMP =
-        new OriginComparator(Y_AXIS);
+    protected static final Comparator<DirtyItem> ORIGIN_Y_COMP = new OriginComparator(Y_AXIS);
 
     /** The comparator used to sort dirty items in ascending "rear-depth"
      * order. */
-    protected static final Comparator REAR_DEPTH_COMP = new Comparator() {
-        public int compare (Object o1, Object o2) {
-            return (((DirtyItem)o1).getRearDepth() -
-                    ((DirtyItem)o2).getRearDepth());
+    protected static final Comparator<DirtyItem> REAR_DEPTH_COMP = new Comparator<DirtyItem>() {
+        public int compare (DirtyItem o1, DirtyItem o2) {
+            return (o1.getRearDepth() - o2.getRearDepth());
         }
     };
 }

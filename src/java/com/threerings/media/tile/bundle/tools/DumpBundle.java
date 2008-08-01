@@ -66,9 +66,9 @@ public class DumpBundle
                     tsb = BundleUtil.extractBundle(file);
                 }
 
-                Iterator tsids = tsb.enumerateTileSetIds();
+                Iterator<Integer> tsids = tsb.enumerateTileSetIds();
                 while (tsids.hasNext()) {
-                    Integer tsid = (Integer)tsids.next();
+                    Integer tsid = tsids.next();
                     TileSet set = tsb.getTileSet(tsid.intValue());
                     System.out.println(tsid + " => " + set);
                     if (dumpTiles) {

@@ -127,7 +127,7 @@ public abstract class TileSetRuleSet
      * A tileset rule set will create tilesets of a particular class,
      * which must be provided by the derived class via this method.
      */
-    protected abstract Class getTileSetClass ();
+    protected abstract Class<? extends TileSet> getTileSetClass ();
 
     /** The tileset path we append to the prefix to get the full path. */    
     protected String _tilesetPath = TILESET_PATH;

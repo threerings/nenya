@@ -141,14 +141,15 @@ public class ComponentBundlerTask extends Task
                   "definitions via the 'actiondef' attribute.");
 
         // parse in the action tilesets
-        HashMap actsets = parseActionTileSets();
+        HashMap<String, TileSet> actsets = parseActionTileSets();
 
         // load up our component ID broker
         ComponentIDBroker broker = loadBroker(_mapfile);
 
         // check to see if any of the source files are newer than the
         // target file
-        ArrayList sources = (ArrayList)_filesets.clone();
+        ArrayList<Object> sources = new ArrayList<Object>();
+        sources.addAll(_filesets);
         sources.add(_mapfile);
         sources.add(_actionDef);
         long newest = getNewestDate(sources);
@@ -187,7 +188,7 @@ public class ComponentBundlerTask extends Task
                     String[] info = decomposePath(cfile.getPath());
 
                     // make sure we have an action tileset definition
-                    TileSet aset = (TileSet)actsets.get(info[2]);
+                    TileSet aset = actsets.get(info[2]);
                     if (aset == null) {
                         System.err.println(
                             "No tileset definition for component action " +
@@ -292,7 +293,7 @@ public class ComponentBundlerTask extends Task
         }
     }
 
-    protected long getNewestDate (ArrayList sources)
+    protected long getNewestDate (ArrayList<Object> sources)
     {
         long newest = 0L;
         for (int ii = 0; ii < sources.size(); ii++) {
@@ -414,7 +415,7 @@ public class ComponentBundlerTask extends Task
      * Parses the action tileset definitions and puts them into a hash
      * map, keyed on action name.
      */
-    protected HashMap parseActionTileSets ()
+    protected HashMap<String, TileSet> parseActionTileSets ()
     {
         Digester digester = new Digester();
         digester.addSetProperties("actions" + ActionRuleSet.ACTION_PATH);
@@ -422,7 +423,7 @@ public class ComponentBundlerTask extends Task
         addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
 
 
-        HashMap actsets = new ActionMap();
+        HashMap<String, TileSet> actsets = new ActionMap();
         digester.push(actsets);
 
         try {
@@ -484,7 +485,7 @@ public class ComponentBundlerTask extends Task
     }
 
     /** Used when parsing action tilesets. */
-    public static class ActionMap extends HashMap
+    public static class ActionMap extends HashMap<String, TileSet>
     {
         public void setName (String name) {
             _name = name;
@@ -546,13 +547,13 @@ public class ComponentBundlerTask extends Task
     }
 
     protected static class HashMapIDBroker
-        extends HashMap implements ComponentIDBroker
+        extends HashMap<Tuple<String, String>, Integer> implements ComponentIDBroker
     {
         public int getComponentID (String cclass, String cname)
             throws PersistenceException
         {
-            Tuple key = new Tuple(cclass, cname);
-            Integer cid = (Integer)get(key);
+            Tuple<String, String> key = new Tuple<String, String>(cclass, cname);
+            Integer cid = get(key);
             if (cid == null) {
                 cid = Integer.valueOf(++_nextCID);
                 put(key, cid);
@@ -580,11 +581,11 @@ public class ComponentBundlerTask extends Task
             bout.newLine();
 
             // write out the keys and values
-            ComparableArrayList lines = new ComparableArrayList();
-            Iterator keys = keySet().iterator();
+            ComparableArrayList<String> lines = new ComparableArrayList<String>();
+            Iterator<Tuple<String, String>> keys = keySet().iterator();
             while (keys.hasNext()) {
-                Tuple key = (Tuple)keys.next();
-                Integer value = (Integer)get(key);
+                Tuple<String, String> key = keys.next();
+                Integer value = get(key);
                 String line = key.left + SEP_STR + key.right + SEP_STR + value;
                 lines.add(line);
             }
@@ -595,7 +596,7 @@ public class ComponentBundlerTask extends Task
             // now write it to the file
             int lcount = lines.size();
             for (int ii = 0; ii < lcount; ii++) {
-                String line = (String)lines.get(ii);
+                String line = lines.get(ii);
                 bout.write(line, 0, line.length());
                 bout.newLine();
             }
@@ -626,7 +627,7 @@ public class ComponentBundlerTask extends Task
                 String cname = line.substring(0, sidx);
                 line = line.substring(sidx + SEP_STR.length());
                 try {
-                    put(new Tuple(cclass, cname), Integer.valueOf(line));
+                    put(new Tuple<String, String>(cclass, cname), Integer.valueOf(line));
                 } catch (NumberFormatException nfe) {
                     String err = "Malformed line, invalid code '" + orig + "'";
                     throw new IOException(err);

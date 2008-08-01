@@ -132,15 +132,13 @@ public class TileSetBundler
         Digester digester = new Digester();
 
         // push our mappings array onto the stack
-        ArrayList mappings = new ArrayList();
+        ArrayList<Mapping> mappings = new ArrayList<Mapping>();
         digester.push(mappings);
 
         // create a mapping object for each mapping entry and append it to
         // our mapping list
-        digester.addObjectCreate("bundler-config/mapping",
-                                 Mapping.class.getName());
-        digester.addSetNext("bundler-config/mapping",
-                            "add", "java.lang.Object");
+        digester.addObjectCreate("bundler-config/mapping", Mapping.class.getName());
+        digester.addSetNext("bundler-config/mapping", "add", "java.lang.Object");
 
         // configure each mapping object with the path and ruleset
         digester.addCallMethod("bundler-config/mapping", "init", 2);
@@ -164,7 +162,7 @@ public class TileSetBundler
         // use the mappings we parsed to configure our actual digester
         int msize = mappings.size();
         for (int i = 0; i < msize; i++) {
-            Mapping map = (Mapping)mappings.get(i);
+            Mapping map = mappings.get(i);
             try {
                 TileSetRuleSet ruleset = (TileSetRuleSet)Class.forName(map.ruleset).newInstance();
 
@@ -229,7 +227,7 @@ public class TileSetBundler
     {
         // stick an array list on the top of the stack into which we will
         // collect parsed tilesets
-        ArrayList sets = new ArrayList();
+        ArrayList<TileSet> sets = new ArrayList<TileSet>();
         _digester.push(sets);
 
         // parse the tilesets
@@ -255,7 +253,7 @@ public class TileSetBundler
         // add all of the parsed tilesets to the tileset bundle
         try {
             for (int i = 0; i < sets.size(); i++) {
-                TileSet set = (TileSet)sets.get(i);
+                TileSet set = sets.get(i);
                 String name = set.getName();
 
                 // let's be robust
@@ -363,13 +361,13 @@ public class TileSetBundler
         try {
             // write all of the image files to the bundle, converting the
             // tilesets to trimmed tilesets in the process
-            Iterator iditer = bundle.enumerateTileSetIds();
+            Iterator<Integer> iditer = bundle.enumerateTileSetIds();
             
             // Store off the updated TileSets in a separate Map so we can wait to change the
             // bundle till we're done iterating.
             HashIntMap<TileSet> toUpdate = new HashIntMap<TileSet>();
             while (iditer.hasNext()) {
-                int tileSetId = ((Integer)iditer.next()).intValue();
+                int tileSetId = iditer.next().intValue();
                 TileSet set = bundle.getTileSet(tileSetId);
                 String imagePath = set.getImagePath();
 

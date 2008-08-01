@@ -207,8 +207,8 @@ public class ResourceManager
     {
         // set up a URL handler so that things can be loaded via urls with the 'resource' protocol
         try {
-            AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run () {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                public Void run () {
                     Handler.registerHandler(ResourceManager.this);
                     return null;
                 }
@@ -272,7 +272,7 @@ public class ResourceManager
 
         // resolve the configured resource sets
         List<ResourceBundle> dlist = new ArrayList<ResourceBundle>();
-        Enumeration names = config.propertyNames();
+        Enumeration<?> names = config.propertyNames();
         while (names.hasMoreElements()) {
             String key = (String)names.nextElement();
             if (!key.startsWith(RESOURCE_SET_PREFIX)) {
@@ -421,7 +421,7 @@ public class ResourceManager
      * already resolved, or it may be notified on a brand new thread if the bundle requires
      * unpacking.
      */
-    public void resolveBundle (String path, final ResultListener listener)
+    public void resolveBundle (String path, final ResultListener<FileResourceBundle> listener)
     {
         File bfile = getResourceFile(path);
         if (bfile == null) {
@@ -442,7 +442,7 @@ public class ResourceManager
         }
 
         // start a thread to unpack our bundles
-        ArrayList list = new ArrayList();
+        ArrayList<ResourceBundle> list = new ArrayList<ResourceBundle>();
         list.add(bundle);
         Unpacker unpack = new Unpacker(list, new InitObserver() {
             public void progress (int percent, long remaining) {
@@ -513,8 +513,8 @@ public class ResourceManager
         if (_localePrefix != null) {
             final String rpath = PathUtil.appendPath(
                 _rootPath, PathUtil.appendPath(_localePrefix, path));
-            in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run () {
+            in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+                public InputStream run () {
                     return _loader.getResourceAsStream(rpath);
                 }
             });
@@ -525,8 +525,8 @@ public class ResourceManager
 
         // if we didn't find that, try locale-neutral
         final String rpath = PathUtil.appendPath(_rootPath, path);
-        in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run () {
+        in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+            public InputStream run () {
                 return _loader.getResourceAsStream(rpath);
             }
         });
@@ -578,8 +578,8 @@ public class ResourceManager
         if (_localePrefix != null) {
             final String rpath = PathUtil.appendPath(
                 _rootPath, PathUtil.appendPath(_localePrefix, path));
-            InputStream in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run () {
+            InputStream in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+                public InputStream run () {
                     return _loader.getResourceAsStream(rpath);
                 }
             });
@@ -590,8 +590,8 @@ public class ResourceManager
 
         // if we still didn't find anything, try the classloader
         final String rpath = PathUtil.appendPath(_rootPath, path);
-        InputStream in = (InputStream)AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run () {
+        InputStream in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+            public InputStream run () {
                 return _loader.getResourceAsStream(rpath);
             }
         });

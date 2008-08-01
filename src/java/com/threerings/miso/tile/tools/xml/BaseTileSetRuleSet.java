@@ -26,6 +26,7 @@ import org.apache.commons.digester.Digester;
 import com.samskivert.util.StringUtil;
 import com.samskivert.xml.CallMethodSpecialRule;
 
+import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
 
 import com.threerings.miso.tile.BaseTileSet;
@@ -77,7 +78,7 @@ public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
     }
 
     @Override
-    protected Class getTileSetClass ()
+    protected Class<? extends TileSet> getTileSetClass ()
     {
         return BaseTileSet.class;
     }

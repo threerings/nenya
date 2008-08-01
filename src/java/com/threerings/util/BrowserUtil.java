@@ -42,7 +42,7 @@ public class BrowserUtil
      * @param listener a listener to be notified if we failed to launch the
      * browser. <em>Note:</em> it will not be notified of success.
      */
-    public static void browseURL (URL url, ResultListener listener)
+    public static void browseURL (URL url, ResultListener<Void> listener)
     {
         browseURL(url, listener, "firefox");
     }
@@ -56,8 +56,7 @@ public class BrowserUtil
      * @param genagent the path to the browser to execute on non-Windows,
      * non-MacOS.
      */
-    public static void browseURL (
-        URL url, ResultListener listener, String genagent)
+    public static void browseURL (URL url, ResultListener<Void> listener, String genagent)
     {
         String[] cmd;
         if (RunAnywhere.isWindows()) {
@@ -98,7 +97,7 @@ public class BrowserUtil
 
     protected static class BrowserTracker extends Thread
     {
-        public BrowserTracker (Process process, URL url, ResultListener rl) {
+        public BrowserTracker (Process process, URL url, ResultListener<Void> rl) {
             super("BrowserLaunchWaiter");
             setDaemon(true);
             _process = process;
@@ -142,6 +141,6 @@ public class BrowserUtil
 
         protected Process _process;
         protected URL _url;
-        protected ResultListener _listener;
+        protected ResultListener<Void> _listener;
     };
 }

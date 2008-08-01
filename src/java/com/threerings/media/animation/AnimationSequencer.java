@@ -89,11 +89,11 @@ public class AnimationSequencer extends Animation
             if (_queued.size() > 0) {
                 // if there are queued animations we want the most
                 // recently queued animation
-                trigger = (AnimRecord)_queued.get(_queued.size()-1);
+                trigger = _queued.get(_queued.size()-1);
             } else if (_running.size() > 0) {
                 // otherwise, if there are running animations, we want the
                 // last one in that list
-                trigger = (AnimRecord)_running.get(_running.size()-1);
+                trigger = _running.get(_running.size()-1);
             }
             // otherwise we have no trigger, we'll just start ASAP
         }
@@ -122,7 +122,7 @@ public class AnimationSequencer extends Animation
 
         // add all animations whose time has come
         while (_queued.size() > 0) {
-            AnimRecord arec = (AnimRecord)_queued.get(0);
+            AnimRecord arec = _queued.get(0);
             if (!arec.readyToFire(tickStamp, _lastStamp)) {
                 // if it's not time to add this animation, all subsequent
                 // animations must surely wait as well
@@ -284,10 +284,10 @@ public class AnimationSequencer extends Animation
     protected AnimationManager _animmgr;
 
     /** Animations that have not been fired. */
-    protected ArrayList _queued = new ArrayList();
+    protected ArrayList<AnimRecord> _queued = new ArrayList<AnimRecord>();
 
     /** Animations that are currently running. */
-    protected ArrayList _running = new ArrayList();
+    protected ArrayList<AnimRecord> _running = new ArrayList<AnimRecord>();
 
     /** The timestamp at which we fired the last animation. */
     protected long _lastStamp;
