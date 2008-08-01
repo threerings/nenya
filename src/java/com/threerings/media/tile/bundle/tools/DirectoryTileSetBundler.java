@@ -29,8 +29,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import java.awt.image.BufferedImage;
-
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
