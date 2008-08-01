@@ -31,7 +31,6 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.sound.sampled.AudioFormat;
@@ -84,7 +83,7 @@ public class SoundManager
         /**
          * Construct a new SoundType.
          * Which should be a static variable stashed somewhere for the entire application to share.
-         * 
+         *
          * @param strname a short string identifier, preferably without spaces.
          */
         public SoundType (String strname)
@@ -108,8 +107,8 @@ public class SoundManager
     {
         /**
          * Stop playing or looping the sound.
-         * At present, the granularity of this command is limited to the buffer size of the 
-         * line spooler, or about 8k of data. Thus, if playing an 11khz sample, it could take 
+         * At present, the granularity of this command is limited to the buffer size of the
+         * line spooler, or about 8k of data. Thus, if playing an 11khz sample, it could take
          * 8/11ths of a second for the sound to actually stop playing.
          */
         public void stop ();
@@ -135,7 +134,7 @@ public class SoundManager
          */
         public float getPan ();
     }
-    
+
     /** The default sound type. */
     public static final SoundType DEFAULT = new SoundType("default");
 
@@ -174,7 +173,7 @@ public class SoundManager
         _rmgr = rmgr;
         _defaultClipBundle = defaultClipBundle;
         _defaultClipPath = defaultClipPath;
-        _clipCache = 
+        _clipCache =
             new LRUHashMap<SoundKey, byte[][]>(cacheSize, new LRUHashMap.ItemSizer<byte[][]>() {
                 public int computeSize (byte[][] value) {
                     int total = 0;
@@ -213,11 +212,11 @@ public class SoundManager
         buf.append("clipVol=").append(_clipVol);
         buf.append(", disabled=[");
         int ii = 0;
-        for (Iterator<SoundType> iter = _disabledTypes.iterator(); iter.hasNext(); ) {
+        for (SoundType soundType : _disabledTypes) {
             if (ii++ > 0) {
                 buf.append(", ");
             }
-            buf.append(iter.next());
+            buf.append(soundType);
         }
         return buf.append("]").toString();
     }
@@ -526,7 +525,7 @@ public class SoundManager
     }
 
     /**
-     * On a spooling thread, 
+     * On a spooling thread,
      */
     protected void playSound (SoundKey key)
     {
@@ -565,7 +564,6 @@ public class SoundManager
             line.start();
 
             _soundSeemsToWork = true;
-            long startTime = System.currentTimeMillis();
 
             byte[] buffer = new byte[LINEBUF_SIZE];
             int totalRead = 0;
@@ -600,7 +598,7 @@ public class SoundManager
                 }
 
                 if (key.cmd == LOOP) {
-                    // if we're going to loop, reset the stream to the beginning if we can, 
+                    // if we're going to loop, reset the stream to the beginning if we can,
                     // otherwise just remake the stream
                     if (stream.markSupported()) {
                         stream.reset();
@@ -610,32 +608,7 @@ public class SoundManager
                 }
             } while (key.cmd == LOOP && key.running);
 
-            // sleep the drain time. We never trust line.drain() because
-            // it is buggy and locks up on natively multithreaded systems
-            // (linux, winXP with HT).
-            float sampleRate = format.getSampleRate();
-            if (sampleRate == AudioSystem.NOT_SPECIFIED) {
-                sampleRate = 11025; // most of our sounds are
-            }
-            int sampleSize = format.getSampleSizeInBits();
-            if (sampleSize == AudioSystem.NOT_SPECIFIED) {
-                sampleSize = 16;
-            }
-
-            int drainTime = (int) Math.ceil((totalRead * 8 * 1000) / (sampleRate * sampleSize));
-
-            // subtract out time we've already spent doing things.
-            drainTime -= System.currentTimeMillis() - startTime;
-            
-            drainTime = Math.max(0, drainTime);
-            
-            // add in a fudge factor of half a second 
-            drainTime += 500;
-
-            try {
-                Thread.sleep(drainTime);
-            } catch (InterruptedException ie) { }
-
+            line.drain();
         } catch (IOException ioe) {
             log.warning("Error loading sound file [key=" + key + ", e=" + ioe + "].");
 
@@ -647,7 +620,7 @@ public class SoundManager
             if (_soundSeemsToWork) {
                 log.warning(err);
             } else {
-                // this error comes every goddamned time we play a sound on someone with a 
+                // this error comes every goddamned time we play a sound on someone with a
                 // misconfigured sound card, so let's just keep it to ourselves
                 log.debug(err);
             }
@@ -697,7 +670,7 @@ public class SoundManager
                     data = new byte[1][];
                     data[0] = IOUtils.toByteArray(stream);
 
-                } else { 
+                } else {
                     // otherwise, randomize between all available sounds
                     Config c = getConfig(key);
                     String[] names = c.getValue(key.key, (String[])null);
@@ -787,7 +760,7 @@ public class SoundManager
             } catch (FileNotFoundException fnfe2) {
                 // only play the default sound if we have verbose sound debugging turned on.
                 if (_verbose.getValue()) {
-                    log.warning("Could not locate sound data [bundle=" + bundle + 
+                    log.warning("Could not locate sound data [bundle=" + bundle +
                                 ", path=" + path + "].");
                     if (_defaultClipPath != null) {
                         try {
@@ -844,7 +817,7 @@ public class SoundManager
 //    protected static void adjustVolumeIdeally (Line line, float volume)
 //    {
 //        if (line.isControlSupported(FloatControl.Type.VOLUME)) {
-//            FloatControl vol = (FloatControl) 
+//            FloatControl vol = (FloatControl)
 //                line.getControl(FloatControl.Type.VOLUME);
 //
 //            float min = vol.getMinimum();
@@ -1072,7 +1045,7 @@ public class SoundManager
     protected static final long MAX_SOUND_DELAY = 400L;
 
     /** The size of the line's buffer. */
-    protected static final int LINEBUF_SIZE = 16 * 1024;
+    protected static final int LINEBUF_SIZE = 64 * 1024;
 
     /** The maximum time a spooler will wait for a stream before deciding to shut down. */
     protected static final long MAX_WAIT_TIME = 30000L;
