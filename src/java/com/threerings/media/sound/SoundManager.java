@@ -31,6 +31,7 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.sound.sampled.AudioFormat;
@@ -212,11 +213,11 @@ public class SoundManager
         buf.append("clipVol=").append(_clipVol);
         buf.append(", disabled=[");
         int ii = 0;
-        for (SoundType soundType : _disabledTypes) {
+        for (Iterator<SoundType> iter = _disabledTypes.iterator(); iter.hasNext(); ) {
             if (ii++ > 0) {
                 buf.append(", ");
             }
-            buf.append(soundType);
+            buf.append(iter.next());
         }
         return buf.append("]").toString();
     }
@@ -564,6 +565,7 @@ public class SoundManager
             line.start();
 
             _soundSeemsToWork = true;
+            long startTime = System.currentTimeMillis();
 
             byte[] buffer = new byte[LINEBUF_SIZE];
             int totalRead = 0;
@@ -608,7 +610,32 @@ public class SoundManager
                 }
             } while (key.cmd == LOOP && key.running);
 
-            line.drain();
+            // sleep the drain time. We never trust line.drain() because
+            // it is buggy and locks up on natively multithreaded systems
+            // (linux, winXP with HT).
+            float sampleRate = format.getSampleRate();
+            if (sampleRate == AudioSystem.NOT_SPECIFIED) {
+                sampleRate = 11025; // most of our sounds are
+            }
+            int sampleSize = format.getSampleSizeInBits();
+            if (sampleSize == AudioSystem.NOT_SPECIFIED) {
+                sampleSize = 16;
+            }
+
+            int drainTime = (int) Math.ceil((totalRead * 8 * 1000) / (sampleRate * sampleSize));
+
+            // subtract out time we've already spent doing things.
+            drainTime -= System.currentTimeMillis() - startTime;
+
+            drainTime = Math.max(0, drainTime);
+
+            // add in a fudge factor of half a second
+            drainTime += 500;
+
+            try {
+                Thread.sleep(drainTime);
+            } catch (InterruptedException ie) { }
+
         } catch (IOException ioe) {
             log.warning("Error loading sound file [key=" + key + ", e=" + ioe + "].");
 
@@ -1045,7 +1072,7 @@ public class SoundManager
     protected static final long MAX_SOUND_DELAY = 400L;
 
     /** The size of the line's buffer. */
-    protected static final int LINEBUF_SIZE = 64 * 1024;
+    protected static final int LINEBUF_SIZE = 16 * 1024;
 
     /** The maximum time a spooler will wait for a stream before deciding to shut down. */
     protected static final long MAX_WAIT_TIME = 30000L;
