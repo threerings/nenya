@@ -37,13 +37,13 @@ public interface TileSetRepository
      * Returns an iterator over the identifiers of all {@link TileSet}
      * objects available.
      */
-    public Iterator enumerateTileSetIds ()
+    public Iterator<Integer> enumerateTileSetIds ()
         throws PersistenceException;
 
     /**
      * Returns an iterator over all {@link TileSet} objects available.
      */
-    public Iterator enumerateTileSets ()
+    public Iterator<TileSet> enumerateTileSets ()
         throws PersistenceException;
 
     /**

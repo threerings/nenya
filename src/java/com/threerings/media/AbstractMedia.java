@@ -212,7 +212,7 @@ public abstract class AbstractMedia
      * Queues the supplied notification up to be dispatched to this
      * abstract media's observers.
      */
-    public void queueNotification (ObserverList.ObserverOp amop)
+    public void queueNotification (ObserverList.ObserverOp<Object> amop)
     {
         if (_observers != null) {
             if (_mgr != null) {
@@ -330,7 +330,7 @@ public abstract class AbstractMedia
     protected void addObserver (Object obs)
     {
         if (_observers == null) {
-            _observers = new ObserverList(ObserverList.FAST_UNSAFE_NOTIFY);
+            _observers = ObserverList.newFastUnsafe();
         }
         _observers.add(obs);
     }
@@ -376,7 +376,7 @@ public abstract class AbstractMedia
     protected AbstractMediaManager _mgr;
 
     /** Our observers. */
-    protected ObserverList _observers = null;
+    protected ObserverList<Object> _observers = null;
 
     /** The tick stamp associated with our first call to {@link #tick}.
      * This is set up automatically in {@link #willStart}. */

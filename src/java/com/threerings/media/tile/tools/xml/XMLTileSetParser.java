@@ -27,7 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
@@ -83,16 +84,16 @@ public class XMLTileSetParser
 
     /**
      * Loads all of the tilesets specified in the supplied XML tileset
-     * description file and places them into the supplied hashmap indexed
+     * description file and places them into the supplied map indexed
      * by tileset name. This method is not reentrant, so don't go calling
      * it from multiple threads.
      *
      * @param path a path, relative to the classpath, at which the tileset
      * definition file can be found.
-     * @param tilesets the hashmap into which the tilesets will be placed,
+     * @param tilesets the map into which the tilesets will be placed,
      * indexed by tileset name.
      */
-    public void loadTileSets (String path, HashMap tilesets)
+    public void loadTileSets (String path, Map<String, TileSet> tilesets)
         throws IOException
     {
         // get an input stream for this XML file
@@ -109,16 +110,16 @@ public class XMLTileSetParser
 
     /**
      * Loads all of the tilesets specified in the supplied XML tileset
-     * description file and places them into the supplied hashmap indexed
+     * description file and places them into the supplied map indexed
      * by tileset name. This method is not reentrant, so don't go calling
      * it from multiple threads.
      *
      * @param file the file in which the tileset definition file can be
      * found.
-     * @param tilesets the hashmap into which the tilesets will be placed,
+     * @param tilesets the map into which the tilesets will be placed,
      * indexed by tileset name.
      */
-    public void loadTileSets (File file, HashMap tilesets)
+    public void loadTileSets (File file, Map<String, TileSet> tilesets)
         throws IOException
     {
         // load up the tilesets
@@ -127,21 +128,21 @@ public class XMLTileSetParser
 
     /**
      * Loads all of the tilesets specified in the supplied XML tileset
-     * description file and places them into the supplied hashmap indexed
+     * description file and places them into the supplied map indexed
      * by tileset name. This method is not reentrant, so don't go calling
      * it from multiple threads.
      *
      * @param source an input stream from which the tileset definition
      * file can be read.
-     * @param tilesets the hashmap into which the tilesets will be placed,
+     * @param tilesets the map into which the tilesets will be placed,
      * indexed by tileset name.
      */
-    public void loadTileSets (InputStream source, HashMap tilesets)
+    public void loadTileSets (InputStream source, Map<String, TileSet> tilesets)
         throws IOException
     {
         // stick an array list on the top of the stack for collecting
         // parsed tilesets
-        ArrayList setlist = new ArrayList();
+        List<TileSet> setlist = new ArrayList<TileSet>();
         _digester.push(setlist);
 
         // now fire up the digester to parse the stream
@@ -153,7 +154,7 @@ public class XMLTileSetParser
 
         // stick the tilesets from the list into the hashtable
         for (int i = 0; i < setlist.size(); i++) {
-            TileSet set = (TileSet)setlist.get(i);
+            TileSet set = setlist.get(i);
             if (set.getName() == null) {
                 log.warning("Tileset did not receive name during " +
                             "parsing process [set=" + set + "].");

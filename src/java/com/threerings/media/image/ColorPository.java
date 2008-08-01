@@ -75,7 +75,7 @@ public class ColorPository implements Serializable
         public int defaultId;
 
         /** A table of target colors included in this class. */
-        public HashIntMap colors = new HashIntMap();
+        public HashIntMap<ColorRecord> colors = new HashIntMap<ColorRecord>();
 
         /** Used when parsing the color definitions. */
         public void addColor (ColorRecord record)
@@ -114,9 +114,7 @@ public class ColorPository implements Serializable
             }
 
             // Look for name matches among all colors
-            Iterator iter = colors.values().iterator();
-            while (iter.hasNext()) {
-                ColorRecord color = (ColorRecord)iter.next();
+            for (ColorRecord color : colors.values()) {
                 if (color.name.equalsIgnoreCase(name)) {
                     return color.colorId;
                 }
@@ -132,16 +130,13 @@ public class ColorPository implements Serializable
         {
             // figure out our starter ids if we haven't already
             if (_starters == null) {
-                ArrayList list = new ArrayList();
-                Iterator iter = colors.values().iterator();
-                while (iter.hasNext()) {
-                    ColorRecord color = (ColorRecord)iter.next();
+                ArrayList<ColorRecord> list = new ArrayList<ColorRecord>();
+                for (ColorRecord color : colors.values()) {
                     if (color.starter) {
                         list.add(color);
                     }
                 }
-                _starters = (ColorRecord[])
-                    list.toArray(new ColorRecord[list.size()]);
+                _starters = list.toArray(new ColorRecord[list.size()]);
             }
 
             // sanity check
@@ -161,7 +156,7 @@ public class ColorPository implements Serializable
          */
         public ColorRecord getDefault ()
         {
-            return (ColorRecord) colors.get(defaultId);
+            return colors.get(defaultId);
         }
 
         @Override
@@ -249,7 +244,7 @@ public class ColorPository implements Serializable
     /**
      * Returns an iterator over all color classes in this pository.
      */
-    public Iterator enumerateClasses ()
+    public Iterator<ClassRecord> enumerateClasses ()
     {
         return _classes.values().iterator();
     }
@@ -268,9 +263,9 @@ public class ColorPository implements Serializable
 
         // create the array
         ColorRecord[] crecs = new ColorRecord[record.colors.size()];
-        Iterator iter = record.colors.values().iterator();
+        Iterator<ColorRecord> iter = record.colors.values().iterator();
         for (int i = 0; iter.hasNext(); i++) {
-            crecs[i] = ((ColorRecord)iter.next());
+            crecs[i] = iter.next();
         }
         return crecs;
     }
@@ -288,9 +283,9 @@ public class ColorPository implements Serializable
         }
 
         int[] cids = new int[record.colors.size()];
-        Iterator crecs = record.colors.values().iterator();
+        Iterator<ColorRecord> crecs = record.colors.values().iterator();
         for (int i = 0; crecs.hasNext(); i++) {
-            cids[i] = ((ColorRecord)crecs.next()).colorId;
+            cids[i] = crecs.next().colorId;
         }
         return cids;
     }
@@ -340,7 +335,7 @@ public class ColorPository implements Serializable
     {
         ClassRecord crec = getClassRecord(className);
         if (crec != null) {
-            ColorRecord color = (ColorRecord)crec.colors.get(colorId);
+            ColorRecord color = crec.colors.get(colorId);
             if (color != null) {
                 return color.getColorization();
             }
@@ -363,7 +358,7 @@ public class ColorPository implements Serializable
                 return null;
             }
 
-            ColorRecord color = (ColorRecord)crec.colors.get(colorId);
+            ColorRecord color = crec.colors.get(colorId);
             if (color != null) {
                 return color.getColorization();
             }
@@ -377,9 +372,9 @@ public class ColorPository implements Serializable
      */
     public ClassRecord getClassRecord (String className)
     {
-        Iterator iter = _classes.values().iterator();
+        Iterator<ClassRecord> iter = _classes.values().iterator();
         while (iter.hasNext()) {
-            ClassRecord crec = (ClassRecord)iter.next();
+            ClassRecord crec = iter.next();
             if (crec.name.equals(className)) {
                 return crec;
             }
@@ -394,7 +389,7 @@ public class ColorPository implements Serializable
      */
     public ColorRecord getColorRecord (int classId, int colorId)
     {
-        ClassRecord record = (ClassRecord)_classes.get(classId);
+        ClassRecord record = _classes.get(classId);
         if (record == null) {
             // if they request color class zero, we assume they're just
             // decoding a blank colorprint, otherwise we complain
@@ -406,7 +401,7 @@ public class ColorPository implements Serializable
             }
             return null;
         }
-        return (ColorRecord)record.colors.get(colorId);
+        return record.colors.get(colorId);
     }
 
     /**
@@ -430,7 +425,7 @@ public class ColorPository implements Serializable
             return null;
         }
 
-        return (ColorRecord)record.colors.get(colorId);
+        return record.colors.get(colorId);
     }
 
     /**
@@ -491,7 +486,7 @@ public class ColorPository implements Serializable
     }
 
     /** Our mapping from class names to class records. */
-    protected HashIntMap _classes = new HashIntMap();
+    protected HashIntMap<ClassRecord> _classes = new HashIntMap<ClassRecord>();
 
     /** Increase this value when object's serialized state is impacted by
      * a class change (modification of fields, inheritance). */
