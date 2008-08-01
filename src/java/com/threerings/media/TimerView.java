@@ -92,7 +92,7 @@ public class TimerView
      * or more completed.  If "warner" is non-null, it will be
      * called at that time.
      */
-    public void setWarning (float warnPercent, ResultListener warner)
+    public void setWarning (float warnPercent, ResultListener<TimerView> warner)
     {
         // This warning hasn't triggered yet
         _warned = false;
@@ -130,8 +130,7 @@ public class TimerView
      * @param finisher a listener that will be notified when the timer
      * finishes, or null if nothing should be notified.
      */
-    public void start (float startPercent, long duration,
-                       ResultListener finisher)
+    public void start (float startPercent, long duration, ResultListener<TimerView> finisher)
     {
         // Sanity check input arguments
         if (startPercent < 0.0f || startPercent >= 1.0f) {
@@ -515,10 +514,10 @@ public class TimerView
     protected boolean _processUnpause = false;
 
     /** A listener to be notified when the timer finishes. */
-    protected ResultListener _finisher;
+    protected ResultListener<TimerView> _finisher;
 
     /** A listener to be notified when the warning time occurs. */
-    protected ResultListener _warner;
+    protected ResultListener<TimerView> _warner;
 
     /** The default update date. */
     protected static final long DEFAULT_RATE = 100L;
