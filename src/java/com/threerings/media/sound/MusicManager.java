@@ -176,7 +176,7 @@ public class MusicManager
             return;
         }
 
-        // if the volume is off, we don't actually want to play anything but we want to at least 
+        // if the volume is off, we don't actually want to play anything but we want to at least
         // decrement any loopers by one and keep them on the top of the queue
         if (_musicVol == 0f) {
             handleMusicStopped();
@@ -216,7 +216,7 @@ public class MusicManager
                 _musicPlayer.init(_playerListener);
 
             } catch (Exception e) {
-                log.warning("Unable to instantiate music player [class=" + playerClass + 
+                log.warning("Unable to instantiate music player [class=" + playerClass +
                             ", e=" + e + "].");
 
                 // scrap it, try again with the next song
@@ -314,7 +314,7 @@ public class MusicManager
 
         public MusicKey (String set, String path, int loops)
         {
-            super((byte) -1, set, path);
+            super((byte) -1, set, path, null);
             this.loops = loops;
         }
     }

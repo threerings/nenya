@@ -31,7 +31,6 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.sound.sampled.AudioFormat;
@@ -213,11 +212,11 @@ public class SoundManager
         buf.append("clipVol=").append(_clipVol);
         buf.append(", disabled=[");
         int ii = 0;
-        for (Iterator<SoundType> iter = _disabledTypes.iterator(); iter.hasNext(); ) {
+        for (SoundType soundType : _disabledTypes) {
             if (ii++ > 0) {
                 buf.append(", ");
             }
-            buf.append(iter.next());
+            buf.append(soundType);
         }
         return buf.append("]").toString();
     }
@@ -262,39 +261,33 @@ public class SoundManager
     }
 
     /**
-     * Optionally lock the sound data prior to playing, to guarantee
-     * that it will be quickly available for playing.
+     * Optionally lock each of these keys prior to playing, to guarantee that it will be quickly
+     * available for playing.
      */
-    public void lock (String pkgPath, String key)
+    public void lock (String pkgPath, String... keys)
     {
-        enqueue(new SoundKey(LOCK, pkgPath, key), true);
+        lock(pkgPath, null, keys);
     }
 
     /**
-     * Unlock the specified sound so that its resources can be freed.
+     * Optionally lock each of these keys prior to playing, to guarantee that it will be quickly
+     * available for playing. <code>onLock</code> will be called on a spooler thread when locking
+     * is complete.
      */
-    public void unlock (String pkgPath, String key)
-    {
-        enqueue(new SoundKey(UNLOCK, pkgPath, key), true);
-    }
-
-    /**
-     * Batch lock a list of sounds.
-     */
-    public void lock (String pkgPath, String[] keys)
+    public void lock (String pkgPath, Runnable onLock, String... keys)
     {
         for (int ii=0; ii < keys.length; ii++) {
-            enqueue(new SoundKey(LOCK, pkgPath, keys[ii]), (ii == 0));
+            enqueue(new SoundKey(LOCK, pkgPath, keys[ii], onLock), (ii == 0));
         }
     }
 
     /**
-     * Batch unlock a list of sounds.
+     *Unlock the specified sounds so that its resources can be freed.
      */
-    public void unlock (String pkgPath, String[] keys)
+    public void unlock (String pkgPath, String... keys)
     {
         for (int ii=0; ii < keys.length; ii++) {
-            enqueue(new SoundKey(UNLOCK, pkgPath, keys[ii]), (ii == 0));
+            enqueue(new SoundKey(UNLOCK, pkgPath, keys[ii], null), (ii == 0));
         }
     }
 
@@ -355,28 +348,29 @@ public class SoundManager
     }
 
     /**
-     * Loop the specified sound.
+     * Loop the specified sound, stopping as quickly as possible when stop is called.
      */
     public Frob loop (SoundType type, String pkgPath, String key)
     {
-        return loop(type, pkgPath, key, PAN_CENTER);
+        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION);
     }
 
     /**
-     * Loop the specified sound.
+     * Loop the specified sound, stopping as quickly as possible when stop is called.
      */
     public Frob loop (SoundType type, String pkgPath, String key, float pan)
     {
-        if (type == null) {
-            type = DEFAULT;
-        }
+        return loop(type, pkgPath, key, pan, LOOP);
 
-        if (!isEnabled(type)) {
-            return null;
-        }
-        SoundKey skey = new SoundKey(LOOP, pkgPath, key, 0, _clipVol, pan);
-        addToPlayQueue(skey);
-        return skey; // it is a frob
+    }
+
+    /**
+     * Loop the specified sound, stopping after the current iteration completes when stop is
+     * called.
+     */
+    public Frob loopToCompletion (SoundType type, String pkgPath, String key)
+    {
+        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION);
     }
 
     // ==== End of public methods ====
@@ -474,6 +468,7 @@ public class SoundManager
         switch (key.cmd) {
         case PLAY:
         case LOOP:
+        case LOOP_TO_COMPLETION:
             playSound(key);
             break;
 
@@ -500,6 +495,7 @@ public class SoundManager
             }
             break;
         }
+        key.processed();
     }
 
     /**
@@ -551,7 +547,7 @@ public class SoundManager
 
             AudioInputStream stream = setupAudioStream(data);
 
-            if (key.cmd == LOOP && stream.markSupported()) {
+            if (key.isLoop() && stream.markSupported()) {
                 stream.mark(data.length);
             }
 
@@ -572,7 +568,7 @@ public class SoundManager
             do {
                 // play the sound
                 int count = 0;
-                while (key.running && count != -1) {
+                while ((key.running || key.cmd == LOOP_TO_COMPLETION) && count != -1) {
                     float vol = key.volume;
                     if (vol != setVolume) {
                         adjustVolume(line, vol);
@@ -599,7 +595,7 @@ public class SoundManager
                     }
                 }
 
-                if (key.cmd == LOOP) {
+                if (key.isLoop()) {
                     // if we're going to loop, reset the stream to the beginning if we can,
                     // otherwise just remake the stream
                     if (stream.markSupported()) {
@@ -608,7 +604,7 @@ public class SoundManager
                         stream = setupAudioStream(data);
                     }
                 }
-            } while (key.cmd == LOOP && key.running);
+            } while (key.isLoop() && key.running);
 
             // sleep the drain time. We never trust line.drain() because
             // it is buggy and locks up on natively multithreaded systems
@@ -838,6 +834,23 @@ public class SoundManager
         return c;
     }
 
+    /**
+     * Loop the specified sound.
+     */
+    protected Frob loop (SoundType type, String pkgPath, String key, float pan, byte cmd)
+    {
+        if (type == null) {
+            type = DEFAULT;
+        }
+
+        if (!isEnabled(type)) {
+            return null;
+        }
+        SoundKey skey = new SoundKey(cmd, pkgPath, key, 0, _clipVol, pan);
+        addToPlayQueue(skey);
+        return skey; // it is a frob
+    }
+
 //    /**
 //     * Adjust the volume of this clip.
 //     */
@@ -920,9 +933,11 @@ public class SoundManager
         /** The player thread, if it's playing us. */
         public Thread thread;
 
+        /** Run when the processed method is called. */
+        public Runnable onProcessed;
+
         /**
          * Create a SoundKey that just contains the specified command.
-         * DIE.
          */
         public SoundKey (byte cmd)
         {
@@ -932,19 +947,21 @@ public class SoundManager
         /**
          * Quicky constructor for music keys and lock operations.
          */
-        public SoundKey (byte cmd, String pkgPath, String key)
+        public SoundKey (byte cmd, String pkgPath, String key, Runnable onProcessed)
         {
             this(cmd);
             this.pkgPath = pkgPath;
             this.key = key;
+            this.onProcessed = onProcessed;
         }
 
         /**
          * Constructor for a sound effect soundkey.
          */
-        public SoundKey (byte cmd, String pkgPath, String key, int delay, float volume, float pan)
+        public SoundKey (byte cmd, String pkgPath, String key, int delay, float volume,
+                float pan)
         {
-            this(cmd, pkgPath, key);
+            this(cmd, pkgPath, key, null);
 
             stamp = System.currentTimeMillis() + delay;
             setVolume(volume);
@@ -992,6 +1009,23 @@ public class SoundManager
         public boolean isExpired ()
         {
             return (stamp + MAX_SOUND_DELAY < System.currentTimeMillis());
+        }
+
+        /**
+         * If this key is one of the two loop types.
+         */
+        protected boolean isLoop() {
+            return cmd == LOOP || cmd == LOOP_TO_COMPLETION;
+        }
+
+        /**
+         * Called when the manager is done processing this key.
+         */
+        public void processed ()
+        {
+            if (onProcessed != null) {
+                onProcessed.run();
+            }
         }
 
         @Override
@@ -1055,6 +1089,7 @@ public class SoundManager
     protected static final byte UNLOCK = 2;
     protected static final byte DIE = 3;
     protected static final byte LOOP = 4;
+    protected static final byte LOOP_TO_COMPLETION = 5;
 
     /** A pref that specifies a directory for us to get test sounds from. */
     protected static RuntimeAdjust.FileAdjust _testDir =
