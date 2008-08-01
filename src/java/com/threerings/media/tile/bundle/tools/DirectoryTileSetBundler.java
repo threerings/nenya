@@ -128,7 +128,9 @@ public class DirectoryTileSetBundler extends TileSetBundler
                     }
 
                     try {
-                        BufferedImage image = ImageIO.read(ifile);
+                        // We read the image to ensure it is a valid image.
+                        ImageIO.read(ifile);
+
                         File outFile = new File(target, imagePath);
                         if (outFile.lastModified() > newestMod) {
                             // Our file's newer than the newest bundle mod - up to date.
