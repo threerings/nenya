@@ -352,7 +352,7 @@ public class SoundManager
      */
     public Frob loop (SoundType type, String pkgPath, String key)
     {
-        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION);
+        return loop(type, pkgPath, key, PAN_CENTER, LOOP);
     }
 
     /**
