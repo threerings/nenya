@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="com/threerings/jme/|com/threerings/media/sound/ModPlayer.java|com/threerings/media/sound/OggPlayer.java|com/threerings/openal/" kind="src" output="dist/classes" path="src/java"/>
-	<classpathentry excluding="com/threerings/jme/|com/threerings/openal/" kind="src" path="tests/src/java"/>
+	<classpathentry excluding="com/threerings/jme/|com/threerings/openal/" kind="src" output="dist/classes" path="tests/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/narya"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/xml-writer.jar"/>
-	<classpathentry kind="output" path="tests/dist/classes"/>
 </classpath>
