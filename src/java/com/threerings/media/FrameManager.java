@@ -411,8 +411,8 @@ public abstract class FrameManager
         }
 
         // tick all of our frame participants
-        for (Object _participant : _participants) {
-            FrameParticipant part = (FrameParticipant)_participant;
+        for (Object participant : _participants) {
+            FrameParticipant part = (FrameParticipant)participant;
             if (part == null) {
                 continue;
             }
@@ -467,8 +467,8 @@ public abstract class FrameManager
     {
         // paint our frame participants (which want to be handled specially)
         int painted = 0;
-        for (Object _participant : _participants) {
-            FrameParticipant part = (FrameParticipant)_participant;
+        for (Object participant : _participants) {
+            FrameParticipant part = (FrameParticipant)participant;
             if (part == null) {
                 continue;
             }
