@@ -21,6 +21,8 @@
 
 package com.threerings.media.animation;
 
+import java.util.Iterator;
+
 import com.samskivert.util.SortableArrayList;
 
 import com.threerings.media.AbstractMedia;
@@ -31,6 +33,7 @@ import com.threerings.media.AbstractMediaManager;
  * generating events when animations finish and suchlike.
  */
 public class AnimationManager extends AbstractMediaManager
+    implements Iterable<Animation>
 {
     /**
      * Registers the given {@link Animation} with the animation manager for ticking and painting.
@@ -48,6 +51,11 @@ public class AnimationManager extends AbstractMediaManager
     public void unregisterAnimation (Animation anim)
     {
         removeMedia(anim);
+    }
+
+    public Iterator<Animation> iterator ()
+    {
+        return _anims.iterator();
     }
 
     @Override

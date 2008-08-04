@@ -24,6 +24,7 @@ package com.threerings.media;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.List;
+
 import javax.swing.JRootPane;
 
 import com.threerings.media.animation.Animation;
@@ -122,12 +123,18 @@ public class MediaOverlay
     }
 
     /**
-     * Adds a dirty region to this overlay. Note: control of the rectangle is granted to our
-     * underlying {@link RegionManager} which may bend, fold or mutilate it.
+     * Adds a dirty region to this overlay.
      */
     public void addDirtyRegion (Rectangle rect)
     {
-        _metamgr.getRegionManager().addDirtyRegion(rect);
+        // Only add dirty regions where rect intersects our actual media as the set region will
+        // propagate out to the repaint manager.
+        for (AbstractMedia media : _metamgr) {
+            Rectangle intersection = media.getBounds().intersection(rect);
+            if (!intersection.isEmpty()) {
+                _metamgr.getRegionManager().addDirtyRegion(intersection);
+            }
+        }
     }
 
     /**
@@ -144,7 +151,7 @@ public class MediaOverlay
             List<Rectangle> dlist = _metamgr.getRegionManager().peekDirtyRegions();
             for (int ii = 0, ll = dlist.size(); ii < ll; ii++) {
                 Rectangle dirty = dlist.get(ii);
-                repmgr.addDirtyRegion(root, dirty.x - root.getX(), dirty.y - root.getY(), 
+                repmgr.addDirtyRegion(root, dirty.x - root.getX(), dirty.y - root.getY(),
                                       dirty.width, dirty.height);
             }
         }
@@ -163,10 +170,10 @@ public class MediaOverlay
         }
 
         Rectangle[] dirty = _metamgr.getRegionManager().getDirtyRegions();
-        for (int ii = 0; ii < dirty.length; ii++) {
-            gfx.setClip(dirty[ii]);
-            _metamgr.paintMedia(gfx, MediaConstants.BACK, dirty[ii]);
-            _metamgr.paintMedia(gfx, MediaConstants.FRONT, dirty[ii]);
+        for (Rectangle element : dirty) {
+            gfx.setClip(element);
+            _metamgr.paintMedia(gfx, MediaConstants.BACK, element);
+            _metamgr.paintMedia(gfx, MediaConstants.FRONT, element);
         }
         return true;
     }

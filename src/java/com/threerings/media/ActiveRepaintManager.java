@@ -68,7 +68,7 @@ public class ActiveRepaintManager extends RepaintManager
     }
 
     @Override
-    public synchronized void addInvalidComponent (JComponent comp) 
+    public synchronized void addInvalidComponent (JComponent comp)
     {
         Component vroot = null;
         if (DEBUG) {
@@ -128,7 +128,7 @@ public class ActiveRepaintManager extends RepaintManager
     }
 
     @Override
-    public synchronized void addDirtyRegion (JComponent comp, int x, int y, int width, int height) 
+    public synchronized void addDirtyRegion (JComponent comp, int x, int y, int width, int height)
     {
         // ignore invalid requests
         if ((width <= 0) || (height <= 0) || (comp == null) ||
@@ -382,7 +382,7 @@ public class ActiveRepaintManager extends RepaintManager
 
                 // we also need to repaint any components in this layer that are above our freshly
                 // repainted component
-                fmgr.renderLayers((Graphics2D)g, ocomp, _cbounds, _clipped);
+                fmgr.renderLayers((Graphics2D)g, ocomp, _cbounds, _clipped, drect);
 
             } else if (root != null) {
                 if (DEBUG) {
@@ -436,7 +436,7 @@ public class ActiveRepaintManager extends RepaintManager
             comp = comp.getParent();
         }
     }
-    
+
     /** The root of our interface. */
     protected Component _root;
 

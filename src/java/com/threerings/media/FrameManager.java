@@ -207,7 +207,7 @@ public abstract class FrameManager
     {
         return _timer.getElapsedMillis();
     }
-    
+
     /**
      * Returns the highest drift ratio our timer has seen. 1.0 means no drift (and is what we return
      * if we're not using a CalibratingTimer)
@@ -220,7 +220,7 @@ public abstract class FrameManager
     		return 1.0;
     	}
     }
-    
+
     /**
      * Clears out the maximum drift our timer remembers seeing.
      */
@@ -411,8 +411,8 @@ public abstract class FrameManager
         }
 
         // tick all of our frame participants
-        for (int ii = 0; ii < _participants.length; ii++) {
-            FrameParticipant part = (FrameParticipant)_participants[ii];
+        for (Object _participant : _participants) {
+            FrameParticipant part = (FrameParticipant)_participant;
             if (part == null) {
                 continue;
             }
@@ -467,8 +467,8 @@ public abstract class FrameManager
     {
         // paint our frame participants (which want to be handled specially)
         int painted = 0;
-        for (int ii = 0; ii < _participants.length; ii++) {
-            FrameParticipant part = (FrameParticipant)_participants[ii];
+        for (Object _participant : _participants) {
+            FrameParticipant part = (FrameParticipant)_participant;
             if (part == null) {
                 continue;
             }
@@ -513,7 +513,7 @@ public abstract class FrameManager
 
             // render any components in our layered pane that are not in the default layer
             _clipped[0] = false;
-            renderLayers(gfx, pcomp, _tbounds, _clipped);
+            renderLayers(gfx, pcomp, _tbounds, _clipped, _tbounds);
 
             if (HANG_DEBUG) {
                 long delay = (System.currentTimeMillis() - start);
@@ -551,8 +551,8 @@ public abstract class FrameManager
      * Renders all components in all {@link JLayeredPane} layers that intersect the supplied
      * bounds.
      */
-    protected void renderLayers (Graphics2D g, Component pcomp,
-                                 Rectangle bounds, boolean[] clipped)
+    protected void renderLayers (Graphics2D g, Component pcomp, Rectangle bounds,
+        boolean[] clipped, Rectangle dirty)
     {
         JLayeredPane lpane = JLayeredPane.getLayeredPaneAbove(pcomp);
         if (lpane != null) {
@@ -565,7 +565,7 @@ public abstract class FrameManager
         // if we have a MediaOverlay, let it know that any sprites in this region need to be
         // repainted as the components beneath them have just been redrawn
         if (_overlay != null) {
-            _overlay.addDirtyRegion(new Rectangle(bounds));
+            _overlay.addDirtyRegion(dirty);
         }
     }
 
@@ -623,7 +623,7 @@ public abstract class FrameManager
         {
             super("FrameManagerTicker");
         }
-        
+
         @Override
         public void run ()
         {

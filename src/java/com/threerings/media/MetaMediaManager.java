@@ -21,24 +21,28 @@
 
 package com.threerings.media;
 
-import java.util.Arrays;
+import static com.threerings.media.Log.log;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.util.Arrays;
+import java.util.Iterator;
 
-import com.samskivert.swing.Label;
+import com.google.common.collect.Iterators;
+
 import com.samskivert.util.IntListUtil;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.sprite.Sprite;
-import com.threerings.media.sprite.SpriteManager;
+import com.samskivert.swing.Label;
+
 import com.threerings.media.animation.Animation;
 import com.threerings.media.animation.AnimationManager;
-
-import static com.threerings.media.Log.log;
+import com.threerings.media.sprite.Sprite;
+import com.threerings.media.sprite.SpriteManager;
+import com.threerings.media.timer.MediaTimer;
 
 /**
  * Coordinates interaction between a sprite and animation manager and the media host that hosts and
@@ -47,7 +51,7 @@ import static com.threerings.media.Log.log;
  * functionality, we're constrained by all the extant usages and derivations.
  */
 public class MetaMediaManager
-    implements MediaConstants
+    implements MediaConstants, Iterable<AbstractMedia>
 {
     public MetaMediaManager (FrameManager framemgr, MediaHost host)
     {
@@ -330,6 +334,11 @@ public class MetaMediaManager
         // let our sprites and animations know what's up
         _animmgr.viewLocationDidChange(dx, dy);
         _spritemgr.viewLocationDidChange(dx, dy);
+    }
+
+    public Iterator<AbstractMedia> iterator ()
+    {
+        return Iterators.concat(_spritemgr.enumerateSprites(), _animmgr.iterator());
     }
 
     /** The frame manager with whom we register. */
