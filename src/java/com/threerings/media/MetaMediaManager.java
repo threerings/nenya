@@ -116,7 +116,8 @@ public class MetaMediaManager
             return;
         }
 
-        if (_paused = paused) {
+        _paused = paused;
+        if (_paused) {
             // make a note of our pause time
             _pauseTime = _framemgr.getTimeStamp();
 

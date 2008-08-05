@@ -51,7 +51,8 @@ public class Unsafe
             }
 
             if (_initialized && enabled != _gcEnabled) {
-                if (_gcEnabled = enabled) {
+                _gcEnabled = enabled;
+                if (_gcEnabled) {
                     enableGC();
                 } else {
                     disableGC();
