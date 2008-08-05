@@ -21,6 +21,8 @@
 
 package com.threerings.media.sound;
 
+import static com.threerings.media.Log.log;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +30,6 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
@@ -45,20 +46,19 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.io.IOUtils;
 
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.Config;
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.util.Interval;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RandomUtil;
+import com.samskivert.util.RunQueue;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.resource.ResourceManager;
+import com.samskivert.swing.RuntimeAdjust;
 
 import com.threerings.media.MediaPrefs;
-
-import static com.threerings.media.Log.log;
+import com.threerings.resource.ResourceManager;
 
 /**
  * Manages the playing of audio files.
@@ -163,18 +163,19 @@ public class SoundManager
     /**
      * Constructs a sound manager.
      *
-     * @param defaultClipPath The pathname of a sound clip to use as a
-     * fallback if another sound clip cannot be located.
+     * @param defaultClipPath The pathname of a sound clip to use as a fallback if another sound
+     * clip cannot be located.
      * @param cacheSize the number of bytes of sound clips to cache.
      */
-    public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath, int cacheSize)
+    public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath,
+            int cacheSize)
     {
         // save things off
         _rmgr = rmgr;
         _defaultClipBundle = defaultClipBundle;
         _defaultClipPath = defaultClipPath;
-        _clipCache =
-            new LRUHashMap<SoundKey, byte[][]>(cacheSize, new LRUHashMap.ItemSizer<byte[][]>() {
+        _clipCache = new LRUHashMap<SoundKey, byte[][]>(cacheSize,
+            new LRUHashMap.ItemSizer<byte[][]>() {
                 public int computeSize (byte[][] value) {
                     int total = 0;
                     for (byte[] bs : value) {
@@ -182,7 +183,7 @@ public class SoundManager
                     }
                     return total;
                 }
-        });
+            });
     }
 
     /**
@@ -243,6 +244,23 @@ public class SoundManager
     }
 
     /**
+     * Sets the run queue on which sound ending runnables are dispatched.
+     */
+    public void setCallbackQueue (RunQueue queue)
+    {
+        _callbackQueue = queue;
+    }
+
+    /**
+     * Gets the run queue on which sound ending runnables are dispatched. It defaults to
+     * {@link RunQueue#AWT}.
+     */
+    public RunQueue getCallbackQueue ()
+    {
+        return _callbackQueue;
+    }
+
+    /**
      * Sets the volume for all sound clips.
      *
      * @param vol a volume parameter between 0f and 1f, inclusive.
@@ -271,8 +289,8 @@ public class SoundManager
 
     /**
      * Optionally lock each of these keys prior to playing, to guarantee that it will be quickly
-     * available for playing. <code>onLock</code> will be called on a spooler thread when locking
-     * is complete.
+     * available for playing. <code>onLock</code> will be called on the run queue from
+     * {@link #getCallbackQueue()} when locking is complete.
      */
     public void lock (String pkgPath, Runnable onLock, String... keys)
     {
@@ -290,8 +308,8 @@ public class SoundManager
     }
 
     /**
-     *Unlock the specified sounds so that its resources can be freed. <code>onUnlock</code> will
-     * be called on a spooler thread when unlocking is complete.
+     *Unlock the specified sounds so that its resources can be freed. <code>onUnock</code> will
+     * be called on the run queue from {@link #getCallbackQueue()} when unlocking is complete.
      */
     public void unlock (String pkgPath, Runnable onUnlock, String... keys)
     {
@@ -301,12 +319,12 @@ public class SoundManager
     }
 
     /**
-     * Play the specified sound as the specified type of sound, immediately.
-     * Note that a sound need not be locked prior to playing.
+     * Play the specified sound as the specified type of sound, immediately. Note that a sound
+     * need not be locked prior to playing.
      */
-    public void play (SoundType type, String pkgPath, String key)
+    public boolean play (SoundType type, String pkgPath, String key)
     {
-        play(type, pkgPath, key, 0, PAN_CENTER);
+        return play(type, pkgPath, key, 0, PAN_CENTER);
     }
 
     /**
@@ -316,18 +334,18 @@ public class SoundManager
      *
      * @param pan a value from -1f (all left) to +1f (all right).
      */
-    public void play (SoundType type, String pkgPath, String key, float pan)
+    public boolean play (SoundType type, String pkgPath, String key, float pan)
     {
-        play(type, pkgPath, key, 0, pan);
+        return play(type, pkgPath, key, 0, pan);
     }
 
     /**
      * Play the specified sound after the specified delay.
      * @param delay the delay in milliseconds.
      */
-    public void play (SoundType type, String pkgPath, String key, int delay)
+    public boolean play (SoundType type, String pkgPath, String key, int delay)
     {
-        play(type, pkgPath, key, delay, PAN_CENTER);
+        return play(type, pkgPath, key, delay, PAN_CENTER);
     }
 
     /**
@@ -335,12 +353,19 @@ public class SoundManager
      * @param delay the delay in milliseconds.
      * @param pan a value from -1f (all left) to +1f (all right).
      */
-    public void play (SoundType type, String pkgPath, String key, int delay, float pan)
+    public boolean play (SoundType type, String pkgPath, String key, int delay, float pan)
     {
-        play(type, pkgPath, key, delay, pan, null);
+        return play(type, pkgPath, key, delay, pan, null);
     }
 
-    public void play (SoundType type, String pkgPath, String key, int delay, float pan,
+    /**
+     * Play the specified sound after the specified delay.
+     * @param delay the delay in milliseconds.
+     * @param pan a value from -1f (all left) to +1f (all right).
+     * @param onStop a runnable that will be run on the queue from {@link #getCallbackQueue()}
+     * when the sound stops playing.
+     */
+    public boolean play (SoundType type, String pkgPath, String key, int delay, float pan,
         Runnable onStop)
     {
         if (type == null) {
@@ -359,7 +384,9 @@ public class SoundManager
             } else {
                 addToPlayQueue(skey);
             }
+            return true;
         }
+        return false;
     }
 
     /**
@@ -528,7 +555,9 @@ public class SoundManager
             }
             break;
         }
-        key.processed();
+        if (key.onProcessed != null) {
+            _callbackQueue.postRunnable(key.onProcessed);
+        }
     }
 
     /**
@@ -1052,16 +1081,6 @@ public class SoundManager
             return cmd == LOOP || cmd == LOOP_TO_COMPLETION;
         }
 
-        /**
-         * Called when the manager is done processing this key.
-         */
-        public void processed ()
-        {
-            if (onProcessed != null) {
-                onProcessed.run();
-            }
-        }
-
         @Override
         public String toString ()
         {
@@ -1084,6 +1103,9 @@ public class SoundManager
             return false;
         }
     }
+
+    /** The queue where callbacks for keys being processed are dispatched. */
+    protected RunQueue _callbackQueue = RunQueue.AWT;
 
     /** The path of the default sound to use for missing sounds. */
     protected String _defaultClipBundle, _defaultClipPath;
