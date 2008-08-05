@@ -321,6 +321,9 @@ public class SoundManager
     /**
      * Play the specified sound as the specified type of sound, immediately. Note that a sound
      * need not be locked prior to playing.
+     *
+     * @return true if the sound actually played, or false if its sound type was disabled or if
+     * sound is off altogether.
      */
     public boolean play (SoundType type, String pkgPath, String key)
     {
@@ -333,6 +336,8 @@ public class SoundManager
      * Note that a sound need not be locked prior to playing.
      *
      * @param pan a value from -1f (all left) to +1f (all right).
+     * @return true if the sound actually played, or false if its sound type was disabled or if
+     * sound is off altogether.
      */
     public boolean play (SoundType type, String pkgPath, String key, float pan)
     {
@@ -342,6 +347,8 @@ public class SoundManager
     /**
      * Play the specified sound after the specified delay.
      * @param delay the delay in milliseconds.
+     * @return true if the sound actually played, or false if its sound type was disabled or if
+     * sound is off altogether.
      */
     public boolean play (SoundType type, String pkgPath, String key, int delay)
     {
@@ -352,6 +359,8 @@ public class SoundManager
      * Play the specified sound after the specified delay.
      * @param delay the delay in milliseconds.
      * @param pan a value from -1f (all left) to +1f (all right).
+     * @return true if the sound actually played, or false if its sound type was disabled or if
+     * sound is off altogether.
      */
     public boolean play (SoundType type, String pkgPath, String key, int delay, float pan)
     {
