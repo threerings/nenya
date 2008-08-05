@@ -657,7 +657,7 @@ public class SoundManager
                     } catch (IOException e) {
                         // this shouldn't ever ever happen because the stream
                         // we're given is from a reliable source
-                        log.warning("Error reading clip data! [e=" + e + "].");
+                        log.warning("Error reading clip data!", e);
                         return;
                     }
 
@@ -689,7 +689,8 @@ public class SoundManager
                 sampleSize = 16;
             }
 
-            int drainTime = (int) Math.ceil((totalRead * 8 * 1000) / (sampleRate * sampleSize));
+            // Calculate the numerator as a long as a decent sized clip * 8000 can overflow an int
+            int drainTime = (int) Math.ceil((totalRead * 8 * 1000L) / (sampleRate * sampleSize));
 
             // subtract out time we've already spent doing things.
             drainTime -= System.currentTimeMillis() - startTime;
