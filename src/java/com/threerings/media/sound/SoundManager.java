@@ -286,8 +286,17 @@ public class SoundManager
      */
     public void unlock (String pkgPath, String... keys)
     {
-        for (int ii=0; ii < keys.length; ii++) {
-            enqueue(new SoundKey(UNLOCK, pkgPath, keys[ii], null), (ii == 0));
+        unlock(pkgPath, null, keys);
+    }
+
+    /**
+     *Unlock the specified sounds so that its resources can be freed. <code>onUnlock</code> will
+     * be called on a spooler thread when unlocking is complete.
+     */
+    public void unlock (String pkgPath, Runnable onUnlock, String... keys)
+    {
+        for (int ii = 0; ii < keys.length; ii++) {
+            enqueue(new SoundKey(UNLOCK, pkgPath, keys[ii], onUnlock), (ii == 0));
         }
     }
 
@@ -328,12 +337,18 @@ public class SoundManager
      */
     public void play (SoundType type, String pkgPath, String key, int delay, float pan)
     {
+        play(type, pkgPath, key, delay, pan, null);
+    }
+
+    public void play (SoundType type, String pkgPath, String key, int delay, float pan,
+        Runnable onStop)
+    {
         if (type == null) {
             type = DEFAULT; // let the lazy kids play too
         }
 
         if ((_clipVol != 0f) && isEnabled(type)) {
-            final SoundKey skey = new SoundKey(PLAY, pkgPath, key, delay, _clipVol, pan);
+            final SoundKey skey = new SoundKey(PLAY, pkgPath, key, delay, _clipVol, pan, onStop);
             if (delay > 0) {
                 new Interval() {
                     @Override
@@ -352,7 +367,7 @@ public class SoundManager
      */
     public Frob loop (SoundType type, String pkgPath, String key)
     {
-        return loop(type, pkgPath, key, PAN_CENTER, LOOP);
+        return loop(type, pkgPath, key, PAN_CENTER);
     }
 
     /**
@@ -360,7 +375,16 @@ public class SoundManager
      */
     public Frob loop (SoundType type, String pkgPath, String key, float pan)
     {
-        return loop(type, pkgPath, key, pan, LOOP);
+        return loop(type, pkgPath, key, pan, LOOP, null);
+
+    }
+
+    /**
+     * Loop the specified sound, stopping as quickly as possible when stop is called.
+     */
+    public Frob loop (SoundType type, String pkgPath, String key, float pan, Runnable onStop)
+    {
+        return loop(type, pkgPath, key, pan, LOOP, onStop);
 
     }
 
@@ -370,7 +394,16 @@ public class SoundManager
      */
     public Frob loopToCompletion (SoundType type, String pkgPath, String key)
     {
-        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION);
+        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION, null);
+    }
+
+    /**
+     * Loop the specified sound, stopping after the current iteration completes when stop is
+     * called.
+     */
+    public Frob loopToCompletion (SoundType type, String pkgPath, String key, Runnable onStop)
+    {
+        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION, onStop);
     }
 
     // ==== End of public methods ====
@@ -837,7 +870,8 @@ public class SoundManager
     /**
      * Loop the specified sound.
      */
-    protected Frob loop (SoundType type, String pkgPath, String key, float pan, byte cmd)
+    protected Frob loop (SoundType type, String pkgPath, String key, float pan, byte cmd,
+        Runnable onStop)
     {
         if (type == null) {
             type = DEFAULT;
@@ -846,7 +880,7 @@ public class SoundManager
         if (!isEnabled(type)) {
             return null;
         }
-        SoundKey skey = new SoundKey(cmd, pkgPath, key, 0, _clipVol, pan);
+        SoundKey skey = new SoundKey(cmd, pkgPath, key, 0, _clipVol, pan, onStop);
         addToPlayQueue(skey);
         return skey; // it is a frob
     }
@@ -959,9 +993,9 @@ public class SoundManager
          * Constructor for a sound effect soundkey.
          */
         public SoundKey (byte cmd, String pkgPath, String key, int delay, float volume,
-                float pan)
+                float pan, Runnable onProcessed)
         {
-            this(cmd, pkgPath, key, null);
+            this(cmd, pkgPath, key, onProcessed);
 
             stamp = System.currentTimeMillis() + delay;
             setVolume(volume);
