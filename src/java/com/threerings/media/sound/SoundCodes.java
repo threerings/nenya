@@ -34,7 +34,7 @@ public interface SoundCodes
     public static final SoundType ALERT = new SoundType("alert");
 
     /**
-     * Feedback sounds are the type of sounds a player would here when clicking on buttons or 
+     * Feedback sounds are the type of sounds a player would here when clicking on buttons or
      * performing an action.
      */
     public static final SoundType FEEDBACK = new SoundType("feedback");
@@ -53,4 +53,9 @@ public interface SoundCodes
      * General game sound effects.
      */
     public static final SoundType GAME_FX =new SoundType("game_fx");
+
+    /**
+     * Songs and the like.
+     */
+    public static final SoundType MUSIC = new SoundType("music");
 }
