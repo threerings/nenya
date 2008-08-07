@@ -30,6 +30,8 @@ import java.io.InputStream;
 
 import java.nio.ByteBuffer;
 
+import com.google.common.collect.Maps;
+
 import static com.threerings.openal.Log.log;
 
 /**
@@ -40,7 +42,7 @@ public abstract class StreamDecoder
     /**
      * Registers a class of {@link StreamDecoder} for the specified file extension.
      */
-    public static void registerExtension (String extension, Class clazz)
+    public static void registerExtension (String extension, Class<? extends StreamDecoder> clazz)
     {
         _extensions.put(extension, clazz);
     }
@@ -58,7 +60,7 @@ public abstract class StreamDecoder
             return null;
         }
         String extension = path.substring(idx+1);
-        Class clazz = _extensions.get(extension);
+        Class<? extends StreamDecoder> clazz = _extensions.get(extension);
         if (clazz == null) {
             log.warning("No decoder registered for extension [extension=" + extension +
                 ", file=" + path + "].");
@@ -66,7 +68,7 @@ public abstract class StreamDecoder
         }
         StreamDecoder decoder;
         try {
-            decoder = (StreamDecoder)clazz.newInstance();
+            decoder = clazz.newInstance();
         } catch (Exception e) {
             log.warning("Error instantiating decoder [file=" + path + ", error=" + e + "].");
             return null;
@@ -101,7 +103,8 @@ public abstract class StreamDecoder
         throws IOException;
 
     /** Maps file extensions to decoder classes. */
-    protected static HashMap<String, Class> _extensions = new HashMap<String, Class>();
+    protected static HashMap<String, Class<? extends StreamDecoder>> _extensions =
+        Maps.newHashMap();
     static {
         registerExtension("ogg", OggStreamDecoder.class);
         registerExtension("mp3", Mp3StreamDecoder.class);

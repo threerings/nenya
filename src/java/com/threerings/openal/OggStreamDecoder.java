@@ -43,7 +43,7 @@ import com.jcraft.jorbis.Info;
  */
 public class OggStreamDecoder extends StreamDecoder
 {
-    // documentation inherited
+    @Override
     public void init (InputStream in)
         throws IOException
     {
@@ -84,19 +84,19 @@ public class OggStreamDecoder extends StreamDecoder
         _offsets = new int[_info.channels];
     }
 
-    // documentation inherited
+    @Override
     public int getFormat ()
     {
         return (_info.channels == 1) ? AL10.AL_FORMAT_MONO16 : AL10.AL_FORMAT_STEREO16;
     }
 
-    // documentation inherited
+    @Override
     public int getFrequency ()
     {
         return _info.rate;
     }
 
-    // documentation inherited
+    @Override
     public int read (ByteBuffer buf)
         throws IOException
     {

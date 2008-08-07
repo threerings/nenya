@@ -58,19 +58,19 @@ public class FileStream extends Stream
         _queue.add(new QueuedFile(file, loop));
     }
 
-    // documentation inherited
+    @Override
     protected int getFormat ()
     {
         return _decoder.getFormat();
     }
 
-    // documentation inherited
+    @Override
     protected int getFrequency ()
     {
         return _decoder.getFrequency();
     }
 
-    // documentation inherited
+    @Override
     protected int populateBuffer (ByteBuffer buf)
         throws IOException
     {

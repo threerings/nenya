@@ -39,7 +39,7 @@ import javazoom.jl.decoder.SampleBuffer;
  */
 public class Mp3StreamDecoder extends StreamDecoder
 {
-    // documentation inherited
+    @Override
     public void init (InputStream in)
         throws IOException
     {
@@ -52,19 +52,19 @@ public class Mp3StreamDecoder extends StreamDecoder
         _decoder = new Decoder();
     }
 
-    // documentation inherited
+    @Override
     public int getFormat ()
     {
         return AL10.AL_FORMAT_STEREO16;
     }
 
-    // documentation inherited
+    @Override
     public int getFrequency ()
     {
         return _header.frequency();
     }
 
-    // documentation inherited
+    @Override
     public int read (ByteBuffer buf)
         throws IOException
     {

@@ -131,7 +131,7 @@ public class ClipBuffer
             _state = LOADED;
             _manager.restoreClip(this);
         }
-        
+
         // if we're already loaded, this is easy
         if (_state == LOADED) {
             if (observer != null) {
@@ -182,7 +182,7 @@ public class ClipBuffer
                 _state = UNLOADING;
                 return;
             }
-            
+
             // free up our buffer
             AL10.alDeleteBuffers(_bufferId);
             _bufferId = null;
@@ -255,12 +255,12 @@ public class ClipBuffer
 
     /**
      * Notifies the buffer that a source has been bound to it.
-     */ 
+     */
     protected void sourceBound ()
     {
         _bound++;
     }
-    
+
     /**
      * Notifies the buffer that a source has been unbound from it.
      */
@@ -271,15 +271,15 @@ public class ClipBuffer
             dispose();
         }
     }
-    
+
     protected SoundManager _manager;
     protected ClipProvider _provider;
     protected String _path;
     protected int _state;
     protected IntBuffer _bufferId;
     protected int _size;
-    protected ObserverList _observers =
-        new ObserverList(ObserverList.FAST_UNSAFE_NOTIFY);
+    protected ObserverList<Observer> _observers =
+        new ObserverList<Observer>(ObserverList.FAST_UNSAFE_NOTIFY);
     protected int _bound;
 
     protected static final int UNLOADED = 0;

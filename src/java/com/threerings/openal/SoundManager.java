@@ -21,13 +21,12 @@
 
 package com.threerings.openal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.WeakHashMap;
-
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+
+import com.google.common.collect.Maps;
 
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
@@ -121,7 +120,7 @@ public class SoundManager
     {
         return _streams;
     }
-    
+
     /**
      * Updates all of the streams controlled by the manager.  This should be called once per frame
      * by the application.
@@ -183,7 +182,7 @@ public class SoundManager
         });
 
         // create our loading queue
-        _toLoad = new Queue();
+        _toLoad = new Queue<ClipBuffer>();
 
         // start up the background loader thread
         _loader.setDaemon(true);
@@ -250,7 +249,7 @@ public class SoundManager
     {
         _clips.put(buffer.getKey(), buffer);
     }
-    
+
     /**
      * Adds a stream to the list maintained by the manager.  Called by streams when they are
      * created.
@@ -259,7 +258,7 @@ public class SoundManager
     {
         _streams.add(stream);
     }
-    
+
     /**
      * Removes a stream from the list maintained by the manager.  Called by streams when they are
      * disposed.
@@ -268,12 +267,13 @@ public class SoundManager
     {
         _streams.remove(stream);
     }
-    
+
     /** The thread that loads up sound clips in the background. */
     protected Thread _loader = new Thread("SoundManager.Loader") {
+        @Override
         public void run () {
             while (true) {
-                final ClipBuffer buffer = (ClipBuffer)_toLoad.get();
+                final ClipBuffer buffer = _toLoad.get();
                 try {
                     log.debug("Loading " + buffer.getKey() + ".");
                     final Clip clip = buffer.load();
@@ -308,18 +308,18 @@ public class SoundManager
     protected float _baseGain = 1;
 
     /** Contains a mapping of all currently-loading clips. */
-    protected HashMap<Comparable,ClipBuffer> _loading = new HashMap<Comparable,ClipBuffer>();
+    protected HashMap<Comparable,ClipBuffer> _loading = Maps.newHashMap();
 
     /** Contains a mapping of all loaded clips. */
-    protected LRUHashMap<Comparable,ClipBuffer> _clips = 
+    protected LRUHashMap<Comparable,ClipBuffer> _clips =
         new LRUHashMap<Comparable,ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
 
     /** Contains a queue of clip buffers waiting to be loaded. */
-    protected Queue _toLoad;
+    protected Queue<ClipBuffer> _toLoad;
 
     /** The list of active streams. */
     protected ArrayList<Stream> _streams = new ArrayList<Stream>();
-    
+
     /** The one and only sound manager, here for an exclusive performance by special request.
      * Available for all your sound playing needs. */
     protected static SoundManager _soundmgr;
