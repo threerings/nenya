@@ -30,13 +30,15 @@ import mx.core.UIComponent;
  */
 public class FlexWrapper extends UIComponent
 {
-    public function FlexWrapper (object :DisplayObject)
+    public function FlexWrapper (object :DisplayObject, inheritSize :Boolean = false)
     {
         // don't capture mouse events in this wrapper
         mouseEnabled = false;
         addChild(object);
-        width = object.width;
-        height = object.height;
+        if (inheritSize) {
+            width = object.width;
+            height = object.height;
+        }
     }
 }
 }
