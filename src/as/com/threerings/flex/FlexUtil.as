@@ -24,6 +24,8 @@ package com.threerings.flex {
 import mx.controls.Label;
 import mx.controls.Spacer;
 
+import mx.core.UIComponent;
+
 /**
  * Flex-related utility methods.
  */
@@ -51,6 +53,17 @@ public class FlexUtil
         spacer.width = width;
         spacer.height = height;
         return spacer;
+    }
+
+    /**
+     * In flex the 'visible' property controls visibility separate from whether
+     * the component takes up space in the layout, which is controlled by 'includeInLayout'.
+     * We usually want to set them together, so this does that for us.
+     */
+    public static function setVisible (component :UIComponent, visible :Boolean) :void
+    {
+        component.visible = visible;
+        component.includeInLayout = visible;
     }
 }
 }
