@@ -84,5 +84,34 @@ public class GridUtil
         row.addChild(item);
         return item;
     }
+
+    /**
+     * Get the number of cells in a grid.
+     */
+    public static function getCellCount (grid :Grid) :int
+    {
+        var count :int = 0;
+        for (var ii :int = 0; ii < grid.numChildren; ii++) {
+            count += (grid.getChildAt(ii) as GridRow).numChildren;
+        }
+        return count;
+    }
+
+    /**
+     * Return the contents of the specified cell. Not super fast, as it
+     * checks each row in order.
+     */
+    public static function getCellAt (grid :Grid, index :int) :UIComponent
+    {
+        for (var ii :int = 0; ii < grid.numChildren; ii++) {
+            var row :GridRow = grid.getChildAt(ii) as GridRow;
+            if (index < row.numChildren) {
+                return (row.getChildAt(index) as GridItem).getChildAt(0) as UIComponent;
+            } else {
+                index -= row.numChildren; // and then on to the next row
+            }
+        }
+        return null; // never found it. throw an out-of-range error?
+    }
 }
 }
