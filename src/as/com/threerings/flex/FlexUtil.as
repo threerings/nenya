@@ -59,11 +59,13 @@ public class FlexUtil
      * In flex the 'visible' property controls visibility separate from whether
      * the component takes up space in the layout, which is controlled by 'includeInLayout'.
      * We usually want to set them together, so this does that for us.
+     * @return the new visible setting.
      */
-    public static function setVisible (component :UIComponent, visible :Boolean) :void
+    public static function setVisible (component :UIComponent, visible :Boolean) :Boolean
     {
         component.visible = visible;
         component.includeInLayout = visible;
+        return visible;
     }
 }
 }
