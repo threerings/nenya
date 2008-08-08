@@ -34,7 +34,16 @@ public class FlexWrapper extends UIComponent
     {
         // don't capture mouse events in this wrapper
         mouseEnabled = false;
+        _obj = object;
         addChild(object);
     }
+
+    override protected function measure () :void
+    {
+        measuredWidth = _obj.width;
+        measuredHeight = _obj.height;
+    }
+
+    protected var _obj :DisplayObject;
 }
 }
