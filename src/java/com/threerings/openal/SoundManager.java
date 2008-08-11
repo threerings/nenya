@@ -308,11 +308,11 @@ public class SoundManager
     protected float _baseGain = 1;
 
     /** Contains a mapping of all currently-loading clips. */
-    protected HashMap<Comparable,ClipBuffer> _loading = Maps.newHashMap();
+    protected HashMap<Comparable, ClipBuffer> _loading = Maps.newHashMap();
 
     /** Contains a mapping of all loaded clips. */
-    protected LRUHashMap<Comparable,ClipBuffer> _clips =
-        new LRUHashMap<Comparable,ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
+    protected LRUHashMap<Comparable, ClipBuffer> _clips =
+        new LRUHashMap<Comparable, ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
 
     /** Contains a queue of clip buffers waiting to be loaded. */
     protected Queue<ClipBuffer> _toLoad;

@@ -209,21 +209,19 @@ public class ClipBuffer
      */
     protected boolean bind (Clip clip)
     {
-        AL10.alBufferData(
-            _bufferId.get(0), clip.format, clip.data, clip.frequency);
+        AL10.alBufferData(_bufferId.get(0), clip.format, clip.data, clip.frequency);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
-            log.warning("Failed to bind clip [key=" + getKey() +
-                        ", errno=" + errno + "].");
+            log.warning("Failed to bind clip", "key", getKey(), "errno", errno);
             failed();
             return false;
         }
 
         _state = LOADED;
         _size = AL10.alGetBufferi(_bufferId.get(0), AL10.AL_SIZE);
-        _observers.apply(new ObserverList.ObserverOp() {
-            public boolean apply (Object observer) {
-                ((Observer)observer).clipLoaded(ClipBuffer.this);
+        _observers.apply(new ObserverList.ObserverOp<Observer>() {
+            public boolean apply (Observer observer) {
+                observer.clipLoaded(ClipBuffer.this);
                 return true;
             }
         });

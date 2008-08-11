@@ -30,9 +30,8 @@ import org.lwjgl.openal.AL10;
 import static com.threerings.openal.Log.log;
 
 /**
- * Manages a group of sounds, binding them to OpenAL sources as they are
- * played and freeing up those sources for use by other sounds when the
- * sounds are finished.
+ * Manages a group of sounds, binding them to OpenAL sources as they are played and freeing up
+ * those sources for use by other sounds when the sounds are finished.
  */
 public class SoundGroup
 {
@@ -47,8 +46,8 @@ public class SoundGroup
     }
 
     /**
-     * Obtains an "instance" of the specified sound which can be
-     * positioned, played, looped and otherwise used to make noise.
+     * Obtains an "instance" of the specified sound which can be positioned, played, looped and
+     * otherwise used to make noise.
      */
     public Sound getSound (String path)
     {
@@ -60,9 +59,8 @@ public class SoundGroup
     }
 
     /**
-     * Disposes this sound group, freeing up the OpenAL sources with which
-     * it is associated. All sounds obtained from this group will no
-     * longer be usable and should be discarded.
+     * Disposes this sound group, freeing up the OpenAL sources with which it is associated. All
+     * sounds obtained from this group will no longer be usable and should be discarded.
      */
     public void dispose ()
     {
@@ -75,8 +73,7 @@ public class SoundGroup
     }
 
     /**
-     * Stops and reclaims all sounds from this sound group but does not
-     * free the sources.
+     * Stops and reclaims all sounds from this sound group but does not free the sources.
      */
     public void reclaimAll ()
     {
@@ -92,8 +89,7 @@ public class SoundGroup
         }
     }
 
-    protected SoundGroup (
-        SoundManager manager, ClipProvider provider, int sources)
+    protected SoundGroup (SoundManager manager, ClipProvider provider, int sources)
     {
         _manager = manager;
         _provider = provider;
@@ -125,8 +121,7 @@ public class SoundGroup
     }
 
     /**
-     * Called by a {@link Sound} when it wants to obtain a source on which
-     * to play its clip.
+     * Called by a {@link Sound} when it wants to obtain a source on which to play its clip.
      */
     protected int acquireSource (Sound acquirer)
     {

@@ -27,19 +27,21 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 /**
- * Represents an instance of a sound clip which can be positioned in 3D
- * space, gain and pitch adjusted and played or looped.
+ * Represents an instance of a sound clip which can be positioned in 3D space, gain and pitch
+ * adjusted and played or looped.
  */
 public class Sound
 {
-    /** Used to await notification of the starting of a sound which may be
-     * delayed in loading. */
+    /**
+     * Used to await notification of the starting of a sound which may be delayed in loading.
+     */
     public interface StartObserver
     {
-        /** Called when the specified sound has started playing.  If 
-         * sound is null then the sound failed to play but soundStarted
-         * was called anyway to perform whatever actions were waiting
-         * on the sound. */
+        /**
+         * Called when the specified sound has started playing. If sound is null then the sound
+         * failed to play but soundStarted was called anyway to perform whatever actions were
+         * waiting on the sound.
+         */
         public void soundStarted (Sound sound);
     }
 
@@ -52,9 +54,8 @@ public class Sound
     }
 
     /**
-     * Configures the location of this sound in 3D space. This will not
-     * affect an already playing sound but will take effect the next time
-     * it is played.
+     * Configures the location of this sound in 3D space. This will not affect an already playing
+     * sound but will take effect the next time it is played.
      */
     public void setLocation (float x, float y, float z)
     {
@@ -66,10 +67,9 @@ public class Sound
     }
 
     /**
-     * Configures the velocity of this sound in 3D space, in delta
-     * location per second (see {@link #setLocation}). This will not
-     * affect an already playing sound but will take effect the next time
-     * it is played.
+     * Configures the velocity of this sound in 3D space, in delta location per second (see
+     * {@link #setLocation}). This will not affect an already playing sound but will take effect
+     * the next time it is played.
      */
     public void setVelocity (float dx, float dy, float dz)
     {
@@ -81,9 +81,8 @@ public class Sound
     }
 
     /**
-     * Configures the sounds's pitch. This value can range from 0.5 to
-     * 2.0. This will not affect an already playing sound but will take
-     * effect the next time it is played.
+     * Configures the sounds's pitch. This value can range from 0.5 to 2.0. This will not affect
+     * an already playing sound but will take effect the next time it is played.
      */
     public void setPitch (float pitch)
     {
@@ -91,15 +90,13 @@ public class Sound
     }
 
     /**
-     * Configures the sound's gain (volume). This value can range from 0.0
-     * to 1.0 with 1.0 meaning no attenuation, each division by two
-     * corresponding to a -6db attentuation and each multiplication by two
-     * corresponding to +6db amplification. This will not affect an
-     * already playing sound but will take effect the next time it is
-     * played.
+     * Configures the sound's gain (volume). This value can range from 0.0 to 1.0 with 1.0 meaning
+     * no attenuation, each division by two corresponding to a -6db attentuation and each
+     * multiplication by two corresponding to +6db amplification. This will not affect an already
+     * playing sound but will take effect the next time it is played.
      *
-     * <p><em>Note:</em> this value is multiplied by the base gain configured
-     * in the sound manager.
+     * <p>
+     * <em>Note:</em> this value is multiplied by the base gain configured in the sound manager.
      */
     public void setGain (float gain)
     {
@@ -107,19 +104,17 @@ public class Sound
     }
 
     /**
-     * Plays this sound from the beginning. While the sound is playing, an
-     * audio channel will be locked and then freed when the sound
-     * completes.
+     * Plays this sound from the beginning. While the sound is playing, an audio channel will be
+     * locked and then freed when the sound completes.
      *
-     * @param allowDefer if false, the sound will be played immediately or
-     * not at all. If true, the sound will be queued up for loading if it
-     * is currently flushed from the cache and played once loaded.
+     * @param allowDefer if false, the sound will be played immediately or not at all. If true,
+     * the sound will be queued up for loading if it is currently flushed from the cache and
+     * played once loaded.
      *
-     * @return true if the sound could be played and was started (or
-     * queued up to be loaded and played ASAP if it was specified as
-     * deferrable) or false if the sound could not be played either
-     * because it was not ready and deferral was not allowed or because
-     * too many other sounds were playing concurrently.
+     * @return true if the sound could be played and was started (or queued up to be loaded and
+     * played ASAP if it was specified as deferrable) or false if the sound could not be played
+     * either because it was not ready and deferral was not allowed or because too many other
+     * sounds were playing concurrently.
      */
     public boolean play (boolean allowDefer)
     {
@@ -127,12 +122,12 @@ public class Sound
     }
 
     /**
-     * Loops this sound, starting from the beginning of the audio data. It
-     * will continue to loop until {@link #pause}d or {@link #stop}ped.
-     * While the sound is playing an audio channel will be locked.
+     * Loops this sound, starting from the beginning of the audio data. It will continue to loop
+     * until {@link #pause}d or {@link #stop}ped. While the sound is playing an audio channel will
+     * be locked.
      *
-     * @return true if a channel could be obtained to play the sound (and
-     * the sound was thus started) or false if no channels were available.
+     * @return true if a channel could be obtained to play the sound (and the sound was thus
+     * started) or false if no channels were available.
      */
     public boolean loop (boolean allowDefer)
     {
@@ -140,8 +135,7 @@ public class Sound
     }
 
     /**
-     * Plays this sound from the beginning, notifying the supplied observer
-     * when the audio starts.
+     * Plays this sound from the beginning, notifying the supplied observer when the audio starts.
      *
      * @param loop whether or not to loop the sampe until {@link #stop}ped.
      */
@@ -151,9 +145,9 @@ public class Sound
     }
 
     /**
-     * Pauses this sound. A subsequent call to {@link #play} will resume
-     * the sound from the precise position that it left off. While the
-     * sound is paused, its audio channel will remain locked.
+     * Pauses this sound. A subsequent call to {@link #play} will resume the sound from the
+     * precise position that it left off. While the sound is paused, its audio channel will remain
+     * locked.
      */
     public void pause ()
     {
@@ -163,8 +157,8 @@ public class Sound
     }
 
     /**
-     * Stops this sound and rewinds to its beginning. The audio channel
-     * being used to play the sound will be released.
+     * Stops this sound and rewinds to its beginning. The audio channel being used to play the
+     * sound will be released.
      */
     public void stop ()
     {
@@ -188,8 +182,7 @@ public class Sound
         _buffer = buffer;
     }
 
-    protected boolean play (
-        boolean allowDefer, final boolean loop, final StartObserver obs)
+    protected boolean play (boolean allowDefer, final boolean loop, final StartObserver obs)
     {
         // if we were unable to get our buffer, fail immediately
         if (_buffer == null) {
@@ -202,15 +195,14 @@ public class Sound
         // if we're not ready to go...
         if (!_buffer.isPlayable()) {
             if (allowDefer) {
-                // resolve the buffer and instruct it to play once it is
-                // resolved
+                // resolve the buffer and instruct it to play once it is resolved
                 _buffer.resolve(new ClipBuffer.Observer() {
                     public void clipLoaded (ClipBuffer buffer) {
                         play(false, loop, obs);
                     }
                     public void clipFailed (ClipBuffer buffer) {
-                        // well, let's pretend like the sound started so that
-                        // the observer isn't left hanging
+                        // well, let's pretend like the sound started so that the observer isn't
+                        // left hanging
                         if (obs != null) {
                             obs.soundStarted(Sound.this);
                         }
@@ -226,8 +218,7 @@ public class Sound
             }
         }
 
-        // let the observer know that (as far as they're concerned), we're
-        // started
+        // let the observer know that (as far as they're concerned), we're started
         if (obs != null) {
             obs.soundStarted(this);
         }
@@ -255,8 +246,7 @@ public class Sound
         }
 
         // configure whether or not we should loop
-        AL10.alSourcei(_sourceId, AL10.AL_LOOPING,
-                       loop ? AL10.AL_TRUE : AL10.AL_FALSE);
+        AL10.alSourcei(_sourceId, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
 
         // and start that damned thing up!
         AL10.alSourcePlay(_sourceId);
@@ -265,17 +255,15 @@ public class Sound
     }
 
     /**
-     * Called by the {@link SoundGroup} when it wants to reclaim our
-     * source.
+     * Called by the {@link SoundGroup} when it wants to reclaim our source.
      *
-     * @return false if we have no source to reclaim or if we're still busy
-     * playing our sound, true if we gave up our source.
+     * @return false if we have no source to reclaim or if we're still busy playing our sound,
+     * true if we gave up our source.
      */
     protected boolean reclaim ()
     {
         if (_sourceId != -1 &&
-            AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE) ==
-            AL10.AL_STOPPED) {
+            AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED) {
             AL10.alSourcei(_sourceId, AL10.AL_BUFFER, 0);
             _buffer.sourceUnbound();
             _sourceId = -1;
