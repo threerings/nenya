@@ -81,6 +81,14 @@ public class ChatControl extends HBox
     }
 
     /**
+     * Provides access to the send button.
+     */
+    public function get sendButton () :CommandButton
+    {
+        return _but;
+    }
+
+    /**
      * Request focus to this chat control.
      */
     override public function setFocus () :void
