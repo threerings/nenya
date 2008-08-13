@@ -1,7 +1,7 @@
-package com.threerings.media.sound;
+//
+// $Id$
 
-
-import static com.threerings.media.Log.log;
+package com.threerings.openal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,13 +13,11 @@ import com.google.common.collect.Maps;
 
 import com.samskivert.util.RunQueue;
 
-import com.threerings.media.sound.SoundManager.Frob;
-import com.threerings.openal.Clip;
-import com.threerings.openal.ClipBuffer;
-import com.threerings.openal.ClipProvider;
-import com.threerings.openal.Sound;
-import com.threerings.openal.SoundGroup;
-import com.threerings.openal.Stream;
+import com.threerings.media.sound.SoundLoader;
+import com.threerings.media.sound.SoundManager;
+import com.threerings.media.sound.AbstractSoundManager;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Plays sounds via OpenAL.
@@ -77,11 +75,11 @@ public class OpenALSoundManager extends AbstractSoundManager
     }
 
     @Override
-    protected Frob loop (String pkgPath, String key, float pan)
+    protected SoundManager.Frob loop (String pkgPath, String key, float pan)
     {
         final Sound sound = _group.getSound(pkgPath + key);
         sound.loop(true);
-        return new Frob(){
+        return new SoundManager.Frob(){
             public float getPan () {
                 return 0;
             }
@@ -133,9 +131,7 @@ public class OpenALSoundManager extends AbstractSoundManager
     protected Map<String, ClipBuffer> _locked = Maps.newHashMap();
 
     protected final SoundLoader _loader;
-
     protected final SoundGroup _group;
-
     protected final com.threerings.openal.SoundManager _alSoundManager;
 
     /** Number of sounds that can be played simultaneously. */
