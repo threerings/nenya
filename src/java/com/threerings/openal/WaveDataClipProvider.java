@@ -31,16 +31,13 @@ import org.lwjgl.util.WaveData;
  */
 public class WaveDataClipProvider implements ClipProvider
 {
-    public Clip loadClip (String path) throws IOException
+    public Clip loadClip (String path)
+        throws IOException
     {
-        Clip clip = new Clip();
         WaveData file = WaveData.create(path);
         if (file == null) {
             throw new IOException("Error loading " + path);
         }
-        clip.format = file.format;
-        clip.frequency = file.samplerate;
-        clip.data = file.data;
-        return clip;
+        return new Clip(file);
     }
 }

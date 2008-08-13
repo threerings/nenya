@@ -5,15 +5,9 @@ import static com.threerings.media.Log.log;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import org.lwjgl.openal.AL10;
+import org.lwjgl.util.WaveData;
 
 import com.google.common.collect.Maps;
 
@@ -44,41 +38,9 @@ public class OpenALSoundManager extends AbstractSoundManager
     public Clip loadClip (String path)
         throws IOException
     {
-        byte[] data;
-        AudioInputStream in;
         int pkgEnd = path.lastIndexOf("/") + 1;
-        try {
-            data = _loader.load(path.substring(0, pkgEnd), path.substring(pkgEnd))[0];
-            in = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
-        } catch (UnsupportedAudioFileException e) {
-            throw new RuntimeException("Unsupported format: " + path, e);
-        }
-        AudioFormat format = in.getFormat();
-        int alformat = 0;
-        if (format.getChannels() == 1) {
-            if (format.getSampleSizeInBits() == 8) {
-                alformat = AL10.AL_FORMAT_MONO8;
-            } else if (format.getSampleSizeInBits() == 16) {
-                alformat = AL10.AL_FORMAT_MONO16;
-            } else {
-                throw new IOException("Illegal audio sample size: " + path);
-            }
-        } else if (format.getChannels() == 2) {
-            if (format.getSampleSizeInBits() == 8) {
-                alformat = AL10.AL_FORMAT_STEREO8;
-            } else if (format.getSampleSizeInBits() == 16) {
-                alformat = AL10.AL_FORMAT_STEREO16;
-            } else {
-                throw new IOException("Illegal audio sample size: " + path);
-            }
-        } else {
-            throw new IOException("Only mono and stereo are supported: " + path);
-        }
-        Clip clip = new Clip();
-        clip.format = alformat;
-        clip.data = ByteBuffer.wrap(data);
-        clip.frequency = (int)format.getFrameRate();
-        return clip;
+        byte[] data = _loader.load(path.substring(0, pkgEnd), path.substring(pkgEnd))[0];
+        return new Clip(WaveData.create(new ByteArrayInputStream(data)));
     }
 
     @Override

@@ -24,12 +24,26 @@ package com.threerings.openal;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.openal.AL10;
+import org.lwjgl.util.WaveData;
 
 /**
  * Contains data for a single sampled sound.
  */
 public class Clip
 {
+    public Clip ()
+    {}
+
+    /**
+     * Fills in a clip from the given wave data.
+     */
+    public Clip (WaveData data)
+    {
+        format = data.format;
+        frequency = data.samplerate;
+        this.data = data.data;
+    }
+
     /** The OpenAL format of this clip: {@link AL10#AL_FORMAT_MONO8}, etc. */
     public int format;
 
