@@ -21,8 +21,11 @@
 
 package com.threerings.openal;
 
+import static com.threerings.openal.Log.log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
@@ -32,7 +35,7 @@ import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RunQueue;
 
-import static com.threerings.openal.Log.log;
+import com.threerings.openal.ClipBuffer.Observer;
 
 /**
  * An interface to the OpenAL library that provides a number of additional services:
@@ -142,7 +145,16 @@ public class SoundManager
      */
     public void loadClip (ClipProvider provider, String path)
     {
-        getClip(provider, path);
+        loadClip(provider, path, null);
+    }
+
+    /**
+     * Loads a clip buffer for the sound clip loaded via the specified provider with the
+     * specified path. The loaded clip is placed in the cache.
+     */
+    public void loadClip (ClipProvider provider, String path, Observer observer)
+    {
+        getClip(provider, path, observer);
     }
 
     /**
@@ -196,6 +208,16 @@ public class SoundManager
      */
     protected ClipBuffer getClip (ClipProvider provider, String path)
     {
+        return getClip(provider, null);
+    }
+
+    /**
+     * Creates a clip buffer for the sound clip loaded via the specified provider with the
+     * specified path. The clip buffer may come from the cache, and it will immediately be queued
+     * for loading if it is not already loaded.
+     */
+    protected ClipBuffer getClip (ClipProvider provider, String path, Observer observer)
+    {
         Comparable ckey = ClipBuffer.makeKey(provider, path);
         ClipBuffer buffer = _clips.get(ckey);
         try {
@@ -207,7 +229,7 @@ public class SoundManager
                     _loading.put(ckey, buffer);
                 }
             }
-            buffer.resolve(null);
+            buffer.resolve(observer);
             return buffer;
 
         } catch (Throwable t) {

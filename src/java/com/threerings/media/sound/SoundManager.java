@@ -26,13 +26,10 @@ import static com.threerings.media.Log.log;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Properties;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -46,9 +43,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.io.IOUtils;
 
-import com.samskivert.util.Config;
-import com.samskivert.util.ConfigUtil;
-import com.samskivert.util.Interval;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RandomUtil;
@@ -61,9 +55,9 @@ import com.threerings.media.MediaPrefs;
 import com.threerings.resource.ResourceManager;
 
 /**
- * Manages the playing of audio files.
+ * Manages the playing of audio files via the Java Sound APIs.
  */
-public class SoundManager
+public class SoundManager extends AbstractSoundManager
 {
     /** A pan value indicating that a sound should play from the left only. */
     public static final float PAN_LEFT = -1f;
@@ -170,10 +164,13 @@ public class SoundManager
     public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath,
             int cacheSize)
     {
+        this(new SoundLoader(rmgr, defaultClipBundle, defaultClipPath), cacheSize);
+    }
+
+    public SoundManager (SoundLoader loader, int cacheSize)
+    {
         // save things off
-        _rmgr = rmgr;
-        _defaultClipBundle = defaultClipBundle;
-        _defaultClipPath = defaultClipPath;
+        _loader = loader;
         _clipCache = new LRUHashMap<SoundKey, byte[][]>(cacheSize,
             new LRUHashMap.ItemSizer<byte[][]>() {
                 public int computeSize (byte[][] value) {
@@ -186,9 +183,7 @@ public class SoundManager
             });
     }
 
-    /**
-     * Shut the damn thing off.
-     */
+    @Override
     public void shutdown ()
     {
         // TODO: we need to stop any looping sounds
@@ -200,249 +195,64 @@ public class SoundManager
         }
         synchronized (_clipCache) {
             _lockedClips.clear();
-            _configs.clear();
+            _loader.shutdown();
         }
     }
 
     /**
-     * Returns a string summarizing our volume settings and disabled sound types.
+     * Sets the run queue on which sound should be played.
      */
-    public String summarizeState ()
-    {
-        StringBuilder buf = new StringBuilder();
-        buf.append("clipVol=").append(_clipVol);
-        buf.append(", disabled=[");
-        int ii = 0;
-        for (SoundType soundType : _disabledTypes) {
-            if (ii++ > 0) {
-                buf.append(", ");
-            }
-            buf.append(soundType);
-        }
-        return buf.append("]").toString();
-    }
-
-    /**
-     * Is the specified soundtype enabled?
-     */
-    public boolean isEnabled (SoundType type)
-    {
-        // by default, types are enabled..
-        return (!_disabledTypes.contains(type));
-    }
-
-    /**
-     * Turns on or off the specified sound type.
-     */
-    public void setEnabled (SoundType type, boolean enabled)
-    {
-        if (enabled) {
-            _disabledTypes.remove(type);
-        } else {
-            _disabledTypes.add(type);
-        }
-    }
-
-    /**
-     * Sets the run queue on which sound ending runnables are dispatched.
-     */
-    public void setCallbackQueue (RunQueue queue)
+    public void setSoundQueue (RunQueue queue)
     {
         _callbackQueue = queue;
     }
 
-    /**
-     * Gets the run queue on which sound ending runnables are dispatched. It defaults to
-     * {@link RunQueue#AWT}.
-     */
-    public RunQueue getCallbackQueue ()
+    @Override
+    public RunQueue getSoundQueue ()
     {
         return _callbackQueue;
     }
 
-    /**
-     * Sets the volume for all sound clips.
-     *
-     * @param vol a volume parameter between 0f and 1f, inclusive.
-     */
-    public void setClipVolume (float vol)
-    {
-        _clipVol = Math.max(0f, Math.min(1f, vol));
-    }
-
-    /**
-     * Get the volume for all sound clips.
-     */
-    public float getClipVolume ()
-    {
-        return _clipVol;
-    }
-
-    /**
-     * Optionally lock each of these keys prior to playing, to guarantee that it will be quickly
-     * available for playing.
-     */
+    @Override
     public void lock (String pkgPath, String... keys)
     {
-        lock(pkgPath, null, keys);
-    }
-
-    /**
-     * Optionally lock each of these keys prior to playing, to guarantee that it will be quickly
-     * available for playing. <code>onLock</code> will be called on the run queue from
-     * {@link #getCallbackQueue()} when locking is complete.
-     */
-    public void lock (String pkgPath, Runnable onLock, String... keys)
-    {
         for (int ii=0; ii < keys.length; ii++) {
-            enqueue(new SoundKey(LOCK, pkgPath, keys[ii], onLock), (ii == 0));
+            enqueue(new SoundKey(LOCK, pkgPath, keys[ii]), (ii == 0));
         }
     }
 
-    /**
-     *Unlock the specified sounds so that its resources can be freed.
-     */
+    @Override
     public void unlock (String pkgPath, String... keys)
     {
-        unlock(pkgPath, null, keys);
-    }
-
-    /**
-     *Unlock the specified sounds so that its resources can be freed. <code>onUnock</code> will
-     * be called on the run queue from {@link #getCallbackQueue()} when unlocking is complete.
-     */
-    public void unlock (String pkgPath, Runnable onUnlock, String... keys)
-    {
         for (int ii = 0; ii < keys.length; ii++) {
-            enqueue(new SoundKey(UNLOCK, pkgPath, keys[ii], onUnlock), (ii == 0));
+            enqueue(new SoundKey(UNLOCK, pkgPath, keys[ii]), (ii == 0));
         }
-    }
-
-    /**
-     * Play the specified sound as the specified type of sound, immediately. Note that a sound
-     * need not be locked prior to playing.
-     *
-     * @return true if the sound actually played, or false if its sound type was disabled or if
-     * sound is off altogether.
-     */
-    public boolean play (SoundType type, String pkgPath, String key)
-    {
-        return play(type, pkgPath, key, 0, PAN_CENTER);
-    }
-
-    /**
-     * Play the specified sound as the specified type of sound, immediately,
-     * with the specified pan value.
-     * Note that a sound need not be locked prior to playing.
-     *
-     * @param pan a value from -1f (all left) to +1f (all right).
-     * @return true if the sound actually played, or false if its sound type was disabled or if
-     * sound is off altogether.
-     */
-    public boolean play (SoundType type, String pkgPath, String key, float pan)
-    {
-        return play(type, pkgPath, key, 0, pan);
-    }
-
-    /**
-     * Play the specified sound after the specified delay.
-     * @param delay the delay in milliseconds.
-     * @return true if the sound actually played, or false if its sound type was disabled or if
-     * sound is off altogether.
-     */
-    public boolean play (SoundType type, String pkgPath, String key, int delay)
-    {
-        return play(type, pkgPath, key, delay, PAN_CENTER);
-    }
-
-    /**
-     * Play the specified sound after the specified delay.
-     * @param delay the delay in milliseconds.
-     * @param pan a value from -1f (all left) to +1f (all right).
-     * @return true if the sound actually played, or false if its sound type was disabled or if
-     * sound is off altogether.
-     */
-    public boolean play (SoundType type, String pkgPath, String key, int delay, float pan)
-    {
-        return play(type, pkgPath, key, delay, pan, null);
-    }
-
-    /**
-     * Play the specified sound after the specified delay.
-     * @param delay the delay in milliseconds.
-     * @param pan a value from -1f (all left) to +1f (all right).
-     * @param onStop a runnable that will be run on the queue from {@link #getCallbackQueue()}
-     * when the sound stops playing.
-     */
-    public boolean play (SoundType type, String pkgPath, String key, int delay, float pan,
-        Runnable onStop)
-    {
-        if (type == null) {
-            type = DEFAULT; // let the lazy kids play too
-        }
-
-        if ((_clipVol != 0f) && isEnabled(type)) {
-            final SoundKey skey = new SoundKey(PLAY, pkgPath, key, delay, _clipVol, pan, onStop);
-            if (delay > 0) {
-                new Interval() {
-                    @Override
-                    public void expired () {
-                        addToPlayQueue(skey);
-                    }
-                }.schedule(delay);
-            } else {
-                addToPlayQueue(skey);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Loop the specified sound, stopping as quickly as possible when stop is called.
-     */
-    public Frob loop (SoundType type, String pkgPath, String key)
-    {
-        return loop(type, pkgPath, key, PAN_CENTER);
-    }
-
-    /**
-     * Loop the specified sound, stopping as quickly as possible when stop is called.
-     */
-    public Frob loop (SoundType type, String pkgPath, String key, float pan)
-    {
-        return loop(type, pkgPath, key, pan, LOOP, null);
-
-    }
-
-    /**
-     * Loop the specified sound, stopping as quickly as possible when stop is called.
-     */
-    public Frob loop (SoundType type, String pkgPath, String key, float pan, Runnable onStop)
-    {
-        return loop(type, pkgPath, key, pan, LOOP, onStop);
-
-    }
-
-    /**
-     * Loop the specified sound, stopping after the current iteration completes when stop is
-     * called.
-     */
-    public Frob loopToCompletion (SoundType type, String pkgPath, String key)
-    {
-        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION, null);
-    }
-
-    /**
-     * Loop the specified sound, stopping after the current iteration completes when stop is
-     * called.
-     */
-    public Frob loopToCompletion (SoundType type, String pkgPath, String key, Runnable onStop)
-    {
-        return loop(type, pkgPath, key, PAN_CENTER, LOOP_TO_COMPLETION, onStop);
     }
 
     // ==== End of public methods ====
+
+    @Override
+    protected void play (String pkgPath, String key, float pan)
+    {
+        addToPlayQueue(new SoundKey(PLAY, pkgPath, key, 0, _clipVol, pan));
+    }
+
+    @Override
+    protected Frob loop (String pkgPath, String key, float pan)
+    {
+        return loop(pkgPath, key, pan, LOOP);
+
+    }
+
+    /**
+     * Loop the specified sound.
+     */
+    protected Frob loop (String pkgPath, String key, float pan, byte cmd)
+    {
+        SoundKey skey = new SoundKey(cmd, pkgPath, key, 0, _clipVol, pan);
+        addToPlayQueue(skey);
+        return skey; // it is a frob
+    }
 
     /**
      * Add the sound clip key to the queue to be played.
@@ -537,7 +347,6 @@ public class SoundManager
         switch (key.cmd) {
         case PLAY:
         case LOOP:
-        case LOOP_TO_COMPLETION:
             playSound(key);
             break;
 
@@ -564,19 +373,26 @@ public class SoundManager
             }
             break;
         }
-        if (key.onProcessed != null) {
-            _callbackQueue.postRunnable(key.onProcessed);
-        }
     }
 
     /**
      * Sets up an audio stream from the given byte array, and gets it to convert itself to PCM
      * data for writing to our output line (if it isn't already that)
      */
-    protected AudioInputStream setupAudioStream (byte[] data)
+    public static AudioInputStream setupAudioStream (byte[] data)
         throws UnsupportedAudioFileException, IOException
     {
-        AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
+        return setupAudioStream(new ByteArrayInputStream(data));
+    }
+
+    /**
+     * Sets up an audio stream from the given byte array, and gets it to convert itself to PCM
+     * data for writing to our output line (if it isn't already that)
+     */
+    public static AudioInputStream setupAudioStream (InputStream in)
+        throws UnsupportedAudioFileException, IOException
+    {
+        AudioInputStream stream = AudioSystem.getAudioInputStream(in);
         AudioFormat format = stream.getFormat();
         if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
             stream = AudioSystem.getAudioInputStream(
@@ -624,7 +440,7 @@ public class SoundManager
 
             // open the sound line
             AudioFormat format = stream.getFormat();
-            line = (SourceDataLine) AudioSystem.getLine(
+            line = (SourceDataLine)AudioSystem.getLine(
                 new DataLine.Info(SourceDataLine.class, format));
             line.open(format, LINEBUF_SIZE);
             float setVolume = 1;
@@ -639,7 +455,7 @@ public class SoundManager
             do {
                 // play the sound
                 int count = 0;
-                while ((key.running || key.cmd == LOOP_TO_COMPLETION) && count != -1) {
+                while (key.running && count != -1) {
                     float vol = key.volume;
                     if (vol != setVolume) {
                         adjustVolume(line, vol);
@@ -766,19 +582,7 @@ public class SoundManager
                     data[0] = IOUtils.toByteArray(stream);
 
                 } else {
-                    // otherwise, randomize between all available sounds
-                    Config c = getConfig(key);
-                    String[] names = c.getValue(key.key, (String[])null);
-                    if (names == null) {
-                        log.warning("No such sound [key=" + key + "].");
-                        return null;
-                    }
-
-                    data = new byte[names.length][];
-                    String bundle = c.getValue("bundle", (String)null);
-                    for (int ii=0; ii < names.length; ii++) {
-                        data[ii] = loadClipData(bundle, names[ii]);
-                    }
+                    data = _loader.load(key.pkgPath, key.key);
                 }
 
                 _clipCache.put(key, data);
@@ -827,9 +631,11 @@ public class SoundManager
                 return false;
             }
         });
-        int size = (list == null) ? 0 : list.length;
-        if (size > 0) {
-            File pick = list[RandomUtil.getInt(size)];
+        if (list == null) {
+            return null;
+        }
+        if (list.length > 0) {
+            File pick = list[RandomUtil.getInt(list.length)];
             try {
                 return new FileInputStream(pick);
             } catch (Exception e) {
@@ -838,114 +644,6 @@ public class SoundManager
         }
         return null;
     }
-
-    /**
-     * Read the data from the resource manager.
-     */
-    protected byte[] loadClipData (String bundle, String path)
-        throws IOException
-    {
-        InputStream clipin = null;
-        try {
-            clipin = _rmgr.getResource(bundle, path);
-        } catch (FileNotFoundException fnfe) {
-            // try from the classpath
-            try {
-                clipin = _rmgr.getResource(path);
-            } catch (FileNotFoundException fnfe2) {
-                // only play the default sound if we have verbose sound debugging turned on.
-                if (_verbose.getValue()) {
-                    log.warning("Could not locate sound data [bundle=" + bundle +
-                                ", path=" + path + "].");
-                    if (_defaultClipPath != null) {
-                        try {
-                            clipin = _rmgr.getResource(_defaultClipBundle, _defaultClipPath);
-                        } catch (FileNotFoundException fnfe3) {
-                            try {
-                                clipin = _rmgr.getResource(_defaultClipPath);
-                            } catch (FileNotFoundException fnfe4) {
-                                log.warning("Additionally, the default " +
-                                    "fallback sound could not be located " +
-                                    "[bundle=" + _defaultClipBundle +
-                                    ", path=" + _defaultClipPath + "].");
-                            }
-                        }
-                    } else {
-                        log.warning("No fallback default sound specified!");
-                    }
-                }
-                // if we couldn't load the default, rethrow
-                if (clipin == null) {
-                    throw fnfe2;
-                }
-            }
-        }
-
-        return IOUtils.toByteArray(clipin);
-    }
-
-    /**
-     * Get the cached Config.
-     */
-    protected Config getConfig (SoundKey key)
-    {
-        Config c =  _configs.get(key.pkgPath);
-        if (c == null) {
-            String propPath = key.pkgPath + Sounds.PROP_NAME;
-            Properties props = new Properties();
-            try {
-                props = ConfigUtil.loadInheritedProperties(
-                    propPath + ".properties", _rmgr.getClassLoader());
-            } catch (IOException ioe) {
-                log.warning("Failed to load sound properties " +
-                            "[path=" + propPath + ", error=" + ioe + "].");
-            }
-            c = new Config(propPath, props);
-            _configs.put(key.pkgPath, c);
-        }
-        return c;
-    }
-
-    /**
-     * Loop the specified sound.
-     */
-    protected Frob loop (SoundType type, String pkgPath, String key, float pan, byte cmd,
-        Runnable onStop)
-    {
-        if (type == null) {
-            type = DEFAULT;
-        }
-
-        if (!isEnabled(type)) {
-            return null;
-        }
-        SoundKey skey = new SoundKey(cmd, pkgPath, key, 0, _clipVol, pan, onStop);
-        addToPlayQueue(skey);
-        return skey; // it is a frob
-    }
-
-//    /**
-//     * Adjust the volume of this clip.
-//     */
-//    protected static void adjustVolumeIdeally (Line line, float volume)
-//    {
-//        if (line.isControlSupported(FloatControl.Type.VOLUME)) {
-//            FloatControl vol = (FloatControl)
-//                line.getControl(FloatControl.Type.VOLUME);
-//
-//            float min = vol.getMinimum();
-//            float max = vol.getMaximum();
-//
-//            float ourval = (volume * (max - min)) + min;
-//            Log.debug("adjust vol: [min=" + min + ", ourval=" + ourval +
-//                ", max=" + max + "].");
-//            vol.setValue(ourval);
-//
-//        } else {
-//            // fall back
-//            adjustVolume(line, volume);
-//        }
-//    }
 
     /**
      * Use the gain control to implement volume.
@@ -1006,9 +704,6 @@ public class SoundManager
         /** The player thread, if it's playing us. */
         public Thread thread;
 
-        /** Run when the processed method is called. */
-        public Runnable onProcessed;
-
         /**
          * Create a SoundKey that just contains the specified command.
          */
@@ -1020,21 +715,20 @@ public class SoundManager
         /**
          * Quicky constructor for music keys and lock operations.
          */
-        public SoundKey (byte cmd, String pkgPath, String key, Runnable onProcessed)
+        public SoundKey (byte cmd, String pkgPath, String key)
         {
             this(cmd);
             this.pkgPath = pkgPath;
             this.key = key;
-            this.onProcessed = onProcessed;
         }
 
         /**
          * Constructor for a sound effect soundkey.
          */
         public SoundKey (byte cmd, String pkgPath, String key, int delay, float volume,
-                float pan, Runnable onProcessed)
+                float pan)
         {
-            this(cmd, pkgPath, key, onProcessed);
+            this(cmd, pkgPath, key);
 
             stamp = System.currentTimeMillis() + delay;
             setVolume(volume);
@@ -1088,7 +782,7 @@ public class SoundManager
          * If this key is one of the two loop types.
          */
         protected boolean isLoop() {
-            return cmd == LOOP || cmd == LOOP_TO_COMPLETION;
+            return cmd == LOOP;
         }
 
         @Override
@@ -1114,14 +808,11 @@ public class SoundManager
         }
     }
 
+    /** Does our package based sound loading. */
+    protected SoundLoader _loader;
+
     /** The queue where callbacks for keys being processed are dispatched. */
     protected RunQueue _callbackQueue = RunQueue.AWT;
-
-    /** The path of the default sound to use for missing sounds. */
-    protected String _defaultClipBundle, _defaultClipPath;
-
-    /** The resource manager from which we obtain audio files. */
-    protected ResourceManager _rmgr;
 
     /** The queue of sound clips to be played. */
     protected Queue<SoundKey> _queue = new Queue<SoundKey>();
@@ -1132,22 +823,14 @@ public class SoundManager
     /** If we every play a sound successfully, this is set to true. */
     protected boolean _soundSeemsToWork = false;
 
-    /** Volume level for sound clips. */
-    protected float _clipVol = 1f;
-
     /** The cache of recent audio clips . */
     protected LRUHashMap<SoundKey, byte[][]> _clipCache;
 
-    /** The set of locked audio clips; this is separate from the LRU so
-     * that locking clips doesn't booch up an otherwise normal caching
-     * agenda. */
+    /**
+     * The set of locked audio clips; this is separate from the LRU so that locking clips doesn't
+     * booch up an otherwise normal caching agenda.
+     */
     protected HashMap<SoundKey,byte[][]> _lockedClips = new HashMap<SoundKey,byte[][]>();
-
-    /** A set of soundTypes for which sound is enabled. */
-    protected HashSet<SoundType> _disabledTypes = new HashSet<SoundType>();
-
-    /** A cache of config objects we've created. */
-    protected LRUHashMap<String,Config> _configs = new LRUHashMap<String,Config>(5);
 
     /** Soundkey command constants. */
     protected static final byte PLAY = 0;
@@ -1155,7 +838,6 @@ public class SoundManager
     protected static final byte UNLOCK = 2;
     protected static final byte DIE = 3;
     protected static final byte LOOP = 4;
-    protected static final byte LOOP_TO_COMPLETION = 5;
 
     /** A pref that specifies a directory for us to get test sounds from. */
     protected static RuntimeAdjust.FileAdjust _testDir =
