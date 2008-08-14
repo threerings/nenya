@@ -7,6 +7,7 @@ import com.threerings.resource.ResourceManager;
  *
  * @deprecated - use {@link JavaSoundPlayer}
  */
+@Deprecated
 public class SoundManager extends JavaSoundPlayer
 {
     public SoundManager (ResourceManager rmgr)
