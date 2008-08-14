@@ -57,88 +57,15 @@ import com.threerings.resource.ResourceManager;
 /**
  * Manages the playing of audio files via the Java Sound APIs.
  */
-public class SoundManager extends AbstractSoundManager
+public class JavaSoundPlayer extends SoundPlayer
 {
-    /** A pan value indicating that a sound should play from the left only. */
-    public static final float PAN_LEFT = -1f;
-
-    /** A pan value indicating that a sound should play from the right only. */
-    public static final float PAN_RIGHT = 1f;
-
-    /** A pan value indicating that a sound should play from center. */
-    public static final float PAN_CENTER = 0f;
-
-    /**
-     * Create instances of this for your application to differentiate
-     * between different types of sounds.
-     */
-    public static class SoundType
-    {
-        /**
-         * Construct a new SoundType.
-         * Which should be a static variable stashed somewhere for the entire application to share.
-         *
-         * @param strname a short string identifier, preferably without spaces.
-         */
-        public SoundType (String strname)
-        {
-            _strname = strname;
-        }
-
-        @Override
-        public String toString ()
-        {
-            return _strname;
-        }
-
-        protected String _strname;
-    }
-
-    /**
-     * A control for sounds.
-     */
-    public static interface Frob
-    {
-        /**
-         * Stop playing or looping the sound.
-         * At present, the granularity of this command is limited to the buffer size of the
-         * line spooler, or about 8k of data. Thus, if playing an 11khz sample, it could take
-         * 8/11ths of a second for the sound to actually stop playing.
-         */
-        public void stop ();
-
-        /**
-         * Set the volume of the sound.
-         */
-        public void setVolume (float vol);
-
-        /**
-         * Get the volume of this sound.
-         */
-        public float getVolume ();
-
-        /**
-         * Set the pan value for the sound. Valid values are
-         * -1 for left-only, 0 is centered, all the way to +1 for right-only.
-         */
-        public void setPan (float pan);
-
-        /**
-         * Get the pan value of this sound.
-         */
-        public float getPan ();
-    }
-
-    /** The default sound type. */
-    public static final SoundType DEFAULT = new SoundType("default");
-
     /** The default clip cache holds 4 megs. */
     public static final int DEFAULT_CACHE_SIZE = 4 * 1024 * 1024;
 
     /**
      * Constructs a sound manager.
      */
-    public SoundManager (ResourceManager rmgr)
+    public JavaSoundPlayer (ResourceManager rmgr)
     {
         this(rmgr, null, null);
     }
@@ -149,7 +76,7 @@ public class SoundManager extends AbstractSoundManager
      * @param defaultClipPath The pathname of a sound clip to use as a
      * fallback if another sound clip cannot be located.
      */
-    public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath)
+    public JavaSoundPlayer (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath)
     {
         this(rmgr, defaultClipBundle, defaultClipPath, DEFAULT_CACHE_SIZE);
     }
@@ -161,13 +88,13 @@ public class SoundManager extends AbstractSoundManager
      * clip cannot be located.
      * @param cacheSize the number of bytes of sound clips to cache.
      */
-    public SoundManager (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath,
+    public JavaSoundPlayer (ResourceManager rmgr, String defaultClipBundle, String defaultClipPath,
             int cacheSize)
     {
         this(new SoundLoader(rmgr, defaultClipBundle, defaultClipPath), cacheSize);
     }
 
-    public SoundManager (SoundLoader loader, int cacheSize)
+    public JavaSoundPlayer (SoundLoader loader, int cacheSize)
     {
         // save things off
         _loader = loader;

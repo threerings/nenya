@@ -91,7 +91,7 @@ public class SoundLoader
                 clipin = _rmgr.getResource(path);
             } catch (FileNotFoundException fnfe2) {
                 // only play the default sound if we have verbose sound debugging turned on.
-                if (SoundManager._verbose.getValue()) {
+                if (JavaSoundPlayer._verbose.getValue()) {
                     log.warning("Could not locate sound data", "bundle", bundle, "path", path);
                     if (_defaultClipPath != null) {
                         try {

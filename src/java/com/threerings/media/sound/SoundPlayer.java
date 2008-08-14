@@ -7,11 +7,83 @@ import com.google.common.collect.Sets;
 import com.samskivert.util.Interval;
 import com.samskivert.util.RunQueue;
 
-import com.threerings.media.sound.SoundManager.Frob;
-import com.threerings.media.sound.SoundManager.SoundType;
-
-public abstract class AbstractSoundManager
+/**
+ * Loads, plays and loops sounds.
+ */
+public abstract class SoundPlayer
 {
+    /** A pan value indicating that a sound should play from the left only. */
+    public static final float PAN_LEFT = -1f;
+
+    /** A pan value indicating that a sound should play from the right only. */
+    public static final float PAN_RIGHT = 1f;
+
+    /** A pan value indicating that a sound should play from center. */
+    public static final float PAN_CENTER = 0f;
+
+    /**
+     * Create instances of this for your application to differentiate
+     * between different types of sounds.
+     */
+    public static class SoundType
+    {
+        /**
+         * Construct a new SoundType.
+         * Which should be a static variable stashed somewhere for the entire application to share.
+         *
+         * @param strname a short string identifier, preferably without spaces.
+         */
+        public SoundType (String strname)
+        {
+            _strname = strname;
+        }
+
+        @Override
+        public String toString ()
+        {
+            return _strname;
+        }
+
+        protected String _strname;
+    }
+
+    /**
+     * A control for sounds.
+     */
+    public static interface Frob
+    {
+        /**
+         * Stop playing or looping the sound.
+         * At present, the granularity of this command is limited to the buffer size of the
+         * line spooler, or about 8k of data. Thus, if playing an 11khz sample, it could take
+         * 8/11ths of a second for the sound to actually stop playing.
+         */
+        public void stop ();
+
+        /**
+         * Set the volume of the sound.
+         */
+        public void setVolume (float vol);
+
+        /**
+         * Get the volume of this sound.
+         */
+        public float getVolume ();
+
+        /**
+         * Set the pan value for the sound. Valid values are
+         * -1 for left-only, 0 is centered, all the way to +1 for right-only.
+         */
+        public void setPan (float pan);
+
+        /**
+         * Get the pan value of this sound.
+         */
+        public float getPan ();
+    }
+
+    /** The default sound type. */
+    public static final SoundType DEFAULT = new SoundType("default");
     /**
      * Shut the damn thing off.
      */
@@ -94,7 +166,7 @@ public abstract class AbstractSoundManager
      */
     public boolean play (SoundType type, String pkgPath, String key)
     {
-        return play(type, pkgPath, key, 0, SoundManager.PAN_CENTER);
+        return play(type, pkgPath, key, 0, PAN_CENTER);
     }
 
     /**
@@ -118,7 +190,7 @@ public abstract class AbstractSoundManager
      */
     public boolean play (SoundType type, String pkgPath, String key, int delay)
     {
-        return play(type, pkgPath, key, delay, SoundManager.PAN_CENTER);
+        return play(type, pkgPath, key, delay, PAN_CENTER);
     }
 
     /**
@@ -159,7 +231,7 @@ public abstract class AbstractSoundManager
      */
     public Frob loop (SoundType type, String pkgPath, String key)
     {
-        return loop(type, pkgPath, key, SoundManager.PAN_CENTER);
+        return loop(type, pkgPath, key, PAN_CENTER);
     }
 
     /**
@@ -181,7 +253,7 @@ public abstract class AbstractSoundManager
     protected boolean shouldPlay (SoundType type)
     {
         if (type == null) {
-            type = SoundManager.DEFAULT; // let the lazy kids play too
+            type = DEFAULT; // let the lazy kids play too
         }
 
         return _clipVol != 0f && isEnabled(type);

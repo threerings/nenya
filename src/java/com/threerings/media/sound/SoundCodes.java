@@ -21,7 +21,7 @@
 
 package com.threerings.media.sound;
 
-import com.threerings.media.sound.SoundManager.SoundType;
+import com.threerings.media.sound.SoundPlayer.SoundType;
 
 /**
  * A basic set of sound types.

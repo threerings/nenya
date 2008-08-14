@@ -14,19 +14,18 @@ import com.google.common.collect.Maps;
 import com.samskivert.util.RunQueue;
 
 import com.threerings.media.sound.SoundLoader;
-import com.threerings.media.sound.SoundManager;
-import com.threerings.media.sound.AbstractSoundManager;
+import com.threerings.media.sound.SoundPlayer;
 
 import static com.threerings.media.Log.log;
 
 /**
- * Plays sounds via OpenAL.
+ * Implements the abstract pieces of {@link SoundPlayer} via OpenAL.
  */
-public class OpenALSoundManager extends AbstractSoundManager
+public class OpenALSoundPlayer extends SoundPlayer
     implements ClipProvider
 {
 
-    public OpenALSoundManager (SoundLoader loader)
+    public OpenALSoundPlayer (SoundLoader loader)
     {
         _loader = loader;
         _alSoundManager = new MediaALSoundManager();
@@ -75,11 +74,11 @@ public class OpenALSoundManager extends AbstractSoundManager
     }
 
     @Override
-    protected SoundManager.Frob loop (String pkgPath, String key, float pan)
+    protected Frob loop (String pkgPath, String key, float pan)
     {
         final Sound sound = _group.getSound(pkgPath + key);
         sound.loop(true);
-        return new SoundManager.Frob(){
+        return new Frob(){
             public float getPan () {
                 return 0;
             }
@@ -114,7 +113,7 @@ public class OpenALSoundManager extends AbstractSoundManager
         }
     }
 
-    protected class MediaALSoundManager extends com.threerings.openal.SoundManager {
+    protected class MediaALSoundManager extends SoundManager {
         protected MediaALSoundManager () {
             super(getSoundQueue());
         }
@@ -132,7 +131,7 @@ public class OpenALSoundManager extends AbstractSoundManager
 
     protected final SoundLoader _loader;
     protected final SoundGroup _group;
-    protected final com.threerings.openal.SoundManager _alSoundManager;
+    protected final SoundManager _alSoundManager;
 
     /** Number of sounds that can be played simultaneously. */
     protected final int SOURCE_COUNT = 10;
