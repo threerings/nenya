@@ -36,7 +36,7 @@ public class SoundTestApp
         }
 
         ResourceManager rmgr = new ResourceManager("rsrc");
-        _soundmgr = new SoundManager(rmgr, null, null);
+        _soundmgr = new JavaSoundPlayer(rmgr, null, null);
         _keys = args;
     }
 
@@ -44,7 +44,7 @@ public class SoundTestApp
     {
         for (int ii = 0; ii < _keys.length; ii++) {
             System.out.println("Playing " + _keys[ii] + ".");
-            _soundmgr.play(SoundManager.DEFAULT,
+            _soundmgr.play(JavaSoundPlayer.DEFAULT,
                            "com/threerings/media/sound/", _keys[ii]);
         }
         _soundmgr.shutdown();
@@ -65,5 +65,5 @@ public class SoundTestApp
     }
 
     protected String[] _keys;
-    protected SoundManager _soundmgr;
+    protected JavaSoundPlayer _soundmgr;
 }
