@@ -117,6 +117,18 @@ public abstract class SoundPlayer
     }
 
     /**
+     * Is sound on and is the specified soundtype enabled?
+     */
+    public boolean shouldPlay (SoundType type)
+    {
+        if (type == null) {
+            type = DEFAULT; // let the lazy kids play too
+        }
+
+        return _clipVol != 0f && isEnabled(type);
+    }
+
+    /**
      * Turns on or off the specified sound type.
      */
     public void setEnabled (SoundType type, boolean enabled)
@@ -249,15 +261,6 @@ public abstract class SoundPlayer
      * Loop the specified sound, stopping as quickly as possible when stop is called.
      */
     protected abstract Frob loop (String pkgPath, String key, float pan);
-
-    protected boolean shouldPlay (SoundType type)
-    {
-        if (type == null) {
-            type = DEFAULT; // let the lazy kids play too
-        }
-
-        return _clipVol != 0f && isEnabled(type);
-    }
 
     /**
      * Gets the run queue on which sound should be played. It defaults to {@link RunQueue#AWT}.
