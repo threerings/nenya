@@ -46,7 +46,7 @@ public class TestSoundManager
                 e.printStackTrace();
             }
             Interval i = new Interval(rqueue) {
-                public void expired () {
+                @Override public void expired () {
                     smgr.updateStreams(0.1f);
                 }
             };
@@ -54,7 +54,7 @@ public class TestSoundManager
         } else {
             // queue up an interval to play a sound over and over
             Interval i = new Interval(rqueue) {
-                public void expired () {
+                @Override public void expired () {
                     Sound sound = group.getSound(path);
                     sound.play(true);
                 }

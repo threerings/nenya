@@ -39,12 +39,10 @@ public class ClipBuffer
     /** Used to notify parties interested in when a clip is loaded. */
     public static interface Observer
     {
-        /** Called when a clip has completed loading and is ready to be
-         * played. */
+        /** Called when a clip has completed loading and is ready to be played. */
         public void clipLoaded (ClipBuffer buffer);
 
-        /** Called when a clip has failed to prepare itself for one reason
-         * or other. */
+        /** Called when a clip has failed to prepare itself for one reason or other. */
         public void clipFailed (ClipBuffer buffer);
     }
 
