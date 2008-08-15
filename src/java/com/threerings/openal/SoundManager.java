@@ -181,8 +181,8 @@ public class SoundManager
         }
 
         // configure our LRU map with a removal observer
-        _clips.setRemovalObserver(new LRUHashMap.RemovalObserver<Comparable,ClipBuffer>() {
-            public void removedFromMap (LRUHashMap<Comparable,ClipBuffer> map,
+        _clips.setRemovalObserver(new LRUHashMap.RemovalObserver<String, ClipBuffer>() {
+            public void removedFromMap (LRUHashMap<String, ClipBuffer> map,
                                         final ClipBuffer item) {
                 _rqueue.postRunnable(new Runnable() {
                     public void run () {
@@ -218,7 +218,7 @@ public class SoundManager
      */
     protected ClipBuffer getClip (ClipProvider provider, String path, Observer observer)
     {
-        Comparable ckey = ClipBuffer.makeKey(provider, path);
+        String ckey = ClipBuffer.makeKey(provider, path);
         ClipBuffer buffer = _clips.get(ckey);
         try {
             if (buffer == null) {
@@ -301,7 +301,7 @@ public class SoundManager
                     final Clip clip = buffer.load();
                     _rqueue.postRunnable(new Runnable() {
                         public void run () {
-                            Comparable ckey = buffer.getKey();
+                            String ckey = buffer.getKey();
                             log.debug("Loaded " + ckey + ".");
                             _loading.remove(ckey);
                             if (buffer.bind(clip)) {
@@ -330,11 +330,11 @@ public class SoundManager
     protected float _baseGain = 1;
 
     /** Contains a mapping of all currently-loading clips. */
-    protected HashMap<Comparable, ClipBuffer> _loading = Maps.newHashMap();
+    protected HashMap<String, ClipBuffer> _loading = Maps.newHashMap();
 
     /** Contains a mapping of all loaded clips. */
-    protected LRUHashMap<Comparable, ClipBuffer> _clips =
-        new LRUHashMap<Comparable, ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
+    protected LRUHashMap<String, ClipBuffer> _clips =
+        new LRUHashMap<String, ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
 
     /** Contains a queue of clip buffers waiting to be loaded. */
     protected Queue<ClipBuffer> _toLoad;

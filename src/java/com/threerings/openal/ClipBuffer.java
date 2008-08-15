@@ -52,7 +52,7 @@ public class ClipBuffer
      * Create a key that uniquely identifies this combination of clip
      * provider and path.
      */
-    public static Comparable makeKey (ClipProvider provider, String path)
+    public static String makeKey (ClipProvider provider, String path)
     {
         // we'll just use a string, amazing!
         return provider + ":" + path;
@@ -73,7 +73,7 @@ public class ClipBuffer
     /**
      * Returns the unique key for this clip buffer.
      */
-    public Comparable getKey ()
+    public String getKey ()
     {
         return makeKey(_provider, _path);
     }
@@ -242,9 +242,9 @@ public class ClipBuffer
         }
         _state = UNLOADED;
 
-        _observers.apply(new ObserverList.ObserverOp() {
-            public boolean apply (Object observer) {
-                ((Observer)observer).clipFailed(ClipBuffer.this);
+        _observers.apply(new ObserverList.ObserverOp<Observer>() {
+            public boolean apply (Observer observer) {
+                observer.clipFailed(ClipBuffer.this);
                 return true;
             }
         });
