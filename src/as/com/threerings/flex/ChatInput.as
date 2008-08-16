@@ -20,6 +20,12 @@ public class ChatInput extends TextInput
     {
         styleName = "chatInput";
         width = 147;
+        showPrompt(true);
+    }
+
+    protected function showPrompt (show :Boolean) :void
+    {
+        setStyle("backgroundImage", (show && ("" == text)) ? PROMPT : undefined);
     }
 
     override protected function focusInHandler (event :FocusEvent) :void
@@ -32,6 +38,16 @@ public class ChatInput extends TextInput
         } finally {
             textField.selectable = oldValue;
         }
+        showPrompt(false);
     }
+
+    override protected function focusOutHandler (event :FocusEvent) :void
+    {
+        super.focusOutHandler(event);
+        showPrompt(true);
+    }
+
+    [Embed(source="typetochat.png")]
+    protected static const PROMPT :Class; 
 }
 }
