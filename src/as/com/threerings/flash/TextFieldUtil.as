@@ -102,7 +102,7 @@ public class TextFieldUtil
     {
         var tf :TextField = (clazz == null) ? new TextField() : TextField(new clazz());
 
-        if ("outlineColor" in initProps) {
+        if ((initProps != null) && ("outlineColor" in initProps)) {
             tf.filters = [ new GlowFilter(uint(initProps["outlineColor"]), 1, 2, 2, 255) ];
         }
 
