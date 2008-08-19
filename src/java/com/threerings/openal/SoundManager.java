@@ -208,7 +208,7 @@ public class SoundManager
      */
     protected ClipBuffer getClip (ClipProvider provider, String path)
     {
-        return getClip(provider, null);
+        return getClip(provider, path, null);
     }
 
     /**
