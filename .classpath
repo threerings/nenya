@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/.svn/|com/threerings/jme/" kind="src" output="dist/classes" path="src/java"/>
-	<classpathentry excluding="**/.svn/|com/threerings/jme/" kind="src" output="test/dist/classes" path="tests/src/java"/>
+	<classpathentry excluding="**/.svn/|com/threerings/jme/" kind="src" output="tests/dist/classes" path="tests/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/narya"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/xml-writer.jar"/>
