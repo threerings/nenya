@@ -3,6 +3,8 @@
 
 package com.threerings.openal;
 
+import static com.threerings.media.Log.log;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -11,12 +13,13 @@ import org.lwjgl.util.WaveData;
 
 import com.google.common.collect.Maps;
 
+import com.samskivert.util.BasicRunQueue;
 import com.samskivert.util.RunQueue;
 
+import com.threerings.media.FrameManager;
 import com.threerings.media.sound.SoundLoader;
 import com.threerings.media.sound.SoundPlayer;
-
-import static com.threerings.media.Log.log;
+import com.threerings.media.timer.MediaTimer;
 
 /**
  * Implements the abstract pieces of {@link SoundPlayer} via OpenAL.
@@ -30,6 +33,7 @@ public class OpenALSoundPlayer extends SoundPlayer
         _loader = loader;
         _alSoundManager = new MediaALSoundManager();
         _group = _alSoundManager.createGroup(this, SOURCE_COUNT);
+        _ticker.start();
     }
 
     public Clip loadClip (String path)
@@ -43,42 +47,56 @@ public class OpenALSoundPlayer extends SoundPlayer
     @Override
     public RunQueue getSoundQueue ()
     {
-        return RunQueue.AWT;
+        return _ticker;
     }
 
     @Override
-    public void lock (final String pkgPath, String... keys)
+    public void lock (String pkgPath, String... keys)
     {
-        for (final String key : keys) {
+        for (String key : keys) {
             final String path = pkgPath + key;
-            if (_locked.containsKey(path)) {
-                continue;
-            }
-            _alSoundManager.loadClip(this, path, new ClipBuffer.Observer() {
-                public void clipFailed (ClipBuffer buffer) {
-                    log.warning("Unable to load sound", "path", path);
-                }
+            getSoundQueue().postRunnable(new Runnable() {
+                public void run () {
+                    if (_locked.containsKey(path)) {
+                        return;
+                    }
+                    _alSoundManager.loadClip(OpenALSoundPlayer.this, path,
+                        new ClipBuffer.Observer() {
+                            public void clipFailed (ClipBuffer buffer) {
+                                log.warning("Unable to load sound", "path", path);
+                            }
 
-                public void clipLoaded (ClipBuffer buffer) {
-                    _locked.put(path, buffer);
-                }});
+                            public void clipLoaded (ClipBuffer buffer) {
+                                _locked.put(path, buffer);
+                            }
+                        });
+                }
+            });
         }
     }
 
     @Override
-    public void unlock (String pkgPath, String... keys)
+    public void unlock (final String pkgPath, String... keys)
     {
-        for (String key : keys) {
-            _locked.remove(pkgPath + key);
+        for (final String key : keys) {
+            getSoundQueue().postRunnable(new Runnable() {
+                public void run () {
+                    _locked.remove(pkgPath + key);
+                }
+            });
         }
     }
 
     @Override
     protected Frob loop (String pkgPath, String key, float pan)
     {
-        final Sound sound = _group.getSound(pkgPath + key);
-        sound.loop(true);
-        return new Frob(){
+        final SoundGrabber loader = new SoundGrabber(pkgPath, key) {
+            @Override
+            protected void soundLoaded () {
+                sound.loop(true);
+            }};
+        getSoundQueue().postRunnable(loader);
+        return new Frob() {
             public float getPan () {
                 return 0;
             }
@@ -89,18 +107,26 @@ public class OpenALSoundPlayer extends SoundPlayer
 
             public void setPan (float pan) {}
 
-            public void setVolume (float vol) { }
+            public void setVolume (float vol) {}
 
             public void stop () {
-                sound.stop();
+                getSoundQueue().postRunnable(new Runnable(){
+                    public void run () {
+                        if (loader.sound != null) {
+                            loader.sound.stop();
+                        }
+                    }});
             }};
     }
 
     @Override
     public void play (String pkgPath, String key, float pan)
     {
-        Sound sound = _group.getSound(pkgPath + key);
-        sound.play(true);
+        getSoundQueue().postRunnable(new SoundGrabber(pkgPath, key) {
+            @Override
+            protected void soundLoaded () {
+                sound.play(true);
+            }});
     }
 
     @Override
@@ -113,6 +139,9 @@ public class OpenALSoundPlayer extends SoundPlayer
         }
     }
 
+    /**
+     * Extends sound manager to allow sounds to be pulled out of the locked map.
+     */
     protected class MediaALSoundManager extends SoundManager {
         protected MediaALSoundManager () {
             super(getSoundQueue());
@@ -126,6 +155,70 @@ public class OpenALSoundPlayer extends SoundPlayer
             return super.getClip(provider, path, null);
         }
     }
+
+    /**
+     * Updates the sound manager's streams every STREAM_UPDATE_INTERVAL and processes sound
+     * runnables added to its queue.
+     */
+    protected class TickingQueue extends BasicRunQueue
+    {
+        @Override
+        protected void iterate ()
+        {
+            long elapsed = _timer.getElapsedMillis() - _lastTick;
+            Runnable r;
+            if (elapsed >= STREAM_UPDATE_INTERVAL) {
+                r = _queue.getNonBlocking();
+            } else {
+                r = _queue.get(STREAM_UPDATE_INTERVAL - elapsed);
+            }
+            if (r != null) {
+                try {
+                    r.run();
+
+                } catch (Throwable t) {
+                    log.warning("Runnable posted to SoundPlayerQueue barfed.", t);
+                }
+            }
+            long newTime = _timer.getElapsedMillis();
+            _alSoundManager.updateStreams((newTime - _lastTick)/ 1000F);
+            _lastTick = newTime;
+        }
+
+        protected MediaTimer _timer = FrameManager.createTimer();
+
+        protected long _lastTick;
+    };
+
+    /**
+     * Loads a sound in its run method and calls subclasses with soundLoaded to let them know it's
+     * ready.
+     */
+    protected abstract class SoundGrabber
+        implements Runnable
+    {
+        public String path;
+
+        public Sound sound;
+
+        public SoundGrabber (String pkgPath, String key)
+        {
+            path = pkgPath + key;
+        }
+
+        public void run ()
+        {
+            sound = _group.getSound(path);
+            soundLoaded();
+        }
+
+        protected abstract void soundLoaded ();
+    }
+
+    /** Number of milliseconds to wait between stream updates. */
+    protected static final int STREAM_UPDATE_INTERVAL = 100;
+
+    protected TickingQueue _ticker = new TickingQueue();
 
     protected Map<String, ClipBuffer> _locked = Maps.newHashMap();
 

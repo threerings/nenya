@@ -126,6 +126,15 @@ public abstract class FrameManager
      */
     public static FrameManager newInstance (ManagedRoot root)
     {
+        return newInstance(root, createTimer());
+    }
+
+    /**
+     * Attempts to create a high resolution timer, but if that isn't possible, uses a
+     * System.currentTimeMillis based timer.
+     */
+    public static MediaTimer createTimer ()
+    {
         MediaTimer timer = null;
         for (String timerClass : PERF_TIMERS) {
             try {
@@ -140,7 +149,7 @@ public abstract class FrameManager
                      "System.currentTimeMillis() based timer.");
             timer = new MillisTimer();
         }
-        return newInstance(root, timer);
+        return timer;
     }
 
     /**
