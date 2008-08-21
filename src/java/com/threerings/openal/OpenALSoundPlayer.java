@@ -51,6 +51,16 @@ public class OpenALSoundPlayer extends SoundPlayer
     }
 
     @Override
+    public void setClipVolume (final float vol)
+    {
+        super.setClipVolume(vol);
+        _ticker.postRunnable(new Runnable(){
+            public void run () {
+                _alSoundManager.setBaseGain(vol);
+            }});
+    }
+
+    @Override
     public void lock (String pkgPath, String... keys)
     {
         for (String key : keys) {
@@ -162,6 +172,11 @@ public class OpenALSoundPlayer extends SoundPlayer
      */
     protected class TickingQueue extends BasicRunQueue
     {
+        public TickingQueue ()
+        {
+            super("SoundPlayerQueue");
+        }
+
         @Override
         protected void iterate ()
         {
