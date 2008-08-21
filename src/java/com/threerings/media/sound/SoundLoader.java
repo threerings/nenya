@@ -50,6 +50,27 @@ public class SoundLoader
         return data;
     }
 
+    /**
+     * Attempts to load a sound stream from the given path from the given bundle and from the
+     * classpath. If nothing is found, a FileNotFoundException is thrown.
+     */
+    public InputStream getSound (String bundle, String path)
+        throws IOException
+    {
+        InputStream rsrc;
+        try {
+            rsrc = _rmgr.getResource(bundle, path);
+        } catch (FileNotFoundException notFound) {
+            // try from the classpath
+            try {
+                rsrc = _rmgr.getResource(path);
+            } catch (FileNotFoundException notFoundAgain) {
+                throw notFound;
+            }
+        }
+        return rsrc;
+    }
+
     public void shutdown ()
     {
         _configs.clear();
@@ -84,35 +105,30 @@ public class SoundLoader
     {
         InputStream clipin = null;
         try {
-            clipin = _rmgr.getResource(bundle, path);
+            clipin = getSound(bundle, path);
         } catch (FileNotFoundException fnfe) {
-            // try from the classpath
-            try {
-                clipin = _rmgr.getResource(path);
-            } catch (FileNotFoundException fnfe2) {
-                // only play the default sound if we have verbose sound debugging turned on.
-                if (JavaSoundPlayer._verbose.getValue()) {
-                    log.warning("Could not locate sound data", "bundle", bundle, "path", path);
-                    if (_defaultClipPath != null) {
+            // only play the default sound if we have verbose sound debugging turned on.
+            if (JavaSoundPlayer._verbose.getValue()) {
+                log.warning("Could not locate sound data", "bundle", bundle, "path", path);
+                if (_defaultClipPath != null) {
+                    try {
+                        clipin = _rmgr.getResource(_defaultClipBundle, _defaultClipPath);
+                    } catch (FileNotFoundException fnfe3) {
                         try {
-                            clipin = _rmgr.getResource(_defaultClipBundle, _defaultClipPath);
-                        } catch (FileNotFoundException fnfe3) {
-                            try {
-                                clipin = _rmgr.getResource(_defaultClipPath);
-                            } catch (FileNotFoundException fnfe4) {
-                                log.warning(
-                                    "Additionally, the default fallback sound could not be located",
-                                    "bundle", _defaultClipBundle, "path", _defaultClipPath);
-                            }
+                            clipin = _rmgr.getResource(_defaultClipPath);
+                        } catch (FileNotFoundException fnfe4) {
+                            log.warning(
+                                "Additionally, the default fallback sound could not be located",
+                                "bundle", _defaultClipBundle, "path", _defaultClipPath);
                         }
-                    } else {
-                        log.warning("No fallback default sound specified!");
                     }
+                } else {
+                    log.warning("No fallback default sound specified!");
                 }
-                // if we couldn't load the default, rethrow
-                if (clipin == null) {
-                    throw fnfe2;
-                }
+            }
+            // if we couldn't load the default, rethrow
+            if (clipin == null) {
+                throw fnfe;
             }
         }
 

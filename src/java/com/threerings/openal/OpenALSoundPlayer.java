@@ -7,8 +7,11 @@ import static com.threerings.media.Log.log;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
+import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
 
 import com.google.common.collect.Maps;
@@ -95,6 +98,52 @@ public class OpenALSoundPlayer extends SoundPlayer
                 }
             });
         }
+    }
+
+    /**
+     * Streams ogg files from the given bundle and path.
+     */
+    public Stream stream (final String bundle, final String path, final boolean loop)
+        throws IOException
+    {
+        if (!path.endsWith(".ogg")) {
+            log.warning("Unknown file type for streaming", "bundle", bundle, "path", path);
+            return null;
+        }
+        InputStream rsrc = _loader.getSound(bundle, path);
+        final StreamDecoder dec = new OggStreamDecoder();
+        dec.init(rsrc);
+        return new Stream(_alSoundManager) {
+
+            @Override
+            protected void update (float time) {
+                super.update(time);
+                if (_state != AL10.AL_PLAYING) {
+                    return;
+                }
+                setGain(_clipVol);
+            }
+
+            @Override
+            protected int getFormat () {
+                return dec.getFormat();
+            }
+
+            @Override
+            protected int getFrequency () {
+                return dec.getFrequency();
+            }
+
+            @Override
+            protected int populateBuffer (ByteBuffer buf) throws IOException {
+                int read = dec.read(buf);
+                if(buf.hasRemaining() && loop) {
+                    dec.init(_loader.getSound(bundle, path));
+                    read = Math.max(0, read);
+                    read += dec.read(buf);
+                }
+                return read;
+            }};
     }
 
     @Override
