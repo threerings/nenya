@@ -25,7 +25,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 
 /**
- * Tests the {@link Direction} class.
+ * Tests the {@link DirectionUtil} class.
  */
 public class DirectionTest extends TestCase
     implements DirectionCodes

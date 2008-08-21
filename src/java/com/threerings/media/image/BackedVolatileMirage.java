@@ -57,9 +57,8 @@ public class BackedVolatileMirage extends VolatileMirage
     @Override
     protected void refreshVolatileImage ()
     {
-        Graphics gfx = null;
+        Graphics gfx = _image.getGraphics();
         try {
-            gfx = _image.getGraphics();
             gfx.drawImage(_source, -_bounds.x, -_bounds.y, null);
 
         } catch (Exception e) {

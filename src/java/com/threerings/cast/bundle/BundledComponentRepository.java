@@ -91,42 +91,46 @@ public class BundledComponentRepository
 
         // first we obtain the resource set from whence will come our bundles
         ResourceBundle[] rbundles = rmgr.getResourceSet(name);
+        if (rbundles == null) {
+            // Couldn't find a bundle with that name, so just make empty maps for safe enumerating
+            fillInWithEmptyMaps();
+            return;
+        }
 
         // look for our metadata info in each of the bundles
         try {
-            int rcount = (rbundles == null) ? 0 : rbundles.length;
-            for (int i = 0; i < rcount; i++) {
+            for (ResourceBundle rbundle : rbundles) {
                 if (_actions == null) {
                     @SuppressWarnings("unchecked") Map<String, ActionSequence> amap =
                         (Map<String, ActionSequence>)BundleUtil.loadObject(
-                            rbundles[i], BundleUtil.ACTIONS_PATH, true);
+                            rbundle, BundleUtil.ACTIONS_PATH, true);
                     _actions = amap;
                 }
                 if (_actionSets == null) {
-                    @SuppressWarnings("unchecked") Map<String, TileSet> asets = 
+                    @SuppressWarnings("unchecked") Map<String, TileSet> asets =
                         (Map<String, TileSet>)BundleUtil.loadObject(
-                            rbundles[i], BundleUtil.ACTION_SETS_PATH, true);
+                            rbundle, BundleUtil.ACTION_SETS_PATH, true);
                     _actionSets = asets;
                 }
                 if (_classes == null) {
                     @SuppressWarnings("unchecked") Map<String, ComponentClass> cmap =
                         (Map<String, ComponentClass>)BundleUtil.loadObject(
-                            rbundles[i], BundleUtil.CLASSES_PATH, true);
+                            rbundle, BundleUtil.CLASSES_PATH, true);
                     _classes = cmap;
                 }
             }
 
             // now go back and load up all of the component information
-            for (int i = 0; i < rcount; i++) {
-                @SuppressWarnings("unchecked") IntMap<Tuple<String, String>> comps = 
+            for (ResourceBundle rbundle : rbundles) {
+                @SuppressWarnings("unchecked") IntMap<Tuple<String, String>> comps =
                     (IntMap<Tuple<String, String>>)BundleUtil.loadObject(
-                        rbundles[i], BundleUtil.COMPONENTS_PATH, true);
+                        rbundle, BundleUtil.COMPONENTS_PATH, true);
                 if (comps == null) {
                     continue;
                 }
 
                 // create a frame provider for this bundle
-                FrameProvider fprov = new ResourceBundleProvider(_imgr, rbundles[i]);
+                FrameProvider fprov = new ResourceBundleProvider(_imgr, rbundle);
 
                 // now create char. component instances for each component in the serialized table
                 Iterator<Integer> iter = comps.keySet().iterator();
@@ -144,6 +148,11 @@ public class BundledComponentRepository
 
         // if we failed to load our classes or actions, create empty hashtables so that we can
         // safely enumerate our emptiness
+        fillInWithEmptyMaps();
+    }
+
+    protected void fillInWithEmptyMaps(){
+
         if (_actions == null) {
             _actions = Maps.newHashMap();
         }
@@ -364,8 +373,8 @@ public class BundledComponentRepository
             }
             return actionPath;
         }
-        
-        protected String makePath(CharacterComponent component, String action, String type) 
+
+        protected String makePath(CharacterComponent component, String action, String type)
         {
             String imgpath = action;
             if (type != null) {
