@@ -93,7 +93,8 @@ public class BundledComponentRepository
         ResourceBundle[] rbundles = rmgr.getResourceSet(name);
         if (rbundles == null) {
             // Couldn't find a bundle with that name, so just make empty maps for safe enumerating
-            fillInWithEmptyMaps();
+            _actions = Maps.newHashMap();
+            _classes = Maps.newHashMap();
             return;
         }
 
@@ -148,11 +149,6 @@ public class BundledComponentRepository
 
         // if we failed to load our classes or actions, create empty hashtables so that we can
         // safely enumerate our emptiness
-        fillInWithEmptyMaps();
-    }
-
-    protected void fillInWithEmptyMaps(){
-
         if (_actions == null) {
             _actions = Maps.newHashMap();
         }
