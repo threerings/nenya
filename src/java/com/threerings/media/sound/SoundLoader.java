@@ -12,7 +12,6 @@ import org.apache.commons.io.IOUtils;
 import com.samskivert.util.Config;
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.util.LRUHashMap;
-
 import com.threerings.resource.ResourceManager;
 
 /**
@@ -34,20 +33,36 @@ public class SoundLoader
     public byte[][] load (String packagePath, String key)
         throws IOException
     {
-        // otherwise, randomize between all available sounds
-        Config c = getConfig(packagePath);
-        String[] names = c.getValue(key, (String[])null);
-        if (names == null) {
+        String[] paths = getPaths(packagePath, key);
+        if (paths == null) {
             log.warning("No such sound", "key", key);
             return null;
         }
 
-        byte[][] data = new byte[names.length][];
-        String bundle = c.getValue("bundle", (String)null);
-        for (int ii = 0; ii < names.length; ii++) {
-            data[ii] = loadClipData(bundle, names[ii]);
+        byte[][] data = new byte[paths.length][];
+        String bundle = getBundle(packagePath);
+        for (int ii = 0; ii < paths.length; ii++) {
+            data[ii] = loadClipData(bundle, paths[ii]);
         }
         return data;
+    }
+
+    /**
+     * Returns the paths to sounds for <code>key</code> in the given package. Returns null if no
+     * sounds are found.
+     */
+    public String[] getPaths (String packagePath, String key)
+    {
+        return getConfig(packagePath).getValue(key, (String[])null);
+    }
+
+
+    /**
+     * Returns the bundle for sounds in the given package.  Returns null if the bundle isn't found.
+     */
+    public String getBundle (String packagePath)
+    {
+        return getConfig(packagePath).getValue("bundle", (String)null);
     }
 
     /**

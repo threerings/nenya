@@ -6,20 +6,29 @@ package com.threerings.openal;
 import static com.threerings.media.Log.log;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+
 import org.lwjgl.openal.AL10;
 import org.lwjgl.util.WaveData;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import com.samskivert.util.BasicRunQueue;
+import com.samskivert.util.RandomUtil;
 import com.samskivert.util.RunQueue;
 
 import com.threerings.media.FrameManager;
+import com.threerings.media.sound.JavaSoundPlayer;
 import com.threerings.media.sound.SoundLoader;
 import com.threerings.media.sound.SoundPlayer;
 import com.threerings.media.timer.MediaTimer;
@@ -42,9 +51,41 @@ public class OpenALSoundPlayer extends SoundPlayer
     public Clip loadClip (String path)
         throws IOException
     {
-        int pkgEnd = path.lastIndexOf("/") + 1;
-        byte[] data = _loader.load(path.substring(0, pkgEnd), path.substring(pkgEnd))[0];
-        return new Clip(WaveData.create(new ByteArrayInputStream(data)));
+        int bundleEnd = path.lastIndexOf(":");
+        InputStream sound = _loader.getSound(path.substring(0, bundleEnd),
+            path.substring(bundleEnd + 1));
+        if (path.endsWith(".ogg")) {
+            try {
+                AudioInputStream instream = JavaSoundPlayer.setupAudioStream(sound);
+                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+
+                byte[] buf = new byte[16 * 1024];
+                int read;
+                do {
+                    read = instream.read(buf, 0, buf.length);
+                    if (read >= 0) {
+                        outstream.write(buf, 0, read);
+                    }
+                } while (read >= 0);
+
+                byte[] audio = outstream.toByteArray();
+                AudioFormat format = instream.getFormat();
+                long length = audio.length / format.getFrameSize();
+
+                instream = new AudioInputStream(new ByteArrayInputStream(audio), format, length);
+
+                outstream = new ByteArrayOutputStream();
+
+                AudioSystem.write(instream, AudioFileFormat.Type.WAVE, outstream);
+
+                sound = new ByteArrayInputStream(outstream.toByteArray());
+
+            } catch (Exception e) {
+                log.warning("Error decompressing audio clip", "path", path, e);
+                return new Clip();
+            }
+        }
+        return new Clip(WaveData.create(sound));
     }
 
     @Override
@@ -113,7 +154,7 @@ public class OpenALSoundPlayer extends SoundPlayer
         InputStream rsrc = _loader.getSound(bundle, path);
         final StreamDecoder dec = new OggStreamDecoder();
         dec.init(rsrc);
-        return new Stream(_alSoundManager) {
+        Stream s = new Stream(_alSoundManager) {
 
             @Override
             protected void update (float time) {
@@ -144,6 +185,8 @@ public class OpenALSoundPlayer extends SoundPlayer
                 }
                 return read;
             }};
+            s.setGain(_clipVol);
+            return s;
     }
 
     @Override
@@ -267,7 +310,12 @@ public class OpenALSoundPlayer extends SoundPlayer
 
         public SoundGrabber (String pkgPath, String key)
         {
-            path = pkgPath + key;
+            String bundle = _loader.getBundle(pkgPath);
+            Preconditions.checkNotNull(bundle,
+                "Unable to find the bundle name for a package [package=%s, key=%s]", pkgPath, key);
+            String[] names = _loader.getPaths(pkgPath, key);
+            Preconditions.checkNotNull(bundle, "No such sound [package=%s, key=%s]", pkgPath, key);
+            path = bundle + ":" + names[RandomUtil.getInt(names.length)];
         }
 
         public void run ()
