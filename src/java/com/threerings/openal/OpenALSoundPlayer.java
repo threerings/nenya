@@ -108,24 +108,25 @@ public class OpenALSoundPlayer extends SoundPlayer
     public void lock (String pkgPath, String... keys)
     {
         for (String key : keys) {
-            final String path = pkgPath + key;
-            getSoundQueue().postRunnable(new Runnable() {
-                public void run () {
-                    if (_locked.containsKey(path)) {
-                        return;
-                    }
-                    _alSoundManager.loadClip(OpenALSoundPlayer.this, path,
-                        new ClipBuffer.Observer() {
-                            public void clipFailed (ClipBuffer buffer) {
-                                log.warning("Unable to load sound", "path", path);
-                            }
+            for (final String path : getPaths(pkgPath, key)) {
+                getSoundQueue().postRunnable(new Runnable() {
+                    public void run () {
+                        if (_locked.containsKey(path)) {
+                            return;
+                        }
+                        _alSoundManager.loadClip(OpenALSoundPlayer.this, path,
+                            new ClipBuffer.Observer() {
+                                public void clipFailed (ClipBuffer buffer) {
+                                    log.warning("Unable to load sound", "path", path);
+                                }
 
-                            public void clipLoaded (ClipBuffer buffer) {
-                                _locked.put(path, buffer);
-                            }
-                        });
-                }
-            });
+                                public void clipLoaded (ClipBuffer buffer) {
+                                    _locked.put(path, buffer);
+                                }
+                            });
+                    }
+                });
+            }
         }
     }
 
@@ -135,7 +136,9 @@ public class OpenALSoundPlayer extends SoundPlayer
         for (final String key : keys) {
             getSoundQueue().postRunnable(new Runnable() {
                 public void run () {
-                    _locked.remove(pkgPath + key);
+                    for (String path : getPaths(pkgPath, key)) {
+                        _locked.remove(path);
+                    }
                 }
             });
         }
@@ -242,6 +245,24 @@ public class OpenALSoundPlayer extends SoundPlayer
     }
 
     /**
+     * Returns bundle:path for all sounds under key in pkgPath.
+     */
+    protected String[] getPaths (String pkgPath, String key)
+    {
+
+        String bundle = _loader.getBundle(pkgPath);
+        Preconditions.checkNotNull(bundle,
+            "Unable to find the bundle name for a package [package=%s, key=%s]", pkgPath, key);
+        String[] names = _loader.getPaths(pkgPath, key);
+        Preconditions.checkNotNull(bundle, "No such sound [package=%s, key=%s]", pkgPath, key);
+        String[] paths = new String[names.length];
+        for (int ii = 0; ii < paths.length; ii++) {
+            paths[ii] = bundle + ":" + names[ii];
+        }
+        return paths;
+    }
+
+    /**
      * Extends sound manager to allow sounds to be pulled out of the locked map.
      */
     protected class MediaALSoundManager extends SoundManager {
@@ -310,12 +331,8 @@ public class OpenALSoundPlayer extends SoundPlayer
 
         public SoundGrabber (String pkgPath, String key)
         {
-            String bundle = _loader.getBundle(pkgPath);
-            Preconditions.checkNotNull(bundle,
-                "Unable to find the bundle name for a package [package=%s, key=%s]", pkgPath, key);
-            String[] names = _loader.getPaths(pkgPath, key);
-            Preconditions.checkNotNull(bundle, "No such sound [package=%s, key=%s]", pkgPath, key);
-            path = bundle + ":" + names[RandomUtil.getInt(names.length)];
+            String[] paths = getPaths(pkgPath, key);
+            path = paths[RandomUtil.getInt(paths.length)];
         }
 
         public void run ()
