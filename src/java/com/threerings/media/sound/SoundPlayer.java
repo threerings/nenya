@@ -5,7 +5,9 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import com.samskivert.util.Interval;
+import com.samskivert.util.ObserverList;
 import com.samskivert.util.RunQueue;
+import com.samskivert.util.ObserverList.ObserverOp;
 
 /**
  * Loads, plays and loops sounds.
@@ -131,13 +133,32 @@ public abstract class SoundPlayer
     /**
      * Turns on or off the specified sound type.
      */
-    public void setEnabled (SoundType type, boolean enabled)
+    public void setEnabled (final SoundType type, final boolean enabled)
     {
+        boolean changed;
         if (enabled) {
-            _disabledTypes.remove(type);
+            changed = _disabledTypes.remove(type);
         } else {
-            _disabledTypes.add(type);
+            changed = _disabledTypes.add(type);
         }
+        if (changed) {
+            _enabledObservers.apply(new ObserverOp<SoundEnabledObserver>() {
+                public boolean apply (SoundEnabledObserver observer) {
+                    observer.enabledChanged(type, enabled);
+                    return true;
+                }
+            });
+        }
+    }
+
+    public void addSoundEnabledObserver (SoundEnabledObserver listener)
+    {
+        _enabledObservers.add(listener);
+    }
+
+    public void removeSoundEnabledObserver (SoundEnabledObserver listener)
+    {
+        _enabledObservers.remove(listener);
     }
 
     /**
@@ -272,5 +293,7 @@ public abstract class SoundPlayer
 
     /** A set of soundTypes for which sound is enabled. */
     protected Set<SoundType> _disabledTypes = Sets.newHashSet();
+
+    protected ObserverList<SoundEnabledObserver> _enabledObservers = ObserverList.newFastUnsafe();
 
 }
