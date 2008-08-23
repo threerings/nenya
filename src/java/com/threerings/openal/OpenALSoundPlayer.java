@@ -88,6 +88,14 @@ public class OpenALSoundPlayer extends SoundPlayer
         return new Clip(WaveData.create(sound));
     }
 
+    /**
+     * Returns the loader used by this player.
+     */
+    public SoundLoader getSoundLoader ()
+    {
+        return _loader;
+    }
+
     @Override
     public RunQueue getSoundQueue ()
     {
