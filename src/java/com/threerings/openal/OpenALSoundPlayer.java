@@ -174,14 +174,19 @@ public class OpenALSoundPlayer extends SoundPlayer
         getSoundQueue().postRunnable(new Runnable(){
             public void run () {
                 Stream s = new Stream(_alSoundManager) {
-
                     @Override
                     protected void update (float time) {
                         super.update(time);
                         if (_state != AL10.AL_PLAYING) {
                             return;
                         }
-                        setGain(_clipVol);
+                        super.setGain(_clipVol * _streamGain);
+                    }
+
+                    @Override
+                    public void setGain (float gain) {
+                        _streamGain = gain;
+                        super.setGain(_clipVol * _streamGain);
                     }
 
                     @Override
@@ -203,9 +208,12 @@ public class OpenALSoundPlayer extends SoundPlayer
                             read += dec.read(buf);
                         }
                         return read;
-                    }};
-                    s.setGain(_clipVol);
-                    listener.requestCompleted(s);
+                    }
+
+                    protected float _streamGain = 1F;
+                };
+                s.setGain(_clipVol);
+                listener.requestCompleted(s);
             }});
     }
 
@@ -244,11 +252,18 @@ public class OpenALSoundPlayer extends SoundPlayer
     @Override
     public void play (String pkgPath, String key, float pan)
     {
+        play(pkgPath, key, pan, getClipVolume());
+    }
+
+    public void play (String pkgPath, String key, float pan, final float gain)
+    {
         getSoundQueue().postRunnable(new SoundGrabber(pkgPath, key) {
             @Override
             protected void soundLoaded () {
+                sound.setGain(gain);
                 sound.play(true);
-            }});
+            }
+        });
     }
 
     @Override
