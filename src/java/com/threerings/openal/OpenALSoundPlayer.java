@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 
 import com.samskivert.util.BasicRunQueue;
 import com.samskivert.util.RandomUtil;
+import com.samskivert.util.ResultListener;
 import com.samskivert.util.RunQueue;
 
 import com.threerings.media.FrameManager;
@@ -43,8 +44,12 @@ public class OpenALSoundPlayer extends SoundPlayer
     public OpenALSoundPlayer (SoundLoader loader)
     {
         _loader = loader;
-        _alSoundManager = new MediaALSoundManager();
-        _group = _alSoundManager.createGroup(this, SOURCE_COUNT);
+        try {
+            _alSoundManager = new MediaALSoundManager();
+            _group = _alSoundManager.createGroup(this, SOURCE_COUNT);
+        } catch (Throwable t) {
+            log.warning("Unable to initialize OpenAL", "cause", t);
+        }
         _ticker.start();
     }
 
@@ -155,49 +160,53 @@ public class OpenALSoundPlayer extends SoundPlayer
     /**
      * Streams ogg files from the given bundle and path.
      */
-    public Stream stream (final String bundle, final String path, final boolean loop)
+    public void stream (final String bundle, final String path, final boolean loop,
+        final ResultListener<Stream> listener)
         throws IOException
     {
         if (!path.endsWith(".ogg")) {
             log.warning("Unknown file type for streaming", "bundle", bundle, "path", path);
-            return null;
+            return;
         }
         InputStream rsrc = _loader.getSound(bundle, path);
         final StreamDecoder dec = new OggStreamDecoder();
         dec.init(rsrc);
-        Stream s = new Stream(_alSoundManager) {
+        getSoundQueue().postRunnable(new Runnable(){
+            public void run () {
+                Stream s = new Stream(_alSoundManager) {
 
-            @Override
-            protected void update (float time) {
-                super.update(time);
-                if (_state != AL10.AL_PLAYING) {
-                    return;
-                }
-                setGain(_clipVol);
-            }
+                    @Override
+                    protected void update (float time) {
+                        super.update(time);
+                        if (_state != AL10.AL_PLAYING) {
+                            return;
+                        }
+                        setGain(_clipVol);
+                    }
 
-            @Override
-            protected int getFormat () {
-                return dec.getFormat();
-            }
+                    @Override
+                    protected int getFormat () {
+                        return dec.getFormat();
+                    }
 
-            @Override
-            protected int getFrequency () {
-                return dec.getFrequency();
-            }
+                    @Override
+                    protected int getFrequency () {
+                        return dec.getFrequency();
+                    }
 
-            @Override
-            protected int populateBuffer (ByteBuffer buf) throws IOException {
-                int read = dec.read(buf);
-                if(buf.hasRemaining() && loop) {
-                    dec.init(_loader.getSound(bundle, path));
-                    read = Math.max(0, read);
-                    read += dec.read(buf);
-                }
-                return read;
-            }};
-            s.setGain(_clipVol);
-            return s;
+                    @Override
+                    protected int populateBuffer (ByteBuffer buf) throws IOException {
+                        int read = dec.read(buf);
+                        if(buf.hasRemaining() && loop) {
+                            dec.init(_loader.getSound(bundle, path));
+                            read = Math.max(0, read);
+                            read += dec.read(buf);
+                        }
+                        return read;
+                    }};
+                    s.setGain(_clipVol);
+                    listener.requestCompleted(s);
+            }});
     }
 
     @Override
@@ -245,11 +254,14 @@ public class OpenALSoundPlayer extends SoundPlayer
     @Override
     public void shutdown ()
     {
-        _group.dispose();
-        _locked.clear();
-        for (Stream stream : _alSoundManager.getStreams()) {
-            stream.dispose();
-        }
+        getSoundQueue().postRunnable(new Runnable(){
+            public void run () {
+                _group.dispose();
+                _locked.clear();
+                for (Stream stream : _alSoundManager.getStreams()) {
+                    stream.dispose();
+                }
+            }});
     }
 
     /**
@@ -308,6 +320,12 @@ public class OpenALSoundPlayer extends SoundPlayer
             } else {
                 r = _queue.get(STREAM_UPDATE_INTERVAL - elapsed);
             }
+            if (_alSoundManager == null) {
+                // We weren't able to initialize the sound system, and we logged it earlier, so
+                // just empty the queue and bail without running the code that needs the sound
+                // manager.
+                return;
+            }
             if (r != null) {
                 try {
                     r.run();
@@ -359,9 +377,9 @@ public class OpenALSoundPlayer extends SoundPlayer
 
     protected Map<String, ClipBuffer> _locked = Maps.newHashMap();
 
-    protected final SoundLoader _loader;
-    protected final SoundGroup _group;
-    protected final SoundManager _alSoundManager;
+    protected SoundLoader _loader;
+    protected SoundGroup _group;
+    protected SoundManager _alSoundManager;
 
     /** Number of sounds that can be played simultaneously. */
     protected final int SOURCE_COUNT = 10;
