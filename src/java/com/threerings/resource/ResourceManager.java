@@ -34,7 +34,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -47,10 +49,14 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.io.StreamUtil;
 import com.samskivert.net.PathUtil;
+import com.samskivert.util.ObserverList;
 import com.samskivert.util.ResultListener;
 import com.samskivert.util.StringUtil;
+import com.samskivert.util.WeakObserverList;
 
 import static com.threerings.resource.Log.log;
 
@@ -139,6 +145,21 @@ public class ResourceManager
         }
 
         protected InitObserver _obs;
+    }
+
+    /**
+     * Notifies observers of modifications to resources (as indicated by a change to their
+     * {@link File#lastModified} property).
+     */
+    public interface ModificationObserver
+    {
+        /**
+         * Notes that a resource has been modified.
+         *
+         * @param path the path of the resource.
+         * @param lastModified the resource's new timestamp.
+         */
+        public void resourceModified (String path, long lastModified);
     }
 
     /**
@@ -703,6 +724,52 @@ public class ResourceManager
     }
 
     /**
+     * Adds a modification observer for the specified resource.  Note that only a weak reference to
+     * the observer will be retained, and thus this will not prevent the observer from being
+     * garbage-collected.
+     */
+    public void addModificationObserver (String path, ModificationObserver obs)
+    {
+        ObservedResource resource = _observed.get(path);
+        if (resource == null) {
+            File file = getResourceFile(path);
+            if (file == null) {
+                return; // only resource files will ever be modified
+            }
+            _observed.put(path, resource = new ObservedResource(file));
+        }
+        resource.observers.add(obs);
+    }
+
+    /**
+     * Removes a modification observer from the list maintained for the specified resource.
+     */
+    public void removeModificationObserver (String path, ModificationObserver obs)
+    {
+        ObservedResource resource = _observed.get(path);
+        if (resource != null) {
+            resource.observers.remove(obs);
+        }
+    }
+
+    /**
+     * Checks all observed resources for changes to their {@link File#lastModified} properties,
+     * notifying their listeners if the files have been modified since the last call to this
+     * method.
+     */
+    public void checkForModifications ()
+    {
+        for (Iterator<Map.Entry<String, ObservedResource>> it = _observed.entrySet().iterator();
+                it.hasNext(); ) {
+            Map.Entry<String, ObservedResource> entry = it.next();
+            ObservedResource resource = entry.getValue();
+            if (resource.checkForModification(entry.getKey())) {
+                it.remove();
+            }
+        }
+    }
+
+    /**
      * Loads the configuration properties for our resource sets.
      */
     protected Properties loadConfig (String configPath)
@@ -914,6 +981,65 @@ public class ResourceManager
         protected InitObserver _obs;
     }
 
+    /** Contains the state of an observed file resource. */
+    protected static class ObservedResource
+    {
+        /** The observers listening for modifications to this resource. */
+        public WeakObserverList<ModificationObserver> observers =
+            WeakObserverList.newFastUnsafe();
+
+        public ObservedResource (File file)
+        {
+            _file = file;
+            _lastModified = file.lastModified();
+        }
+
+        /**
+         * Checks for a modification to the observed resource, notifying the observers if
+         * one is detected.
+         *
+         * @param path the path of the resource (to forward to observers).
+         * @return <code>true</code> if the list of observers is empty and the resource should be
+         * removed from the observed list, <code>false</code> if it should remain in the list.
+         */
+        public boolean checkForModification (String path)
+        {
+            long newLastModified = _file.lastModified();
+            if (newLastModified > _lastModified) {
+                _resourceModifiedOp.init(path, _lastModified = newLastModified);
+                observers.apply(_resourceModifiedOp);
+            } else {
+                // TODO: uncomment when we get this method into samskivert
+                // observers.prune();
+            }
+            return observers.isEmpty();
+        }
+
+        protected File _file;
+        protected long _lastModified;
+    }
+
+    /** An observer op that calls {@link ModificationObserver#resourceModified}. */
+    protected static class ResourceModifiedOp
+        implements ObserverList.ObserverOp<ModificationObserver>
+    {
+        public void init (String path, long lastModified)
+        {
+            _path = path;
+            _lastModified = lastModified;
+        }
+
+        // documentation inherited from interface ObserverOp
+        public boolean apply (ModificationObserver obs)
+        {
+            obs.resourceModified(_path, _lastModified);
+            return true;
+        }
+
+        protected String _path;
+        protected long _lastModified;
+    }
+
     /** The classloader we use for classpath-based resource loading. */
     protected ClassLoader _loader;
 
@@ -934,10 +1060,16 @@ public class ResourceManager
     protected ResourceBundle[] _default = new ResourceBundle[0];
 
     /** A table of our resource sets. */
-    protected HashMap<String, ResourceBundle[]> _sets = new HashMap<String, ResourceBundle[]>();
+    protected HashMap<String, ResourceBundle[]> _sets = Maps.newHashMap();
 
     /** Locale to search for locale-specific resources, if any. */
     protected String _localePrefix = null;
+
+    /** Maps resource paths to observed file resources. */
+    protected HashMap<String, ObservedResource> _observed = Maps.newHashMap();
+
+    /** A reusable instance of {@link ResourceModifiedOp}. */
+    protected static ResourceModifiedOp _resourceModifiedOp = new ResourceModifiedOp();
 
     /** The prefix of configuration entries that describe a resource set. */
     protected static final String RESOURCE_SET_PREFIX = "resource.set.";
