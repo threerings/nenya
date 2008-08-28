@@ -1009,8 +1009,8 @@ public class ResourceManager
                 _resourceModifiedOp.init(path, _lastModified = newLastModified);
                 observers.apply(_resourceModifiedOp);
             } else {
-                // TODO: uncomment when we get this method into samskivert
-                // observers.prune();
+                // remove any observers that have been garbage-collected
+                observers.prune();
             }
             return observers.isEmpty();
         }
