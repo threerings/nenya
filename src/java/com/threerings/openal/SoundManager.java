@@ -23,14 +23,18 @@ package com.threerings.openal;
 
 import static com.threerings.openal.Log.log;
 
+import java.nio.IntBuffer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
 import com.google.common.collect.Maps;
 
+import com.samskivert.util.IntListUtil;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RunQueue;
@@ -86,6 +90,14 @@ public class SoundManager
     }
 
     /**
+     * Returns a reference to the listener object.
+     */
+    public Listener getListener ()
+    {
+        return _listener;
+    }
+
+    /**
      * Configures the base gain (which must be a value between 0 and 1.0) which is multiplied to
      * the individual gain assigned to sound effects (but not music).
      */
@@ -137,6 +149,9 @@ public class SoundManager
         for (int ii = _streams.size() - 1; ii >= 0; ii--) {
             _streams.get(ii).update(time);
         }
+
+        // delete any finalized objects
+        deleteFinalizedObjects();
     }
 
     /**
@@ -290,6 +305,41 @@ public class SoundManager
         _streams.remove(stream);
     }
 
+    /**
+     * Called when a source has been finalized.
+     */
+    protected synchronized void sourceFinalized (int id)
+    {
+        _finalizedSources = IntListUtil.add(_finalizedSources, id);
+    }
+
+    /**
+     * Called when a buffer has been finalized.
+     */
+    protected synchronized void bufferFinalized (int id)
+    {
+        _finalizedBuffers = IntListUtil.add(_finalizedBuffers, id);
+    }
+
+    /**
+     * Deletes all finalized objects.
+     */
+    protected synchronized void deleteFinalizedObjects ()
+    {
+        if (_finalizedSources != null) {
+            IntBuffer idbuf = BufferUtils.createIntBuffer(_finalizedSources.length);
+            idbuf.put(_finalizedSources).rewind();
+            AL10.alDeleteSources(idbuf);
+            _finalizedSources = null;
+        }
+        if (_finalizedBuffers != null) {
+            IntBuffer idbuf = BufferUtils.createIntBuffer(_finalizedBuffers.length);
+            idbuf.put(_finalizedBuffers).rewind();
+            AL10.alDeleteBuffers(idbuf);
+            _finalizedBuffers = null;
+        }
+    }
+
     /** The thread that loads up sound clips in the background. */
     protected Thread _loader = new Thread("SoundManager.Loader") {
         @Override
@@ -326,6 +376,9 @@ public class SoundManager
     /** Used to get back from the background thread to our "main" thread. */
     protected RunQueue _rqueue;
 
+    /** The listener object. */
+    protected Listener _listener = new Listener();
+
     /** A base gain that is multiplied by the individual gain assigned to sounds. */
     protected float _baseGain = 1;
 
@@ -341,6 +394,12 @@ public class SoundManager
 
     /** The list of active streams. */
     protected ArrayList<Stream> _streams = new ArrayList<Stream>();
+
+    /** The list of sources to be deleted. */
+    protected int[] _finalizedSources;
+
+    /** The list of buffers to be deleted. */
+    protected int[] _finalizedBuffers;
 
     /** The one and only sound manager, here for an exclusive performance by special request.
      * Available for all your sound playing needs. */

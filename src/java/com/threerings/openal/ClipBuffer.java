@@ -101,12 +101,11 @@ public class ClipBuffer
     }
 
     /**
-     * Returns the identifier for this clip's buffer or -1 if it is not
-     * loaded.
+     * Returns a reference to this clip's buffer or <code>null</code> if it is not loaded.
      */
-    public int getBufferId ()
+    public Buffer getBuffer ()
     {
-        return (_bufferId == null) ? -1 : _bufferId.get(0);
+        return _buffer;
     }
 
     /**
@@ -150,13 +149,12 @@ public class ClipBuffer
 
         // create our OpenAL buffer and then queue ourselves up to have
         // our clip data loaded
-        _bufferId = BufferUtils.createIntBuffer(1);
-        AL10.alGenBuffers(_bufferId);
+        _buffer = new Buffer(_manager);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
             log.warning("Failed to create buffer [key=" + getKey() +
                         ", errno=" + errno + "].");
-            _bufferId = null;
+            _buffer = null;
             // queue up a failure notification so that we properly return
             // from this method and our sound has a chance to register
             // itself as an observer before we jump up and declare failure
@@ -173,7 +171,7 @@ public class ClipBuffer
      */
     public void dispose ()
     {
-        if (_bufferId != null) {
+        if (_buffer != null) {
             // if there are sources bound to this buffer, we must wait
             // for them to be unbound
             if (_bound > 0) {
@@ -182,8 +180,8 @@ public class ClipBuffer
             }
 
             // free up our buffer
-            AL10.alDeleteBuffers(_bufferId);
-            _bufferId = null;
+            _buffer.delete();
+            _buffer = null;
             _state = UNLOADED;
         }
     }
@@ -207,7 +205,7 @@ public class ClipBuffer
      */
     protected boolean bind (Clip clip)
     {
-        AL10.alBufferData(_bufferId.get(0), clip.format, clip.data, clip.frequency);
+        _buffer.setData(clip.format, clip.data, clip.frequency);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
             log.warning("Failed to bind clip", "key", getKey(), "errno", errno);
@@ -216,7 +214,7 @@ public class ClipBuffer
         }
 
         _state = LOADED;
-        _size = AL10.alGetBufferi(_bufferId.get(0), AL10.AL_SIZE);
+        _size = _buffer.getSize();
         _observers.apply(new ObserverList.ObserverOp<Observer>() {
             public boolean apply (Observer observer) {
                 observer.clipLoaded(ClipBuffer.this);
@@ -234,9 +232,9 @@ public class ClipBuffer
      */
     protected void failed ()
     {
-        if (_bufferId != null) {
-            AL10.alDeleteBuffers(_bufferId);
-            _bufferId = null;
+        if (_buffer != null) {
+            _buffer.delete();
+            _buffer = null;
         }
         _state = UNLOADED;
 
@@ -272,7 +270,7 @@ public class ClipBuffer
     protected ClipProvider _provider;
     protected String _path;
     protected int _state;
-    protected IntBuffer _bufferId;
+    protected Buffer _buffer;
     protected int _size;
     protected ObserverList<Observer> _observers =
         new ObserverList<Observer>(ObserverList.FAST_UNSAFE_NOTIFY);

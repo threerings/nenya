@@ -65,11 +65,10 @@ public class SoundGroup
     public void dispose ()
     {
         reclaimAll();
-        if (_sourceIds != null) {
-            _sources.clear();
-            AL10.alDeleteSources(_sourceIds);
-            _sourceIds = null;
+        for (PooledSource pooled : _sources) {
+            pooled.source.delete();
         }
+        _sources.clear();
     }
 
     /**
@@ -77,14 +76,12 @@ public class SoundGroup
      */
     public void reclaimAll ()
     {
-        if (_sourceIds != null) {
-            // make sure any bound sources are released
-            for (Source source : _sources) {
-                if (source.holder != null) {
-                    source.holder.stop();
-                    source.holder.reclaim();
-                    source.holder = null;
-                }
+        // make sure any bound sources are released
+        for (PooledSource pooled : _sources) {
+            if (pooled.holder != null) {
+                pooled.holder.stop();
+                pooled.holder.reclaim();
+                pooled.holder = null;
             }
         }
     }
@@ -100,45 +97,38 @@ public class SoundGroup
             return;
         }
 
-        // create our sources
-        _sourceIds = BufferUtils.createIntBuffer(sources);
-        AL10.alGenSources(_sourceIds);
-        int errno = AL10.alGetError();
-        if (errno != AL10.AL_NO_ERROR) {
-            log.warning("Failed to create sources [cprov=" + provider +
-                        ", sources=" + sources + ", errno=" + errno + "].");
-            _sourceIds = null;
-            // we'll have no sources which means all requests to play
-            // sounds will silently fail as if all sources were in use
-
-        } else {
-            for (int ii = 0; ii < sources; ii++) {
-                Source source = new Source();
-                source.sourceId = _sourceIds.get(ii);
-                _sources.add(source);
+        // create our sources (or as many of them as we can)
+        for (int ii = 0; ii < sources; ii++) {
+            PooledSource pooled = new PooledSource();
+            pooled.source = new Source(manager);
+            int errno = AL10.alGetError();
+            if (errno != AL10.AL_NO_ERROR) {
+                log.warning("Failed to create sources [cprov=" + provider +
+                            ", sources=" + sources + ", errno=" + errno + "].");
+                return;
             }
+            _sources.add(pooled);
         }
     }
 
     /**
      * Called by a {@link Sound} when it wants to obtain a source on which to play its clip.
      */
-    protected int acquireSource (Sound acquirer)
+    protected Source acquireSource (Sound acquirer)
     {
-        // start at the beginning of the list looking for an available
-        // source
+        // start at the beginning of the list looking for an available source
         for (int ii = 0, ll = _sources.size(); ii < ll; ii++) {
-            Source source = _sources.get(ii);
-            if (source.holder == null || source.holder.reclaim()) {
+            PooledSource pooled = _sources.get(ii);
+            if (pooled.holder == null || pooled.holder.reclaim()) {
                 // note this source's new holder
-                source.holder = acquirer;
+                pooled.holder = acquirer;
                 // move this source to the end of the list
                 _sources.remove(ii);
-                _sources.add(source);
-                return source.sourceId;
+                _sources.add(pooled);
+                return pooled.source;
             }
         }
-        return -1;
+        return null;
     }
 
     /**
@@ -150,15 +140,14 @@ public class SoundGroup
     }
 
     /** Used to track which sources are in use. */
-    protected static class Source
+    protected static class PooledSource
     {
-        public int sourceId;
+        public Source source;
         public Sound holder;
     }
 
     protected SoundManager _manager;
     protected ClipProvider _provider;
 
-    protected IntBuffer _sourceIds;
-    protected ArrayList<Source> _sources = new ArrayList<Source>();
+    protected ArrayList<PooledSource> _sources = new ArrayList<PooledSource>();
 }

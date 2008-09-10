@@ -54,53 +54,164 @@ public class Sound
     }
 
     /**
-     * Configures the location of this sound in 3D space. This will not affect an already playing
-     * sound but will take effect the next time it is played.
+     * Sets the position of the sound.
      */
-    public void setLocation (float x, float y, float z)
+    public void setPosition (float x, float y, float z)
     {
-        if (_position == null) {
-            _position = BufferUtils.createFloatBuffer(3);
+        if (_source != null) {
+            _source.setPosition(x, y, z);
         }
-        _position.put(x).put(y).put(z);
-        _position.flip();
+        _px = x;
+        _py = y;
+        _pz = z;
     }
 
     /**
-     * Configures the velocity of this sound in 3D space, in delta location per second (see
-     * {@link #setLocation}). This will not affect an already playing sound but will take effect
-     * the next time it is played.
+     * Sets the velocity of the sound.
      */
-    public void setVelocity (float dx, float dy, float dz)
+    public void setVelocity (float x, float y, float z)
     {
-        if (_velocity == null) {
-            _velocity = BufferUtils.createFloatBuffer(3);
+        if (_source != null) {
+            _source.setVelocity(x, y, z);
         }
-        _velocity.put(dx).put(dy).put(dz);
-        _velocity.flip();
+        _vx = x;
+        _vy = y;
+        _vz = z;
     }
 
     /**
-     * Configures the sounds's pitch. This value can range from 0.5 to 2.0. This will not affect
-     * an already playing sound but will take effect the next time it is played.
+     * Sets the gain of the sound.
+     */
+    public void setGain (float gain)
+    {
+        if (_source != null) {
+            _source.setGain(gain);
+        }
+        _gain = gain;
+    }
+
+    /**
+     * Sets whether or not the position, velocity, etc., of the sound are relative to the
+     * listener.
+     */
+    public void setSourceRelative (boolean relative)
+    {
+        if (_source != null) {
+            _source.setSourceRelative(relative);
+        }
+        _sourceRelative = relative;
+    }
+
+    /**
+     * Sets the minimum gain.
+     */
+    public void setMinGain (float gain)
+    {
+        if (_source != null) {
+            _source.setMinGain(gain);
+        }
+        _minGain = gain;
+    }
+
+    /**
+     * Sets the maximum gain.
+     */
+    public void setMaxGain (float gain)
+    {
+        if (_source != null) {
+            _source.setMaxGain(gain);
+        }
+        _maxGain = gain;
+    }
+
+    /**
+     * Sets the reference distance for attenuation.
+     */
+    public void setReferenceDistance (float distance)
+    {
+        if (_source != null) {
+            _source.setReferenceDistance(distance);
+        }
+        _referenceDistance = distance;
+    }
+
+    /**
+     * Sets the rolloff factor for attenuation.
+     */
+    public void setRolloffFactor (float rolloff)
+    {
+        if (_source != null) {
+            _source.setRolloffFactor(rolloff);
+        }
+        _rolloffFactor = rolloff;
+    }
+
+    /**
+     * Sets the maximum distance for attenuation.
+     */
+    public void setMaxDistance (float distance)
+    {
+        if (_source != null) {
+            _source.setMaxDistance(distance);
+        }
+        _maxDistance = distance;
+    }
+
+    /**
+     * Sets the pitch multiplier.
      */
     public void setPitch (float pitch)
     {
+        if (_source != null) {
+            _source.setPitch(pitch);
+        }
         _pitch = pitch;
     }
 
     /**
-     * Configures the sound's gain (volume). This value can range from 0.0 to 1.0 with 1.0 meaning
-     * no attenuation, each division by two corresponding to a -6db attentuation and each
-     * multiplication by two corresponding to +6db amplification. This will not affect an already
-     * playing sound but will take effect the next time it is played.
-     *
-     * <p>
-     * <em>Note:</em> this value is multiplied by the base gain configured in the sound manager.
+     * Sets the direction of the sound.
      */
-    public void setGain (float gain)
+    public void setDirection (float x, float y, float z)
     {
-        _gain = gain;
+        if (_source != null) {
+            _source.setDirection(x, y, z);
+        }
+        _dx = x;
+        _dy = y;
+        _dz = z;
+    }
+
+    /**
+     * Sets the inside angle of the sound cone.
+     */
+    public void setConeInnerAngle (float angle)
+    {
+        if (_source != null) {
+            _source.setConeInnerAngle(angle);
+        }
+        _coneInnerAngle = angle;
+    }
+
+    /**
+     * Sets the outside angle of the sound cone.
+     */
+    public void setConeOuterAngle (float angle)
+    {
+        if (_source != null) {
+            _source.setConeOuterAngle(angle);
+        }
+        _coneOuterAngle = angle;
+    }
+
+    /**
+     * Sets the gain outside of the sound cone.
+     */
+    public void setConeOuterGain (float gain)
+    {
+        if (_source != null) {
+            _source.setConeOuterGain(gain);
+        }
+        _coneOuterGain = gain;
     }
 
     /**
@@ -151,8 +262,8 @@ public class Sound
      */
     public void pause ()
     {
-        if (_sourceId != -1) {
-            AL10.alSourcePause(_sourceId);
+        if (_source != null) {
+            _source.pause();
         }
     }
 
@@ -162,8 +273,8 @@ public class Sound
      */
     public void stop ()
     {
-        if (_sourceId != -1) {
-            AL10.alSourceStop(_sourceId);
+        if (_source != null) {
+            _source.stop();
         }
     }
 
@@ -172,8 +283,7 @@ public class Sound
      */
     public boolean isPlaying ()
     {
-        return (_sourceId != -1 && AL10.AL_PLAYING ==
-                AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE));
+        return _source != null && _source.isPlaying();
     }
 
     protected Sound (SoundGroup group, ClipBuffer buffer)
@@ -224,32 +334,38 @@ public class Sound
         }
 
         // if we do not already have a source, obtain one
-        if (_sourceId == -1) {
-            _sourceId = _group.acquireSource(this);
-            if (_sourceId == -1) {
+        if (_source == null) {
+            _source = _group.acquireSource(this);
+            if (_source == null) {
                 return false;
             }
 
             // bind our clip buffer to the source and notify it
-            AL10.alSourcei(_sourceId, AL10.AL_BUFFER, _buffer.getBufferId());
+            _source.setBuffer(_buffer.getBuffer());
             _buffer.sourceBound();
-        }
 
-        // configure the source with our ephemera
-        AL10.alSourcef(_sourceId, AL10.AL_PITCH, _pitch);
-        AL10.alSourcef(_sourceId, AL10.AL_GAIN, _gain * _group.getBaseGain());
-        if (_position != null) {
-            AL10.alSource(_sourceId, AL10.AL_POSITION, _position);
-        }
-        if (_velocity != null) {
-            AL10.alSource(_sourceId, AL10.AL_VELOCITY, _velocity);
+            // configure the source with our ephemera
+            _source.setPosition(_px, _py, _pz);
+            _source.setVelocity(_vx, _vy, _vz);
+            _source.setGain(_gain * _group.getBaseGain());
+            _source.setSourceRelative(_sourceRelative);
+            _source.setMinGain(_minGain);
+            _source.setMaxGain(_maxGain);
+            _source.setReferenceDistance(_referenceDistance);
+            _source.setRolloffFactor(_rolloffFactor);
+            _source.setMaxDistance(_maxDistance);
+            _source.setPitch(_pitch);
+            _source.setDirection(_dx, _dy, _dz);
+            _source.setConeInnerAngle(_coneInnerAngle);
+            _source.setConeOuterAngle(_coneOuterAngle);
+            _source.setConeOuterGain(_coneOuterGain);
         }
 
         // configure whether or not we should loop
-        AL10.alSourcei(_sourceId, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);
+        _source.setLooping(loop);
 
         // and start that damned thing up!
-        AL10.alSourcePlay(_sourceId);
+        _source.play();
 
         return true;
     }
@@ -262,11 +378,10 @@ public class Sound
      */
     protected boolean reclaim ()
     {
-        if (_sourceId != -1 &&
-            AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_STOPPED) {
-            AL10.alSourcei(_sourceId, AL10.AL_BUFFER, 0);
+        if (_source != null && _source.isStopped()) {
+            _source.setBuffer(null);
             _buffer.sourceUnbound();
-            _sourceId = -1;
+            _source = null;
             return true;
         }
         return false;
@@ -279,17 +394,47 @@ public class Sound
     protected ClipBuffer _buffer;
 
     /** The source via which we are playing our sound currently. */
-    protected int _sourceId = -1;
+    protected Source _source;
 
-    /** The pitch adjustment. */
-    protected float _pitch = 1;
+    /** The position of the sound. */
+    protected float _px, _py, _pz;
 
-    /** The gain adjustment. */
-    protected float _gain = 1;
+    /** The velocity of the sound. */
+    protected float _vx, _vy, _vz;
 
-    /** The starting position in 3D space. */
-    protected FloatBuffer _position;
+    /** The gain of the sound. */
+    protected float _gain = 1f;
 
-    /** The velocity vector. */
-    protected FloatBuffer _velocity;
+    /** Whether or not the sound's position, velocity, etc. are relative to the listener. */
+    protected boolean _sourceRelative;
+
+    /** The minimum gain. */
+    protected float _minGain;
+
+    /** The maximum gain. */
+    protected float _maxGain = 1f;
+
+    /** The reference distance for attenuation. */
+    protected float _referenceDistance = 1f;
+
+    /** The attenuation rolloff factor. */
+    protected float _rolloffFactor = 1f;
+
+    /** The maximum distance for attenuation. */
+    protected float _maxDistance = Float.MAX_VALUE;
+
+    /** The pitch multiplier. */
+    protected float _pitch = 1f;
+
+    /** The direction of the sound. */
+    protected float _dx, _dy, _dz;
+
+    /** The inside angle of the sound cone. */
+    protected float _coneInnerAngle = 360f;
+
+    /** The outside angle of the sound cone. */
+    protected float _coneOuterAngle = 360f;
+
+    /** The gain outside the sound cone. */
+    protected float _coneOuterGain;
 }

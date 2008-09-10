@@ -47,13 +47,10 @@ public abstract class Stream
         _soundmgr = soundmgr;
 
         // create the source and buffers
-        _nbuf = BufferUtils.createIntBuffer(NUM_BUFFERS);
-        _nbuf.limit(1);
-        AL10.alGenSources(_nbuf);
-        _sourceId = _nbuf.get();
-        _nbuf.clear();
-        AL10.alGenBuffers(_nbuf);
-        _nbuf.get(_bufferIds);
+        _source = new Source(soundmgr);
+        for (int ii = 0; ii < _buffers.length; ii++) {
+            _buffers[ii] = new Buffer(soundmgr);
+        }
 
         // register with sound manager
         _soundmgr.addStream(this);
@@ -66,17 +63,16 @@ public abstract class Stream
     {
         _gain = gain;
         if (_fadeMode == FadeMode.NONE) {
-            AL10.alSourcef(_sourceId, AL10.AL_GAIN, _gain);
+            _source.setGain(_gain);
         }
     }
 
     /**
-     * Sets the pitch of the stream.
+     * Returns a reference to the stream source.
      */
-    public void setPitch (float pitch)
+    public Source getSource ()
     {
-        _pitch = pitch;
-        AL10.alSourcef(_sourceId, AL10.AL_PITCH, _pitch);
+        return _source;
     }
 
     /**
@@ -100,7 +96,7 @@ public abstract class Stream
             _qidx = _qlen = 0;
             queueBuffers(NUM_BUFFERS);
         }
-        AL10.alSourcePlay(_sourceId);
+        _source.play();
         _state = AL10.AL_PLAYING;
     }
 
@@ -113,7 +109,7 @@ public abstract class Stream
             log.warning("Tried to pause stream that wasn't playing.");
             return;
         }
-        AL10.alSourcePause(_sourceId);
+        _source.pause();
         _state = AL10.AL_PAUSED;
     }
 
@@ -126,7 +122,7 @@ public abstract class Stream
             log.warning("Tried to stop stream that was already stopped.");
             return;
         }
-        AL10.alSourceStop(_sourceId);
+        _source.stop();
         _state = AL10.AL_STOPPED;
     }
 
@@ -139,7 +135,7 @@ public abstract class Stream
         if (_state != AL10.AL_PLAYING) {
             play();
         }
-        AL10.alSourcef(_sourceId, AL10.AL_GAIN, 0f);
+        _source.setGain(0f);
         _fadeMode = FadeMode.IN;
         _fadeInterval = interval;
         _fadeElapsed = 0f;
@@ -168,12 +164,10 @@ public abstract class Stream
         }
 
         // delete the source and buffers
-        _nbuf.clear();
-        _nbuf.put(_sourceId).flip();
-        AL10.alDeleteSources(_nbuf);
-        _nbuf.clear();
-        _nbuf.put(_bufferIds).flip();
-        AL10.alDeleteBuffers(_nbuf);
+        _source.delete();
+        for (Buffer buffer : _buffers) {
+            buffer.delete();
+        }
 
         // remove from manager
         _soundmgr.removeStream(this);
@@ -194,24 +188,21 @@ public abstract class Stream
         }
 
         // find out how many buffers have been played and unqueue them
-        int played = AL10.alGetSourcei(_sourceId, AL10.AL_BUFFERS_PROCESSED);
+        int played = _source.getBuffersProcessed();
         if (played == 0) {
             return;
         }
-        _nbuf.clear();
         for (int ii = 0; ii < played; ii++) {
-            _nbuf.put(_bufferIds[_qidx]);
+            _source.unqueueBuffers(_buffers[_qidx]);
             _qidx = (_qidx + 1) % NUM_BUFFERS;
             _qlen--;
         }
-        _nbuf.flip();
-        AL10.alSourceUnqueueBuffers(_sourceId, _nbuf);
 
         // enqueue up to the number of buffers played
         queueBuffers(played);
 
         // find out if we're still playing; if not and we have buffers queued, we must restart
-        _state = AL10.alGetSourcei(_sourceId, AL10.AL_SOURCE_STATE);
+        _state = _source.getSourceState();
         if (_qlen > 0 && _state != AL10.AL_PLAYING) {
             play();
         }
@@ -226,8 +217,7 @@ public abstract class Stream
             return;
         }
         float alpha = Math.min((_fadeElapsed += time) / _fadeInterval, 1f);
-        AL10.alSourcef(_sourceId, AL10.AL_GAIN, _gain *
-            (_fadeMode == FadeMode.IN ? alpha : (1f - alpha)));
+        _source.setGain(_gain * (_fadeMode == FadeMode.IN ? alpha : (1f - alpha)));
         if (alpha == 1f) {
             if (_fadeMode == FadeMode.OUT) {
                 stop();
@@ -243,18 +233,15 @@ public abstract class Stream
      */
     protected void queueBuffers (int buffers)
     {
-        _nbuf.clear();
         for (int ii = 0; ii < buffers; ii++) {
-            int bufferId = _bufferIds[(_qidx + _qlen) % NUM_BUFFERS];
-            if (populateBuffer(bufferId)) {
-                _nbuf.put(bufferId);
+            Buffer buffer = _buffers[(_qidx + _qlen) % NUM_BUFFERS];
+            if (populateBuffer(buffer)) {
+                _source.queueBuffers(buffer);
                 _qlen++;
             } else {
                 break;
             }
         }
-        _nbuf.flip();
-        AL10.alSourceQueueBuffers(_sourceId, _nbuf);
     }
 
     /**
@@ -263,7 +250,7 @@ public abstract class Stream
      * @return true if data was read into the buffer and it should be enqueued, false if the end of
      * the stream has been reached and no data was read into the buffer
      */
-    protected boolean populateBuffer (int bufferId)
+    protected boolean populateBuffer (Buffer buffer)
     {
         if (_abuf == null) {
             _abuf = ByteBuffer.allocateDirect(BUFFER_SIZE).order(ByteOrder.nativeOrder());
@@ -279,7 +266,7 @@ public abstract class Stream
             return false;
         }
         _abuf.rewind().limit(read);
-        AL10.alBufferData(bufferId, getFormat(), _abuf, getFrequency());
+        buffer.setData(getFormat(), _abuf, getFrequency());
         return true;
     }
 
@@ -306,16 +293,13 @@ public abstract class Stream
     protected SoundManager _soundmgr;
 
     /** The source through which the stream plays. */
-    protected int _sourceId;
+    protected Source _source;
 
     /** The buffers through which we cycle. */
-    protected int[] _bufferIds = new int[NUM_BUFFERS];
+    protected Buffer[] _buffers = new Buffer[NUM_BUFFERS];
 
     /** The starting index and length of the current queue in {@link #_bufferIds}. */
     protected int _qidx, _qlen;
-
-    /** The pitch of the stream. */
-    protected float _pitch = 1f;
 
     /** The gain of the stream. */
     protected float _gain = 1f;
