@@ -21,11 +21,6 @@
 
 package com.threerings.openal;
 
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
-
 /**
  * Represents an instance of a sound clip which can be positioned in 3D space, gain and pitch
  * adjusted and played or looped.

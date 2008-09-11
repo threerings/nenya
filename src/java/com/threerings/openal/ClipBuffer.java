@@ -22,9 +22,7 @@
 package com.threerings.openal;
 
 import java.io.IOException;
-import java.nio.IntBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 import com.samskivert.util.ObserverList;

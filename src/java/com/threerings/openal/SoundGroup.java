@@ -21,10 +21,8 @@
 
 package com.threerings.openal;
 
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 import static com.threerings.openal.Log.log;
