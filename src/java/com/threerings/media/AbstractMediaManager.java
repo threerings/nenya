@@ -21,20 +21,19 @@
 
 package com.threerings.media;
 
+import static com.threerings.resource.Log.log;
+
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-
 import java.util.Comparator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-
-import com.samskivert.util.SortableArrayList;
-import com.samskivert.util.ObserverList.ObserverOp;
 import com.samskivert.util.ObserverList;
+import com.samskivert.util.SortableArrayList;
 import com.samskivert.util.Tuple;
-
-import static com.threerings.resource.Log.log;
+import com.samskivert.util.ObserverList.ObserverOp;
 
 /**
  * Manages, ticks, and paints {@link AbstractMedia}.
@@ -61,7 +60,7 @@ public abstract class AbstractMediaManager
 
     /**
      * Creates a graphics that can be used to compute metrics or whatever else a media might need.
-     * The caller should call {@link Graphics2D#dispose} on the returned object when it is done
+     * The caller should call {@link Graphics#dispose} on the returned object when it is done
      * with it.
      */
     public Graphics2D createGraphics ()
@@ -167,11 +166,11 @@ public abstract class AbstractMediaManager
             log.warning("Egads! Render order changed during a tick.");
             Thread.dumpStack();
         }
-        
+
         _media.remove(media);
         _media.insertSorted(media, RENDER_ORDER);
     }
-    
+
     /**
      * Calls {@link AbstractMedia#tick} on all media to give them a chance to move about, change
      * their look, generate dirty regions, and so forth.

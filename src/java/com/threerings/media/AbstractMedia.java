@@ -41,9 +41,8 @@ import static com.threerings.media.Log.log;
 public abstract class AbstractMedia
     implements Shape
 {
-    /** A {@link #_renderOrder} value at or above which, indicates that this
-     * media is in the HUD (heads up display) and should not scroll when the
-     * view scrolls. */
+    /** A {@link #_renderOrder} value at or above which, indicates that this media is in the HUD
+     * (heads up display) and should not scroll when the view scrolls. */
     public static final int HUD_LAYER = 65536;
 
     /**
@@ -348,7 +347,7 @@ public abstract class AbstractMedia
     /**
      * "Naturally" compares this media with the specified other media (which by definition will
      * have the same render order value). The default behavior, for legacy reasons, is to compare
-     * using {@link #hashCode} which is not consistent across VM invocations.
+     * using {@link Object#hashCode} which is not consistent across VM invocations.
      */
     protected int naturalCompareTo (AbstractMedia other)
     {
