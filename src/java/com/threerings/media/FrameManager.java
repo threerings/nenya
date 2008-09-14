@@ -221,12 +221,12 @@ public abstract class FrameManager
      * Returns the highest drift ratio our timer has seen. 1.0 means no drift (and is what we return
      * if we're not using a CalibratingTimer)
      */
-    public double getMaxTimerDriftRatio ()
+    public float getMaxTimerDriftRatio ()
     {
     	if (_timer instanceof CalibratingTimer) {
     	    return ((CalibratingTimer)_timer).getMaxDriftRatio();
     	} else {
-    		return 1.0;
+    		return 1.0F;
     	}
     }
 

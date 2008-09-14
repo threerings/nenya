@@ -85,7 +85,7 @@ public abstract class CalibratingTimer
     /**
      * Returns the greatest drift ratio we've had to compensate for.
      */
-    public double getMaxDriftRatio ()
+    public float getMaxDriftRatio ()
     {
     	return _maxDriftRatio;
     }
@@ -132,8 +132,13 @@ public abstract class CalibratingTimer
 
         } else if (drift > MAX_ALLOWED_DRIFT_RATIO || drift < MIN_ALLOWED_DRIFT_RATIO) {
             log.warning("Calibrating", "drift", drift);
-            // Keep the drift somewhat sane between .01 and 10
-            _driftRatio = (float)Math.min(Math.max(.01, drift), 10);
+            // Ignore the drift if it's hugely out of range. That indicates general clock insanity,
+            // and we just want to stay out of the way.
+            if (drift < 100 * MAX_ALLOWED_DRIFT_RATIO && drift > MIN_ALLOWED_DRIFT_RATIO / 100) {
+                _driftRatio = drift;
+            }  else {
+                _driftRatio = 1.0F;
+            }
             if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
             	_maxDriftRatio = drift;
             }
