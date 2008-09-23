@@ -335,22 +335,24 @@ public class OpenALSoundPlayer extends SoundPlayer
             } else {
                 r = _queue.get(STREAM_UPDATE_INTERVAL - elapsed);
             }
+            long newTime;
             if (_alSoundManager == null) {
                 // We weren't able to initialize the sound system, and we logged it earlier, so
-                // just empty the queue and bail without running the code that needs the sound
-                // manager.
-                return;
-            }
-            if (r != null) {
-                try {
-                    r.run();
+                // just empty the queue and update the tick time without running the code that
+                // needs the sound manager.
+                newTime = _timer.getElapsedMillis();
+            } else {
+                if (r != null) {
+                    try {
+                        r.run();
 
-                } catch (Throwable t) {
-                    log.warning("Runnable posted to SoundPlayerQueue barfed.", t);
+                    } catch (Throwable t) {
+                        log.warning("Runnable posted to SoundPlayerQueue barfed.", t);
+                    }
                 }
+                newTime = _timer.getElapsedMillis();
+                _alSoundManager.updateStreams((newTime - _lastTick)/ 1000F);
             }
-            long newTime = _timer.getElapsedMillis();
-            _alSoundManager.updateStreams((newTime - _lastTick)/ 1000F);
             _lastTick = newTime;
         }
 
