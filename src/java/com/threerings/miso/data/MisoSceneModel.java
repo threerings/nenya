@@ -24,6 +24,7 @@ package com.threerings.miso.data;
 import java.awt.Rectangle;
 
 import com.threerings.io.SimpleStreamableObject;
+
 import com.threerings.miso.util.ObjectSet;
 
 /**

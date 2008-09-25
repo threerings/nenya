@@ -21,10 +21,10 @@
 
 package com.threerings.resource;
 
+import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.awt.image.BufferedImage;
 
 /**
  * A resource bundle provides access to media resources.

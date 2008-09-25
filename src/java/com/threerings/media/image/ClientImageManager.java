@@ -26,8 +26,10 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import com.samskivert.swing.RuntimeAdjust;
-import com.threerings.media.MediaPrefs;
+
 import com.threerings.resource.ResourceManager;
+
+import com.threerings.media.MediaPrefs;
 
 /**
  * Provides a single point of access for image retrieval and caching - just like the

@@ -27,10 +27,12 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.xml.sax.SAXException;
+
 import org.apache.commons.digester.Digester;
 
-import com.threerings.tools.CompiledConfigTask;
 import com.threerings.util.CompiledConfig;
+
+import com.threerings.tools.CompiledConfigTask;
 
 /**
  * An abstract base implementation of a parser that is used to compile

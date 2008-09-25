@@ -22,6 +22,7 @@
 package com.threerings.miso.tools.xml;
 
 import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 
 import org.apache.commons.digester.Digester;
@@ -31,10 +32,10 @@ import com.samskivert.xml.CallMethodSpecialRule;
 import com.samskivert.xml.SetFieldRule;
 import com.samskivert.xml.SetPropertyFieldsRule;
 
-import com.threerings.tools.xml.NestableRuleSet;
-
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.data.SimpleMisoSceneModel;
+
+import com.threerings.tools.xml.NestableRuleSet;
 
 /**
  * Used to parse a {@link SimpleMisoSceneModel} from XML.

@@ -21,8 +21,9 @@
 
 package com.threerings.cast;
 
-import com.threerings.media.image.Colorization;
 import com.threerings.util.DirectionCodes;
+
+import com.threerings.media.image.Colorization;
 
 /**
  * Encapsulates a set of frames in each of {@link

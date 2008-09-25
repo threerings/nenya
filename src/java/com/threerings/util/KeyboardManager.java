@@ -21,14 +21,13 @@
 
 package com.threerings.util;
 
-import static com.threerings.NenyaLog.log;
-
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -37,14 +36,19 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
-import com.samskivert.swing.Controller;
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.Interval;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.RunAnywhere;
-import com.threerings.media.MediaPrefs;
+
+import com.samskivert.swing.Controller;
+import com.samskivert.swing.RuntimeAdjust;
+
 import com.threerings.util.keybd.Keyboard;
+
+import com.threerings.media.MediaPrefs;
+
+import static com.threerings.NenyaLog.log;
 
 /**
  * The keyboard manager observes keyboard actions on a particular component and posts commands

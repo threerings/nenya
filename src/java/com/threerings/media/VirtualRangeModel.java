@@ -25,7 +25,6 @@ import java.awt.Rectangle;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 

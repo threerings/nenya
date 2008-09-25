@@ -21,16 +21,17 @@
 
 package com.threerings.miso.tile;
 
-import static com.threerings.miso.Log.log;
+import java.lang.ref.WeakReference;
 
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.lang.ref.WeakReference;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import com.google.common.collect.Lists;
 
 import com.samskivert.util.CheapIntMap;
@@ -44,7 +45,10 @@ import com.threerings.media.tile.Tile;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
+
 import com.threerings.miso.data.MisoSceneModel;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Automatically fringes a scene according to the rules in the supplied fringe configuration.

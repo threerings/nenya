@@ -23,8 +23,9 @@ package com.threerings.cast.builder;
 
 import java.util.List;
 
-import javax.swing.*;
-
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 

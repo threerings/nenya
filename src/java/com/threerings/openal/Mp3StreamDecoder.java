@@ -23,16 +23,17 @@ package com.threerings.openal;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-
-import org.lwjgl.openal.AL10;
 
 import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.decoder.SampleBuffer;
+
+import org.lwjgl.openal.AL10;
 
 /**
  * Decodes MP3 streams.

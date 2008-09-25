@@ -24,6 +24,7 @@ package com.threerings.media.util;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+
 import javax.swing.JComponent;
 
 /**

@@ -21,9 +21,10 @@
 
 package com.threerings.media.image.tools;
 
+import java.util.Iterator;
+
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Iterator;
 
 import com.threerings.media.image.ColorPository;
 

@@ -21,9 +21,11 @@
 
 package com.threerings.tools;
 
+import java.util.ArrayList;
+
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
@@ -31,8 +33,9 @@ import org.apache.tools.ant.types.FileSet;
 
 import com.samskivert.util.FileUtil;
 
-import com.threerings.tools.xml.CompiledConfigParser;
 import com.threerings.util.CompiledConfig;
+
+import com.threerings.tools.xml.CompiledConfigParser;
 
 /**
  * Used to parse configuration information from an XML file and create the

@@ -21,11 +21,12 @@
 
 package com.threerings.media;
 
-import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;

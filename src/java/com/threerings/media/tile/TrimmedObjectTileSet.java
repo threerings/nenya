@@ -22,6 +22,7 @@
 package com.threerings.media.tile;
 
 import java.awt.Rectangle;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -29,8 +30,9 @@ import java.io.Serializable;
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.image.Colorization;
 import com.threerings.resource.FastImageIO;
+
+import com.threerings.media.image.Colorization;
 import com.threerings.media.tile.util.TileSetTrimmer;
 
 /**

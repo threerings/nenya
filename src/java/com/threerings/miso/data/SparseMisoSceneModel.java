@@ -22,6 +22,7 @@
 package com.threerings.miso.data;
 
 import java.awt.Rectangle;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -31,8 +32,9 @@ import com.samskivert.util.StringUtil;
 
 import com.threerings.io.SimpleStreamableObject;
 
-import com.threerings.media.util.MathUtil;
 import com.threerings.util.StreamableHashIntMap;
+
+import com.threerings.media.util.MathUtil;
 
 import com.threerings.miso.util.ObjectSet;
 

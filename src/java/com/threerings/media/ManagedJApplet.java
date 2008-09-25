@@ -23,6 +23,7 @@ package com.threerings.media;
 
 import java.awt.Component;
 import java.awt.Window;
+
 import javax.swing.JApplet;
 
 /**

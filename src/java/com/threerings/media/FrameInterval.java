@@ -23,9 +23,6 @@ package com.threerings.media;
 
 import java.awt.Component;
 
-import com.threerings.media.FrameManager;
-import com.threerings.media.FrameParticipant;
-
 public abstract class FrameInterval
     implements FrameParticipant
 {

@@ -21,9 +21,10 @@
 
 package com.threerings.media.tile.bundle.tools;
 
+import java.util.ArrayList;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;

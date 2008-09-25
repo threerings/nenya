@@ -23,9 +23,11 @@ package com.threerings.media;
 
 import java.awt.EventQueue;
 import java.awt.Rectangle;
+
 import java.util.List;
 
 import com.google.common.collect.Lists;
+
 import com.samskivert.util.StringUtil;
 
 import static com.threerings.resource.Log.log;

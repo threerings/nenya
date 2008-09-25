@@ -25,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import com.samskivert.util.RandomUtil;
+
 import com.threerings.media.image.Mirage;
 
 /**

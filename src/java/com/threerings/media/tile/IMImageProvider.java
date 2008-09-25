@@ -24,9 +24,9 @@ package com.threerings.media.tile;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageDataProvider;
+import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Mirage;
 
 /**

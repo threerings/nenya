@@ -30,14 +30,17 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 import com.samskivert.util.Tuple;
+
+import com.samskivert.swing.RuntimeAdjust;
+
+import com.threerings.util.DirectionCodes;
+
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageManager;
-import com.threerings.util.DirectionCodes;
 
 import com.threerings.cast.CompositedActionFrames.ComponentFrames;
 import com.threerings.cast.CompositedActionFrames.CompositedFramesKey;

@@ -29,11 +29,11 @@ import org.apache.commons.digester.Rule;
 import com.samskivert.xml.SetFieldRule;
 import com.samskivert.xml.SetPropertyFieldsRule;
 
-import com.threerings.tools.xml.NestableRuleSet;
-
 import com.threerings.miso.data.ObjectInfo;
-import com.threerings.miso.data.SparseMisoSceneModel.Section;
 import com.threerings.miso.data.SparseMisoSceneModel;
+import com.threerings.miso.data.SparseMisoSceneModel.Section;
+
+import com.threerings.tools.xml.NestableRuleSet;
 
 /**
  * Used to parse a {@link SparseMisoSceneModel} from XML.

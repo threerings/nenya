@@ -22,6 +22,7 @@
 package com.threerings.miso.data;
 
 import java.awt.Rectangle;
+
 import java.util.List;
 
 import com.samskivert.util.ArrayUtil;
@@ -29,6 +30,7 @@ import com.samskivert.util.IntListUtil;
 import com.samskivert.util.ListUtil;
 
 import com.threerings.media.util.MathUtil;
+
 import com.threerings.miso.util.ObjectSet;
 
 /**

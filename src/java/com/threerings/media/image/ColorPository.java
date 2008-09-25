@@ -22,6 +22,7 @@
 package com.threerings.media.image;
 
 import java.awt.Color;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -36,8 +37,9 @@ import com.samskivert.util.HashIntMap;
 import com.samskivert.util.RandomUtil;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.resource.ResourceManager;
 import com.threerings.util.CompiledConfig;
+
+import com.threerings.resource.ResourceManager;
 
 import static com.threerings.media.Log.log;
 

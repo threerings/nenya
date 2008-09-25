@@ -32,7 +32,6 @@ import java.awt.HeadlessException;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Transparency;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;

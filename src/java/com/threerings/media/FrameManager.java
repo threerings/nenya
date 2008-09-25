@@ -22,6 +22,7 @@
 package com.threerings.media;
 
 import java.applet.Applet;
+
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
@@ -32,10 +33,11 @@ import javax.swing.JLayeredPane;
 import javax.swing.JRootPane;
 import javax.swing.RepaintManager;
 
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.RunAnywhere;
 import com.samskivert.util.StringUtil;
+
+import com.samskivert.swing.RuntimeAdjust;
 
 import com.threerings.util.unsafe.Unsafe;
 

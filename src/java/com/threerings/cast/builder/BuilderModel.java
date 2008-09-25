@@ -29,8 +29,8 @@ import java.util.List;
 
 import com.samskivert.util.CollectionUtil;
 
-import com.threerings.cast.ComponentRepository;
 import com.threerings.cast.ComponentClass;
+import com.threerings.cast.ComponentRepository;
 
 /**
  * The builder model represents the current state of the character the

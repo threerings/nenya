@@ -21,19 +21,21 @@
 
 package com.threerings.media;
 
-import static com.threerings.resource.Log.log;
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+
 import java.util.Comparator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.SortableArrayList;
 import com.samskivert.util.Tuple;
 import com.samskivert.util.ObserverList.ObserverOp;
+
+import static com.threerings.resource.Log.log;
 
 /**
  * Manages, ticks, and paints {@link AbstractMedia}.

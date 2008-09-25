@@ -23,6 +23,7 @@ package com.threerings.media.tile.bundle.tools;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.tools.ant.BuildException;
 
 /**

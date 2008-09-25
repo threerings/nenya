@@ -21,9 +21,8 @@
 
 package com.threerings.media.tile;
 
-import static com.threerings.media.Log.log;
-
 import java.lang.ref.SoftReference;
+
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -31,6 +30,8 @@ import com.google.common.collect.Maps;
 import com.samskivert.io.PersistenceException;
 
 import com.threerings.media.image.ImageManager;
+
+import static com.threerings.media.Log.log;
 
 /**
  * The tile manager provides a simplified interface for retrieving and caching tiles. Tiles can be

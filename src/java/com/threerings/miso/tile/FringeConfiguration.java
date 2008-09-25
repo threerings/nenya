@@ -21,8 +21,9 @@
 
 package com.threerings.miso.tile;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+
+import java.io.Serializable;
 
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;

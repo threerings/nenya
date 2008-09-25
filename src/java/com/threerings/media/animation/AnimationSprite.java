@@ -26,7 +26,6 @@ import java.awt.Rectangle;
 
 import com.threerings.media.MediaPanel;
 import com.threerings.media.sprite.Sprite;
-import com.threerings.media.animation.Animation;
 
 /**
  * A Sprite that wraps an animation so that a sequence of frames can be easily

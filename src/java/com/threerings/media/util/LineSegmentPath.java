@@ -22,8 +22,8 @@
 package com.threerings.media.util;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Graphics2D;
+import java.awt.Point;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,8 +33,6 @@ import com.samskivert.util.StringUtil;
 
 import com.threerings.util.DirectionCodes;
 import com.threerings.util.DirectionUtil;
-
-import com.threerings.media.util.MathUtil;
 
 import static com.threerings.media.Log.log;
 

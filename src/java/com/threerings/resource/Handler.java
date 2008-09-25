@@ -21,6 +21,11 @@
 
 package com.threerings.resource;
 
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.security.Permission;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -28,13 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-
-import java.security.Permission;
-
 import javax.imageio.ImageIO;
+
 import com.samskivert.io.ByteArrayOutInputStream;
 import com.samskivert.net.AttachableURLFactory;
 import com.samskivert.util.StringUtil;

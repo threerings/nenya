@@ -21,9 +21,10 @@
 
 package com.threerings.media;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+
+import java.io.IOException;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -33,7 +34,6 @@ import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.media.image.ImageUtil;
-
 import com.threerings.media.tile.TileIcon;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;

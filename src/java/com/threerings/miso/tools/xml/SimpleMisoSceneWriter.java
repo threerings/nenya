@@ -25,11 +25,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.megginson.sax.DataWriter;
+
 import com.samskivert.util.StringUtil;
-import com.threerings.tools.xml.NestableWriter;
 
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.data.SimpleMisoSceneModel;
+
+import com.threerings.tools.xml.NestableWriter;
 
 /**
  * Generates an XML representation of a {@link SimpleMisoSceneModel}.

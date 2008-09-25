@@ -25,12 +25,11 @@ import java.util.Map;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.media.image.ImageManager;
-import com.threerings.media.image.Colorization;
-import com.threerings.media.util.MultiFrameImage;
-
-import com.threerings.cast.CharacterComponent;
 import com.threerings.util.DirectionCodes;
+
+import com.threerings.media.image.Colorization;
+import com.threerings.media.image.ImageManager;
+import com.threerings.media.util.MultiFrameImage;
 
 /**
  * An implementation of the {@link MultiFrameImage} interface that is used

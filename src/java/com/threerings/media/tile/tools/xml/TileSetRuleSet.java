@@ -25,8 +25,8 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.RuleSetBase;
 
 import com.samskivert.util.StringUtil;
-import com.samskivert.xml.ValidatedSetNextRule.Validator;
 import com.samskivert.xml.ValidatedSetNextRule;
+import com.samskivert.xml.ValidatedSetNextRule.Validator;
 
 import com.threerings.media.tile.TileSet;
 

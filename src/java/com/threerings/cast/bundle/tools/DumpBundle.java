@@ -21,16 +21,18 @@
 
 package com.threerings.cast.bundle.tools;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import java.io.File;
 
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.cast.bundle.BundleUtil;
 import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceBundle;
+
+import com.threerings.cast.bundle.BundleUtil;
 
 /**
  * Dumps the contents of a component bundle to stdout.

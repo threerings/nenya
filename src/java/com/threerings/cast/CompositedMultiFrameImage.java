@@ -26,14 +26,16 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
-import com.threerings.cast.CompositedActionFrames.ComponentFrames;
-import com.threerings.cast.bundle.BundledComponentRepository.TileSetFrameImage;
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.image.VolatileMirage;
+
+import com.threerings.cast.CompositedActionFrames.ComponentFrames;
+import com.threerings.cast.bundle.BundledComponentRepository.TileSetFrameImage;
 
 /**
  * Used to composite the action frames for a particular orientation of a

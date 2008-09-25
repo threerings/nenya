@@ -23,11 +23,12 @@ package com.threerings.cast.builder;
 
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 import com.samskivert.swing.VGroupLayout;
 
-import com.threerings.cast.*;
+import com.threerings.cast.ComponentClass;
 
 import static com.threerings.cast.Log.log;
 

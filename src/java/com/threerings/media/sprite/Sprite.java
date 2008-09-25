@@ -26,6 +26,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 
 import com.samskivert.util.ObserverList;
+
 import com.threerings.util.DirectionCodes;
 
 import com.threerings.media.AbstractMedia;

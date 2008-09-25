@@ -22,11 +22,7 @@
 package com.threerings.media.tile.bundle.tools;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
@@ -34,14 +30,24 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.Deflater;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import javax.imageio.ImageIO;
+
+import org.xml.sax.SAXException;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.io.IOUtils;
-import org.xml.sax.SAXException;
 
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.HashIntMap;
+
+import com.threerings.resource.FastImageIO;
+
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
 import com.threerings.media.tile.SimpleCachingImageProvider;
@@ -51,7 +57,6 @@ import com.threerings.media.tile.TrimmedObjectTileSet;
 import com.threerings.media.tile.bundle.BundleUtil;
 import com.threerings.media.tile.bundle.TileSetBundle;
 import com.threerings.media.tile.tools.xml.TileSetRuleSet;
-import com.threerings.resource.FastImageIO;
 
 import static com.threerings.media.Log.log;
 

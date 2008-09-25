@@ -22,13 +22,14 @@
 package com.threerings.miso.client;
 
 import java.awt.event.ActionEvent;
+
 import java.util.HashMap;
+
 import javax.swing.Icon;
 
-import com.samskivert.swing.RadialMenu;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.miso.client.SceneObject;
+import com.samskivert.swing.RadialMenu;
 
 import static com.threerings.miso.Log.log;
 

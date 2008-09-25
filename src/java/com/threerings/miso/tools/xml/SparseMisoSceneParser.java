@@ -21,10 +21,11 @@
 
 package com.threerings.miso.tools.xml;
 
-import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.xml.sax.SAXException;
+
 import org.apache.commons.digester.Digester;
 
 import com.samskivert.io.StreamUtil;

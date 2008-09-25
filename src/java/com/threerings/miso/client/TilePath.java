@@ -22,6 +22,7 @@
 package com.threerings.miso.client;
 
 import java.awt.Point;
+
 import java.util.List;
 
 import com.threerings.util.DirectionCodes;

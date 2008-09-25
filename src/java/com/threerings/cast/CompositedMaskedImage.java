@@ -24,6 +24,7 @@ package com.threerings.cast;
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.VolatileMirage;
 

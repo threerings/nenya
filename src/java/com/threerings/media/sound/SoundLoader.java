@@ -1,18 +1,20 @@
 package com.threerings.media.sound;
 
-import static com.threerings.media.Log.log;
+import java.util.Properties;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 
 import com.samskivert.util.Config;
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.util.LRUHashMap;
+
 import com.threerings.resource.ResourceManager;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Loads sound clips specified by package-based properties files.

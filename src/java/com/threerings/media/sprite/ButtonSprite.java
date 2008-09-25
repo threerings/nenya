@@ -24,6 +24,7 @@ package com.threerings.media.sprite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+
 import com.samskivert.swing.Label;
 import com.samskivert.swing.util.SwingUtil;
 

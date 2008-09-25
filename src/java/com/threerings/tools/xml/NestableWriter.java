@@ -22,6 +22,7 @@
 package com.threerings.tools.xml;
 
 import org.xml.sax.SAXException;
+
 import com.megginson.sax.DataWriter;
 
 /**

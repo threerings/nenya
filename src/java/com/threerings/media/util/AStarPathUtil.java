@@ -22,11 +22,13 @@
 package com.threerings.media.util;
 
 import java.awt.Point;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.samskivert.util.HashIntMap;
-
-import com.threerings.media.util.MathUtil;
 
 /**
  * The <code>AStarPathUtil</code> class provides a facility for

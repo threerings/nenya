@@ -2,11 +2,13 @@ package com.threerings.miso.client;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
 import com.threerings.media.util.MathUtil;
+
 import com.threerings.miso.util.MisoSceneMetrics;
 
 /**

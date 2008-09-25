@@ -21,6 +21,13 @@
 
 package com.threerings.cast.bundle.tools;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.zip.Deflater;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,27 +36,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.zip.Deflater;
 
 import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
 import com.samskivert.util.Tuple;
+
+import com.threerings.media.tile.TileSet;
+import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
+import com.threerings.media.tile.tools.xml.TileSetRuleSet;
+import com.threerings.media.tile.tools.xml.UniformTileSetRuleSet;
+
 import com.threerings.cast.ActionSequence;
 import com.threerings.cast.ComponentClass;
 import com.threerings.cast.bundle.BundleUtil;
 import com.threerings.cast.tools.xml.ActionRuleSet;
 import com.threerings.cast.tools.xml.ClassRuleSet;
-import com.threerings.media.tile.TileSet;
-import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
-import com.threerings.media.tile.tools.xml.TileSetRuleSet;
-import com.threerings.media.tile.tools.xml.UniformTileSetRuleSet;
 
 /**
  * Ant task for creating metadata bundles, which contain action sequence

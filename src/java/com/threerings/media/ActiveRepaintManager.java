@@ -24,11 +24,14 @@ package com.threerings.media;
 import java.applet.Applet;
 
 import java.awt.Component;
-import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Window;
+
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
@@ -37,9 +40,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
-
-import java.util.Iterator;
-import java.util.Map;
 
 import com.google.common.collect.Maps;
 

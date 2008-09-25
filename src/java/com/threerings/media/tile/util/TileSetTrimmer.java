@@ -22,17 +22,20 @@
 package com.threerings.media.tile.util;
 
 import java.awt.Rectangle;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RasterFormatException;
 import java.awt.image.WritableRaster;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.imageio.ImageIO;
+
+import com.threerings.resource.FastImageIO;
+
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.tile.TileSet;
-import com.threerings.resource.FastImageIO;
 
 /**
  * Contains routines for trimming the images from an existing tileset

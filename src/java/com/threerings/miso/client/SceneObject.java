@@ -38,6 +38,7 @@ import com.threerings.media.tile.ObjectTile;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileUtil;
 import com.threerings.media.tile.TileSet.Colorizer;
+
 import com.threerings.miso.MisoPrefs;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.util.MisoSceneMetrics;

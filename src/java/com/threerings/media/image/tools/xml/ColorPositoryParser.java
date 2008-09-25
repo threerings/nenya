@@ -24,15 +24,17 @@ package com.threerings.media.image.tools.xml;
 import java.io.Serializable;
 
 import org.xml.sax.Attributes;
+
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
+
 import com.samskivert.xml.SetPropertyFieldsRule;
 
-import com.threerings.tools.xml.CompiledConfigParser;
-
+import com.threerings.media.image.ColorPository;
 import com.threerings.media.image.ColorPository.ClassRecord;
 import com.threerings.media.image.ColorPository.ColorRecord;
-import com.threerings.media.image.ColorPository;
+
+import com.threerings.tools.xml.CompiledConfigParser;
 
 /**
  * Parses the XML color repository definition and creates a {@link

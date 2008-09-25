@@ -3,14 +3,14 @@
 
 package com.threerings.openal;
 
-import static com.threerings.media.Log.log;
+import java.util.Map;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -33,6 +33,8 @@ import com.threerings.media.sound.JavaSoundPlayer;
 import com.threerings.media.sound.SoundLoader;
 import com.threerings.media.sound.SoundPlayer;
 import com.threerings.media.timer.MediaTimer;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Implements the abstract pieces of {@link SoundPlayer} via OpenAL.

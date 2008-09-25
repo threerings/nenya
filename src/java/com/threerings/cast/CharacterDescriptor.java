@@ -22,8 +22,11 @@
 package com.threerings.cast;
 
 import java.awt.Point;
+
 import java.util.Arrays;
+
 import com.samskivert.util.StringUtil;
+
 import com.threerings.media.image.Colorization;
 
 /**

@@ -21,7 +21,7 @@
 
 package com.threerings.miso.client;
 
-import static com.threerings.miso.Log.log;
+import java.lang.ref.WeakReference;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -42,7 +42,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.lang.ref.WeakReference;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +73,7 @@ import com.threerings.media.tile.TileSet;
 import com.threerings.media.util.AStarPathUtil;
 import com.threerings.media.util.MathUtil;
 import com.threerings.media.util.Path;
+
 import com.threerings.miso.MisoPrefs;
 import com.threerings.miso.client.DirtyItemList.DirtyItem;
 import com.threerings.miso.data.MisoSceneModel;
@@ -82,6 +83,8 @@ import com.threerings.miso.tile.AutoFringer.FringeTile;
 import com.threerings.miso.util.MisoContext;
 import com.threerings.miso.util.MisoSceneMetrics;
 import com.threerings.miso.util.MisoUtil;
+
+import static com.threerings.miso.Log.log;
 
 /**
  * Renders a Miso scene for all to see.

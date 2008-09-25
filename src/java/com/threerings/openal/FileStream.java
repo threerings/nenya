@@ -21,12 +21,12 @@
 
 package com.threerings.openal;
 
+import java.util.ArrayList;
+
 import java.io.File;
 import java.io.IOException;
 
 import java.nio.ByteBuffer;
-
-import java.util.ArrayList;
 
 /**
  * An audio stream read from one or more files.

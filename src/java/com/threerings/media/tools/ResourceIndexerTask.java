@@ -1,9 +1,10 @@
 package com.threerings.media.tools;
 
+import java.util.ArrayList;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;

@@ -26,8 +26,9 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.threerings.media.image.Colorization;
 import com.threerings.resource.FastImageIO;
+
+import com.threerings.media.image.Colorization;
 import com.threerings.media.tile.util.TileSetTrimmer;
 
 /**

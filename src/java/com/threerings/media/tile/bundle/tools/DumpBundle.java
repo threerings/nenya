@@ -21,8 +21,9 @@
 
 package com.threerings.media.tile.bundle.tools;
 
-import java.io.File;
 import java.util.Iterator;
+
+import java.io.File;
 
 import com.threerings.resource.FileResourceBundle;
 import com.threerings.resource.ResourceBundle;

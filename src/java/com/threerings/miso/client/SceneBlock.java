@@ -23,6 +23,7 @@ package com.threerings.miso.client;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -32,7 +33,6 @@ import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.IntMap;
 import com.samskivert.util.StringUtil;
 
-import com.threerings.geom.GeomUtil;
 import com.threerings.media.tile.NoSuchTileSetException;
 import com.threerings.media.tile.ObjectTile;
 import com.threerings.media.tile.Tile;
@@ -40,6 +40,9 @@ import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
 import com.threerings.media.util.MathUtil;
+
+import com.threerings.geom.GeomUtil;
+
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.tile.BaseTile;

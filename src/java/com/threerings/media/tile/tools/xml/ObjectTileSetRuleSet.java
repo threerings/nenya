@@ -26,10 +26,10 @@ import org.apache.commons.digester.Digester;
 import com.samskivert.util.StringUtil;
 import com.samskivert.xml.CallMethodSpecialRule;
 
+import com.threerings.util.DirectionUtil;
+
 import com.threerings.media.tile.ObjectTileSet;
 import com.threerings.media.tile.TileSet;
-
-import com.threerings.util.DirectionUtil;
 
 /**
  * Parses {@link ObjectTileSet} instances from a tileset description. An

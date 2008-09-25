@@ -23,13 +23,15 @@ package com.threerings.media.tile.bundle;
 
 import java.awt.image.BufferedImage;
 
+import java.util.Iterator;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Iterator;
 
 import com.samskivert.util.HashIntMap;
+
 import com.threerings.resource.FastImageIO;
 import com.threerings.resource.ResourceBundle;
 

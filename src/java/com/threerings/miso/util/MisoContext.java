@@ -22,6 +22,7 @@
 package com.threerings.miso.util;
 
 import com.threerings.media.FrameManager;
+
 import com.threerings.miso.tile.MisoTileManager;
 
 /**

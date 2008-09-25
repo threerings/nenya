@@ -21,22 +21,25 @@
 
 package com.threerings.media.tile;
 
+import java.lang.ref.SoftReference;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
-import java.lang.ref.SoftReference;
+
 import java.util.Iterator;
 import java.util.Map;
+
+import java.io.Serializable;
 
 import com.google.common.collect.Maps;
 
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 
-import com.threerings.media.image.Colorization;
-import com.threerings.media.image.Mirage;
-import com.threerings.media.image.ImageUtil;
 import com.threerings.media.image.BufferedMirage;
+import com.threerings.media.image.Colorization;
+import com.threerings.media.image.ImageUtil;
+import com.threerings.media.image.Mirage;
 import com.threerings.media.tile.Tile.Key;
 
 import static com.threerings.media.Log.log;

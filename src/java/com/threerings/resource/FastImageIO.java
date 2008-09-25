@@ -22,7 +22,6 @@
 package com.threerings.resource;
 
 import java.awt.Point;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;

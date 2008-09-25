@@ -21,13 +21,12 @@
 
 package com.threerings.media;
 
-import static com.threerings.media.Log.log;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -43,6 +42,8 @@ import com.threerings.media.animation.AnimationManager;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.timer.MediaTimer;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Coordinates interaction between a sprite and animation manager and the media host that hosts and

@@ -21,7 +21,7 @@
 
 package com.threerings.media.sound;
 
-import static com.threerings.media.Log.log;
+import java.util.HashMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -51,8 +50,11 @@ import com.samskivert.util.StringUtil;
 
 import com.samskivert.swing.RuntimeAdjust;
 
-import com.threerings.media.MediaPrefs;
 import com.threerings.resource.ResourceManager;
+
+import com.threerings.media.MediaPrefs;
+
+import static com.threerings.media.Log.log;
 
 /**
  * Manages the playing of audio files via the Java Sound APIs.

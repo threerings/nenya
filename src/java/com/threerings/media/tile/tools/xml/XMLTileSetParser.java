@@ -21,17 +21,19 @@
 
 package com.threerings.media.tile.tools.xml;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
+import org.xml.sax.SAXException;
 
 import org.apache.commons.digester.Digester;
-import org.xml.sax.SAXException;
 
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.xml.ValidatedSetNextRule;

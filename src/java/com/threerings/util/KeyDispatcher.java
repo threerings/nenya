@@ -22,10 +22,9 @@
 package com.threerings.util;
 
 import java.awt.Component;
-import java.awt.Window;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;

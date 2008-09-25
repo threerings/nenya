@@ -21,8 +21,9 @@
 
 package com.threerings.media.tile.tools;
 
-import java.io.File;
 import java.util.Iterator;
+
+import java.io.File;
 
 import com.samskivert.io.PersistenceException;
 

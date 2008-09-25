@@ -21,12 +21,10 @@
 
 package com.threerings.openal;
 
-import static com.threerings.openal.Log.log;
-
-import java.nio.IntBuffer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
@@ -40,6 +38,8 @@ import com.samskivert.util.Queue;
 import com.samskivert.util.RunQueue;
 
 import com.threerings.openal.ClipBuffer.Observer;
+
+import static com.threerings.openal.Log.log;
 
 /**
  * An interface to the OpenAL library that provides a number of additional services:

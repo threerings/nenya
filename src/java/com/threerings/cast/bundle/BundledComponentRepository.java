@@ -21,16 +21,16 @@
 
 package com.threerings.cast.bundle;
 
-import static com.threerings.cast.Log.log;
-
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import java.io.IOException;
 
 import com.google.common.collect.Maps;
 
@@ -39,6 +39,22 @@ import com.samskivert.util.IntMap;
 import com.samskivert.util.IntMaps;
 import com.samskivert.util.Predicate;
 import com.samskivert.util.Tuple;
+
+import com.threerings.util.DirectionCodes;
+
+import com.threerings.resource.FileResourceBundle;
+import com.threerings.resource.ResourceBundle;
+import com.threerings.resource.ResourceManager;
+
+import com.threerings.media.image.BufferedMirage;
+import com.threerings.media.image.Colorization;
+import com.threerings.media.image.ImageDataProvider;
+import com.threerings.media.image.ImageManager;
+import com.threerings.media.image.Mirage;
+import com.threerings.media.tile.IMImageProvider;
+import com.threerings.media.tile.Tile;
+import com.threerings.media.tile.TileSet;
+import com.threerings.media.tile.TrimmedTile;
 
 import com.threerings.cast.ActionFrames;
 import com.threerings.cast.ActionSequence;
@@ -49,19 +65,8 @@ import com.threerings.cast.FrameProvider;
 import com.threerings.cast.NoSuchComponentException;
 import com.threerings.cast.StandardActions;
 import com.threerings.cast.TrimmedMultiFrameImage;
-import com.threerings.media.image.BufferedMirage;
-import com.threerings.media.image.Colorization;
-import com.threerings.media.image.ImageDataProvider;
-import com.threerings.media.image.ImageManager;
-import com.threerings.media.image.Mirage;
-import com.threerings.media.tile.IMImageProvider;
-import com.threerings.media.tile.Tile;
-import com.threerings.media.tile.TileSet;
-import com.threerings.media.tile.TrimmedTile;
-import com.threerings.resource.FileResourceBundle;
-import com.threerings.resource.ResourceBundle;
-import com.threerings.resource.ResourceManager;
-import com.threerings.util.DirectionCodes;
+
+import static com.threerings.cast.Log.log;
 
 /**
  * A component repository implementation that obtains information from resource bundles.

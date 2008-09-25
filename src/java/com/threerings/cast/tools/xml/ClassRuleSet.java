@@ -31,9 +31,10 @@ import com.samskivert.util.StringUtil;
 import com.samskivert.xml.SetPropertyFieldsRule;
 import com.samskivert.xml.SetPropertyFieldsRule.FieldParser;
 
-import com.threerings.cast.ComponentClass.PriorityOverride;
-import com.threerings.cast.ComponentClass;
 import com.threerings.util.DirectionUtil;
+
+import com.threerings.cast.ComponentClass;
+import com.threerings.cast.ComponentClass.PriorityOverride;
 
 /**
  * The class rule set is used to parse the attributes of a component class

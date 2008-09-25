@@ -29,13 +29,15 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import java.util.Collection;
+
 import javax.swing.Icon;
 import javax.swing.UIManager;
 
-import com.samskivert.swing.Label;
-import com.samskivert.swing.LabelSausage;
 import com.samskivert.util.ComparableArrayList;
 import com.samskivert.util.StringUtil;
+
+import com.samskivert.swing.Label;
+import com.samskivert.swing.LabelSausage;
 
 /**
  * A lightweight tooltip used by the {@link MisoScenePanel}. The tip

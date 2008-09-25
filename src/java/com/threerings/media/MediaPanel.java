@@ -22,38 +22,35 @@
 package com.threerings.media;
 
 import java.awt.Component;
-import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.MouseInputAdapter;
 
-import java.util.ArrayList;
-
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.event.AncestorAdapter;
 import com.samskivert.swing.event.CommandEvent;
-import com.threerings.media.timer.MediaTimer;
 
 import com.threerings.media.animation.Animation;
 import com.threerings.media.animation.AnimationManager;
-
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
-
 import com.threerings.media.sprite.action.ActionSprite;
 import com.threerings.media.sprite.action.ArmingSprite;
 import com.threerings.media.sprite.action.CommandSprite;
 import com.threerings.media.sprite.action.DisableableSprite;
 import com.threerings.media.sprite.action.HoverSprite;
+import com.threerings.media.timer.MediaTimer;
 
 import static com.threerings.media.Log.log;
 

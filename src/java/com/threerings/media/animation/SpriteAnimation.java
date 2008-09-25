@@ -24,9 +24,9 @@ package com.threerings.media.animation;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import com.threerings.media.sprite.PathObserver;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
-import com.threerings.media.sprite.PathObserver;
 import com.threerings.media.util.Path;
 
 public class SpriteAnimation extends Animation

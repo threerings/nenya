@@ -24,19 +24,20 @@ package com.threerings.miso.tile.tools.xml;
 import java.io.Serializable;
 
 import org.xml.sax.Attributes;
+
 import org.apache.commons.digester.Digester;
 
 import com.samskivert.util.StringUtil;
 import com.samskivert.xml.SetPropertyFieldsRule;
 import com.samskivert.xml.ValidatedSetNextRule;
 
-import com.threerings.tools.xml.CompiledConfigParser;
-
 import com.threerings.media.tile.TileSetIDBroker;
 
+import com.threerings.miso.tile.FringeConfiguration;
 import com.threerings.miso.tile.FringeConfiguration.FringeRecord;
 import com.threerings.miso.tile.FringeConfiguration.FringeTileSetRecord;
-import com.threerings.miso.tile.FringeConfiguration;
+
+import com.threerings.tools.xml.CompiledConfigParser;
 
 import static com.threerings.miso.Log.log;
 

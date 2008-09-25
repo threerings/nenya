@@ -21,14 +21,11 @@
 
 package com.threerings.resource;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import java.awt.EventQueue;
 import java.awt.image.BufferedImage;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -42,8 +39,11 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;

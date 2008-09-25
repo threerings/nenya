@@ -29,7 +29,6 @@ import java.awt.Shape;
 
 import com.samskivert.util.RandomUtil;
 
-import com.threerings.media.animation.Animation;
 import com.threerings.media.image.Mirage;
 
 /**

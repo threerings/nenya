@@ -24,6 +24,7 @@ package com.threerings.miso.data;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.io.SimpleStreamableObject;
+
 import com.threerings.media.tile.TileUtil;
 
 /**

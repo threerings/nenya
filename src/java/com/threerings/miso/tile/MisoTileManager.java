@@ -26,8 +26,9 @@ import java.io.InputStream;
 
 import com.samskivert.io.StreamUtil;
 
-import com.threerings.resource.ResourceManager;
 import com.threerings.util.CompiledConfig;
+
+import com.threerings.resource.ResourceManager;
 
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.tile.TileManager;

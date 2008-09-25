@@ -25,8 +25,8 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import com.samskivert.util.Predicate;
 import com.samskivert.util.SortableArrayList;

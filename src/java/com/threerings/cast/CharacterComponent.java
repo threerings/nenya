@@ -21,8 +21,9 @@
 
 package com.threerings.cast;
 
-import java.io.Serializable;
 import java.util.Set;
+
+import java.io.Serializable;
 
 import com.samskivert.util.StringUtil;
 

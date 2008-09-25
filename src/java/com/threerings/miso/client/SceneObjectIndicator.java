@@ -2,6 +2,7 @@ package com.threerings.miso.client;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+
 import java.util.Collection;
 
 import javax.swing.Icon;

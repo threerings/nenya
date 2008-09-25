@@ -21,9 +21,11 @@
 
 package com.threerings.media.timer;
 
-import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.Interval;
 import com.samskivert.util.Logger;
+
+import com.samskivert.swing.RuntimeAdjust;
+
 import com.threerings.media.MediaPrefs;
 
 /**
