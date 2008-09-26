@@ -21,9 +21,9 @@
 
 package com.threerings.media.animation;
 
-import java.awt.Rectangle;
-
 import java.util.ArrayList;
+
+import java.awt.Rectangle;
 
 import com.samskivert.swing.util.SwingUtil;
 

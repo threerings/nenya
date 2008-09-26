@@ -21,6 +21,7 @@
 
 package com.threerings.media.sprite;
 
+import com.threerings.media.FrameManager;
 import com.threerings.media.util.Path;
 
 /**
@@ -42,7 +43,7 @@ public interface PathObserver
      * @param sprite the sprite that completed its path.
      * @param path the path that was completed.
      * @param when the tick stamp of the media tick on which the path was
-     * completed (see {@link SpriteManager#tick}) (this may not be in the
+     * completed (see {@link FrameManager#tick}) (this may not be in the
      * same time domain as {@link System#currentTimeMillis}).
      */
     public void pathCompleted (Sprite sprite, Path path, long when);

@@ -23,9 +23,8 @@ package com.threerings.cast;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Graphics;
-
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
@@ -34,10 +33,12 @@ import javax.swing.JPanel;
 
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.image.ClientImageManager;
-import com.threerings.resource.ResourceManager;
 import com.threerings.util.DirectionCodes;
 import com.threerings.util.DirectionUtil;
+
+import com.threerings.resource.ResourceManager;
+
+import com.threerings.media.image.ClientImageManager;
 
 import com.threerings.cast.bundle.BundledComponentRepository;
 

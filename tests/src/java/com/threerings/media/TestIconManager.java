@@ -22,14 +22,18 @@
 package com.threerings.media;
 
 import java.awt.BorderLayout;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.util.SwingUtil;
 
+import com.threerings.resource.ResourceManager;
+
 import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.tile.TileManager;
-import com.threerings.resource.ResourceManager;
 
 /**
  * Does something extraordinary.

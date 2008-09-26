@@ -21,10 +21,13 @@
 
 package com.threerings.media;
 
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-import java.io.*;
+import java.awt.image.BufferedImage;
+
+import javax.imageio.ImageIO;
 
 import com.threerings.resource.FastImageIO;
 

@@ -627,7 +627,7 @@ public abstract class FrameManager
         }
     }
 
-    /** Used to effect periodic calls to {@link #tick}. */
+    /** Used to effect periodic calls to {@link FrameManager#tick}. */
     protected class Ticker extends Thread
     {
         public Ticker ()
@@ -701,7 +701,7 @@ public abstract class FrameManager
             _ticking = false;
         }
 
-        /** Used to invoke the call to {@link #tick} on the AWT event queue thread. */
+        /** Used to invoke the call to {@link FrameManager#tick} on the AWT event queue thread. */
         protected Runnable _awtTicker = new Runnable () {
             public void run () {
                 long elapsed = _timer.getElapsedMillis();

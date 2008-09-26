@@ -21,10 +21,10 @@
 
 package com.threerings.media.animation;
 
+import java.util.ArrayList;
+
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-
-import java.util.ArrayList;
 
 import com.samskivert.util.StringUtil;
 

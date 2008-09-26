@@ -21,6 +21,9 @@
 
 package com.threerings.media.image;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,9 +41,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 import com.samskivert.swing.Label;
 

@@ -21,14 +21,15 @@
 
 package com.threerings.media.tile.tools.xml;
 
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
 
-import com.threerings.media.tile.TileSet;
+import java.io.IOException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
+
+import com.threerings.media.tile.TileSet;
 
 public class XMLTileSetParserTest extends TestCase
 {

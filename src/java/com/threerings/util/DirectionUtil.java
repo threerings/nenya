@@ -328,11 +328,11 @@ public class DirectionUtil implements DirectionCodes
         /* NNW -> */ NORTHWEST,     /* NNE -> */ NORTH,
         /* ENE -> */ NORTHEAST,     /* ESE -> */ EAST,
         /* SSE -> */ SOUTHEAST,     /* SSW -> */ SOUTH
-    };                                                            
+    };
 
     /** Used to map an angle to a fine compass direction. */
     protected static final int[] ANGLE_MAP = {
         WEST, WESTNORTHWEST, NORTHWEST, NORTHNORTHWEST, NORTH, NORTHNORTHEAST,
         NORTHEAST, EASTNORTHEAST, EAST, EASTSOUTHEAST, SOUTHEAST,
         SOUTHSOUTHEAST, SOUTH, SOUTHSOUTHWEST, SOUTHWEST, WESTSOUTHWEST };
-}                                                                       
+}

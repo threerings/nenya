@@ -23,6 +23,9 @@ package com.threerings.media;
 
 import java.applet.Applet;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

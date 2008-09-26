@@ -21,6 +21,9 @@
 
 package com.threerings.util;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -29,9 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
 
 import javax.swing.JComboBox;
 import javax.swing.JRootPane;

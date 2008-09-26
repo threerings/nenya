@@ -24,6 +24,7 @@ package com.threerings.media.sprite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import com.threerings.media.AbstractMedia;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.util.MultiFrameImage;
 import com.threerings.media.util.SingleFrameImageImpl;
@@ -55,11 +56,10 @@ public class ImageSprite extends Sprite
     public static final int TIME_SEQUENTIAL = 3;
 
     /**
-     * Constructs an image sprite without any associated frames and with
-     * an invalid default initial location. The sprite should be populated
-     * with a set of frames used to display it via a subsequent call to
-     * {@link #setFrames}, and its location updated with {@link
-     * #setLocation}.
+     * Constructs an image sprite without any associated frames and with an invalid default initial
+     * location. The sprite should be populated with a set of frames used to display it via a
+     * subsequent call to {@link #setFrames}, and its location updated with
+     * {@link AbstractMedia#setLocation}.
      */
     public ImageSprite ()
     {
@@ -81,8 +81,7 @@ public class ImageSprite extends Sprite
     }
 
     /**
-     * Constructs an image sprite that will display the supplied single
-     * image when rendering itself.
+     * Constructs an image sprite that will display the supplied single image when rendering itself.
      */
     public ImageSprite (Mirage image)
     {
@@ -94,22 +93,19 @@ public class ImageSprite extends Sprite
     {
         super.init();
 
-        // now that we have our sprite manager, we can lay ourselves out
-        // and initialize our frames
+        // now that we have our sprite manager, we can lay ourselves out and initialize our frames
         layout();
     }
 
     /**
-     * Returns true if the sprite's bounds contain the specified point,
-     * and if there is a non-transparent pixel in the sprite's image at
-     * the specified point, false if not.
+     * Returns true if the sprite's bounds contain the specified point, and if there is a
+     * non-transparent pixel in the sprite's image at the specified point, false if not.
      */
     @Override
     public boolean hitTest (int x, int y)
     {
-        // first check to see that we're in the sprite's bounds and that
-        // we've got a frame image (if we've got no image, there's nothing
-        // to be hit)
+        // first check to see that we're in the sprite's bounds and that we've got a frame image
+        // (if we've got no image, there's nothing to be hit)
         if (!super.hitTest(x, y) || _frames == null) {
             return false;
         }
@@ -136,9 +132,8 @@ public class ImageSprite extends Sprite
     }
 
     /**
-     * Sets the number of frames per second desired for the sprite
-     * animation. This is only used when the animation mode is
-     * <code>TIME_BASED</code>.
+     * Sets the number of frames per second desired for the sprite animation. This is only used
+     * when the animation mode is <code>TIME_BASED</code>.
      *
      * @param fps the desired frames per second.
      */
@@ -163,13 +158,11 @@ public class ImageSprite extends Sprite
     public void setFrames (MultiFrameImage frames)
     {
         if (frames == null) {
-            // Log.warning("Someone set up us the null frames! " +
-            // "[sprite=" + this + "].");
+            // log.warning("Someone set up us the null frames!", "sprite", this);
             return;
         }
 
-        // if these are the same frames we already had, no need to do a
-        // bunch of pointless business
+        // if these are the same frames we already had, no need to do a bunch of pointless business
         if (frames == _frames) {
             return;
         }
@@ -181,8 +174,7 @@ public class ImageSprite extends Sprite
     }
 
     /**
-     * Instructs this sprite to lay out its current frame and any
-     * accoutrements.
+     * Instructs this sprite to lay out its current frame and any accoutrements.
      */
     public void layout ()
     {
@@ -224,10 +216,9 @@ public class ImageSprite extends Sprite
     }
 
     /**
-     * Must adjust the bounds to accomodate the our new frame. This
-     * includes changing the width and height to reflect the size of the
-     * new frame and also updating the render origin (if necessary) and
-     * calling {@link #updateRenderOrigin} to reflect those changes in the
+     * Must adjust the bounds to accommodate the our new frame. This includes changing the width
+     * and height to reflect the size of the new frame and also updating the render origin (if
+     * necessary) and calling {@link Sprite#updateRenderOrigin} to reflect those changes in the
      * sprite's bounds.
      *
      * @param frameIdx the index of our new frame.
@@ -266,11 +257,11 @@ public class ImageSprite extends Sprite
         if (_frames == null) {
             return;
         }
-        
+
         int fcount = _frames.getFrameCount();
         boolean moved = false;
 
-        // move the sprite along toward its destination, if any 
+        // move the sprite along toward its destination, if any
         moved = tickPath(timestamp);
 
         // increment the display image if performing image animation

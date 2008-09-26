@@ -27,17 +27,10 @@ import java.awt.event.MouseEvent;
 
 import com.samskivert.util.RandomUtil;
 
-import com.threerings.cast.CharacterDescriptor;
-import com.threerings.cast.CharacterManager;
-import com.threerings.cast.CharacterSprite;
-import com.threerings.cast.ComponentRepository;
-import com.threerings.cast.util.CastUtil;
-
 import com.threerings.media.sprite.PathObserver;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LineSegmentPath;
-
 import com.threerings.media.util.Path;
 import com.threerings.media.util.PerformanceMonitor;
 import com.threerings.media.util.PerformanceObserver;
@@ -46,6 +39,12 @@ import com.threerings.miso.MisoConfig;
 import com.threerings.miso.client.MisoScenePanel;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.util.MisoContext;
+
+import com.threerings.cast.CharacterDescriptor;
+import com.threerings.cast.CharacterManager;
+import com.threerings.cast.CharacterSprite;
+import com.threerings.cast.ComponentRepository;
+import com.threerings.cast.util.CastUtil;
 
 import static com.threerings.miso.Log.log;
 

@@ -26,12 +26,12 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+
 import javax.swing.JFrame;
 
 import com.threerings.media.FrameManager;
 import com.threerings.media.ManagedJFrame;
 import com.threerings.media.MediaPanel;
-
 import com.threerings.media.sprite.Sprite;
 
 /**

@@ -21,9 +21,10 @@
 
 package com.threerings.cast;
 
-import java.awt.Point;
 
 import java.io.Serializable;
+
+import java.awt.Point;
 
 /**
  * The action sequence class describes a particular character animation

@@ -21,11 +21,12 @@
 
 package com.threerings.media.tile;
 
-import java.awt.Rectangle;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+
+import java.awt.Rectangle;
 
 import com.samskivert.util.ListUtil;
 import com.samskivert.util.StringUtil;

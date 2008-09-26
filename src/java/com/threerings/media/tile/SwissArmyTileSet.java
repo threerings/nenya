@@ -21,12 +21,12 @@
 
 package com.threerings.media.tile;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
 
 import com.samskivert.util.StringUtil;
 

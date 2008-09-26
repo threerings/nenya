@@ -21,6 +21,7 @@
 
 package com.threerings.media.image;
 
+
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;

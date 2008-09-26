@@ -21,9 +21,10 @@
 
 package com.threerings.media.tile;
 
-import java.awt.Graphics2D;
 
 import java.util.Arrays;
+
+import java.awt.Graphics2D;
 
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.Mirage;

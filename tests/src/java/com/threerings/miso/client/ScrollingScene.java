@@ -21,10 +21,10 @@
 
 package com.threerings.miso.client;
 
-import java.awt.Rectangle;
-
 import java.util.Iterator;
 import java.util.Random;
+
+import java.awt.Rectangle;
 
 import com.samskivert.io.PersistenceException;
 
@@ -33,11 +33,11 @@ import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileSetRepository;
 
 import com.threerings.miso.data.MisoSceneModel;
+import com.threerings.miso.data.ObjectInfo;
 import com.threerings.miso.tile.BaseTile;
 import com.threerings.miso.tile.BaseTileSet;
 import com.threerings.miso.util.MisoContext;
 import com.threerings.miso.util.ObjectSet;
-import com.threerings.miso.data.ObjectInfo;
 
 /**
  * Provides an infinite array of tiles in which to scroll.

@@ -21,9 +21,10 @@
 
 package com.threerings.media.tile.bundle.tools;
 
+import java.util.HashMap;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import com.samskivert.io.PersistenceException;
 import com.samskivert.test.TestUtil;

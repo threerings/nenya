@@ -21,6 +21,8 @@
 
 package com.threerings.miso.client;
 
+import java.util.HashMap;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -28,9 +30,6 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-
-import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.JPanel;
 
@@ -119,8 +118,8 @@ public class ResolutionView extends JPanel
         gfx.scale(0.25, 0.25);
 
         // draw our block glyphs
-        for (Iterator<BlockGlyph> iter = _blocks.values().iterator(); iter.hasNext(); ) {
-            iter.next().paint(gfx);
+        for (BlockGlyph blockGlyph : _blocks.values()) {
+            blockGlyph.paint(gfx);
         }
 
         // draw the view bounds

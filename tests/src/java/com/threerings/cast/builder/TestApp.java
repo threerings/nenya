@@ -22,12 +22,14 @@
 package com.threerings.cast.builder;
 
 import java.io.IOException;
+
 import javax.swing.JFrame;
 
 import com.samskivert.swing.util.SwingUtil;
 
-import com.threerings.media.image.ClientImageManager;
 import com.threerings.resource.ResourceManager;
+
+import com.threerings.media.image.ClientImageManager;
 
 import com.threerings.cast.CharacterManager;
 import com.threerings.cast.ComponentRepository;

@@ -21,15 +21,17 @@
 
 package com.threerings.media.tile.bundle;
 
-import java.awt.Component;
 import java.util.Iterator;
 
-import com.threerings.media.image.ClientImageManager;
-import com.threerings.media.tile.TileSet;
-import com.threerings.resource.ResourceManager;
+import java.awt.Component;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
+
+import com.threerings.resource.ResourceManager;
+
+import com.threerings.media.image.ClientImageManager;
+import com.threerings.media.tile.TileSet;
 
 public class BundledTileSetRepositoryTest extends TestCase
 {

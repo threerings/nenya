@@ -21,11 +21,11 @@
 
 package com.threerings.media.util;
 
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-
 import java.util.Comparator;
 import java.util.TreeSet;
+
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
 
 /**
  * Display mode related utilities.

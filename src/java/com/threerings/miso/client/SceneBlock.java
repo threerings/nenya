@@ -21,13 +21,14 @@
 
 package com.threerings.miso.client;
 
-import java.awt.Polygon;
-import java.awt.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+
+import java.awt.Polygon;
+import java.awt.Rectangle;
 
 import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.IntMap;

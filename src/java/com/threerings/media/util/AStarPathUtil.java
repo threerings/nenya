@@ -21,6 +21,11 @@
 
 package com.threerings.media.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import java.awt.Point;
 
 import java.util.ArrayList;
@@ -136,7 +141,7 @@ public class AStarPathUtil
      * @return the list of points in the path.
      */
     public static List<Point> getPath (
-            TraversalPred tpred, Stepper stepper, Object trav, int longest, 
+            TraversalPred tpred, Stepper stepper, Object trav, int longest,
             int ax, int ay, int bx, int by, boolean partial)
     {
         Info info = new Info(tpred, trav, longest, bx, by);
@@ -166,7 +171,7 @@ public class AStarPathUtil
             if (n.x == bx && n.y == by) {
                 // construct and return the acceptable path
                 return getNodePath(n);
-                
+
             } else if (partial) {
                 float pathdist = MathUtil.distance(n.x, n.y, bx, by);
                 if (pathdist < bestdist) {

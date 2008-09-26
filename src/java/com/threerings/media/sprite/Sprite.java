@@ -34,20 +34,18 @@ import com.threerings.media.util.Path;
 import com.threerings.media.util.Pathable;
 
 /**
- * The sprite class represents a single moveable object in an animated
- * view. A sprite has a position and orientation within the view, and can
- * be moved along a path.
+ * The sprite class represents a single moveable object in an animated view. A sprite has a
+ * position and orientation within the view, and can be moved along a path.
  */
 public abstract class Sprite extends AbstractMedia
     implements DirectionCodes, Pathable
 {
     /**
-     * Constructs a sprite with an initially invalid location. Because
-     * sprite derived classes generally want to get in on the business
-     * when a sprite's location is set, it is not safe to do so in the
-     * constructor because their derived methods will be called before
-     * their constructor has been called. Thus a sprite should be fully
-     * constructed and <em>then</em> its location should be set.
+     * Constructs a sprite with an initially invalid location. Because sprite derived classes
+     * generally want to get in on the business when a sprite's location is set, it is not safe to
+     * do so in the constructor because their derived methods will be called before their
+     * constructor has been called. Thus a sprite should be fully constructed and <em>then</em> its
+     * location should be set.
      */
     public Sprite ()
     {
@@ -55,12 +53,11 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Constructs a sprite with the supplied dimensions. Because
-     * sprite derived classes generally want to get in on the business
-     * when a sprite's location is set, it is not safe to do so in the
-     * constructor because their derived methods will be called before
-     * their constructor has been called. Thus a sprite should be fully
-     * constructed and <em>then</em> its location should be set.
+     * Constructs a sprite with the supplied dimensions. Because sprite derived classes generally
+     * want to get in on the business when a sprite's location is set, it is not safe to do so in
+     * the constructor because their derived methods will be called before their constructor has
+     * been called. Thus a sprite should be fully constructed and <em>then</em> its location should
+     * be set.
      */
     public Sprite (int width, int height)
     {
@@ -68,9 +65,8 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns the sprite's x position in screen coordinates. This is the
-     * x coordinate of the sprite's origin, not the upper left of its
-     * bounds.
+     * Returns the sprite's x position in screen coordinates. This is the x coordinate of the
+     * sprite's origin, not the upper left of its bounds.
      */
     public int getX ()
     {
@@ -78,9 +74,8 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns the sprite's y position in screen coordinates. This is the
-     * y coordinate of the sprite's origin, not the upper left of its
-     * bounds.
+     * Returns the sprite's y position in screen coordinates. This is the y coordinate of the
+     * sprite's origin, not the upper left of its bounds.
      */
     public int getY ()
     {
@@ -88,8 +83,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns the offset to the sprite's origin from the upper-left of
-     * the sprite's image.
+     * Returns the offset to the sprite's origin from the upper-left of the sprite's image.
      */
     public int getXOffset ()
     {
@@ -97,8 +91,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns the offset to the sprite's origin from the upper-left of
-     * the sprite's image.
+     * Returns the offset to the sprite's origin from the upper-left of the sprite's image.
      */
     public int getYOffset ()
     {
@@ -122,11 +115,10 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Sprites have an orientation in one of the eight cardinal
-     * directions: <code>NORTH</code>, <code>NORTHEAST</code>, etc.
-     * Derived classes can choose to override this member function and
-     * select a different set of images based on their orientation, or
-     * they can ignore the orientation information.
+     * Sprites have an orientation in one of the eight cardinal directions: <code>NORTH</code>,
+     * <code>NORTHEAST</code>, etc. Derived classes can choose to override this member function and
+     * select a different set of images based on their orientation, or they can ignore the
+     * orientation information.
      *
      * @see DirectionCodes
      */
@@ -136,8 +128,8 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns the sprite's orientation as one of the eight cardinal
-     * directions: <code>NORTH</code>, <code>NORTHEAST</code>, etc.
+     * Returns the sprite's orientation as one of the eight cardinal directions:
+     * <code>NORTH</code>, <code>NORTHEAST</code>, etc.
      *
      * @see DirectionCodes
      */
@@ -160,8 +152,7 @@ public abstract class Sprite extends AbstractMedia
         _ox = x;
         _oy = y;
 
-        // we need to update our draw position which is based on the size
-        // of our current bounds
+        // we need to update our draw position which is based on the size of our current bounds
         updateRenderOrigin();
 
         // this method will invalidate our old and new bounds efficiently
@@ -187,8 +178,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns true if the sprite's bounds contain the specified point,
-     * false if not.
+     * Returns true if the sprite's bounds contain the specified point, false if not.
      */
     public boolean contains (int x, int y)
     {
@@ -196,8 +186,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns true if the sprite's bounds contain the specified point,
-     * false if not.
+     * Returns true if the sprite's bounds contain the specified point, false if not.
      */
     public boolean hitTest (int x, int y)
     {
@@ -205,8 +194,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns whether the sprite is inside the given shape in pixel
-     * coordinates.
+     * Returns whether the sprite is inside the given shape in pixel coordinates.
      */
     public boolean inside (Shape shape)
     {
@@ -214,8 +202,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns whether the sprite's drawn rectangle intersects the given
-     * shape in pixel coordinates.
+     * Returns whether the sprite's drawn rectangle intersects the given shape in pixel coordinates.
      */
     public boolean intersects (Shape shape)
     {
@@ -223,8 +210,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns true if this sprite is currently following a path, false if
-     * it is not.
+     * Returns true if this sprite is currently following a path, false if it is not.
      */
     public boolean isMoving ()
     {
@@ -232,9 +218,9 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Set the sprite's active path and start moving it along its merry
-     * way.  If the sprite is already moving along a previous path the old
-     * path will be lost and the new path will begin to be traversed.
+     * Set the sprite's active path and start moving it along its merry way.  If the sprite is
+     * already moving along a previous path the old path will be lost and the new path will begin
+     * to be traversed.
      *
      * @param path the path to follow.
      */
@@ -266,8 +252,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Returns the path being followed by this sprite or null if the
-     * sprite is not following a path.
+     * Returns the path being followed by this sprite or null if the sprite is not following a path.
      */
     public Path getPath ()
     {
@@ -318,9 +303,8 @@ public abstract class Sprite extends AbstractMedia
             _path.init(this, _pathStamp = tickStamp);
         }
 
-        // it's possible that as a result of init() the path completed and
-        // removed itself with a call to pathCompleted(), so we have to be
-        // careful here
+        // it's possible that as a result of init() the path completed and removed itself with a
+        // call to pathCompleted(), so we have to be careful here
         return (_path == null) ? true : _path.tick(this, tickStamp);
     }
 
@@ -334,8 +318,8 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Update the coordinates at which the sprite image is drawn to
-     * reflect the sprite's current position.
+     * Update the coordinates at which the sprite image is drawn to reflect the sprite's current
+     * position.
      */
     protected void updateRenderOrigin ()
     {

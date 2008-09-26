@@ -21,7 +21,6 @@
 
 package com.threerings.media.image;
 
-import java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,6 +31,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import java.text.ParseException;
+
+import java.awt.Color;
 
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.RandomUtil;

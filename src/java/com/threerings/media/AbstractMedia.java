@@ -53,31 +53,26 @@ public abstract class AbstractMedia
     }
 
     /**
-     * Called periodically by this media's manager to give it
-     * a chance to do its thing.
+     * Called periodically by this media's manager to give it a chance to do its thing.
      *
-     * @param tickStamp a time stamp associated with this tick.
-     * <em>Note:</em> this is not obtained from a call to {@link
-     * System#currentTimeMillis} and cannot be compared to timestamps
+     * @param tickStamp a time stamp associated with this tick. <em>Note:</em> this is not obtained
+     * from a call to {@link System#currentTimeMillis} and cannot be compared to timestamps
      * obtained there from.
      */
     public abstract void tick (long tickStamp);
 
     /**
-     * Called by the appropriate manager to request that the
-     * media render itself with the given graphics context. The
-     * media may wish to inspect the clipping region that has been set
-     * on the graphics context to render itself more efficiently. This
-     * method will only be called after it has been established that this
-     * media's bounds intersect the clipping region.
+     * Called by the appropriate manager to request that the media render itself with the given
+     * graphics context. The media may wish to inspect the clipping region that has been set on the
+     * graphics context to render itself more efficiently. This method will only be called after it
+     * has been established that this media's bounds intersect the clipping region.
      */
     public abstract void paint (Graphics2D gfx);
 
     /**
-     * Called when the appropriate media manager has been paused for some
-     * length of time and is then unpaused. Media should adjust any time stamps
-     * that are maintained internally forward by the delta so that time
-     * maintains the illusion of flowing smoothly forward.
+     * Called when the appropriate media manager has been paused for some length of time and is
+     * then unpaused. Media should adjust any time stamps that are maintained internally forward by
+     * the delta so that time maintains the illusion of flowing smoothly forward.
      */
     public void fastForward (long timeDelta)
     {
@@ -176,12 +171,10 @@ public abstract class AbstractMedia
     }
 
     /**
-     * Sets the render order associated with this media. Media
-     * can be rendered in two layers; those with negative render order and
-     * those with positive render order. In the same layer, they
-     * will be rendered according to their render order's cardinal value
-     * (least to greatest). Those with the same render order value will be
-     * rendered in arbitrary order.
+     * Sets the render order associated with this media. Media can be rendered in two layers; those
+     * with negative render order and those with positive render order. In the same layer, they
+     * will be rendered according to their render order's cardinal value (least to greatest). Those
+     * with the same render order value will be rendered in arbitrary order.
      *
      * <p>This method may not be called during a tick.
      *
@@ -207,8 +200,7 @@ public abstract class AbstractMedia
     }
 
     /**
-     * Queues the supplied notification up to be dispatched to this
-     * abstract media's observers.
+     * Queues the supplied notification up to be dispatched to this abstract media's observers.
      */
     public void queueNotification (ObserverList.ObserverOp<Object> amop)
     {
@@ -216,15 +208,14 @@ public abstract class AbstractMedia
             if (_mgr != null) {
                 _mgr.queueNotification(_observers, amop);
             } else {
-                log.warning("Have no manager, dropping notification " +
-                            "[media=" + this + ", op=" + amop + "].");
+                log.warning("Have no manager, dropping notification", "media", this, "op", amop);
             }
         }
     }
 
     /**
-     * Called by the {@link AbstractMediaManager} when we are in a
-     * {@link VirtualMediaPanel} that just scrolled.
+     * Called by the {@link AbstractMediaManager} when we are in a {@link VirtualMediaPanel} that
+     * just scrolled.
      */
     public void viewLocationDidChange (int dx, int dy)
     {
@@ -254,24 +245,21 @@ public abstract class AbstractMedia
 
     /**
      * Called when the media has had its manager set.
-     * Derived classes may override this method, but should be sure to
-     * call <code>super.init()</code>.
+     * Derived classes may override this method, but should be sure to call
+     * <code>super.init()</code>.
      */
     protected void init ()
     {
     }
 
     /**
-     * Prior to the first call to {@link #tick} on an abstract media, this
-     * method is called by the {@link AbstractMediaManager}. It is called
-     * during the normal tick cycle, immediately prior to the first call
-     * to {@link #tick}.
+     * Prior to the first call to {@link #tick} on an abstract media, this method is called by the
+     * {@link AbstractMediaManager}. It is called during the normal tick cycle, immediately prior
+     * to the first call to {@link #tick}.
      *
-     * <p><em>Note:</em> It is imperative that
-     * <code>super.willStart()</code> is called by any entity that
-     * overrides this method because the {@link AbstractMediaManager}
-     * depends on the setting of the {@link #_firstTick} value to know
-     * whether or not to call this method.
+     * <p><em>Note:</em> It is imperative that <code>super.willStart()</code> is called by any
+     * entity that overrides this method because the {@link AbstractMediaManager} depends on the
+     * setting of the {@link #_firstTick} value to know whether or not to call this method.
      */
     protected void willStart (long tickStamp)
     {
@@ -279,17 +267,15 @@ public abstract class AbstractMedia
     }
 
     /**
-     * If this media's size or location are changing, it should create a new
-     * rectangle from its old bounds (new Rectangle(_bounds)), then effect the
-     * bounds changes and then call this method with the old bounds. This
-     * method will either merge the new bounds with the old to create a single
-     * dirty rectangle or dirty them separately depending on which is more
-     * appropriate. It will also behave properly if this media is not currently
-     * managed (not being rendered) by NOOPing.
+     * If this media's size or location are changing, it should create a new rectangle from its old
+     * bounds (new Rectangle(_bounds)), then effect the bounds changes and then call this method
+     * with the old bounds. This method will either merge the new bounds with the old to create a
+     * single dirty rectangle or dirty them separately depending on which is more appropriate. It
+     * will also behave properly if this media is not currently managed (not being rendered) by
+     * NOOPing.
      *
-     * <em>Do not</em> pass {@link #_bounds} to this method. The rectangle
-     * passed in will be modified and then passed on to the region manager
-     * which will modify it further.
+     * <em>Do not</em> pass {@link #_bounds} to this method. The rectangle passed in will be
+     * modified and then passed on to the region manager which will modify it further.
      */
     protected void invalidateAfterChange (Rectangle obounds)
     {

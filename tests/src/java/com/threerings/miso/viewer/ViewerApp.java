@@ -21,11 +21,12 @@
 
 package com.threerings.miso.viewer;
 
+import java.io.IOException;
+
 import java.awt.DisplayMode;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.io.IOException;
 
 import com.samskivert.swing.util.SwingUtil;
 
@@ -35,13 +36,13 @@ import com.threerings.media.FrameManager;
 import com.threerings.media.image.ClientImageManager;
 import com.threerings.media.tile.bundle.BundledTileSetRepository;
 
-import com.threerings.cast.CharacterManager;
-import com.threerings.cast.bundle.BundledComponentRepository;
-
 import com.threerings.miso.data.SimpleMisoSceneModel;
 import com.threerings.miso.tile.MisoTileManager;
 import com.threerings.miso.tools.xml.SimpleMisoSceneParser;
 import com.threerings.miso.util.MisoContext;
+
+import com.threerings.cast.CharacterManager;
+import com.threerings.cast.bundle.BundledComponentRepository;
 
 import static com.threerings.miso.Log.log;
 

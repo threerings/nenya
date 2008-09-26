@@ -21,27 +21,30 @@
 
 package com.threerings.miso.client;
 
+import java.io.IOException;
+
 import java.awt.DisplayMode;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
-import java.io.IOException;
+import com.samskivert.util.Config;
 
 import com.samskivert.swing.util.SwingUtil;
-import com.samskivert.util.Config;
 
 import com.threerings.resource.ResourceManager;
 
 import com.threerings.media.FrameManager;
 import com.threerings.media.image.ClientImageManager;
+import com.threerings.media.sprite.PathAdapter;
+import com.threerings.media.sprite.Sprite;
+import com.threerings.media.tile.bundle.BundledTileSetRepository;
 import com.threerings.media.util.LinePath;
 import com.threerings.media.util.Path;
 
-import com.threerings.media.sprite.PathAdapter;
-import com.threerings.media.sprite.Sprite;
-
-import com.threerings.media.tile.bundle.BundledTileSetRepository;
+import com.threerings.miso.MisoConfig;
+import com.threerings.miso.tile.MisoTileManager;
+import com.threerings.miso.util.MisoContext;
 
 import com.threerings.cast.CharacterComponent;
 import com.threerings.cast.CharacterDescriptor;
@@ -49,10 +52,6 @@ import com.threerings.cast.CharacterManager;
 import com.threerings.cast.CharacterSprite;
 import com.threerings.cast.NoSuchComponentException;
 import com.threerings.cast.bundle.BundledComponentRepository;
-
-import com.threerings.miso.MisoConfig;
-import com.threerings.miso.tile.MisoTileManager;
-import com.threerings.miso.util.MisoContext;
 
 import static com.threerings.miso.Log.log;
 

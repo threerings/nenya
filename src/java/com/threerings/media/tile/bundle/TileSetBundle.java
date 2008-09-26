@@ -21,7 +21,7 @@
 
 package com.threerings.media.tile.bundle;
 
-import java.awt.image.BufferedImage;
+import java.util.Iterator;
 
 import java.util.Iterator;
 
@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import java.awt.image.BufferedImage;
 
 import com.samskivert.util.HashIntMap;
 

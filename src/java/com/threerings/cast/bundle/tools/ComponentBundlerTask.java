@@ -21,7 +21,13 @@
 
 package com.threerings.cast.bundle.tools;
 
-import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.zip.Deflater;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +48,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+
+import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
