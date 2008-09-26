@@ -21,14 +21,6 @@
 
 package com.threerings.resource;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.PixelInterleavedSampleModel;
-import java.awt.image.WritableRaster;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +30,14 @@ import java.io.RandomAccessFile;
 import java.nio.IntBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
+import java.awt.image.PixelInterleavedSampleModel;
+import java.awt.image.WritableRaster;
 
 /**
  * Provides routines for writing and reading uncompressed 8-bit color

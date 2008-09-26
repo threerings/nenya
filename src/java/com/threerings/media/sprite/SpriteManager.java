@@ -21,12 +21,12 @@
 
 package com.threerings.media.sprite;
 
-import java.awt.Graphics2D;
-import java.awt.Shape;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import java.awt.Graphics2D;
+import java.awt.Shape;
 
 import com.samskivert.util.Predicate;
 import com.samskivert.util.SortableArrayList;

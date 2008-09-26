@@ -2,12 +2,6 @@
 
 package com.threerings.media.image;
 
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Transparency;
-import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,6 +10,12 @@ import java.util.Map;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
 
 import com.google.common.collect.Maps;
 

@@ -21,15 +21,15 @@
 
 package com.threerings.util;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-
-import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;

@@ -21,12 +21,12 @@
 
 package com.threerings.media.tile;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-
 import java.util.Map;
 
 import java.io.IOException;
+
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 import com.samskivert.util.LRUHashMap;
 

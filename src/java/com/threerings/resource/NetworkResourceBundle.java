@@ -26,12 +26,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessControlException;
 
-import java.awt.image.BufferedImage;
-
 import java.util.HashSet;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.awt.image.BufferedImage;
 
 import static com.threerings.resource.Log.log;
 

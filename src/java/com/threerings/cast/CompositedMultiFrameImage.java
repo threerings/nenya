@@ -21,14 +21,14 @@
 
 package com.threerings.cast;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-
-import java.util.Arrays;
-import java.util.Comparator;
 
 import com.threerings.media.image.ImageManager;
 import com.threerings.media.image.Mirage;

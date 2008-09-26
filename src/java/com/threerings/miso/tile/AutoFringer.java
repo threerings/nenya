@@ -23,14 +23,14 @@ package com.threerings.miso.tile;
 
 import java.lang.ref.WeakReference;
 
-import java.awt.Graphics2D;
-import java.awt.Transparency;
-import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
 
 import com.google.common.collect.Lists;
 

@@ -21,9 +21,9 @@
 
 package com.threerings.miso.client;
 
-import java.awt.event.ActionEvent;
-
 import java.util.HashMap;
+
+import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 

@@ -21,10 +21,10 @@
 
 package com.threerings.media;
 
+import java.util.List;
+
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-
-import java.util.List;
 
 import com.google.common.collect.Lists;
 

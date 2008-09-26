@@ -1,9 +1,9 @@
 package com.threerings.miso.client;
 
+import java.util.Set;
+
 import java.awt.Point;
 import java.awt.Rectangle;
-
-import java.util.Set;
 
 import com.google.common.collect.Sets;
 

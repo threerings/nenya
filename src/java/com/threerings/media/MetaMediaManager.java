@@ -21,14 +21,14 @@
 
 package com.threerings.media;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 import com.google.common.collect.Iterators;
 

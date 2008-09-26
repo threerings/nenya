@@ -21,12 +21,12 @@
 
 package com.threerings.media;
 
+import java.util.Comparator;
+import java.util.List;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-
-import java.util.Comparator;
-import java.util.List;
 
 import com.google.common.collect.Lists;
 

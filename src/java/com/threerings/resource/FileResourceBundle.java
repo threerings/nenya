@@ -21,8 +21,6 @@
 
 package com.threerings.resource;
 
-import java.awt.image.BufferedImage;
-
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -32,6 +30,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.awt.image.BufferedImage;
 
 import org.apache.commons.io.IOUtils;
 

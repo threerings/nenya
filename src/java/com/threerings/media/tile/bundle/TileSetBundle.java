@@ -23,8 +23,6 @@ package com.threerings.media.tile.bundle;
 
 import java.util.Iterator;
 
-import java.util.Iterator;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

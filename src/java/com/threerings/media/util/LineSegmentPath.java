@@ -21,13 +21,13 @@
 
 package com.threerings.media.util;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
 
 import com.samskivert.util.StringUtil;
 

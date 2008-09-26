@@ -23,13 +23,13 @@ package com.threerings.media.tile;
 
 import java.lang.ref.SoftReference;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-
 import java.util.Iterator;
 import java.util.Map;
 
 import java.io.Serializable;
+
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 import com.google.common.collect.Maps;
 

@@ -32,8 +32,6 @@ import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
-import java.util.ArrayList;
-
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;

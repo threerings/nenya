@@ -24,9 +24,6 @@ package com.threerings.resource;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import java.awt.EventQueue;
-import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -44,6 +41,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.awt.EventQueue;
+import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;

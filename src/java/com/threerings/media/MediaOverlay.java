@@ -21,10 +21,10 @@
 
 package com.threerings.media;
 
+import java.util.List;
+
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-
-import java.util.List;
 
 import javax.swing.JRootPane;
 

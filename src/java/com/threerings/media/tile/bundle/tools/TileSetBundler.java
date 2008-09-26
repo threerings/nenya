@@ -21,8 +21,6 @@
 
 package com.threerings.media.tile.bundle.tools;
 
-import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
@@ -35,6 +33,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+
+import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 

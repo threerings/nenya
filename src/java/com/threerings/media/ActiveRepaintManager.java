@@ -33,9 +33,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Window;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;

@@ -22,9 +22,9 @@
 package com.threerings.media.image;
 
 
-import java.awt.image.BufferedImage;
-
 import java.io.IOException;
+
+import java.awt.image.BufferedImage;
 
 /**
  * Provides access to image data for the image with the specified

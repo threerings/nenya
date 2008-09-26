@@ -21,16 +21,16 @@
 
 package com.threerings.cast.bundle;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import java.io.IOException;
+
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 import com.google.common.collect.Maps;
 

@@ -26,12 +26,12 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.security.Permission;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 

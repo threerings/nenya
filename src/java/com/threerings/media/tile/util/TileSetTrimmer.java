@@ -21,14 +21,14 @@
 
 package com.threerings.media.tile.util;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RasterFormatException;
 import java.awt.image.WritableRaster;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 

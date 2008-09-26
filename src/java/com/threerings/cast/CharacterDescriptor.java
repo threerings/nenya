@@ -21,9 +21,9 @@
 
 package com.threerings.cast;
 
-import java.awt.Point;
-
 import java.util.Arrays;
+
+import java.awt.Point;
 
 import com.samskivert.util.StringUtil;
 

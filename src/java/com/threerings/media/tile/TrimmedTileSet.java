@@ -21,10 +21,10 @@
 
 package com.threerings.media.tile;
 
-import java.awt.Rectangle;
-
 import java.io.IOException;
 import java.io.OutputStream;
+
+import java.awt.Rectangle;
 
 import com.threerings.resource.FastImageIO;
 
