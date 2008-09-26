@@ -44,7 +44,7 @@ public class Unsafe
     public static void setGCEnabled (boolean enabled)
     {
         // we don't support nesting, NOOP if the state doesn't change
-        if (_loaded) {
+        if (isLoaded()) {
             if (!_initialized && !(_initialized = init())) {
                 // no joy initializing things
                 return;
@@ -69,7 +69,7 @@ public class Unsafe
      */
     public static void sleep (int millis)
     {
-        if (_loaded && RunAnywhere.isLinux()) {
+        if (RunAnywhere.isLinux() && isLoaded()) {
             nativeSleep(millis);
         } else {
             try {
@@ -87,7 +87,7 @@ public class Unsafe
      */
     public static boolean setuid (int uid)
     {
-        if (_loaded && !RunAnywhere.isWindows()) {
+        if (!RunAnywhere.isWindows() && isLoaded()) {
             return nativeSetuid(uid);
         }
         return false;
@@ -100,7 +100,7 @@ public class Unsafe
      */
     public static boolean setgid (int gid)
     {
-        if (_loaded && !RunAnywhere.isWindows()) {
+        if (!RunAnywhere.isWindows() && isLoaded()) {
             return nativeSetgid(gid);
         }
         return false;
@@ -113,7 +113,7 @@ public class Unsafe
      */
     public static boolean seteuid (int uid)
     {
-        if (_loaded && !RunAnywhere.isWindows()) {
+        if (!RunAnywhere.isWindows() && isLoaded()) {
             return nativeSeteuid(uid);
         }
         return false;
@@ -126,10 +126,23 @@ public class Unsafe
      */
     public static boolean setegid (int gid)
     {
-        if (_loaded && !RunAnywhere.isWindows()) {
+        if (!RunAnywhere.isWindows() && isLoaded()) {
             return nativeSetegid(gid);
         }
         return false;
+    }
+
+    /**
+     * Returns true if the native library was successfully loaded, and if this is the first time
+     * it's been checked and it failed, reports the failure.
+     */
+    protected static boolean isLoaded ()
+    {
+        if (_loadError != null) {
+            log.warning("Unable to load 'unsafe' library", "e", _loadError);
+            _loadError = null;
+        }
+        return _loaded;
     }
 
     /**
@@ -181,14 +194,18 @@ public class Unsafe
     /** Whether or not we were able to initialize our library (i.e. get access to jvmpi) */
     protected static boolean _initialized;
 
+    /**
+     * The error that occurred when loading the native library, or null if none occurred or it was
+     * already reported.
+     */
+    protected static Throwable _loadError;
+
     static {
         try {
             System.loadLibrary("unsafe");
             _loaded = true;
-        } catch (SecurityException se) {
-            log.warning("Failed to load 'unsafe' library: " + se + ".");
-        } catch (UnsatisfiedLinkError e) {
-            log.warning("Failed to load 'unsafe' library: " + e + ".");
+        } catch (Throwable t) {
+            _loadError = t;
         }
     }
 }
