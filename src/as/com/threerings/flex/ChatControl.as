@@ -59,6 +59,7 @@ public class ChatControl extends HBox
 
         addChild(_txt = new ChatInput());
         _txt.addEventListener(FlexEvent.ENTER, sendChat, false, 0, true);
+        _txt.addEventListener(KeyboardEvent.KEY_UP, handleKeyUp);
 
         _but = new CommandButton(sendButtonLabel, sendChat);
         addChild(_but);
@@ -140,6 +141,22 @@ public class ChatControl extends HBox
 
         // if there was no error, clear the entry area in prep for the next entry event
         _txt.text = "";
+        _histidx = -1;
+    }
+
+    protected function scrollHistory (next :Boolean) :void
+    {
+        var size :int = _chatDtr.getCommandHistorySize();
+        if ((_histidx == -1) || (_histidx == size)) {
+            _curLine = _txt.text;
+            _histidx = size;
+        }
+
+        _histidx = (next) ? Math.min(_histidx + 1, size)
+                          : Math.max(_histidx - 1, 0);
+        var text :String = (_histidx == size) ? _curLine : _chatDtr.getCommandHistory(_histidx);
+        _txt.text = text;
+        _txt.setSelection(text.length, text.length);
     }
 
     /**
@@ -150,6 +167,7 @@ public class ChatControl extends HBox
         if (event.type == Event.ADDED_TO_STAGE) {
             // set up any already-configured text
             _txt.text = _curLine;
+            _histidx = -1;
 
             // request focus
             callLater(_txt.setFocus);
@@ -161,6 +179,14 @@ public class ChatControl extends HBox
         }
     }
 
+    protected function handleKeyUp (event :KeyboardEvent) :void
+    {
+        switch (event.keyCode) {
+        case Keyboard.UP: scrollHistory(false); break;
+        case Keyboard.DOWN: scrollHistory(true); break;
+        }
+    }
+
     /** Our client-side context. */
     protected var _ctx :CrowdContext;
 
@@ -169,6 +195,9 @@ public class ChatControl extends HBox
 
     /** The place where the user may enter chat. */
     protected var _txt :ChatInput;
+
+    /** The current index in the chat command history. */
+    protected var _histidx :int = -1;
 
     /** The button for sending chat. */
     protected var _but :CommandButton;
