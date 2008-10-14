@@ -53,7 +53,8 @@ public class TextFieldUtil
      * the specified width.
      * @return true if truncation took place
      */
-    public static function setMaximumTextWidth (tf :TextField, width :Number, truncationString :String = "...") :Boolean
+    public static function setMaximumTextWidth (
+        tf :TextField, width :Number, truncationString :String = "...") :Boolean
     {
         if (tf.numLines > 1) {
             // We only operate on single-line TextFields
