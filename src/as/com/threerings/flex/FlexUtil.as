@@ -24,6 +24,7 @@ package com.threerings.flex {
 import mx.controls.Label;
 import mx.controls.Spacer;
 
+import mx.core.Container;
 import mx.core.UIComponent;
 
 /**
@@ -66,6 +67,21 @@ public class FlexUtil
         spacer.width = width;
         spacer.height = height;
         return spacer;
+    }
+
+    /**
+     * Return a count of how many visible (includeInLayout=true) children
+     * are in the specified container.
+     */
+    public static function countLayoutChildren (container :Container) :int
+    {
+        var layoutChildren :int = container.numChildren;
+        for each (var child :Object in container.getChildren()) {
+            if ((child is UIComponent) && !UIComponent(child).includeInLayout) {
+                layoutChildren--;
+            }
+        }
+        return layoutChildren;
     }
 
     /**
