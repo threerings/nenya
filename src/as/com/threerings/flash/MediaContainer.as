@@ -328,16 +328,7 @@ public class MediaContainer extends Sprite
                 removeListeners(loader.contentLoaderInfo);
 
                 // dispose of media
-                try {
-                    loader.close();
-                } catch (ioe :IOError) {
-                    // ignore
-                }
-                try {
-                    loader.unload();
-                } catch (e :Error) {
-                    // ignore
-                }
+                LoaderUtil.unload(loader);
                 dispatchEvent(new Event(Event.UNLOAD));
 
                 removeChild(loader);
