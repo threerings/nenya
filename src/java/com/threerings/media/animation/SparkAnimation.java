@@ -84,7 +84,7 @@ public class SparkAnimation extends Animation
 
         for (int ii = 0; ii < _icount; ii++) {
             // initialize spark position
-            _ox[ii] = x + 
+            _ox[ii] = x +
                 ((xjog == 0) ? 0 : RandomUtil.getInt(xjog) * randomDirection());
             _oy[ii] = y +
                 ((yjog == 0) ? 0 : RandomUtil.getInt(yjog) * randomDirection());
@@ -120,7 +120,7 @@ public class SparkAnimation extends Animation
      */
     protected int randomDirection ()
     {
-        return (RandomUtil.getInt(2) == 0) ? -1 : 1;
+        return RandomUtil.getChance(2) ? -1 : 1;
     }
 
     @Override

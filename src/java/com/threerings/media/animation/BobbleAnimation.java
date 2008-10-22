@@ -75,8 +75,8 @@ public class BobbleAnimation extends Animation
         // calculate the latest position
         int dx = RandomUtil.getInt(_rx);
         int dy = RandomUtil.getInt(_ry);
-        _x = _sx + dx * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
-        _y = _sy + dy * ((RandomUtil.getInt(2) == 0) ? -1 : 1);
+        _x = _sx + dx * (RandomUtil.getChance(2) ? -1 : 1);
+        _y = _sy + dy * (RandomUtil.getChance(2) ? -1 : 1);
     }
 
     @Override
