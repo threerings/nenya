@@ -21,14 +21,6 @@
 
 package com.threerings.miso.client;
 
-import java.lang.ref.WeakReference;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
-
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -48,6 +40,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -150,6 +149,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         _blocks.clear();
         _vizobjs.clear();
         _fringes.clear();
+        _masks.clear();
         if (_dpanel != null) {
             _dpanel.newScene();
         }
@@ -370,9 +370,9 @@ public class MisoScenePanel extends VirtualMediaPanel
         for (SceneBlock block : _blocks.values()) {
             block.computeMemoryUsage(base, fringe, object, usage);
         }
-        log.info("Scene tile memory usage", 
+        log.info("Scene tile memory usage",
             "scene", StringUtil.shortClassName(this),
-            "base", base.size() + "->" + (usage[0] / 1024) + "k", 
+            "base", base.size() + "->" + (usage[0] / 1024) + "k",
             "fringe", fringe.size() + "->" + (usage[1] / 1024) + "k",
             "obj", object.size() + "->" + (usage[2] / 1024) + "k");
     }
@@ -479,7 +479,7 @@ public class MisoScenePanel extends VirtualMediaPanel
 
         // make the menu surround the clicked object, but with consistent size
         Rectangle mbounds = getRadialMenuBounds(scobj);
-        
+
         _activeMenu = menu;
         _activeMenu.addActionListener(new ActionListener() {
             public void actionPerformed (ActionEvent e) {
@@ -515,7 +515,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
         return mbounds;
     }
-    
+
     /**
      * Returns the size of the rectangle around which we create an
      * object's radial menu. The default is a sensible size, but derived
@@ -874,7 +874,7 @@ public class MisoScenePanel extends VirtualMediaPanel
      * Configures <code>influentialBounds</code> to contain the bounds of the potentially
      * "influential" world and <code>visibleBlockBounds</code> to contain bounds that are used to
      * determine which blocks should be resolved before making the view visible.
-     * 
+     *
      * <p> Everything that intersects the influential area will be resolved on the expectation
      * that it could be scrolled into view at any time. The influential bounds should be large
      * enough that the time between a block becoming influential and the time at which it is
@@ -890,7 +890,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         influentualBounds.setBounds(visibleBounds.x - infborx, visibleBounds.y - infbory,
             visibleBounds.width + 2 * infborx, visibleBounds.height + 3 * infbory);
         visibleBlockBounds.setBounds(visibleBounds.x - visibleBounds.width / 4,
-            visibleBounds.y, visibleBounds.width + visibleBounds.width / 2, 
+            visibleBounds.y, visibleBounds.width + visibleBounds.width / 2,
             visibleBounds.height + infbory);
     }
 
@@ -922,7 +922,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         if (_dpanel != null) {
             _dpanel.blockCleared(block);
         }
-        
+
         blockFinished(block);
     }
 
@@ -947,7 +947,7 @@ public class MisoScenePanel extends VirtualMediaPanel
                 _remgr.invalidateRegion(sbounds);
             }
         }
-        
+
         blockFinished(block);
     }
 
@@ -1007,10 +1007,10 @@ public class MisoScenePanel extends VirtualMediaPanel
 
             // see which of this block's objects are visible
             SceneObject[] objs = block.getObjects();
-            for (int ii = 0; ii < objs.length; ii++) {
-                if (objs[ii].bounds != null &&
-                    vbounds.intersects(objs[ii].bounds)) {
-                    _vizobjs.add(objs[ii]);
+            for (SceneObject obj : objs) {
+                if (obj.bounds != null &&
+                    vbounds.intersects(obj.bounds)) {
+                    _vizobjs.add(obj);
                 }
             }
         }
@@ -1228,7 +1228,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
         super.paint(g);
     }
-    
+
     @Override
     protected void paintInFront (Graphics2D gfx, Rectangle dirty)
     {
@@ -1337,7 +1337,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         // make sure the indicators are ready
         if (!_indicatorsLaidOut) {
-            List<Rectangle> boundaries = Lists.newArrayList(); 
+            List<Rectangle> boundaries = Lists.newArrayList();
             for (Map.Entry<SceneObject, SceneObjectIndicator> entry : _indicators.entrySet()) {
                 entry.getValue().layout(gfx, entry.getKey(), _vbounds, boundaries);
                 dirtyIndicator(entry.getValue());
@@ -1415,7 +1415,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Computes the fringe tile for the specified coordinate. */
     protected BaseTile computeFringeTile (int tx, int ty)
     {
-        return _ctx.getTileManager().getAutoFringer().getFringeTile(_model, tx, ty, _fringes);
+        return _ctx.getTileManager().getAutoFringer().getFringeTile(_model, tx, ty, _fringes,
+            _masks);
     }
 
     /**
@@ -1564,6 +1565,11 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected List<SceneObject> _vizobjs = Lists.newArrayList();
 
     /**
+     * Map of the masks used to calculate fringes in this scene.
+     */
+    protected Map<Long, BufferedImage> _masks = Maps.newHashMap();
+
+    /**
      * Map of active fringe tiles. Scene blocks have hard references to fringe tiles in this map
      * for the tiles they're using, so the blocks coming in and out of the influential bounds
      * determines which tiles remain in the map. The map is from FringeTile to FringeTile so a
@@ -1616,7 +1622,7 @@ public class MisoScenePanel extends VirtualMediaPanel
 
     /** The scene block resolver for this scene panel's context. */
     protected SceneBlockResolver _resolver;
-    
+
     /** Scene block resolvers shared by all scene panels in a context. */
     protected static Map<MisoContext, SceneBlockResolver> _resolvers =
         new WeakHashMap<MisoContext, SceneBlockResolver>();
@@ -1624,7 +1630,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     // used to display debugging information on scene block resolution
     protected JFrame _dframe;
     protected ResolutionView _dpanel;
-    
+
     protected TileOpApplicator _applicator;
 
     /** A debug hook that toggles debug rendering of traversable tiles. */
