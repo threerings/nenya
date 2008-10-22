@@ -67,7 +67,7 @@ public class SceneBlock
             width, height);
         _panel = panel;
     }
-    
+
     public SceneBlock (MisoSceneModel model, MisoSceneMetrics metrics, TileManager tileMgr,
             int tx, int ty, int width, int height)
     {
@@ -105,11 +105,13 @@ public class SceneBlock
         if (_panel != null) {
             if (_panel.getBlock(_bounds.x, _bounds.y) != this) {
                 // Log.info("Not resolving abandoned block " + this + ".");
-                _panel.blockAbandoned(this);
+                _wasAbandoned = true;
                 return false;
             }
             _panel.blockResolving(this);
         }
+        // We're doing our work, we're needed!
+        _wasAbandoned = false;
 
         // start with the bounds of the footprint polygon
         Rectangle sbounds = new Rectangle(_footprint.getBounds());
@@ -199,10 +201,10 @@ public class SceneBlock
 
         return true;
     }
-    
+
     protected SceneObject makeSceneObject (ObjectInfo info)
     {
-        return new SceneObject(_metrics, _tileMgr, 
+        return new SceneObject(_metrics, _tileMgr,
             _panel == null ? null : _panel.getColorizer(info), info);
     }
 
@@ -219,7 +221,11 @@ public class SceneBlock
     protected void wasResolved ()
     {
         if (_panel != null) {
-            _panel.blockResolved(this);
+            if (_wasAbandoned) {
+                _panel.blockAbandoned(this);
+            } else {
+                _panel.blockResolved(this);
+            }
         }
     }
 
@@ -240,7 +246,7 @@ public class SceneBlock
     }
 
     /**
-     * Returns the bounds of the screen coordinate rectangle that contains all pixels that are 
+     * Returns the bounds of the screen coordinate rectangle that contains all pixels that are
      * drawn on by all tiles and objects in this block.
      */
     public Rectangle getScreenBounds ()
@@ -358,8 +364,8 @@ public class SceneBlock
     {
         // make sure we don't already have this same object at these
         // coordinates
-        for (int ii = 0; ii < _objects.length; ii++) {
-            if (_objects[ii].info.equals(info)) {
+        for (SceneObject _object : _objects) {
+            if (_object.info.equals(info)) {
                 return false;
             }
         }
@@ -524,8 +530,8 @@ public class SceneBlock
         // if we need to regenerate the set of tiles covered by our
         // objects, do so
         if (recover) {
-            for (int ii = 0; ii < _objects.length; ii++) {
-                setCovered(blocks, _objects[ii]);
+            for (SceneObject _object : _objects) {
+                setCovered(blocks, _object);
             }
         }
     }
@@ -576,11 +582,11 @@ public class SceneBlock
 
     /** The panel for which we contain a block or null if we aren't backed by a panel. */
     protected MisoScenePanel _panel;
-    
+
     protected MisoSceneMetrics _metrics;
-    
+
     protected MisoSceneModel _model;
-    
+
     protected TileManager _tileMgr;
 
     /** The bounds of (in tile coordinates) of this block. */
@@ -615,6 +621,9 @@ public class SceneBlock
 
     /** A debug flag indicating whether we were visible at creation. */
     protected boolean _visi;
+
+    /** If we discovered we were no longer needed in our last call to resolve. */
+    protected boolean _wasAbandoned;
 
     // used to link up to our neighbors
     protected static final int[] DX = { -1, -1,  0,  1, 1, 1, 0, -1 };
