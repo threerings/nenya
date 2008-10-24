@@ -333,7 +333,7 @@ public class MediaContainer extends Sprite
 
                 removeChild(loader);
                 var extra :String  = (url == _url) ? "" : (", _url=" + _url);
-                log.info("Unloaded media [url=" + url + extra + "].");
+                log.debug("Unloaded media [url=" + url + extra + "].");
 
             } else if (_media is VideoDisplayer) {
                 var vid :VideoDisplayer = (_media as VideoDisplayer);
