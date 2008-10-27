@@ -23,6 +23,7 @@ package com.threerings.flex {
 
 import mx.controls.Label;
 import mx.controls.Spacer;
+import mx.controls.Text;
 
 import mx.core.Container;
 import mx.core.UIComponent;
@@ -56,6 +57,19 @@ public class FlexUtil
     public static function createLabel (text :String, style :String = null) :Label
     {
         return createTipLabel(text, null, style);
+    }
+
+    /**
+     * Create an uneditable/unselectable multiline Text widget with the specified text and width.
+     */
+    public static function createText (text :String, width :int, style :String = null) :Text
+    {
+        var t :Text = new Text();
+        t.styleName = style;
+        t.width = width;
+        t.selectable = false;
+        t.text = text;
+        return t;
     }
 
     /**
