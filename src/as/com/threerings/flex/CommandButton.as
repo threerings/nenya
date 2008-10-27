@@ -69,6 +69,14 @@ public class CommandButton extends Button
         _arg = arg;
     }
 
+    /**
+     * Emulate a user click, dispatching all relevant events.
+     */
+    public function activate () :void
+    {
+        dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+    }
+
     override public function set enabled (val :Boolean) :void
     {
         super.enabled = val;
