@@ -297,7 +297,7 @@ public abstract class Stream
     /** The buffers through which we cycle. */
     protected Buffer[] _buffers = new Buffer[NUM_BUFFERS];
 
-    /** The starting index and length of the current queue in {@link #_bufferIds}. */
+    /** The starting index and length of the current queue in {@link #_buffers}. */
     protected int _qidx, _qlen;
 
     /** The gain of the stream. */

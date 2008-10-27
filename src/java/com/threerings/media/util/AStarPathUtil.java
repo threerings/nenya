@@ -31,13 +31,12 @@ import java.awt.Point;
 import com.samskivert.util.HashIntMap;
 
 /**
- * The <code>AStarPathUtil</code> class provides a facility for
- * finding a reasonable path between two points in a scene using the
- * A* search algorithm.
+ * The <code>AStarPathUtil</code> class provides a facility for finding a reasonable path
+ * between two points in a scene using the A* search algorithm.
  *
- * <p> See the path-finding article on
- * <a href="http://www.gamasutra.com/features/19990212/sm_01.htm">
- * Gamasutra</a> for more detailed information.
+ * <p> See the path-finding article on <a
+ * href="http://www.gamasutra.com/features/19990212/sm_01.htm">Gamasutra</a> for more detailed
+ * information.
  */
 public class AStarPathUtil
 {
@@ -47,9 +46,9 @@ public class AStarPathUtil
     public static interface TraversalPred
     {
         /**
-         * Requests to know if the specified traverser (which was provided
-         * in the call to {@link #getPath}) can traverse the specified
-         * tile coordinate.
+         * Requests to know if the specified traverser (which was provided in the call to
+         * {@link #getPath(TraversalPred,Object,int,int,int,int,int,boolean)}) can traverse the
+         * specified tile coordinate.
          */
         public boolean canTraverse (Object traverser, int x, int y);
     }
@@ -60,13 +59,11 @@ public class AStarPathUtil
     public static interface ExtendedTraversalPred extends TraversalPred
     {
         /**
-         * Requests to know if the specific traverser (which was provided
-         * in the call to {@link #getPath}) can traverse from the specified
-         * source tile coordinate to the specified destination tile
-         * coodinate.
+         * Requests to know if the specific traverser (which was provided in the call to
+         * {@link #getPath(TraversalPred,Object,int,int,int,int,int,boolean)}) can traverse from
+         * the specified source tile coordinate to the specified destination tile coordinate.
          */
-        public boolean canTraverse (
-                Object traverser, int sx, int sy, int dx, int dy);
+        public boolean canTraverse (Object traverser, int sx, int sy, int dx, int dy);
     }
 
     /**
@@ -81,10 +78,9 @@ public class AStarPathUtil
         }
 
         /**
-         * Should call {@link #considerStep} in turn on all possible steps
-         * from the specified coordinates. No checking must be done as to
-         * whether the step is legal, that will be handled later. Just
-         * enumerate all possible steps.
+         * Should call {@link #considerStep} in turn on all possible steps from the specified
+         * coordinates. No checking must be done as to whether the step is legal, that will be
+         * handled later. Just enumerate all possible steps.
          */
         public void considerSteps (int x, int y)
         {
@@ -115,10 +111,9 @@ public class AStarPathUtil
         (ADJACENT_COST * ADJACENT_COST) * 2);
 
     /**
-     * Return a list of <code>Point</code> objects representing a path
-     * from coordinates <code>(ax, by)</code> to <code>(bx, by)</code>,
-     * inclusive, determined by performing an A* search in the given
-     * scene's base tile layer. Assumes the starting and destination nodes
+     * Return a list of <code>Point</code> objects representing a path from coordinates
+     * <code>(ax, by)</code> to <code>(bx, by)</code>, inclusive, determined by performing an
+     * A* search in the given scene's base tile layer. Assumes the starting and destination nodes
      * are traversable by the specified traverser.
      *
      * @param tpred lets us know what tiles are traversible.
@@ -129,9 +124,8 @@ public class AStarPathUtil
      * @param ay the starting y-position in tile coordinates.
      * @param bx the ending x-position in tile coordinates.
      * @param by the ending y-position in tile coordinates.
-     * @param partial if true, a partial path will be returned that gets
-     * us as close as we can to the goal in the event that a complete path
-     * cannot be located.
+     * @param partial if true, a partial path will be returned that gets us as close as we can to
+     * the goal in the event that a complete path cannot be located.
      *
      * @return the list of points in the path.
      */
@@ -193,8 +187,8 @@ public class AStarPathUtil
     }
 
     /**
-     * Gets a path with the default stepper which assumes the piece can
-     * move one in any of the eight cardinal directions.
+     * Gets a path with the default stepper which assumes the piece can move one in any of the
+     * eight cardinal directions.
      */
     public static List<Point> getPath (
             TraversalPred tpred, Object trav, int longest,
@@ -205,8 +199,7 @@ public class AStarPathUtil
     }
 
     /**
-     * Returns the number of nodes considered in computing the most recent
-     * path.
+     * Returns the number of nodes considered in computing the most recent path.
      */
     public static int getConsidered ()
     {
@@ -214,16 +207,15 @@ public class AStarPathUtil
     }
 
     /**
-     * Consider the step <code>(n.x, n.y)</code> to <code>(x, y)</code>
-     * for possible inclusion in the path.
+     * Consider the step <code>(n.x, n.y)</code> to <code>(x, y)</code> for possible inclusion
+     * in the path.
      *
      * @param info the info object.
      * @param n the originating node for the step.
      * @param x the x-coordinate for the destination step.
      * @param y the y-coordinate for the destination step.
      */
-    protected static void considerStep (
-        Info info, Node n, int x, int y, int cost)
+    protected static void considerStep (Info info, Node n, int x, int y, int cost)
     {
         // skip node if it's outside the map bounds or otherwise impassable
         if (!info.isStepValid(n.x, n.y, x, y)) {
@@ -268,9 +260,8 @@ public class AStarPathUtil
     }
 
     /**
-     * Return a list of <code>Point</code> objects detailing the path
-     * from the first node (the given node's ultimate parent) to the
-     * ending node (the given node itself.)
+     * Return a list of <code>Point</code> objects detailing the path from the first node (the
+     * given node's ultimate parent) to the ending node (the given node itself.)
      *
      * @param n the ending node in the path.
      *
@@ -294,13 +285,12 @@ public class AStarPathUtil
     }
 
     /**
-     * Return a heuristic estimate of the cost to get from <code>(ax,
-     * ay)</code> to <code>(bx, by)</code>.
+     * Return a heuristic estimate of the cost to get from <code>(ax, ay)</code> to
+     * <code>(bx, by)</code>.
      */
     protected static int getDistanceEstimate (int ax, int ay, int bx, int by)
     {
-        // we're doing all of our cost calculations based on geometric
-        // distance times ten
+        // we're doing all of our cost calculations based on geometric distance times ten
         int xsq = bx - ax;
         int ysq = by - ay;
         return (int) (ADJACENT_COST * Math.sqrt(xsq * xsq + ysq * ysq));
@@ -351,8 +341,8 @@ public class AStarPathUtil
         }
 
         /**
-         * Returns whether moving from the given source to destination
-         * coordinates is a valid move.
+         * Returns whether moving from the given source to destination coordinates is a valid
+         * move.
          */
         protected boolean isStepValid (int sx, int sy, int dx, int dy)
         {
@@ -368,8 +358,7 @@ public class AStarPathUtil
                 }
             }
 
-            // if the step is diagonal, make sure the corners don't impede
-            // our progress
+            // if the step is diagonal, make sure the corners don't impede our progress
             if ((Math.abs(dx - sx) == 1) && (Math.abs(dy - sy) == 1)) {
                 return isTraversable(dx, sy) && isTraversable(sx, dy);
             }
@@ -441,12 +430,10 @@ public class AStarPathUtil
         {
             int bf = o.f;
 
-            // since the set contract is fulfilled using the equality results
-            // returned here, and we'd like to allow multiple nodes with
-            // equivalent scores in our set, we explicitly define object
-            // equivalence as the result of object.equals(), else we use the
-            // unique node id since it will return a consistent ordering for
-            // the objects.
+            // since the set contract is fulfilled using the equality results returned here, and
+            // we'd like to allow multiple nodes with equivalent scores in our set, we explicitly
+            // define object equivalence as the result of object.equals(), else we use the unique
+            // node id since it will return a consistent ordering for the objects.
             if (f == bf) {
                 return (this == o) ? 0 : (id - o.id);
             }

@@ -81,14 +81,12 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * Sets the upper-left coordinate of the view port in virtual
-     * coordinates. The view will be as efficient as possible about
-     * repainting itself to achieve this new virtual location (meaning
-     * that if we need only to move one pixel to the left, it will use
-     * {@link Graphics#copyArea} to move our rendered view over one pixel
-     * and generate a dirty region for the exposed area). The new location
-     * will not take effect until the view is {@link #tick}ed, so only the
-     * last call to this method during a tick will have any effect.
+     * Sets the upper-left coordinate of the view port in virtual coordinates. The view will be as
+     * efficient as possible about repainting itself to achieve this new virtual location (meaning
+     * that if we need only to move one pixel to the left, it will use {@link Graphics#copyArea}
+     * to move our rendered view over one pixel and generate a dirty region for the exposed area).
+     * The new location will not take effect until the view is {@link MediaPanel#tick}ed, so only
+     * the last call to this method during a tick will have any effect.
      */
     public void setViewLocation (int x, int y)
     {

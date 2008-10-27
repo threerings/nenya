@@ -199,8 +199,7 @@ public class MisoUtil
     public static Point screenToTile (
         MisoSceneMetrics metrics, int sx, int sy, Point tpos)
     {
-        // determine the upper-left of the quadrant that contains our
-        // point
+        // determine the upper-left of the quadrant that contains our point
         int zx = (int)Math.floor((float)sx / metrics.tilewid);
         int zy = (int)Math.floor((float)sy / metrics.tilehei);
 

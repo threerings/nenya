@@ -27,10 +27,9 @@ import java.awt.image.BufferedImage;
 import static com.threerings.media.Log.log;
 
 /**
- * Used to tile a background image into regions of various sizes. The
- * source image is divided into nine quadrants (of mostly equal size)
- * which are tiled accordingly to fill whatever size background image is
- * desired.
+ * Used to tile a background image into regions of various sizes. The source image is divided into
+ * nine quadrants (of mostly equal size) which are tiled accordingly to fill whatever size
+ * background image is desired.
  */
 public class BackgroundTiler
 {
@@ -56,9 +55,8 @@ public class BackgroundTiler
 
         // make sure the image suits our minimum useful dimensions
         if (_w3 <= 0 || _cw3 <= 0 || _h3 <= 0 || _ch3 <= 0) {
-            log.warning("Backgrounder given source image of insufficient " +
-                        "size for tiling " +
-                        "[width=" + width + ", height=" + height + "].");
+            log.warning("Backgrounder given source image of insufficient size for tiling",
+                "width", width, "height", height);
             return;
         }
 
@@ -75,8 +73,7 @@ public class BackgroundTiler
     }
 
     /**
-     * Returns the "natural" width of the image being used to tile the
-     * background.
+     * Returns the "natural" width of the image being used to tile the background.
      */
     public int getNaturalWidth ()
     {
@@ -84,8 +81,7 @@ public class BackgroundTiler
     }
 
     /**
-     * Returns the "natural" height of the image being used to tile the
-     * background.
+     * Returns the "natural" height of the image being used to tile the background.
      */
     public int getNaturalHeight ()
     {
@@ -93,13 +89,11 @@ public class BackgroundTiler
     }
 
     /**
-     * Fills the requested region with the background defined by our
-     * source image.
+     * Fills the requested region with the background defined by our source image.
      */
     public void paint (Graphics g, int x, int y, int width, int height)
     {
-        // bail out now if we were passed a bogus source image at
-        // construct time
+        // bail out now if we were passed a bogus source image at construct time
         if (_tiles == null) {
             return;
         }
