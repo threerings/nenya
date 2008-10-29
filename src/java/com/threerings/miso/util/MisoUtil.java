@@ -384,6 +384,14 @@ public class MisoUtil
     }
 
     /**
+     * Returns the supplied tile coordinate as a full coordinate assuming a fine offset of 0.
+     */
+    public static int tileToFull (int tile)
+    {
+        return toFull(tile, 0);
+    }
+
+    /**
      * Composes the supplied tile coordinate and fine coordinate offset
      * into a full coordinate.
      */
