@@ -79,6 +79,13 @@ import com.threerings.util.Util;
 [Event(name="init", type="flash.events.Event")]
 
 /**
+ * Dispatched when we've shown new media.
+ *
+ * @eventType flash.events.Event.COMPLETE
+ */
+[Event(name="complete", type="flash.events.Event")]
+
+/**
  * Dispatched when we've unloaded our content... always. The LoaderInfo's UNLOAD event
  * is only dispatched if the INIT event has already been dispatched and not if you cancel a
  * load before it INIT.
@@ -231,7 +238,7 @@ public class MediaContainer extends Sprite
      */
     protected function didShowNewMedia () :void
     {
-        // nothing right now, but call super() you overriders.
+        dispatchEvent(new Event(Event.COMPLETE));
     }
 
     /**
