@@ -333,7 +333,7 @@ public class MediaContainer extends Sprite
 
             if (_media is Loader) {
                 var loader :Loader = (_media as Loader);
-                var url :String = loader.contentLoaderInfo.url;
+                //var url :String = loader.contentLoaderInfo.url;
 
                 // remove any listeners
                 removeListeners(loader.contentLoaderInfo);
@@ -343,8 +343,8 @@ public class MediaContainer extends Sprite
                 dispatchEvent(new Event(Event.UNLOAD));
 
                 removeChild(loader);
-                var extra :String  = (url == _url) ? "" : (", _url=" + _url);
-                log.debug("Unloaded media [url=" + url + extra + "].");
+                //var extra :String  = (url == _url) ? "" : (", _url=" + _url);
+                //log.debug("Unloaded media [url=" + url + extra + "].");
 
             } else if (_media is SimpleVideoDisplay) {
                 var vid :SimpleVideoDisplay = SimpleVideoDisplay(_media);
@@ -356,8 +356,7 @@ public class MediaContainer extends Sprite
                 removeChild(_media);
             }
         } catch (ioe :IOError) {
-            log.warning("Error shutting down media: " + ioe);
-            log.logStackTrace(ioe);
+            log.warning("Error shutting down media", ioe);
         }
 
         // clean everything up
