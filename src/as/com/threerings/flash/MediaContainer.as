@@ -62,6 +62,9 @@ import com.threerings.util.StringUtil;
 import com.threerings.util.ValueEvent;
 import com.threerings.util.Util;
 
+import com.threerings.flash.video.FlvVideoPlayer;
+import com.threerings.flash.video.SimpleVideoDisplay;
+import com.threerings.flash.video.VideoPlayerCodes;
 
 /**
  * Dispatched when the size of the media being loaded is known.
@@ -246,12 +249,13 @@ public class MediaContainer extends Sprite
      */
     protected function setupVideo (url :String) :void
     {
-        var vid :VideoDisplayer = new VideoDisplayer();
-        vid.addEventListener(VideoDisplayer.SIZE_KNOWN, handleVideoSizeKnown);
-        vid.addEventListener(VideoDisplayer.VIDEO_ERROR, handleVideoError);
+        var player :FlvVideoPlayer = new FlvVideoPlayer();
+        var vid :SimpleVideoDisplay = new SimpleVideoDisplay(player);
+//        vid.addEventListener(VideoPlayerCodes.SIZE, handleVideoSizeKnown);
         _media = vid;
         addChildAt(vid, 0);
-        vid.setup(url);
+        player.load(url);
+        updateContentDimensions(SimpleVideoDisplay.NATIVE_WIDTH, SimpleVideoDisplay.NATIVE_HEIGHT);
     }
 
     /**
@@ -342,11 +346,10 @@ public class MediaContainer extends Sprite
                 var extra :String  = (url == _url) ? "" : (", _url=" + _url);
                 log.debug("Unloaded media [url=" + url + extra + "].");
 
-            } else if (_media is VideoDisplayer) {
-                var vid :VideoDisplayer = (_media as VideoDisplayer);
-                vid.removeEventListener(VideoDisplayer.SIZE_KNOWN, handleVideoSizeKnown);
-                vid.removeEventListener(VideoDisplayer.VIDEO_ERROR, handleVideoError);
-                vid.shutdown();
+            } else if (_media is SimpleVideoDisplay) {
+                var vid :SimpleVideoDisplay = SimpleVideoDisplay(_media);
+//                vid.removeEventListener(VideoPlayerCodes.SIZE, handleVideoSizeKnown);
+                vid.unload();
                 removeChild(vid);
 
             } else if (_media != null) {
@@ -576,24 +579,24 @@ public class MediaContainer extends Sprite
         }
     }
 
-    /**
-     * Handles video size known.
-     */
-    protected function handleVideoSizeKnown (event :ValueEvent) :void
-    {
-        var args :Array = (event.value as Array);
-        updateContentDimensions(int(args[0]), int(args[1]));
-    }
+//    /**
+//     * Handles video size known.
+//     */
+//    protected function handleVideoSizeKnown (event :ValueEvent) :void
+//    {
+//        const size :Point = Point(event.value);
+//        updateContentDimensions(size.x, size.y);
+//    }
 
-    /**
-     * Handles an error loading a video.
-     */
-    protected function handleVideoError (event :ValueEvent) :void
-    {
-        log.warning("Error loading video [cause=" + event.value + "].");
-        stoppedLoading();
-        setupBrokenImage(-1, -1);
-    }
+//    /**
+//     * Handles an error loading a video.
+//     */
+//    protected function handleVideoError (event :ValueEvent) :void
+//    {
+//        log.warning("Error loading video [cause=" + event.value + "].");
+//        stoppedLoading();
+//        setupBrokenImage(-1, -1);
+//    }
 
     /**
      * Handles the INIT event for content loaded with a Loader.
