@@ -241,7 +241,7 @@ public class MediaContainer extends Sprite
      */
     protected function didShowNewMedia () :void
     {
-        dispatchEvent(new Event(Event.COMPLETE));
+        // nada in the base class...
     }
 
     /**
@@ -624,6 +624,9 @@ public class MediaContainer extends Sprite
         updateContentDimensions(info.width, info.height);
         updateLoadingProgress(1, 1);
         stoppedLoading();
+
+        // redispatch
+        dispatchEvent(event);
     }
 
     /**
