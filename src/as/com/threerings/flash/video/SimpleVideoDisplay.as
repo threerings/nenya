@@ -8,9 +8,11 @@ import flash.display.Graphics;
 import flash.display.Shape;
 import flash.display.Sprite;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import flash.geom.Point;
+import flash.geom.Rectangle;
 
 import com.threerings.util.Log;
 import com.threerings.util.ValueEvent;
@@ -76,10 +78,10 @@ public class SimpleVideoDisplay extends Sprite
         _track.y = NATIVE_HEIGHT - PAD - TRACK_HEIGHT - _hud.y;
         g = _track.graphics;
         g.beginFill(0x000000, .7);
-        g.lineStyle(1, 0xFFFFFF);
         g.drawRect(0, 0, TRACK_WIDTH, TRACK_HEIGHT);
         g.endFill();
-        //g.drawRect(0, 0, TRACK_WIDTH - 2, TRACK_HEIGHT - 2);
+        g.lineStyle(2, 0xFFFFFF);
+        g.drawRect(0, 0, TRACK_WIDTH, TRACK_HEIGHT);
         // _track is not added to _hud until we know the duration
 
         const trackMask :Shape = new Shape();
@@ -99,7 +101,6 @@ public class SimpleVideoDisplay extends Sprite
 
         _track.addEventListener(MouseEvent.CLICK, handleTrackClick);
         _knob.addEventListener(MouseEvent.MOUSE_DOWN, handleKnobDown);
-        _knob.addEventListener(MouseEvent.MOUSE_UP, handleKnobUp);
     }
 
     /**
@@ -145,30 +146,33 @@ public class SimpleVideoDisplay extends Sprite
     {
         event.stopImmediatePropagation();
 
-        // see if we can seek to a position
-        const dur :Number = _player.getDuration();
-        if (isNaN(dur)) {
-            log.debug("Duration is NaN, track click dropped.");
-            return;
-        }
-
-        var perc :Number = event.localX / TRACK_WIDTH;
-        perc = Math.max(0, Math.min(1, perc));
-        log.debug("Seek", "x", event.localX, "perc", perc, "pos", (perc * dur));
-
-        _player.seek(perc * dur);
+        adjustSeek(event.localX);
     }
 
     protected function handleKnobDown (event :MouseEvent) :void
     {
         event.stopImmediatePropagation();
-        // TODO
+
+        _dragging = true;
+        _knob.startDrag(false, new Rectangle(0, TRACK_HEIGHT/2, TRACK_WIDTH, 0));
+        addEventListener(Event.ENTER_FRAME, handleKnobSeekCheck);
+        addEventListener(MouseEvent.MOUSE_UP, handleKnobUp);
     }
 
     protected function handleKnobUp (event :MouseEvent) :void
     {
         event.stopImmediatePropagation();
-        // TODO
+
+        _dragging = false;
+        _knob.stopDrag();
+        removeEventListener(Event.ENTER_FRAME, handleKnobSeekCheck);
+        removeEventListener(MouseEvent.MOUSE_UP, handleKnobUp);
+        handleKnobSeekCheck(null);
+    }
+
+    protected function handleKnobSeekCheck (event :Event) :void
+    {
+        adjustSeek(_knob.x);
     }
 
     protected function handlePlayerState (event :ValueEvent) :void
@@ -198,6 +202,10 @@ public class SimpleVideoDisplay extends Sprite
 
     protected function handlePlayerPosition (event :ValueEvent) :void
     {
+        if (_dragging) {
+            return;
+        }
+        _lastKnobX = int.MIN_VALUE;
         const pos :Number = Number(event.value);
         _knob.x = (pos / _player.getDuration()) * TRACK_WIDTH;
         if (_knob.parent == null) {
@@ -209,6 +217,24 @@ public class SimpleVideoDisplay extends Sprite
     {
         // TODO.. maybe just redispatch
         log.warning("player error: " + event.value);
+    }
+
+    protected function adjustSeek (trackX :Number) :void
+    {
+        // see if we can seek to a position
+        const dur :Number = _player.getDuration();
+        if (isNaN(dur)) {
+            log.debug("Duration is NaN, not seeking.");
+            return;
+        }
+        if (trackX == _lastKnobX) {
+            return;
+        }
+        _lastKnobX = trackX;
+        var perc :Number = trackX / TRACK_WIDTH;
+        perc = Math.max(0, Math.min(1, perc));
+        log.debug("Seek", "x", trackX, "perc", perc, "pos", (perc * dur));
+        _player.seek(perc * dur);
     }
 
     protected function showHUD (show :Boolean) :void
@@ -278,6 +304,10 @@ public class SimpleVideoDisplay extends Sprite
 
     /** The seek selector knob, positioned on the hud. */
     protected var _knob :Sprite;
+
+    protected var _lastKnobX :int = int.MIN_VALUE;
+
+    protected var _dragging :Boolean;
     
     /** Our mask, also defines our boundaries for clicking. */
     protected var _mask :Shape;
