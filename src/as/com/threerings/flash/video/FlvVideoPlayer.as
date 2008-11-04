@@ -16,6 +16,7 @@ import flash.events.TimerEvent;
 
 import flash.geom.Point;
 
+import flash.media.SoundTransform;
 import flash.media.Video;
 
 import flash.net.NetConnection;
@@ -31,8 +32,11 @@ public class FlvVideoPlayer extends EventDispatcher
 {
     public function FlvVideoPlayer ()
     {
-        _videoChecker = new Timer(100);
-        _videoChecker.addEventListener(TimerEvent.TIMER, handleVideoCheck);
+        _sizeChecker = new Timer(100);
+        _sizeChecker.addEventListener(TimerEvent.TIMER, handleSizeCheck);
+
+        _positionChecker = new Timer(250);
+        _positionChecker.addEventListener(TimerEvent.TIMER, handlePositionCheck);
     }
 
     /**
@@ -54,10 +58,11 @@ public class FlvVideoPlayer extends EventDispatcher
         _netStream.client = {
             onMetaData: handleMetaData
         };
+        _netStream.soundTransform = new SoundTransform(_volume);
         _netStream.addEventListener(NetStatusEvent.NET_STATUS, handleStreamNetStatus);
 
         _vid.attachNetStream(_netStream);
-        _videoChecker.start();
+        _sizeChecker.start();
 
         _netStream.play(url);
         _netStream.pause(); // TODO Does this work?
@@ -104,37 +109,45 @@ public class FlvVideoPlayer extends EventDispatcher
     // from VideoPlayer
     public function getDuration () :Number
     {
-        return NaN; // TODO
+        return _duration;
     }
 
     // from VideoPlayer
     public function getPosition () :Number
     {
-        return NaN; // TODO
+        if (_netStream != null) {
+            return _netStream.time;
+        }
+        return NaN;
     }
 
     // from VideoPlayer
     public function seek (position :Number) :void
     {
-        // TODO
+        if (_netStream != null) {
+            _netStream.seek(position);
+        }
     }
 
     // from VideoPlayer
     public function getVolume () :Number
     {
-        return 1; // TODO
+        return _volume;
     }
 
     // from VideoPlayer
     public function setVolume (volume :Number) :void
     {
-        // TODO
+        _volume = Math.max(0, Math.min(1, volume));
+        if (_netStream != null) {
+            _netStream.soundTransform = new SoundTransform(_volume);
+        }
     }
 
     // from VideoPlayer
     public function unload () :void
     {
-        _videoChecker.reset();
+        _sizeChecker.reset();
         _vid.attachNetStream(null);
 
         if (_netStream != null) {
@@ -155,22 +168,27 @@ public class FlvVideoPlayer extends EventDispatcher
     /**
      * Check to see if we now know the dimensions of the video.
      */
-    protected function handleVideoCheck (event :TimerEvent) :void
+    protected function handleSizeCheck (event :TimerEvent) :void
     {
         if (_vid.videoWidth == 0 || _vid.videoHeight == 0) {
             return; // not known yet!
         }
 
         // stop the checker timer
-        _videoChecker.stop();
+        _sizeChecker.stop();
         _size = new Point(_vid.videoWidth, _vid.videoHeight);
 
         // set up the width/height
         _vid.width = _size.x;
         _vid.height = _size.y;
 
-        log.info("=================> size known: " + _size);
+        log.debug("====> size known: " + _size);
         dispatchEvent(new ValueEvent(VideoPlayerCodes.SIZE, _size.clone()));
+    }
+
+    protected function handlePositionCheck (event :TimerEvent) :void
+    {
+        dispatchEvent(new ValueEvent(VideoPlayerCodes.POSITION, getPosition()));
     }
 
     protected function handleNetStatus (event :NetStatusEvent) :void
@@ -196,10 +214,19 @@ public class FlvVideoPlayer extends EventDispatcher
 
     protected function handleStreamNetStatus (event :NetStatusEvent) :void
     {
-        if (event.info.code == "NetStream.Play.Stop") {
+        log.debug("NetStatus", "level", event.info.level, "code", event.info.code);
+
+        switch (event.info.code) {
+        case "NetStream.Play.Stop":
+            // rewind to the beginning
             _netStream.seek(0);
             _netStream.pause();
             updateState(VideoPlayerCodes.STATE_PAUSED);
+            break;
+
+        case "NetStream.Seek.Notify":
+            handlePositionCheck(null);
+            break;
         }
     }
 
@@ -238,12 +265,31 @@ public class FlvVideoPlayer extends EventDispatcher
         }
 
         // TODO: total duration is info.duration
+
+        if ("duration" in info) {
+            _duration = Number(info.duration);
+            if (!isNaN(_duration)) {
+                dispatchEvent(new ValueEvent(VideoPlayerCodes.DURATION, _duration));
+            }
+        }
     }
 
     protected function updateState (newState :int) :void
     {
+        const oldState :int = _state;
+
         _state = newState;
         dispatchEvent(new ValueEvent(VideoPlayerCodes.STATE, newState));
+
+        if (_state == VideoPlayerCodes.STATE_PLAYING) {
+            _positionChecker.start();
+
+        } else {
+            _positionChecker.reset();
+            if (oldState == VideoPlayerCodes.STATE_PLAYING) {
+                handlePositionCheck(null);
+            }
+        }
     }
 
     protected const log :Log = Log.getLog(this);
@@ -259,10 +305,16 @@ public class FlvVideoPlayer extends EventDispatcher
     /** Our size, null until known. */
     protected var _size :Point;
 
+    protected var _duration :Number = NaN;
+
+    protected var _volume :Number = 1;
+
     /** Checks the video every 100ms to see if the dimensions are now know.
      * Yes, this is how to do it. We could trigger on ENTER_FRAME, but then
      * we may not know the dimensions unless we're added on the display list,
      * and we want this to work in the general case. */
-    protected var _videoChecker :Timer;
+    protected var _sizeChecker :Timer;
+
+    protected var _positionChecker :Timer;
 }
 }

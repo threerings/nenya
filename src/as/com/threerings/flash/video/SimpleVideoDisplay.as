@@ -38,6 +38,8 @@ public class SimpleVideoDisplay extends Sprite
         _player = player;
         _player.addEventListener(VideoPlayerCodes.STATE, handlePlayerState);
         _player.addEventListener(VideoPlayerCodes.SIZE, handlePlayerSize);
+        _player.addEventListener(VideoPlayerCodes.DURATION, handlePlayerDuration);
+        _player.addEventListener(VideoPlayerCodes.POSITION, handlePlayerPosition);
         _player.addEventListener(VideoPlayerCodes.ERROR, handlePlayerError);
 
         addChild(_player.getDisplay());
@@ -68,6 +70,36 @@ public class SimpleVideoDisplay extends Sprite
         // and update the HUD location (even if not currently showing)
         _hud.x = NATIVE_WIDTH/2;
         _hud.y = NATIVE_HEIGHT/2;
+
+        _track = new Sprite();
+        _track.x = PAD - _hud.x;
+        _track.y = NATIVE_HEIGHT - PAD - TRACK_HEIGHT - _hud.y;
+        g = _track.graphics;
+        g.beginFill(0x000000, .7);
+        g.lineStyle(1, 0xFFFFFF);
+        g.drawRect(0, 0, TRACK_WIDTH, TRACK_HEIGHT);
+        g.endFill();
+        //g.drawRect(0, 0, TRACK_WIDTH - 2, TRACK_HEIGHT - 2);
+        // _track is not added to _hud until we know the duration
+
+        const trackMask :Shape = new Shape();
+        g = trackMask.graphics;
+        g.beginFill(0xFFFFFF);
+        g.drawRect(0, 0, TRACK_WIDTH, TRACK_HEIGHT);
+        _track.addChild(trackMask);
+        _track.mask = trackMask;
+
+        _knob = new Sprite();
+        _knob.y = TRACK_HEIGHT / 2;
+        g = _knob.graphics;
+        g.lineStyle(1, 0xFFFFFF);
+        g.beginFill(0x000099);
+        g.drawCircle(0, 0, TRACK_HEIGHT/2 - 1);
+        // _knob is not added to _track until we know the position
+
+        _track.addEventListener(MouseEvent.CLICK, handleTrackClick);
+        _knob.addEventListener(MouseEvent.MOUSE_DOWN, handleKnobDown);
+        _knob.addEventListener(MouseEvent.MOUSE_UP, handleKnobUp);
     }
 
     /**
@@ -109,6 +141,36 @@ public class SimpleVideoDisplay extends Sprite
         }
     }
 
+    protected function handleTrackClick (event :MouseEvent) :void
+    {
+        event.stopImmediatePropagation();
+
+        // see if we can seek to a position
+        const dur :Number = _player.getDuration();
+        if (isNaN(dur)) {
+            log.debug("Duration is NaN, track click dropped.");
+            return;
+        }
+
+        var perc :Number = event.localX / TRACK_WIDTH;
+        perc = Math.max(0, Math.min(1, perc));
+        log.debug("Seek", "x", event.localX, "perc", perc, "pos", (perc * dur));
+
+        _player.seek(perc * dur);
+    }
+
+    protected function handleKnobDown (event :MouseEvent) :void
+    {
+        event.stopImmediatePropagation();
+        // TODO
+    }
+
+    protected function handleKnobUp (event :MouseEvent) :void
+    {
+        event.stopImmediatePropagation();
+        // TODO
+    }
+
     protected function handlePlayerState (event :ValueEvent) :void
     {
         redrawHUD();
@@ -127,6 +189,20 @@ public class SimpleVideoDisplay extends Sprite
 
         // and, we redispatch
         dispatchEvent(event);
+    }
+
+    protected function handlePlayerDuration (event :ValueEvent) :void
+    {
+        _hud.addChild(_track);
+    }
+
+    protected function handlePlayerPosition (event :ValueEvent) :void
+    {
+        const pos :Number = Number(event.value);
+        _knob.x = (pos / _player.getDuration()) * TRACK_WIDTH;
+        if (_knob.parent == null) {
+            _track.addChild(_knob);
+        }
     }
 
     protected function handlePlayerError (event :ValueEvent) :void
@@ -153,40 +229,41 @@ public class SimpleVideoDisplay extends Sprite
         const g :Graphics = _hud.graphics;
         g.clear();
 
-        if (state == VideoPlayerCodes.STATE_READY ||
-                state == VideoPlayerCodes.STATE_PLAYING ||
-                state == VideoPlayerCodes.STATE_PAUSED) {
-            // draw a nice circle
-            g.beginFill(0x333333);
-            g.drawCircle(0, 0, 20);
-            g.endFill();
-            g.lineStyle(2, 0xFFFFFF);
-            g.drawCircle(0, 0, 20);
-
-            if (state == VideoPlayerCodes.STATE_PLAYING) {
-                g.lineStyle(2, 0x00FF00);
-                g.moveTo(-4, -10);
-                g.lineTo(-4, 10);
-                g.moveTo(4, -10);
-                g.lineTo(4, 10);
-
-            } else {
-                g.lineStyle(0, 0, 0);
-                g.beginFill(0x00FF00);
-                g.moveTo(-4, -10);
-                g.lineTo(4, 0);
-                g.lineTo(-4, 10);
-                g.lineTo(-4, -10);
-                g.endFill();
-            }
-
-        } else {
+        if ((state != VideoPlayerCodes.STATE_READY) &&
+                (state != VideoPlayerCodes.STATE_PLAYING) &&
+                (state != VideoPlayerCodes.STATE_PAUSED)) {
             // draw something loading-like
+            // TODO animated swf
             g.beginFill(0x000033);
             g.drawCircle(5, 5, 10);
             g.drawCircle(-5, 5, 10);
             g.drawCircle(-5, -5, 10);
             g.drawCircle(5, -5, 10);
+            g.endFill();
+            return;
+        }
+
+        // draw a nice circle
+        g.beginFill(0x000000, .7);
+        g.drawCircle(0, 0, 20);
+        g.endFill();
+        g.lineStyle(2, 0xFFFFFF);
+        g.drawCircle(0, 0, 20);
+
+        if (state == VideoPlayerCodes.STATE_PLAYING) {
+            g.lineStyle(2, 0x00FF00);
+            g.moveTo(-4, -10);
+            g.lineTo(-4, 10);
+            g.moveTo(4, -10);
+            g.lineTo(4, 10);
+
+        } else { // READY or PAUSED
+            g.lineStyle(0, 0, 0);
+            g.beginFill(0x00FF00);
+            g.moveTo(-4, -10);
+            g.lineTo(4, 0);
+            g.lineTo(-4, 10);
+            g.lineTo(-4, -10);
             g.endFill();
         }
     }
@@ -196,8 +273,17 @@ public class SimpleVideoDisplay extends Sprite
     protected var _player :VideoPlayer;
 
     protected var _hud :Sprite;
+
+    protected var _track :Sprite;
+
+    /** The seek selector knob, positioned on the hud. */
+    protected var _knob :Sprite;
     
     /** Our mask, also defines our boundaries for clicking. */
     protected var _mask :Shape;
+
+    protected static const PAD :int = 10;
+    protected static const TRACK_HEIGHT :int = 20;
+    protected static const TRACK_WIDTH :int = NATIVE_WIDTH - (PAD * 2);
 }
 }
