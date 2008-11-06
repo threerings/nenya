@@ -30,8 +30,9 @@ import com.threerings.util.ValueEvent;
 public class FlvVideoPlayer extends EventDispatcher
     implements VideoPlayer
 {
-    public function FlvVideoPlayer ()
+    public function FlvVideoPlayer (autoPlay :Boolean = true)
     {
+        _autoPlay = autoPlay;
         _sizeChecker = new Timer(100);
         _sizeChecker.addEventListener(TimerEvent.TIMER, handleSizeCheck);
 
@@ -65,8 +66,13 @@ public class FlvVideoPlayer extends EventDispatcher
         _sizeChecker.start();
 
         _netStream.play(url);
-        _netStream.pause(); // TODO Does this work?
-        updateState(VideoPlayerCodes.STATE_READY);
+        if (_autoPlay) {
+            updateState(VideoPlayerCodes.STATE_PLAYING);
+
+        } else {
+            _netStream.pause();
+            updateState(VideoPlayerCodes.STATE_READY);
+        }
     }
 
     // from VideoPlayer
@@ -293,6 +299,8 @@ public class FlvVideoPlayer extends EventDispatcher
     }
 
     protected const log :Log = Log.getLog(this);
+
+    protected var _autoPlay :Boolean;
     
     protected var _vid :Video = new Video();
 
