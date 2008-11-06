@@ -197,7 +197,8 @@ public class SimpleVideoDisplay extends Sprite
 
     protected function handlePlayerDuration (event :ValueEvent) :void
     {
-        _hud.addChild(_track);
+// TODO: temporarily disabled
+//        _hud.addChild(_track);
     }
 
     protected function handlePlayerPosition (event :ValueEvent) :void
