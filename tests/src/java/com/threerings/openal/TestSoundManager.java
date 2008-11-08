@@ -30,6 +30,9 @@ public class TestSoundManager
             public boolean isDispatchThread () {
                 return (current == Thread.currentThread());
             }
+            public boolean isRunning() {
+                return true;
+            }
         };
 
         final SoundManager smgr = SoundManager.createSoundManager(rqueue);
