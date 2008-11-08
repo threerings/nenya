@@ -256,16 +256,22 @@ public class JmeApp
         _finished = true;
     }
 
-    // documentation inherited from interface RunQueue
+    // from interface RunQueue
     public void postRunnable (Runnable r)
     {
         _evqueue.append(r);
     }
 
-    // documentation inherited from interface RunQueue
+    // from interface RunQueue
     public boolean isDispatchThread ()
     {
         return Thread.currentThread() == _dispatchThread;
+    }
+
+    // from interface RunQueue
+    public boolean isRunning ()
+    {
+        return !_finished;
     }
 
     /**
