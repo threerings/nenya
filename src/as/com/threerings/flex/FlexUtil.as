@@ -62,13 +62,21 @@ public class FlexUtil
     /**
      * Create an uneditable/unselectable multiline Text widget with the specified text and width.
      */
-    public static function createText (text :String, width :int, style :String = null) :Text
+    public static function createText (
+        text :String, width :int, style :String = null, html :Boolean = false) :Text
     {
         var t :Text = new Text();
         t.styleName = style;
         t.width = width;
-        t.selectable = false;
-        t.text = text;
+        if (html) {
+            // I want selectable = false here too, but that makes links not work. They still
+            // have a hand cursor, you can still click the fucking things, but they don't
+            // work. WHY ADOBE WHY YOU RANCID PIEFUCKERS?
+            t.htmlText = text;
+        } else {
+            t.selectable = false;
+            t.text = text;
+        }
         return t;
     }
 
