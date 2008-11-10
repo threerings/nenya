@@ -43,8 +43,7 @@ import com.samskivert.util.StringUtil;
  */
 public class ComponentClass implements Serializable
 {
-    /** Used to effect custom render orders for particular actions,
-     * orientations, etc. */
+    /** Used to effect custom render orders for particular actions, orientations, etc. */
     public static class PriorityOverride
         implements Comparable<PriorityOverride>, Serializable
     {
@@ -54,25 +53,27 @@ public class ComponentClass implements Serializable
         /** The action, if any, for which this override is appropriate. */
         public String action;
 
-        /** The orientations, if any, for which this override is
-         * appropriate. */
+        /** The component, if any, for which this override is appropriate. */
+        public String component;
+
+        /** The orientations, if any, for which this override is appropriate. */
         public ArrayIntSet orients;
 
         /**
          * Determines whether this priority override matches the specified
-         * action and orientation combination.
+         * action, orientation ant component combination.
          */
-        public boolean matches (String action, int orient)
+        public boolean matches (String action, String component, int orient)
         {
             return (((orients == null) || orients.contains(orient)) &&
+                    ((this.component == null) || this.component.equals(component)) &&
                     ((this.action == null) || this.action.equals(action)));
         }
 
         // documentation inherited from interface
         public int compareTo (PriorityOverride po)
         {
-            // overrides with both an action and an orientation should
-            // come first in the list
+            // overrides with both an action and an orientation should come first in the list
             int pri = priority(), opri = po.priority();
             if (pri == opri) {
                 return hashCode() - po.hashCode();
@@ -84,6 +85,9 @@ public class ComponentClass implements Serializable
         protected int priority ()
         {
             int priority = 0;
+            if (component != null) {
+                priority += 3; // Extra priority to things that are for specific components
+            }
             if (action != null) {
                 priority++;
             }
@@ -96,8 +100,8 @@ public class ComponentClass implements Serializable
         @Override
         public String toString ()
         {
-            return "[pri=" + renderPriority + ", action=" + action +
-                ", orients=" + orients + "]";
+            return "[pri=" + renderPriority + ", action=" + action + ", component=" + component +
+                   ", orients=" + orients + "]";
         }
 
         /** Increase this value when object's serialized state is impacted
@@ -139,20 +143,31 @@ public class ComponentClass implements Serializable
     }
 
     /**
-     * Returns the render priority appropriate for the specified action
-     * and orientation.
+     * Returns the render priority appropriate for the specified action and orientation.
+     *
+     * This is deprecated; you should really use {@link #getRenderPriority(String, String, int)}
+     * to handle potential per-component priority overrides.
      */
+    @Deprecated
     public int getRenderPriority (String action, int orientation)
     {
-        // because we expect there to be relatively few priority
-        // overrides, we simply search linearly through the list for the
-        // closest match
+        return getRenderPriority(action, null, orientation);
+    }
+
+    /**
+     * Returns the render priority appropriate for the specified action, orientation and
+     * component.
+     */
+    public int getRenderPriority (String action, String component, int orientation)
+    {
+        // because we expect there to be relatively few priority overrides, we simply search
+        // linearly through the list for the closest match
         int ocount = (_overrides != null) ? _overrides.size() : 0;
         for (int ii = 0; ii < ocount; ii++) {
             PriorityOverride over = _overrides.get(ii);
             // based on the way the overrides are sorted, the first match
             // is the most specific and the one we want
-            if (over.matches(action, orientation)) {
+            if (over.matches(action, component, orientation)) {
                 return over.renderPriority;
             }
         }
@@ -161,8 +176,7 @@ public class ComponentClass implements Serializable
     }
 
     /**
-     * Adds the supplied render priority override record to this component
-     * class.
+     * Adds the supplied render priority override record to this component class.
      */
     public void addPriorityOverride (PriorityOverride override)
     {
@@ -183,8 +197,7 @@ public class ComponentClass implements Serializable
     }
 
     /**
-     * Returns true if this component class is a shadow layer rather than a
-     * normal component class.
+     * Returns true if this component class is a shadow layer rather than a normal component class.
      */
     public boolean isShadow ()
     {

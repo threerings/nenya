@@ -242,8 +242,8 @@ public class BundledComponentRepository
         // look up the component class information
         ComponentClass clazz = _classes.get(cclass);
         if (clazz == null) {
-            log.warning("Non-existent component class [class=" + cclass + ", name=" + cname +
-                        ", id=" + componentId + "].");
+            log.warning("Non-existent component class",
+                "class", cclass, "name", cname, "id", componentId);
             return;
         }
 
@@ -262,7 +262,7 @@ public class BundledComponentRepository
         if (!comps.contains(component)) {
             comps.add(component);
         } else {
-            log.info("Requested to register the same component twice? [comp=" + component + "].");
+            log.info("Requested to register the same component twice?", "comp", component);
         }
     }
 

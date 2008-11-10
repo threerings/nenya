@@ -60,7 +60,7 @@ public class CompositedMultiFrameImage
             _images[ii] = createCompositedMirage(ii);
         }
     }
-    
+
     // documentation inherited
     public int getFrameCount () {
         return _images.length;
@@ -107,8 +107,8 @@ public class CompositedMultiFrameImage
     public long getEstimatedMemoryUsage ()
     {
         long size = 0;
-        for (int ii = 0; ii < _images.length; ii++) {
-            size += _images[ii].getEstimatedMemoryUsage();
+        for (CompositedMirage element : _images) {
+            size += element.getEstimatedMemoryUsage();
         }
         return size;
     }
@@ -128,7 +128,7 @@ public class CompositedMultiFrameImage
         }
         return new CompositedVolatileMirage(index);
     }
-    
+
     /**
      * A CompositedMirage that forwards all of its Mirage calls to a delegate Mirage.
      */
@@ -149,7 +149,7 @@ public class CompositedMultiFrameImage
         {
             return y;
         }
-        
+
         public long getEstimatedMemoryUsage ()
         {
             return delegate.getEstimatedMemoryUsage();
@@ -179,12 +179,12 @@ public class CompositedMultiFrameImage
         {
             delegate.paint(gfx, x, y);
         }
-        
+
         protected int x, y;
-        
+
         protected Mirage delegate;
     }
-    
+
     // documentation inherited
     protected Mirage getFrame (int orient, int index)
     {
@@ -247,7 +247,7 @@ public class CompositedMultiFrameImage
             // render our volatile image for the first time
             createVolatileImage();
         }
-        
+
         public int getXOrigin ()
         {
             return _origin.x;
@@ -261,8 +261,8 @@ public class CompositedMultiFrameImage
         // documentation inherited from interface
         public int compare (ComponentFrames cf1, ComponentFrames cf2)
         {
-            return (cf1.ccomp.componentClass.getRenderPriority(_action, _orient) -
-                    cf2.ccomp.componentClass.getRenderPriority(_action, _orient));
+            return (cf1.ccomp.getRenderPriority(_action, _orient) -
+                    cf2.ccomp.getRenderPriority(_action, _orient));
         }
 
         /**
@@ -278,7 +278,7 @@ public class CompositedMultiFrameImage
             }
             return bounds;
         }
-        
+
         @Override
         protected int getTransparency ()
         {

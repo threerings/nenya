@@ -60,6 +60,16 @@ public class CharacterComponent implements Serializable
         _frameProvider = fprov;
     }
 
+
+    /**
+     * Returns the render priority appropriate for this component at the specified action and
+     * orientation.
+     */
+    public int getRenderPriority (String action, int orientation)
+    {
+        return componentClass.getRenderPriority(action, name, orientation);
+    }
+
     /**
      * Returns the image frames for the specified action animation or null if
      * no animation for the specified action is available for this component.
@@ -78,7 +88,7 @@ public class CharacterComponent implements Serializable
      *
      * @param type null for the normal action frames or one of the custom
      * action sub-types: {@link StandardActions#SHADOW_TYPE}, etc.
-     * 
+     *
      * @param existentPaths the set of all paths for which there are valid frames.
      */
     public String getFramePath (String action, String type, Set<String> existentPaths)
