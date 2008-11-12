@@ -154,6 +154,7 @@ public class FlvVideoPlayer extends EventDispatcher
     public function unload () :void
     {
         _sizeChecker.reset();
+        _positionChecker.reset();
         _vid.attachNetStream(null);
 
         if (_netStream != null) {
