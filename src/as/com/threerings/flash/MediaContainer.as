@@ -315,48 +315,25 @@ public class MediaContainer extends Sprite
      */
     public function shutdown (completely :Boolean = true) :void
     {
-        try {
-            // remove the mask (but only if we added it)
-            if (_media != null && _media.mask != null) {
-                try {
-                    removeChild(_media.mask);
-                    _media.mask = null;
+        // remove the mask (but only if we added it)
+        if (_media != null && _media.mask != null) {
+            try {
+                removeChild(_media.mask);
+                _media.mask = null;
 
-                } catch (argErr :ArgumentError) {
-                    // If we catch this error, it was thrown in removeChild
-                    // and means that we did not add the media's mask,
-                    // and so shouldn't remove it either. The action we
-                    // take here is NOT setting _media.mask = null.
-                    // Then, we continue happily...
-                }
+            } catch (argErr :ArgumentError) {
+                // If we catch this error, it was thrown in removeChild
+                // and means that we did not add the media's mask,
+                // and so shouldn't remove it either. The action we
+                // take here is NOT setting _media.mask = null.
+                // Then, we continue happily...
             }
+        }
 
-            if (_media is Loader) {
-                var loader :Loader = (_media as Loader);
-                //var url :String = loader.contentLoaderInfo.url;
-
-                // remove any listeners
-                removeListeners(loader.contentLoaderInfo);
-
-                // dispose of media
-                LoaderUtil.unload(loader);
-                dispatchEvent(new Event(Event.UNLOAD));
-
-                removeChild(loader);
-                //var extra :String  = (url == _url) ? "" : (", _url=" + _url);
-                //log.debug("Unloaded media [url=" + url + extra + "].");
-
-            } else if (_media is SimpleVideoDisplay) {
-                var vid :SimpleVideoDisplay = SimpleVideoDisplay(_media);
-//                vid.removeEventListener(VideoPlayerCodes.SIZE, handleVideoSizeKnown);
-                vid.unload();
-                removeChild(vid);
-
-            } else if (_media != null) {
-                removeChild(_media);
-            }
-        } catch (ioe :IOError) {
-            log.warning("Error shutting down media", ioe);
+        shutdownMedia();
+        if (_media != null) {
+            removeChild(_media);
+            dispatchEvent(new Event(Event.UNLOAD));
         }
 
         // clean everything up
@@ -741,6 +718,35 @@ public class MediaContainer extends Sprite
     protected function stoppedLoading () :void
     {
         // nada
+    }
+
+    /**
+     * Do whatever is necessary to shut down the media.
+     */
+    protected function shutdownMedia () :void
+    {
+        if (_media is Loader) {
+            try {
+                var loader :Loader = (_media as Loader);
+                //var url :String = loader.contentLoaderInfo.url;
+
+                // remove any listeners
+                removeListeners(loader.contentLoaderInfo);
+
+                // dispose of media
+                LoaderUtil.unload(loader);
+
+                //var extra :String  = (url == _url) ? "" : (", _url=" + _url);
+                //log.debug("Unloaded media [url=" + url + extra + "].");
+            } catch (ioe :IOError) {
+                log.warning("Error shutting down media", ioe);
+            }
+
+        } else if (_media is SimpleVideoDisplay) {
+            var vid :SimpleVideoDisplay = SimpleVideoDisplay(_media);
+//            vid.removeEventListener(VideoPlayerCodes.SIZE, handleVideoSizeKnown);
+            vid.unload();
+        }
     }
 
     /** The unaltered URL of the content we're displaying. */
