@@ -64,6 +64,7 @@ import com.threerings.util.Util;
 
 import com.threerings.flash.video.FlvVideoPlayer;
 import com.threerings.flash.video.SimpleVideoDisplay;
+import com.threerings.flash.video.VideoPlayer;
 import com.threerings.flash.video.VideoPlayerCodes;
 
 /**
@@ -250,12 +251,18 @@ public class MediaContainer extends Sprite
     protected function setupVideo (url :String) :void
     {
         var player :FlvVideoPlayer = new FlvVideoPlayer();
-        var vid :SimpleVideoDisplay = new SimpleVideoDisplay(player);
-//        vid.addEventListener(VideoPlayerCodes.SIZE, handleVideoSizeKnown);
-        _media = vid;
-        addChildAt(vid, 0);
+        _media = createVideoUI(player);
+        addChildAt(_media, 0);
         player.load(url);
-        updateContentDimensions(SimpleVideoDisplay.NATIVE_WIDTH, SimpleVideoDisplay.NATIVE_HEIGHT);
+        updateContentDimensions(_media.width, _media.height);
+    }
+
+    /**
+     * Create the actual display for the VideoPlayer.
+     */
+    protected function createVideoUI (player :VideoPlayer) :DisplayObject
+    {
+        return new SimpleVideoDisplay(player);
     }
 
     /**

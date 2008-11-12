@@ -103,6 +103,16 @@ public class SimpleVideoDisplay extends Sprite
         _knob.addEventListener(MouseEvent.MOUSE_DOWN, handleKnobDown);
     }
 
+    override public function get width () :Number
+    {
+        return NATIVE_WIDTH;
+    }
+
+    override public function get height () :Number
+    {
+        return NATIVE_HEIGHT;
+    }
+
     /**
      * Stop playing our video.
      */
