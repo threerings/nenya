@@ -89,8 +89,8 @@ public class Source
     public void setSourceRelative (boolean relative)
     {
         if (_sourceRelative != relative) {
-            AL10.alSourcei(_id, AL10.AL_SOURCE_RELATIVE,
-                (_sourceRelative = relative) ? AL10.AL_TRUE : AL10.AL_FALSE);
+            _sourceRelative = relative;
+            AL10.alSourcei(_id, AL10.AL_SOURCE_RELATIVE, relative ? AL10.AL_TRUE : AL10.AL_FALSE);
         }
     }
 
@@ -100,8 +100,8 @@ public class Source
     public void setLooping (boolean looping)
     {
         if (_looping != looping) {
-            AL10.alSourcei(_id, AL10.AL_LOOPING,
-                (_looping = looping) ? AL10.AL_TRUE : AL10.AL_FALSE);
+            _looping = looping;
+            AL10.alSourcei(_id, AL10.AL_LOOPING, looping ? AL10.AL_TRUE : AL10.AL_FALSE);
         }
     }
 

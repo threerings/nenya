@@ -30,19 +30,17 @@ import com.samskivert.util.StringUtil;
 import com.threerings.util.DirectionUtil;
 
 /**
- * An object tile extends the base tile to provide support for objects
- * whose image spans more than one unit tile.
+ * An object tile extends the base tile to provide support for objects whose image spans more than
+ * one unit tile.
  *
- * <p> An object tile is generally positioned based on its origin rather
- * than the upper left of its image. Generally this origin is in the
- * bottom center of the object image, but can be configured to be anywhere
- * that the natural center point of "contact" is for the object. Note that
- * this does not automatically adjust the semantics of {@link #paint}, it
- * is just expected that the caller will account for the object tile's
- * origin when painting, if appropriate.
+ * <p> An object tile is generally positioned based on its origin rather than the upper left of
+ * its image. Generally this origin is in the bottom center of the object image, but can be
+ * configured to be anywhere that the natural center point of "contact" is for the object. Note
+ * that this does not automatically adjust the semantics of {@link Tile#paint}, it is just
+ * expected that the caller will account for the object tile's origin when painting, if
+ * appropriate.
  *
- * <p> An object tile has dimensions (in tile units) that represent its
- * footprint or "shadow".
+ * <p> An object tile has dimensions (in tile units) that represent its footprint or "shadow".
  */
 public class ObjectTile extends Tile
 {
@@ -72,11 +70,9 @@ public class ObjectTile extends Tile
     }
 
     /**
-     * Returns the x offset into the tile image of the origin (which will
-     * be aligned with the bottom center of the origin tile) or
-     * <code>Integer.MIN_VALUE</code> if the origin is not explicitly
-     * specified and should be computed from the image size and tile
-     * footprint.
+     * Returns the x offset into the tile image of the origin (which will be aligned with the
+     * bottom center of the origin tile) or <code>Integer.MIN_VALUE</code> if the origin is not
+     * explicitly specified and should be computed from the image size and tile footprint.
      */
     public int getOriginX ()
     {
@@ -84,11 +80,9 @@ public class ObjectTile extends Tile
     }
 
     /**
-     * Returns the y offset into the tile image of the origin (which will
-     * be aligned with the bottom center of the origin tile) or
-     * <code>Integer.MIN_VALUE</code> if the origin is not explicitly
-     * specified and should be computed from the image size and tile
-     * footprint.
+     * Returns the y offset into the tile image of the origin (which will be aligned with the
+     * bottom center of the origin tile) or <code>Integer.MIN_VALUE</code> if the origin is not
+     * explicitly specified and should be computed from the image size and tile footprint.
      */
     public int getOriginY ()
     {
@@ -96,12 +90,11 @@ public class ObjectTile extends Tile
     }
 
     /**
-     * Sets the offset in pixels from the origin of the tile image to the
-     * origin of the object. The object will be rendered such that its
-     * origin is at the bottom center of its origin tile. If no origin is
-     * specified, the bottom of the image is aligned with the bottom of
-     * the origin tile and the left side of the image is aligned with the
-     * left edge of the left-most base tile.
+     * Sets the offset in pixels from the origin of the tile image to the origin of the object.
+     * The object will be rendered such that its origin is at the bottom center of its origin
+     * tile. If no origin is specified, the bottom of the image is aligned with the bottom of the
+     * origin tile and the left side of the image is aligned with the left edge of the left-most
+     * base tile.
      */
     protected void setOrigin (int x, int y)
     {
@@ -167,14 +160,14 @@ public class ObjectTile extends Tile
     }
 
     /**
-     * Returns the list of constraints associated with this object, or
-     * <code>null</code> if the object has no constraints.
+     * Returns the list of constraints associated with this object, or <code>null</code> if the
+     * object has no constraints.
      */
     public String[] getConstraints ()
     {
         return _constraints;
     }
-    
+
     /**
      * Checks whether this object has the given constraint.
      */
@@ -183,7 +176,7 @@ public class ObjectTile extends Tile
         return (_constraints == null) ? false :
             ListUtil.contains(_constraints, constraint);
     }
-    
+
     /**
      * Configures this object's constraints.
      */
@@ -191,7 +184,7 @@ public class ObjectTile extends Tile
     {
         _constraints = constraints;
     }
-    
+
     @Override
     public void toString (StringBuilder buf)
     {
@@ -213,9 +206,8 @@ public class ObjectTile extends Tile
     /** The object footprint width in unit tile units. */
     protected Dimension _base = new Dimension(1, 1);
 
-    /** The offset from the origin of the tile image to the object's
-     * origin or MIN_VALUE if the origin should be calculated based on the
-     * footprint. */
+    /** The offset from the origin of the tile image to the object's origin or MIN_VALUE if the
+     * origin should be calculated based on the footprint. */
     protected Point _origin = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
     /** This object tile's default render priority. */
@@ -226,7 +218,7 @@ public class ObjectTile extends Tile
 
     /** The orientation of the "spot" associated with this object. */
     protected byte _sorient;
-    
+
     /** The list of constraints associated with this object. */
     protected String[] _constraints;
 }

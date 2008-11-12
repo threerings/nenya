@@ -64,7 +64,7 @@ public class Unsafe
     /**
      * Causes the current thread to block for the specified number of
      * milliseconds. This exists primarily to work around the fact that on
-     * Linux, {@link Thread#sleep} is only accurate to around 12ms which
+     * Linux, {@link Thread#sleep(long)} is only accurate to around 12ms which
      * is wholly unacceptable.
      */
     public static void sleep (int millis)

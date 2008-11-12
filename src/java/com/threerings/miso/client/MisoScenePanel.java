@@ -89,15 +89,14 @@ import static com.threerings.miso.Log.log;
  * Renders a Miso scene for all to see.
  */
 public class MisoScenePanel extends VirtualMediaPanel
-    implements MouseListener, MouseMotionListener, AStarPathUtil.TraversalPred,
-               RadialMenu.Host
+    implements MouseListener, MouseMotionListener, AStarPathUtil.TraversalPred, RadialMenu.Host
 {
     /** Show flag that indicates we should show all tips. */
     public static final int SHOW_TIPS = (1 << 0);
 
     /**
-     * Creates a blank miso scene display. Configure it with a scene model
-     * via {@link #setSceneModel} to cause it to display something.
+     * Creates a blank miso scene display. Configure it with a scene model via
+     * {@link #setSceneModel} to cause it to display something.
      */
     public MisoScenePanel (MisoContext ctx, MisoSceneMetrics metrics)
     {
@@ -124,8 +123,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Configures this display with a scene model which will immediately
-     * be resolved and displayed.
+     * Configures this display with a scene model which will immediately be resolved and
+     * displayed.
      */
     public void setSceneModel (MisoSceneModel model)
     {
@@ -156,8 +155,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Completely invalidates our current resolved scene and re-resolves
-     * it from the ground up.
+     * Completely invalidates our current resolved scene and re-resolves it from the ground up.
      */
     public void refreshScene ()
     {
@@ -192,8 +190,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns the scene metrics in use by this panel. <em>Do not</em>
-     * modify!
+     * Returns the scene metrics in use by this panel. <em>Do not</em> modify!
      */
     public MisoSceneMetrics getSceneMetrics ()
     {
@@ -201,8 +198,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Set whether or not to highlight object tooltips (and potentially
-     * other scene entities).
+     * Set whether or not to highlight object tooltips (and potentially other scene entities).
      */
     public void setShowFlags (int flags, boolean on)
     {
@@ -240,8 +236,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns the top-most object over which the mouse is hovering; this
-     * may be a sprite or a {@link SceneObject}.
+     * Returns the top-most object over which the mouse is hovering; this may be a sprite or a
+     * {@link SceneObject}.
      */
     public Object getHoverObject ()
     {
@@ -249,8 +245,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns the tile coordinates of the tile over which the mouse is
-     * hovering.
+     * Returns the tile coordinates of the tile over which the mouse is hovering.
      */
     public Point getHoverCoords ()
     {
@@ -266,8 +261,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns the resolved block that contains the specified tile
-     * coordinate or null if no block is resolved for that coordinate.
+     * Returns the resolved block that contains the specified tile coordinate or null if no block
+     * is resolved for that coordinate.
      */
     public SceneBlock getBlock (int tx, int ty)
     {
@@ -277,13 +272,11 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Computes a path for the specified sprite to the specified tile
-     * coordinates.
+     * Computes a path for the specified sprite to the specified tile coordinates.
      *
-     * @param loose if true, an approximate path will be returned if a
-     * complete path cannot be located. This path will navigate the sprite
-     * "legally" as far as possible and then walk the sprite in a straight
-     * line to its final destination. This is generally only useful if the
+     * @param loose if true, an approximate path will be returned if a complete path cannot be
+     * located. This path will navigate the sprite "legally" as far as possible and then walk the
+     * sprite in a straight line to its final destination. This is generally only useful if the
      * the path goes "off screen".
      */
     public Path getPath (Sprite sprite, int x, int y, boolean loose)
@@ -308,8 +301,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             this, sprite, longestPath, src.x, src.y, dest.x, dest.y, loose);
         long duration = System.currentTimeMillis() - start;
 
-        // sanity check the number of nodes searched so that we can keep
-        // an eye out for bogosity
+        // sanity check the number of nodes searched so that we can keep an eye out for bogosity
         if (duration > 500L) {
             int considered = AStarPathUtil.getConsidered();
             log.warning("Considered " + considered + " nodes for path from " +
@@ -332,7 +324,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Coverts the supplied screen coordinates to full coordinates.
+     * Converts the supplied screen coordinates to full coordinates.
      */
     public Point getFullCoords (int x, int y)
     {
@@ -340,7 +332,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Coverts the supplied screen coordinates to tile coordinates.
+     * Converts the supplied screen coordinates to tile coordinates.
      */
     public Point getTileCoords (int x, int y)
     {
@@ -358,8 +350,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Reports the memory usage of the resolved tiles in the current scene
-     * block.
+     * Reports the memory usage of the resolved tiles in the current scene block.
      */
     public void reportMemoryUsage ()
     {
@@ -432,8 +423,7 @@ public class MisoScenePanel extends VirtualMediaPanel
 
     /**
      * Programmatically "click" a scene object. This results in a call to
-     * {@link #handleObjectPressed} with click coordinates in the center
-     * of the object.
+     * {@link #handleObjectPressed} with click coordinates in the center of the object.
      */
     public void pressObject (SceneObject scobj)
     {
@@ -497,9 +487,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns an appropriate set of menu bounds for the specified object.
-     * Returns a rectangle of the size specified by
-     * {@link #getObjectRadialSize} centered around the object.
+     * Returns an appropriate set of menu bounds for the specified object. Returns a rectangle of
+     * the size specified by {@link #getObjectRadialSize} centered around the object.
      */
     protected Rectangle getRadialMenuBounds (SceneObject scobj)
     {
@@ -517,10 +506,9 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns the size of the rectangle around which we create an
-     * object's radial menu. The default is a sensible size, but derived
-     * classes may wish to tune the value to make their menus lay out in a
-     * more aestetically pleasing manner.
+     * Returns the size of the rectangle around which we create an object's radial menu. The
+     * default is a sensible size, but derived classes may wish to tune the value to make their
+     * menus lay out in a more aestetically pleasing manner.
      */
     protected Dimension getObjectRadialSize ()
     {
@@ -541,11 +529,10 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Called when the mouse is pressed over an unknown or non-existent
-     * hover object.
+     * Called when the mouse is pressed over an unknown or non-existent hover object.
      *
-     * @param hobject the hover object at the time of the mouse press or
-     * null if no hover object is active.
+     * @param hobject the hover object at the time of the mouse press or null if no hover object
+     * is active.
      *
      * @return true if the mouse press was handled, false if not.
      */
@@ -637,10 +624,9 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Gives derived classes a chance to compute a hover object that takes
-     * precedence over sprites and actionable objects. If this method
-     * returns non-null, no sprite or object hover calculations will be
-     * performed and the object returned will become the new hover object.
+     * Gives derived classes a chance to compute a hover object that takes precedence over sprites
+     * and actionable objects. If this method returns non-null, no sprite or object hover
+     * calculations will be performed and the object returned will become the new hover object.
      */
     protected Object computeOverHover (int mx, int my)
     {
@@ -648,11 +634,10 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Gives derived classes a chance to compute a hover object that is
-     * used if the mouse is not hovering over a sprite or actionable
-     * object. If this method is called, it means that there are no
-     * sprites or objects under the mouse. Thus if it returns non-null,
-     * the object returned will become the new hover object.
+     * Gives derived classes a chance to compute a hover object that is used if the mouse is not
+     * hovering over a sprite or actionable object. If this method is called, it means that there
+     * are no sprites or objects under the mouse. Thus if it returns non-null, the object returned
+     * will become the new hover object.
      */
     protected Object computeUnderHover (int mx, int my)
     {
@@ -668,8 +653,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Derived classes can control whether or not we consider unresolved
-     * tiles to be traversable or not.
+     * Derived classes can control whether or not we consider unresolved tiles to be traversable
+     * or not.
      */
     protected boolean canTraverseUnresolved (Object traverser, int tx, int ty)
     {
@@ -731,13 +716,12 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         super.viewLocationDidChange(dx, dy);
 
-        // compute the tile coordinates of our upper left screen
-        // coordinate and request a rethink if they've changed
+        // compute the tile coordinates of our upper left screen coordinate and request a rethink
+        // if they've changed
         MisoUtil.screenToTile(_metrics, _vbounds.x, _vbounds.y, _tcoords);
         if (_ulpos == null || !_tcoords.equals(_ulpos)) {
-            // if this is a forced rethink (_ulpos is null), we might
-            // delay paint as a result of it, but only if we queue up
-            // blocks for resolution in our rethink
+            // if this is a forced rethink (_ulpos is null), we might delay paint as a result of
+            // it, but only if we queue up blocks for resolution in our rethink
             boolean mightDelayPaint = false;
             if (_ulpos == null) {
                 _ulpos = new Point();
@@ -751,16 +735,16 @@ public class MisoScenePanel extends VirtualMediaPanel
                 if (_delayRepaint) {
                     setVisible(false);
                 }
-                log.info("Got new pending blocks", "need", _visiBlocks.size(), "of",
-                    _pendingBlocks, "view", StringUtil.toString(_vbounds), "delay", _delayRepaint);
+                log.info("Got new pending blocks",
+                    "need", _visiBlocks.size(), "of", _pendingBlocks,
+                    "view", StringUtil.toString(_vbounds), "delay", _delayRepaint);
             }
         }
     }
 
     /**
-     * Derived classes can override this method and provide a colorizer
-     * that will be used to colorize the supplied scene object when
-     * rendering.
+     * Derived classes can override this method and provide a colorizer that will be used to
+     * colorize the supplied scene object when rendering.
      */
     protected TileSet.Colorizer getColorizer (ObjectInfo oinfo)
     {
@@ -768,8 +752,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Computes the tile coordinates of the supplied sprite and appends it
-     * to the supplied dirty item list.
+     * Computes the tile coordinates of the supplied sprite and appends it to the supplied dirty
+     * item list.
      */
     protected void appendDirtySprite (DirtyItemList list, Sprite sprite)
     {
@@ -786,12 +770,13 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * This is called when our view position has changed by more than one
-     * tile in any direction. Herein we do a whole crapload of stuff:
+     * This is called when our view position has changed by more than one tile in any direction.
+     * Herein we do a whole crapload of stuff:
      *
-     * <ul><li> Queue up loads for any new influential blocks.
-     * <li> Flush any blocks that are no longer influential.
-     * <li> Recompute the list of potentially visible scene objects.
+     * <ul>
+     *   <li>Queue up loads for any new influential blocks.</li>
+     *   <li>Flush any blocks that are no longer influential.</li>
+     *   <li>Recompute the list of potentially visible scene objects.</li>
      * </ul>
      *
      * @return the count of blocks pending after this rethink.
@@ -872,10 +857,10 @@ public class MisoScenePanel extends VirtualMediaPanel
 
     /**
      * Configures <code>influentialBounds</code> to contain the bounds of the potentially
-     * "influential" world and <code>visibleBlockBounds</code> to contain bounds that are used to
-     * determine which blocks should be resolved before making the view visible.
+     * "influential" world and <code>visibleBlockBounds</code> to contain bounds that are used
+     * to determine which blocks should be resolved before making the view visible.
      *
-     * <p> Everything that intersects the influential area will be resolved on the expectation
+     * <p>Everything that intersects the influential area will be resolved on the expectation
      * that it could be scrolled into view at any time. The influential bounds should be large
      * enough that the time between a block becoming influential and the time at which it is
      * resolved is longer than the expected time by which it will be scrolled into view, otherwise
@@ -895,8 +880,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Returns the bounds for which all intersecting scene blocks are kept
-     * resolved. Do not modify the rectangle returned by this method.
+     * Returns the bounds for which all intersecting scene blocks are kept resolved. Do not modify
+     * the rectangle returned by this method.
      */
     protected Rectangle getInfluentialBounds ()
     {
@@ -914,8 +899,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Called by the scene block if it has come up for resolution but is
-     * no longer influential.
+     * Called by the scene block if it has come up for resolution but is no longer influential.
      */
     protected void blockAbandoned (SceneBlock block)
     {
@@ -927,8 +911,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Called by a scene block when it has completed its resolution
-     * process.
+     * Called by a scene block when it has completed its resolution process.
      */
     protected void blockResolved (SceneBlock block)
     {
@@ -939,9 +922,8 @@ public class MisoScenePanel extends VirtualMediaPanel
         Rectangle sbounds = block.getScreenBounds();
         if (!_delayRepaint && sbounds != null && sbounds.intersects(_vbounds)) {
 //            warnVisible(block, sbounds);
-            // if we have yet further blocks to resolve, queue up a
-            // repaint now so that we get this data onscreen as quickly as
-            // possible
+            // if we have yet further blocks to resolve, queue up a repaint now so that we get these
+            // data onscreen as quickly as possible
             if (_pendingBlocks > 1) {
                 recomputeVisible();
                 _remgr.invalidateRegion(sbounds);
@@ -973,9 +955,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Issues a warning to the error log that the specified block became
-     * visible prior to being resolved. Derived classes may wish to
-     * augment or inhibit this warning.
+     * Issues a warning to the error log that the specified block became visible prior to being
+     * resolved. Derived classes may wish to augment or inhibit this warning.
      */
     protected void warnVisible (SceneBlock block, Rectangle sbounds)
     {
@@ -1088,8 +1069,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Derived classes can provide human readable object tips via this
-     * method.
+     * Derived classes can provide human readable object tips via this method.
      */
     protected String getTipText (SceneObject scobj, String action)
     {
@@ -1098,8 +1078,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Provides an icon for this tooltip, the default looks up an object
-     * action handler for the action and requests the icon from it.
+     * Provides an icon for this tooltip, the default looks up an object action handler for the
+     * action and requests the icon from it.
      */
     protected Icon getTipIcon (SceneObject scobj, String action)
     {
@@ -1159,10 +1139,9 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Adds to the supplied dirty item list, all of the object tiles that
-     * are hit by the specified point (meaning the point is contained
-     * within their bounds and intersects a non-transparent pixel in the
-     * actual object image.
+     * Adds to the supplied dirty item list, all of the object tiles that are hit by the specified
+     * point (meaning the point is contained within their bounds and intersects a non-transparent
+     * pixel in the actual object image.
      */
     protected void getHitObjects (DirtyItemList list, int x, int y)
     {
@@ -1177,8 +1156,7 @@ public class MisoScenePanel extends VirtualMediaPanel
                 continue;
             }
 
-            // now check that the pixel in the tile image is
-            // non-transparent at that point
+            // now check that the pixel in the tile image is non-transparent at that point
             if (!scobj.tile.hitTest(x - pbounds.x, y - pbounds.y)) {
                 continue;
             }
@@ -1189,10 +1167,9 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Determines whether we should skip the specified object when compiling
-     * the list of objects under a specified point using
-     * {@link #getHitObjects}.  The default implementation returns
-     * <code>true</code> iff the object has no action.
+     * Determines whether we should skip the specified object when compiling the list of objects
+     * under a specified point using {@link #getHitObjects}. The default implementation returns
+     * <code>true</code> if the object has no action.
      */
     protected boolean skipHitObject (SceneObject scobj)
     {
@@ -1200,12 +1177,10 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Converts the supplied screen coordinates into tile coordinates,
-     * writing the values into the supplied {@link Point} instance and
-     * returning true if the screen coordinates translated into a
-     * different set of tile coordinates than were already contained in
-     * the point (so that the caller can know to update a highlight, for
-     * example).
+     * Converts the supplied screen coordinates into tile coordinates, writing the values into the
+     * supplied {@link Point} instance and returning true if the screen coordinates translated
+     * into a different set of tile coordinates than were already contained in the point (so that
+     * the caller can know to update a highlight, for example).
      *
      * @return true if the tile coordinates have changed.
      */
@@ -1263,9 +1238,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * We don't want sprites rendered using the standard mechanism because
-     * we intersperse them with objects in our scene and need to manage
-     * their z-order.
+     * We don't want sprites rendered using the standard mechanism because we intersperse them
+     * with objects in our scene and need to manage their z-order.
      */
     @Override
     protected void paintBits (Graphics2D gfx, int layer, Rectangle dirty)
@@ -1274,9 +1248,9 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * A function where derived classes can paint things after the base
-     * tiles have been rendered but before anything else has been rendered
-     * (so that whatever is painted appears to be on the ground).
+     * A function where derived classes can paint things after the base tiles have been rendered
+     * but before anything else has been rendered (so that whatever is painted appears to be on
+     * the ground).
      */
     protected void paintBaseDecorations (Graphics2D gfx, Rectangle clip)
     {
@@ -1284,8 +1258,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     }
 
     /**
-     * Renders the dirty sprites and objects in the scene to the given
-     * graphics context.
+     * Renders the dirty sprites and objects in the scene to the given graphics context.
      */
     protected void paintDirtyItems (Graphics2D gfx, Rectangle clip)
     {
@@ -1428,7 +1401,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         return true;
     }
 
-    /** Used by {@link #paintTiles}. */
+    /** Used by {@link MisoScenePanel#paintTiles}. */
     protected class PaintTileOp implements TileOp
     {
         public void setGraphics (Graphics2D gfx) {
@@ -1483,8 +1456,7 @@ public class MisoScenePanel extends VirtualMediaPanel
                 }
 
             } catch (ArrayIndexOutOfBoundsException e) {
-                log.warning("Whoops, booched it [tx=" + tx +
-                            ", ty=" + ty + ", tb.x=" + tbounds.x + "].");
+                log.warning("Whoops, booched it", "tx", tx, "ty", ty, "tb.x", tbounds.x);
                 e.printStackTrace(System.err);
             }
 
@@ -1541,8 +1513,7 @@ public class MisoScenePanel extends VirtualMediaPanel
     /** Contains the bounds of our "area of influence" in screen coords. */
     protected Rectangle _ibounds = new Rectangle();
 
-    /** Contains the bounds of our visible "area of influence" in screen
-     * coords. */
+    /** Contains the bounds of our visible "area of influence" in screen coords. */
     protected Rectangle _vibounds = new Rectangle();
 
     /** Used by {@link #rethink}. */

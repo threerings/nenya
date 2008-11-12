@@ -113,7 +113,7 @@ public class OpenALSoundPlayer extends SoundPlayer
     public void setClipVolume (final float vol)
     {
         super.setClipVolume(vol);
-        _ticker.postRunnable(new Runnable(){
+        _ticker.postRunnable(new Runnable() {
             public void run () {
                 _alSoundManager.setBaseGain(vol);
             }});
