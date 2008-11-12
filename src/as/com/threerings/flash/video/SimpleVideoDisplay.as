@@ -46,9 +46,9 @@ public class SimpleVideoDisplay extends Sprite
 
         addChild(_player.getDisplay());
 
-        _mask = new Shape();
-        this.mask = _mask;
-        addChild(_mask);
+        var masker :Shape = new Shape();
+        this.mask = masker;
+        addChild(masker);
 
         addEventListener(MouseEvent.ROLL_OVER, handleRollOver);
         addEventListener(MouseEvent.ROLL_OUT, handleRollOut);
@@ -58,7 +58,7 @@ public class SimpleVideoDisplay extends Sprite
         redrawHUD();
 
         // create the mask...
-        var g :Graphics = _mask.graphics;
+        var g :Graphics = masker.graphics;
         g.clear();
         g.beginFill(0xFFFFFF);
         g.drawRect(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT);
@@ -310,9 +310,6 @@ public class SimpleVideoDisplay extends Sprite
 
     protected var _dragging :Boolean;
     
-    /** Our mask, also defines our boundaries for clicking. */
-    protected var _mask :Shape;
-
     protected static const PAD :int = 10;
     protected static const TRACK_HEIGHT :int = 20;
     protected static const TRACK_WIDTH :int = NATIVE_WIDTH - (PAD * 2);
