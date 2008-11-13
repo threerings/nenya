@@ -64,11 +64,6 @@ public class SimpleVideoDisplay extends Sprite
         g.drawRect(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT);
         g.endFill();
 
-        g = this.graphics;
-        g.beginFill(0xFF000000);
-        g.drawRect(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT);
-        g.endFill();
-
         // and update the HUD location (even if not currently showing)
         _hud.x = NATIVE_WIDTH/2;
         _hud.y = NATIVE_HEIGHT/2;
