@@ -221,7 +221,7 @@ public class FlvVideoPlayer extends EventDispatcher
 
     protected function handleStreamNetStatus (event :NetStatusEvent) :void
     {
-        log.debug("NetStatus", "level", event.info.level, "code", event.info.code);
+//        log.debug("NetStatus", "level", event.info.level, "code", event.info.code);
 
         switch (event.info.code) {
         case "NetStream.Play.Stop":
@@ -266,12 +266,10 @@ public class FlvVideoPlayer extends EventDispatcher
      */
     protected function handleMetaData (info :Object) :void
     {
-        log.info("Got video metadata:");
-        for (var n :String in info) {
-            log.info("    " + n + ": " + info[n]);
-        }
-
-        // TODO: total duration is info.duration
+//        log.debug("Got video metadata:");
+//        for (var n :String in info) {
+//            log.debug("    " + n + ": " + info[n]);
+//        }
 
         if ("duration" in info) {
             _duration = Number(info.duration);
