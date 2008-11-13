@@ -25,6 +25,7 @@ import flash.net.NetStream;
 import flash.utils.Timer;
 
 import com.threerings.util.Log;
+import com.threerings.util.MethodQueue;
 import com.threerings.util.ValueEvent;
 
 public class FlvVideoPlayer extends EventDispatcher
@@ -189,7 +190,6 @@ public class FlvVideoPlayer extends EventDispatcher
         _vid.width = _size.x;
         _vid.height = _size.y;
 
-        log.debug("====> size known: " + _size);
         dispatchEvent(new ValueEvent(VideoPlayerCodes.SIZE, _size.clone()));
     }
 
@@ -232,7 +232,7 @@ public class FlvVideoPlayer extends EventDispatcher
             break;
 
         case "NetStream.Seek.Notify":
-            handlePositionCheck(null);
+            MethodQueue.callLater(handlePositionCheck, [ null ]);
             break;
         }
     }
