@@ -63,9 +63,9 @@ import com.threerings.util.ValueEvent;
 import com.threerings.util.Util;
 
 import com.threerings.flash.media.FlvVideoPlayer;
+import com.threerings.flash.media.MediaPlayerCodes;
 import com.threerings.flash.media.SimpleVideoDisplay;
 import com.threerings.flash.media.VideoPlayer;
-import com.threerings.flash.media.VideoPlayerCodes;
 
 /**
  * Dispatched when the size of the media being loaded is known.
@@ -751,7 +751,7 @@ public class MediaContainer extends Sprite
 
         } else if (_media is SimpleVideoDisplay) {
             var vid :SimpleVideoDisplay = SimpleVideoDisplay(_media);
-//            vid.removeEventListener(VideoPlayerCodes.SIZE, handleVideoSizeKnown);
+//            vid.removeEventListener(MediaPlayerCodes.SIZE, handleVideoSizeKnown);
             vid.unload();
         }
     }

@@ -19,7 +19,7 @@ import com.threerings.util.ValueEvent;
 
 /**
  *
- * @eventType com.threerings.flash.video.VideoPlayerCodes.SIZE
+ * @eventType com.threerings.flash.video.MediaPlayerCodes.SIZE
  */
 [Event(name="size", type="com.threerings.util.ValueEvent")]
 
@@ -38,11 +38,11 @@ public class SimpleVideoDisplay extends Sprite
     public function SimpleVideoDisplay (player :VideoPlayer)
     {
         _player = player;
-        _player.addEventListener(VideoPlayerCodes.STATE, handlePlayerState);
-        _player.addEventListener(VideoPlayerCodes.SIZE, handlePlayerSize);
-        _player.addEventListener(VideoPlayerCodes.DURATION, handlePlayerDuration);
-        _player.addEventListener(VideoPlayerCodes.POSITION, handlePlayerPosition);
-        _player.addEventListener(VideoPlayerCodes.ERROR, handlePlayerError);
+        _player.addEventListener(MediaPlayerCodes.STATE, handlePlayerState);
+        _player.addEventListener(MediaPlayerCodes.SIZE, handlePlayerSize);
+        _player.addEventListener(MediaPlayerCodes.DURATION, handlePlayerDuration);
+        _player.addEventListener(MediaPlayerCodes.POSITION, handlePlayerPosition);
+        _player.addEventListener(MediaPlayerCodes.ERROR, handlePlayerError);
 
         addChild(_player.getDisplay());
 
@@ -132,12 +132,12 @@ public class SimpleVideoDisplay extends Sprite
         event.stopImmediatePropagation();
 
         switch (_player.getState()) {
-        case VideoPlayerCodes.STATE_READY:
-        case VideoPlayerCodes.STATE_PAUSED:
+        case MediaPlayerCodes.STATE_READY:
+        case MediaPlayerCodes.STATE_PAUSED:
             _player.play();
             break;
 
-        case VideoPlayerCodes.STATE_PLAYING:
+        case MediaPlayerCodes.STATE_PLAYING:
             _player.pause();
             break;
 
@@ -261,9 +261,9 @@ public class SimpleVideoDisplay extends Sprite
         const g :Graphics = _hud.graphics;
         g.clear();
 
-        if ((state != VideoPlayerCodes.STATE_READY) &&
-                (state != VideoPlayerCodes.STATE_PLAYING) &&
-                (state != VideoPlayerCodes.STATE_PAUSED)) {
+        if ((state != MediaPlayerCodes.STATE_READY) &&
+                (state != MediaPlayerCodes.STATE_PLAYING) &&
+                (state != MediaPlayerCodes.STATE_PAUSED)) {
             // draw something loading-like
             // TODO animated swf
             g.beginFill(0x000033);
@@ -282,7 +282,7 @@ public class SimpleVideoDisplay extends Sprite
         g.lineStyle(2, 0xFFFFFF);
         g.drawCircle(0, 0, 20);
 
-        if (state == VideoPlayerCodes.STATE_PLAYING) {
+        if (state == MediaPlayerCodes.STATE_PLAYING) {
             g.lineStyle(2, 0x00FF00);
             g.moveTo(-4, -10);
             g.lineTo(-4, 10);

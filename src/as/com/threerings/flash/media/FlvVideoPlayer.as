@@ -68,11 +68,11 @@ public class FlvVideoPlayer extends EventDispatcher
 
         _netStream.play(url);
         if (_autoPlay) {
-            updateState(VideoPlayerCodes.STATE_PLAYING);
+            updateState(MediaPlayerCodes.STATE_PLAYING);
 
         } else {
             _netStream.pause();
-            updateState(VideoPlayerCodes.STATE_READY);
+            updateState(MediaPlayerCodes.STATE_READY);
         }
     }
 
@@ -99,7 +99,7 @@ public class FlvVideoPlayer extends EventDispatcher
     {
         if (_netStream != null) {
             _netStream.resume();
-            updateState(VideoPlayerCodes.STATE_PLAYING);
+            updateState(MediaPlayerCodes.STATE_PLAYING);
         }
         // TODO: throw an error if _netStream == null??
     }
@@ -109,7 +109,7 @@ public class FlvVideoPlayer extends EventDispatcher
     {
         if (_netStream != null) {
             _netStream.pause();
-            updateState(VideoPlayerCodes.STATE_PAUSED);
+            updateState(MediaPlayerCodes.STATE_PAUSED);
         }
     }
 
@@ -190,12 +190,12 @@ public class FlvVideoPlayer extends EventDispatcher
         _vid.width = _size.x;
         _vid.height = _size.y;
 
-        dispatchEvent(new ValueEvent(VideoPlayerCodes.SIZE, _size.clone()));
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.SIZE, _size.clone()));
     }
 
     protected function handlePositionCheck (event :TimerEvent) :void
     {
-        dispatchEvent(new ValueEvent(VideoPlayerCodes.POSITION, getPosition()));
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.POSITION, getPosition()));
     }
 
     protected function handleNetStatus (event :NetStatusEvent) :void
@@ -203,7 +203,7 @@ public class FlvVideoPlayer extends EventDispatcher
         var info :Object = event.info;
         if ("error" == info.level) {
             log.warning("NetStatus error: " + info.code);
-            dispatchEvent(new ValueEvent(VideoPlayerCodes.ERROR, info.code));
+            dispatchEvent(new ValueEvent(MediaPlayerCodes.ERROR, info.code));
             return;
         }
         // else info.level == "status"
@@ -228,7 +228,7 @@ public class FlvVideoPlayer extends EventDispatcher
             // rewind to the beginning
             _netStream.seek(0);
             _netStream.pause();
-            updateState(VideoPlayerCodes.STATE_PAUSED);
+            updateState(MediaPlayerCodes.STATE_PAUSED);
             break;
 
         case "NetStream.Seek.Notify":
@@ -258,7 +258,7 @@ public class FlvVideoPlayer extends EventDispatcher
     protected function redispatchError (event :ErrorEvent) :void
     {
         log.warning("got video error: " + event);
-        dispatchEvent(new ValueEvent(VideoPlayerCodes.ERROR, event.text));
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.ERROR, event.text));
     }
 
     /**
@@ -274,7 +274,7 @@ public class FlvVideoPlayer extends EventDispatcher
         if ("duration" in info) {
             _duration = Number(info.duration);
             if (!isNaN(_duration)) {
-                dispatchEvent(new ValueEvent(VideoPlayerCodes.DURATION, _duration));
+                dispatchEvent(new ValueEvent(MediaPlayerCodes.DURATION, _duration));
             }
         }
     }
@@ -284,14 +284,14 @@ public class FlvVideoPlayer extends EventDispatcher
         const oldState :int = _state;
 
         _state = newState;
-        dispatchEvent(new ValueEvent(VideoPlayerCodes.STATE, newState));
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.STATE, newState));
 
-        if (_state == VideoPlayerCodes.STATE_PLAYING) {
+        if (_state == MediaPlayerCodes.STATE_PLAYING) {
             _positionChecker.start();
 
         } else {
             _positionChecker.reset();
-            if (oldState == VideoPlayerCodes.STATE_PLAYING) {
+            if (oldState == MediaPlayerCodes.STATE_PLAYING) {
                 handlePositionCheck(null);
             }
         }
@@ -307,7 +307,7 @@ public class FlvVideoPlayer extends EventDispatcher
 
     protected var _netStream :NetStream;
 
-    protected var _state :int = VideoPlayerCodes.STATE_UNREADY;
+    protected var _state :int = MediaPlayerCodes.STATE_UNREADY;
 
     /** Our size, null until known. */
     protected var _size :Point;

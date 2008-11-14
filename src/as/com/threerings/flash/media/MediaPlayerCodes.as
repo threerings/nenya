@@ -3,7 +3,7 @@
 
 package com.threerings.flash.media {
 
-public class VideoPlayerCodes
+public class MediaPlayerCodes
 {
     public static const STATE :String = "state";
 
@@ -11,6 +11,7 @@ public class VideoPlayerCodes
 
     public static const POSITION :String = "position";
 
+    /** Only applicable for VideoPlayer. */
     public static const SIZE :String = "size";
 
     public static const ERROR :String = "error";
