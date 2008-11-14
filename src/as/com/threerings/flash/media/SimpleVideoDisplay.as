@@ -1,7 +1,7 @@
 //
 // $Id#
 
-package com.threerings.flash.video {
+package com.threerings.flash.media {
 
 import flash.display.DisplayObject;
 import flash.display.Graphics;

@@ -62,10 +62,10 @@ import com.threerings.util.StringUtil;
 import com.threerings.util.ValueEvent;
 import com.threerings.util.Util;
 
-import com.threerings.flash.video.FlvVideoPlayer;
-import com.threerings.flash.video.SimpleVideoDisplay;
-import com.threerings.flash.video.VideoPlayer;
-import com.threerings.flash.video.VideoPlayerCodes;
+import com.threerings.flash.media.FlvVideoPlayer;
+import com.threerings.flash.media.SimpleVideoDisplay;
+import com.threerings.flash.media.VideoPlayer;
+import com.threerings.flash.media.VideoPlayerCodes;
 
 /**
  * Dispatched when the size of the media being loaded is known.

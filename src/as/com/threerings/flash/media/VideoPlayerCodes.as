@@ -1,7 +1,7 @@
 //
 // $Id$
 
-package com.threerings.flash.video {
+package com.threerings.flash.media {
 
 public class VideoPlayerCodes
 {
