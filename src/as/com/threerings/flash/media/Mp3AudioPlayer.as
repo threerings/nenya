@@ -13,6 +13,7 @@ import flash.events.TimerEvent;
 
 import flash.media.Sound;
 import flash.media.SoundChannel;
+import flash.media.SoundLoaderContext;
 import flash.media.SoundTransform;
 
 import flash.net.URLRequest;
@@ -27,7 +28,6 @@ public class Mp3AudioPlayer extends EventDispatcher
 {
     public function Mp3AudioPlayer (loop :Boolean = false)
     {
-        trace(".............. v3");
         _loop = loop;
 
         _positionChecker = new Timer(25);
@@ -45,7 +45,7 @@ public class Mp3AudioPlayer extends EventDispatcher
         _sound.addEventListener(Event.ID3, handleId3); // TODO
         _sound.addEventListener(IOErrorEvent.IO_ERROR, handleError);
         _sound.addEventListener(Event.COMPLETE, handleSoundComplete);
-        _sound.load(new URLRequest(url));
+        _sound.load(new URLRequest(url), new SoundLoaderContext(1000, true));
         play();
     }
 
@@ -177,7 +177,7 @@ public class Mp3AudioPlayer extends EventDispatcher
 
     protected function handleId3 (event :Event) :void
     {
-        trace("got ID3: Duration is now : " + _sound.length);
+        trace("Got ID3");
     }
 
     /**
