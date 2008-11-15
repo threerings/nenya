@@ -282,9 +282,7 @@ public class FlvVideoPlayer extends EventDispatcher
     protected function updateState (newState :int) :void
     {
         const oldState :int = _state;
-
         _state = newState;
-        dispatchEvent(new ValueEvent(MediaPlayerCodes.STATE, newState));
 
         if (_state == MediaPlayerCodes.STATE_PLAYING) {
             _positionChecker.start();
@@ -295,6 +293,8 @@ public class FlvVideoPlayer extends EventDispatcher
                 handlePositionCheck(null);
             }
         }
+
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.STATE, newState));
     }
 
     protected const log :Log = Log.getLog(this);
