@@ -11,6 +11,8 @@ public class MediaPlayerCodes
 
     public static const POSITION :String = "position";
 
+    public static const METADATA :String = "metadata";
+
     /** Only applicable for VideoPlayer. */
     public static const SIZE :String = "size";
 

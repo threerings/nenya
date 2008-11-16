@@ -152,8 +152,15 @@ public class FlvVideoPlayer extends EventDispatcher
     }
 
     // from VideoPlayer
+    public function getMetadata () :Object
+    {
+        return _metadata;
+    }
+
+    // from VideoPlayer
     public function unload () :void
     {
+        _metadata = null;
         _sizeChecker.reset();
         _positionChecker.reset();
         _vid.attachNetStream(null);
@@ -266,17 +273,15 @@ public class FlvVideoPlayer extends EventDispatcher
      */
     protected function handleMetaData (info :Object) :void
     {
-//        log.debug("Got video metadata:");
-//        for (var n :String in info) {
-//            log.debug("    " + n + ": " + info[n]);
-//        }
-
         if ("duration" in info) {
             _duration = Number(info.duration);
             if (!isNaN(_duration)) {
                 dispatchEvent(new ValueEvent(MediaPlayerCodes.DURATION, _duration));
             }
         }
+
+        _metadata = info;
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.METADATA, info));
     }
 
     protected function updateState (newState :int) :void
@@ -315,6 +320,8 @@ public class FlvVideoPlayer extends EventDispatcher
     protected var _duration :Number = NaN;
 
     protected var _volume :Number = 1;
+
+    protected var _metadata :Object;
 
     /** Checks the video every 100ms to see if the dimensions are now know.
      * Yes, this is how to do it. We could trigger on ENTER_FRAME, but then

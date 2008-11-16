@@ -33,6 +33,14 @@ import com.threerings.util.ValueEvent;
 [Event(name="position", type="com.threerings.util.ValueEvent")]
 
 /**
+ * Dispatched when media metadata is available, if ever.
+ * <b>value</b>: metadata object. @see getMetadata() for more info.
+ *
+ * @eventType com.threerings.flash.media.MediaPlayerCodes.METADATA
+ */
+[Event(name="metadata", type="com.threerings.util.ValueEvent")]
+
+/**
  * Dispatched when there's a problem.
  * <b>value</b>: a String error code/message.
  *
@@ -84,6 +92,12 @@ public interface MediaPlayer extends IEventDispatcher
      * Get the volume, from 0 to 1.
      */
     function getVolume () :Number;
+
+    /**
+     * Get metadata, or null if none or not yet available. The exact format of this data
+     * object varies by MediaPlayer implementation, see the documentation for each.
+     */
+    function getMetadata () :Object;
 
     /**
      * Unload the media.

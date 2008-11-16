@@ -118,6 +118,12 @@ public class Mp3AudioPlayer extends EventDispatcher
     }
 
     // from AudioPlayer
+    public function getMetadata () :Object
+    {
+        return (_sound == null) ? null : _sound.id3;
+    }
+
+    // from AudioPlayer
     public function unload () :void
     {
         if (_sound != null) {
@@ -132,6 +138,9 @@ public class Mp3AudioPlayer extends EventDispatcher
         _lastPosition = NaN;
     }
 
+    /**
+     * Play without updating the current state.
+     */
     protected function play0 () :void
     {
         pause0();
@@ -143,6 +152,9 @@ public class Mp3AudioPlayer extends EventDispatcher
         }
     }
 
+    /**
+     * Pause without saving the position or updating the state.
+     */
     protected function pause0 () :void
     {
         if (_chan != null) {
@@ -177,7 +189,7 @@ public class Mp3AudioPlayer extends EventDispatcher
 
     protected function handleId3 (event :Event) :void
     {
-        trace("Got ID3");
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.METADATA, _sound.id3));
     }
 
     /**
