@@ -30,7 +30,7 @@ public class Mp3AudioPlayer extends EventDispatcher
     {
         _loop = loop;
 
-        _positionChecker = new Timer(25);
+        _positionChecker = new Timer(250);
         _positionChecker.addEventListener(TimerEvent.TIMER, handlePositionCheck);
     }
 
