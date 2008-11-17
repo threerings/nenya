@@ -142,8 +142,44 @@ public class Mp3AudioPlayer extends EventDispatcher
                 // ignore
             }
         }
-        _positionChecker.reset();
+        _state = MediaPlayerCodes.STATE_UNREADY;
+        checkNeedTimer();
         _lastPosition = NaN;
+    }
+
+    override public function addEventListener (
+        type :String, listener :Function, useCapture :Boolean = false,
+        priority :int = 0, useWeakReference :Boolean = false) :void
+    {
+        super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+
+        if (type == MediaPlayerCodes.POSITION) {
+            checkNeedTimer();
+        }
+    }
+
+    override public function removeEventListener (
+        type :String, listener :Function, useCapture :Boolean = false) :void
+    {
+        super.removeEventListener(type, listener, useCapture);
+
+        if (type == MediaPlayerCodes.POSITION) {
+            checkNeedTimer();
+        }
+    }
+
+    protected function checkNeedTimer () :void
+    {
+        const needTimer :Boolean = (_state == MediaPlayerCodes.STATE_PLAYING) &&
+            hasEventListener(MediaPlayerCodes.POSITION);
+        const isRunning :Boolean = _positionChecker.running;
+        if (needTimer != isRunning) {
+            if (needTimer) {
+                _positionChecker.start();
+            } else {
+                _positionChecker.reset();
+            }
+        }
     }
 
     /**
@@ -185,15 +221,7 @@ public class Mp3AudioPlayer extends EventDispatcher
     protected function updateState (newState :int) :void
     {
         _state = newState;
-
-        if (_state == MediaPlayerCodes.STATE_PLAYING) {
-            _positionChecker.start();
-
-        } else {
-            _positionChecker.reset();
-            // pause() ends up checking the position one last time before dispatching state..
-        }
-
+        checkNeedTimer();
         dispatchEvent(new ValueEvent(MediaPlayerCodes.STATE, newState));
     }
 
