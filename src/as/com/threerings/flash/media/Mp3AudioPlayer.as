@@ -42,9 +42,9 @@ public class Mp3AudioPlayer extends EventDispatcher
         _isComplete = false;
         _lastPosition = 0;
         _sound = new Sound();
-        _sound.addEventListener(Event.ID3, handleId3); // TODO
+        _sound.addEventListener(Event.ID3, handleId3);
         _sound.addEventListener(IOErrorEvent.IO_ERROR, handleError);
-        _sound.addEventListener(Event.COMPLETE, handleSoundComplete);
+        _sound.addEventListener(Event.COMPLETE, handleLoadingComplete);
         _sound.load(new URLRequest(url), new SoundLoaderContext(1000, true));
         play();
     }
@@ -66,7 +66,7 @@ public class Mp3AudioPlayer extends EventDispatcher
     // from AudioPlayer
     public function pause () :void
     {
-        handlePositionCheck(null); // update _lastPosition and dispatch an event
+        handlePositionCheck(); // update _lastPosition and dispatch an event
         pause0();
         updateState(MediaPlayerCodes.STATE_PAUSED);
     }
@@ -86,7 +86,8 @@ public class Mp3AudioPlayer extends EventDispatcher
         if (_chan == null) {
             return _lastPosition;
         }
-        return _chan.position / 1000;
+        // we mod by the duration because when we loop the position is ever-growing. hahah!
+        return (_chan.position / 1000);
     }
 
     // from AudioPlayer
@@ -98,7 +99,7 @@ public class Mp3AudioPlayer extends EventDispatcher
             play0();
 
         } else {
-            handlePositionCheck(null);
+            handlePositionCheck();
         }
     }
 
@@ -126,6 +127,7 @@ public class Mp3AudioPlayer extends EventDispatcher
     // from AudioPlayer
     public function unload () :void
     {
+        pause0();
         if (_sound != null) {
             try {
                 _sound.close();
@@ -133,7 +135,6 @@ public class Mp3AudioPlayer extends EventDispatcher
                 // ignore
             }
         }
-        pause0();
         _positionChecker.reset();
         _lastPosition = NaN;
     }
@@ -144,9 +145,11 @@ public class Mp3AudioPlayer extends EventDispatcher
     protected function play0 () :void
     {
         pause0();
-        _chan = _sound.play(_lastPosition * 1000, _loop ? int.MAX_VALUE : 0,
-            new SoundTransform(_volume));
-        if (_chan == null) {
+        _chan = _sound.play(_lastPosition * 1000, 0, new SoundTransform(_volume));
+        if (_chan != null) {
+            _chan.addEventListener(Event.SOUND_COMPLETE, handlePlaybackComplete);
+
+        } else {
             Log.getLog(this).warning("All sound channels are in use; " +
                 "unable to play sound.");
         }
@@ -163,7 +166,7 @@ public class Mp3AudioPlayer extends EventDispatcher
         }
     }
 
-    protected function handlePositionCheck (event :TimerEvent) :void
+    protected function handlePositionCheck (event :TimerEvent = null) :void
     {
         if (!_isComplete) {
             dispatchEvent(new ValueEvent(MediaPlayerCodes.DURATION, getDuration()));
@@ -194,10 +197,22 @@ public class Mp3AudioPlayer extends EventDispatcher
 
     /**
      */
-    protected function handleSoundComplete (event :Event) :void
+    protected function handleLoadingComplete (event :Event) :void
     {
-        handlePositionCheck(null); // also updates duration
+        handlePositionCheck(); // also updates duration
         _isComplete = true;
+    }
+
+    protected function handlePlaybackComplete (event :Event) :void
+    {
+        _lastPosition = 0;
+        pause0();
+        handlePositionCheck();
+        if (_loop) {
+            play0();
+        } else {
+            updateState(MediaPlayerCodes.STATE_PAUSED);
+        }
     }
 
     protected function handleError (event :IOErrorEvent) :void
