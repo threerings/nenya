@@ -172,8 +172,7 @@ public class Mp3AudioPlayer extends EventDispatcher
     {
         const needTimer :Boolean = (_state == MediaPlayerCodes.STATE_PLAYING) &&
             hasEventListener(MediaPlayerCodes.POSITION);
-        const isRunning :Boolean = _positionChecker.running;
-        if (needTimer != isRunning) {
+        if (needTimer != _positionChecker.running) {
             if (needTimer) {
                 _positionChecker.start();
             } else {
