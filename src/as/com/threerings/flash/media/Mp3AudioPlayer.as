@@ -121,7 +121,14 @@ public class Mp3AudioPlayer extends EventDispatcher
     // from AudioPlayer
     public function getMetadata () :Object
     {
-        return (_sound == null) ? null : _sound.id3;
+        if (_sound != null) {
+            try {
+                return _sound.id3;
+            } catch (err :SecurityError) {
+                Log.getLog(this).warning("Can't read id3 data", err);
+            }
+        }
+        return null;
     }
 
     // from AudioPlayer
@@ -192,7 +199,7 @@ public class Mp3AudioPlayer extends EventDispatcher
 
     protected function handleId3 (event :Event) :void
     {
-        dispatchEvent(new ValueEvent(MediaPlayerCodes.METADATA, _sound.id3));
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.METADATA, getMetadata()));
     }
 
     /**
