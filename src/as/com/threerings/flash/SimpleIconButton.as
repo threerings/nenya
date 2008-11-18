@@ -6,7 +6,6 @@ package com.threerings.flash {
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.SimpleButton;
-import flash.display.Sprite;
 
 import flash.geom.ColorTransform;
 
@@ -36,19 +35,14 @@ public class SimpleIconButton extends SimpleButton
                 "that becomes one.");
         }
 
-        upState = new Bitmap(bmp);
-        hitTestState = upState;
-        overState = new Bitmap(bmp);
-
-        var down :Sprite = new Sprite();
-        var downBmp :Bitmap = new Bitmap(bmp);
-        downBmp.y = 1;
-        down.addChild(downBmp);
-        downState = down;
-
         const bright :ColorTransform = new ColorTransform(1.25, 1.25, 1.25);
+        upState = new Bitmap(bmp);
+        overState = new Bitmap(bmp);
         overState.transform.colorTransform = bright;
+        downState = new Bitmap(bmp);
+        downState.y = 1;
         downState.transform.colorTransform = bright;
+        hitTestState = upState;
     }
 }
 }
