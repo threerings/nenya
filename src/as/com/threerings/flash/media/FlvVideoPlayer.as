@@ -161,6 +161,8 @@ public class FlvVideoPlayer extends EventDispatcher
     public function unload () :void
     {
         _metadata = null;
+        _duration = NaN;
+        _gotDurationFromMetadata = false;
         _sizeChecker.reset();
         _positionChecker.reset();
         _vid.attachNetStream(null);
@@ -200,9 +202,14 @@ public class FlvVideoPlayer extends EventDispatcher
         dispatchEvent(new ValueEvent(MediaPlayerCodes.SIZE, _size.clone()));
     }
 
-    protected function handlePositionCheck (event :TimerEvent) :void
+    protected function handlePositionCheck (event :TimerEvent = null) :void
     {
-        dispatchEvent(new ValueEvent(MediaPlayerCodes.POSITION, getPosition()));
+        const pos :Number = getPosition();
+        if (!_gotDurationFromMetadata && (isNaN(_duration) || (pos > _duration))) {
+            _duration = pos;
+            dispatchEvent(new ValueEvent(MediaPlayerCodes.DURATION, _duration));
+        }
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.POSITION, pos));
     }
 
     protected function handleNetStatus (event :NetStatusEvent) :void
@@ -232,14 +239,17 @@ public class FlvVideoPlayer extends EventDispatcher
 
         switch (event.info.code) {
         case "NetStream.Play.Stop":
-            // rewind to the beginning
-            _netStream.seek(0);
-            _netStream.pause();
-            updateState(MediaPlayerCodes.STATE_PAUSED);
+            if (_state == MediaPlayerCodes.STATE_PLAYING) {
+                handlePositionCheck(); // if we never got metadata, retrieve final position as dur
+                // rewind to the beginning
+                _netStream.seek(0);
+                _netStream.pause();
+                updateState(MediaPlayerCodes.STATE_PAUSED);
+            }
             break;
 
         case "NetStream.Seek.Notify":
-            MethodQueue.callLater(handlePositionCheck, [ null ]);
+            MethodQueue.callLater(handlePositionCheck);
             break;
         }
     }
@@ -275,6 +285,7 @@ public class FlvVideoPlayer extends EventDispatcher
     {
         if ("duration" in info) {
             _duration = Number(info.duration);
+            _gotDurationFromMetadata = true;
             if (!isNaN(_duration)) {
                 dispatchEvent(new ValueEvent(MediaPlayerCodes.DURATION, _duration));
             }
@@ -295,7 +306,7 @@ public class FlvVideoPlayer extends EventDispatcher
         } else {
             _positionChecker.reset();
             if (oldState == MediaPlayerCodes.STATE_PLAYING) {
-                handlePositionCheck(null);
+                handlePositionCheck();
             }
         }
 
@@ -318,6 +329,8 @@ public class FlvVideoPlayer extends EventDispatcher
     protected var _size :Point;
 
     protected var _duration :Number = NaN;
+
+    protected var _gotDurationFromMetadata :Boolean;
 
     protected var _volume :Number = 1;
 
