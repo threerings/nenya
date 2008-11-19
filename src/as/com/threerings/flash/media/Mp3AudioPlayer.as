@@ -77,7 +77,12 @@ public class Mp3AudioPlayer extends EventDispatcher
         if (_sound == null) {
             return NaN;
         }
-        return _sound.length / 1000;
+        const duration :Number = _sound.length / 1000;
+        if (_isComplete) {
+            return duration;
+        }
+        // extrapolate the total duration based on the current length and current bytesLoaded
+        return (duration / _sound.bytesLoaded) * _sound.bytesTotal;
     }
 
     // from AudioPlayer
@@ -233,8 +238,8 @@ public class Mp3AudioPlayer extends EventDispatcher
      */
     protected function handleLoadingComplete (event :Event) :void
     {
-        handlePositionCheck(); // also updates duration
         _isComplete = true;
+        dispatchEvent(new ValueEvent(MediaPlayerCodes.DURATION, getDuration()));
     }
 
     protected function handlePlaybackComplete (event :Event) :void
