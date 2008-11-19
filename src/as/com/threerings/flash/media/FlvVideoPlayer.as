@@ -243,8 +243,7 @@ public class FlvVideoPlayer extends EventDispatcher
                 handlePositionCheck(); // if we never got metadata, retrieve final position as dur
                 // rewind to the beginning
                 _netStream.seek(0);
-                _netStream.pause();
-                updateState(MediaPlayerCodes.STATE_PAUSED);
+                pause();
             }
             break;
 
