@@ -68,6 +68,24 @@ public class ImageUtil
     }
 
     /**
+     * Takes a BitmapData, Bitmap, or Class that will turn into either, and returns
+     * a reference to the BitmapData, or returns null.
+     */
+    public static function toBitmapData (spec :*) :BitmapData
+    {
+        if (spec is Class) {
+            spec = new (Class(spec))();
+        }
+        if (spec is BitmapData) {
+            return BitmapData(spec);
+        } else if (spec is Bitmap) {
+            return Bitmap(spec).bitmapData;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Create a minimally-sized "error" BitmapData.
      */
     public static function createErrorBitmap () :BitmapData
