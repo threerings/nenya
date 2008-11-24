@@ -22,15 +22,8 @@ public class SimpleIconButton extends SimpleButton
      */
     public function SimpleIconButton (icon :*)
     {
-        var bmp :BitmapData;
-        if (icon is Class) {
-            icon = new (Class(icon))();
-        }
-        if (icon is BitmapData ) {
-            bmp = BitmapData(icon);
-        } else if (icon is Bitmap) {
-            bmp = Bitmap(icon).bitmapData;
-        } else {
+        var bmp :BitmapData = ImageUtil.toBitmapData(icon);
+        if (bmp == null) {
             throw new Error("Unknown icon spec: must be a Bitmap or BitmapData, or a Class " +
                 "that becomes one.");
         }
