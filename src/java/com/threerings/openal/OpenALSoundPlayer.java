@@ -204,7 +204,7 @@ public class OpenALSoundPlayer extends SoundPlayer
                     @Override
                     protected int populateBuffer (ByteBuffer buf) throws IOException {
                         int read = dec.read(buf);
-                        if(buf.hasRemaining() && loop) {
+                        if (buf.hasRemaining() && loop) {
                             dec.init(_loader.getSound(bundle, path));
                             read = Math.max(0, read);
                             read += dec.read(buf);
@@ -259,13 +259,27 @@ public class OpenALSoundPlayer extends SoundPlayer
 
     public void play (String pkgPath, String key, float pan, final float gain)
     {
+        play(null, pkgPath, key, gain, null);
+    }
+
+    public boolean play (SoundType type, String pkgPath, String key, final float gain,
+        final float[] pos)
+    {
+        if (type != null && !shouldPlay(type)) {
+            return false;
+        }
+
         getSoundQueue().postRunnable(new SoundGrabber(pkgPath, key) {
             @Override
             protected void soundLoaded () {
                 sound.setGain(gain);
+                if (pos != null) {
+                    sound.setPosition(pos[0], pos[1], pos[2]);
+                }
                 sound.play(true);
             }
         });
+        return true;
     }
 
     @Override
