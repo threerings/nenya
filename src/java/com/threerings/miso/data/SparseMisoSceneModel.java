@@ -192,8 +192,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
 
         public void getObjects (Rectangle region, ObjectSet set) {
             // first look for intersecting interesting objects
-            for (int ii = 0; ii < objectInfo.length; ii++) {
-                ObjectInfo info = objectInfo[ii];
+            for (ObjectInfo info : objectInfo) {
                 if (region.contains(info.x, info.y)) {
                     set.insert(info);
                 }
@@ -217,8 +216,8 @@ public class SparseMisoSceneModel extends MisoSceneModel
             if ((objectTileIds.length != 0) || (objectInfo.length != 0)) {
                 return false;
             }
-            for (int ii=0, nn=baseTileIds.length; ii < nn; ii++) {
-                if (baseTileIds[ii] != 0) {
+            for (int baseTileId : baseTileIds) {
+                if (baseTileId != 0) {
                     return false;
                 }
             }
@@ -243,10 +242,12 @@ public class SparseMisoSceneModel extends MisoSceneModel
 
         @Override
         public String toString () {
-            return ((width == 0) ? "<no bounds>" :
-                    (width + "x" + (baseTileIds.length/width))) +
-                "+" + x + "+" + y +
-                ":" + objectInfo.length + ":" + objectTileIds.length;
+            if (width == 0 || baseTileIds == null) {
+                return "<no bounds>";
+            } else {
+                return String.format("%sx%s+%s:%s:%s", width, baseTileIds.length / width, x, y,
+                    objectInfo.length, objectTileIds.length);
+            }
         }
     }
 
@@ -283,8 +284,8 @@ public class SparseMisoSceneModel extends MisoSceneModel
     {
         for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
             Section sect = iter.next();
-            for (int oo = 0; oo < sect.objectInfo.length; oo++) {
-                list.add(sect.objectInfo[oo]);
+            for (ObjectInfo element : sect.objectInfo) {
+                list.add(element);
             }
         }
     }
@@ -317,8 +318,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
     {
         for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
             Section sect = iter.next();
-            for (int oo = 0; oo < sect.objectInfo.length; oo++) {
-                ObjectInfo oinfo = sect.objectInfo[oo];
+            for (ObjectInfo oinfo : sect.objectInfo) {
                 visitor.visit(oinfo);
             }
             if (!interestingOnly) {
