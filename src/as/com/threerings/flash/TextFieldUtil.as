@@ -91,6 +91,9 @@ public class TextFieldUtil
 
     /**
      * Create a TextField.
+     * The field will have setFocusable() called on it.
+     * Note that if the autoSize property is not none, then the field will be resized
+     * to the size of the text, overwriting any width/height properties specified.
      *
      * @param initProps contains properties with which to initialize the TextField.
      * Additionally it may contain the following properties:
@@ -112,6 +115,7 @@ public class TextFieldUtil
             tf.defaultTextFormat = createFormat(formatProps);
         }
         updateText(tf, text);
+        setFocusable(tf);
 
         return tf;
     }
@@ -150,6 +154,15 @@ public class TextFieldUtil
             field.width = field.textWidth + WIDTH_PAD;
             field.height = field.textHeight + HEIGHT_PAD;
         }
+    }
+
+    /**
+     * Add a special MouseEvent.CLICK listener so that the specified field is focusable
+     * even inside a security boundary.
+     */
+    public static function setFocusable (field :TextField) :void
+    {
+        field.addEventListener(MouseEvent.CLICK, handleFieldFocus);
     }
 
     /**
@@ -206,6 +219,28 @@ public class TextFieldUtil
         _lastSelected.setSelection(0, 0);
         _lastSelected.removeEventListener(Event.REMOVED_FROM_STAGE, handleLastSelectedRemoved);
         _lastSelected = null;
+    }
+
+    /**
+     * Handle focusing the text field.
+     */
+    protected static function handleFieldFocus (event :MouseEvent) :void
+    {
+        var tf :TextField = TextField(event.currentTarget);
+        if (tf.stage.focus == tf) {
+            return; // already has focus, bail.
+        }
+
+        // else, assign focus
+        tf.stage.focus = tf;
+
+        // try to be smart and move the cursor near the click
+        if (tf.selectable) {
+            var idx :int = tf.getCharIndexAtPoint(event.localX, event.localY);
+            if (idx != -1) {
+                tf.setSelection(idx, idx);
+            }
+        }
     }
 
     /** The last tracked TextField to be selected. */
