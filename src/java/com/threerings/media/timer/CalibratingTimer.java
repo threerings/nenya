@@ -107,8 +107,9 @@ public abstract class CalibratingTimer
         if (_driftRatio != 1.0) {
             long elapsed = current - _priorCurrent;
             _startStamp += (elapsed - (elapsed * _driftRatio));
-            _priorCurrent = current;
         }
+        _priorCurrent = current;
+
         return current - _startStamp;
     }
 
