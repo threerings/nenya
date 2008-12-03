@@ -109,5 +109,5 @@ public interface DirectionCodes
     public static final int FINE_DIRECTION_COUNT = 16;
 
     /** The four points of the compass. */
-    public static final int[] CARDINAL_DIRECTIONS = { NORTH, SOUTH, EAST, WEST };
+    public static final int[] CARDINAL_DIRECTIONS = { NORTH, EAST, SOUTH, WEST };
 }
