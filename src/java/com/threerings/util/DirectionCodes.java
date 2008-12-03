@@ -35,7 +35,7 @@ public interface DirectionCodes
 
     /** A direction code indicating moving right. */
     public static final int RIGHT = 1;
-    
+
     /** A direction code indicating moving up. */
     public static final int UP = 2;
 
@@ -107,4 +107,7 @@ public interface DirectionCodes
 
     /** The number of fine compass directions. */
     public static final int FINE_DIRECTION_COUNT = 16;
+
+    /** The four points of the compass. */
+    public static final int[] CARDINAL_DIRECTIONS = { NORTH, SOUTH, EAST, WEST };
 }

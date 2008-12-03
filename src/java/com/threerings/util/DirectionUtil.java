@@ -136,6 +136,14 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
+     * Get the cardinal direction closest to the specified direction (preferring a clockwise match).
+     */
+    public static int getClosestCardinal (int direction)
+    {
+        return getClosest(direction, CARDINAL_DIRECTIONS, true);
+    }
+
+    /**
      * Get the direction closest to the specified direction, out of
      * the directions in the possible list (preferring a clockwise match).
      */
