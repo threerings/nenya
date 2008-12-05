@@ -95,7 +95,7 @@ import static com.threerings.resource.Log.log;
  * <p> All resource set definitions are prefixed with <code>resource.set.</code> and all text
  * following that string is considered to be the name of the resource set. The resource set named
  * <code>default</code> is the default resource set and is the one that is searched for resources
- * is a call to {@link #getResource}.
+ * is a call to {@link #getResource(String)}.
  *
  * <p> When a resource is loaded from a resource set, the set is searched in the order that entries
  * are specified in the definition.
