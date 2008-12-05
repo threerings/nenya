@@ -941,6 +941,7 @@ public class ResourceManager
         {
             _bundles = bundles;
             _obs = obs;
+            _startTime = System.currentTimeMillis();
         }
 
         @Override
@@ -949,7 +950,7 @@ public class ResourceManager
             try {
                 // Tell the observer were starting
                 if (_obs != null) {
-                    _obs.progress(0, 1);
+                    _obs.progress(0, -1);
                 }
 
                 int count = 0;
@@ -960,8 +961,19 @@ public class ResourceManager
                     }
                     if (_obs != null) {
                         int pct = count*100/_bundles.size();
+
+                        long remaining = 0;
+                        if (pct > 0) {
+                            // We should potentially do something that better understands the fact
+                            // that the first couple percent are wacky, but this should is likely
+                            // good enough, and is certainly better than before when we always
+                            // claimed we only needed one second to finish.
+                            remaining = Math.round((100 - pct) *
+                                ((System.currentTimeMillis() - _startTime) / 1000.0) / pct);
+                        }
+
                         if (pct < 100) {
-                            _obs.progress(pct, 1);
+                            _obs.progress(pct, remaining);
                         }
                     }
                     count++;
@@ -979,6 +991,7 @@ public class ResourceManager
 
         protected List<ResourceBundle> _bundles;
         protected InitObserver _obs;
+        protected long _startTime;
     }
 
     /** Contains the state of an observed file resource. */
