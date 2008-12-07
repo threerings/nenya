@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
 
 import com.samskivert.util.StringUtil;
 
-import static com.threerings.resource.Log.log;
+import static com.threerings.media.Log.log;
 
 /**
  * Manages regions (rectangles) that are invalidated in the process of ticking animations and

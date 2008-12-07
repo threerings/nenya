@@ -35,7 +35,7 @@ import com.samskivert.util.SortableArrayList;
 import com.samskivert.util.Tuple;
 import com.samskivert.util.ObserverList.ObserverOp;
 
-import static com.threerings.resource.Log.log;
+import static com.threerings.media.Log.log;
 
 /**
  * Manages, ticks, and paints {@link AbstractMedia}.
