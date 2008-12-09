@@ -22,14 +22,10 @@
 package com.threerings.jme.model;
 
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 
 import com.jme.bounding.BoundingBox;
@@ -42,8 +38,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Controller;
-import com.jme.scene.SharedMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
@@ -67,8 +61,6 @@ import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.util.ShaderCache;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * A {@link TriMesh} with a serialization mechanism tailored to stored models.

@@ -37,8 +37,6 @@ import com.jme.util.export.OutputCapsule;
 
 import com.samskivert.util.StringUtil;
 
-import com.threerings.jme.util.SpatialVisitor;
-
 import static com.threerings.jme.Log.log;
 
 /**

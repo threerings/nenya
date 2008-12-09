@@ -37,9 +37,6 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.OutputCapsule;
 
-import com.threerings.jme.sprite.PathUtil;
-import com.threerings.jme.util.JmeUtil;
-
 /**
  * Orients its target towards the camera plane.
  */

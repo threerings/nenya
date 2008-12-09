@@ -25,7 +25,6 @@ import java.io.Serializable;
 
 import org.apache.commons.digester.Digester;
 
-import com.samskivert.util.StringUtil;
 import com.samskivert.xml.SetPropertyFieldsRule;
 
 import com.threerings.tools.xml.CompiledConfigParser;
@@ -33,8 +32,6 @@ import com.threerings.tools.xml.CompiledConfigParser;
 import com.threerings.jme.tile.FringeConfiguration.TileRecord;
 import com.threerings.jme.tile.FringeConfiguration.FringeRecord;
 import com.threerings.jme.tile.FringeConfiguration;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * Parses fringe config definitions, which look like so (with angle

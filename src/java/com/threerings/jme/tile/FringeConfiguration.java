@@ -22,8 +22,11 @@
 package com.threerings.jme.tile;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import com.samskivert.util.StringUtil;
 
@@ -46,7 +49,7 @@ public class FringeConfiguration implements Serializable
         public int priority;
 
         /** A list of the fringe records that can be used for fringing. */
-        public ArrayList fringes = new ArrayList();
+        public List<FringeRecord> fringes = Lists.newArrayList();
 
         /** Used when parsing from an XML definition. */
         public void addFringe (FringeRecord record)
@@ -123,13 +126,13 @@ public class FringeConfiguration implements Serializable
      */
     public int fringesOn (String fringer, String fringed)
     {
-        TileRecord f1 = (TileRecord)_trecs.get(fringer);
+        TileRecord f1 = _trecs.get(fringer);
 
         // we better have a fringe record for the fringer
         if (null != f1) {
             // it had better have some types defined
             if (f1.fringes.size() > 0) {
-                TileRecord f2 = (TileRecord)_trecs.get(fringed);
+                TileRecord f2 = _trecs.get(fringed);
                 // and we only fringe if fringed doesn't have a fringe
                 // record or has a lower priority
                 if ((null == f2) || (f1.priority > f2.priority)) {
@@ -147,12 +150,12 @@ public class FringeConfiguration implements Serializable
      */
     public FringeRecord getFringe (String type, int hashValue)
     {
-        TileRecord t = (TileRecord)_trecs.get(type);
-        return (FringeRecord)t.fringes.get(hashValue % t.fringes.size());
+        TileRecord t = _trecs.get(type);
+        return t.fringes.get(hashValue % t.fringes.size());
     }
 
     /** The mapping from tile type to tile record. */
-    protected HashMap _trecs = new HashMap();
+    protected Map<String, TileRecord> _trecs = Maps.newHashMap();
 
     /** Increase this value when object's serialized state is impacted by
      * a class change (modification of fields, inheritance). */

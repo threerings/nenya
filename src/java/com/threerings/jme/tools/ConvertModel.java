@@ -53,7 +53,6 @@ public class ConvertModel
         // create a dummy display system which the converters need
         new DummyDisplaySystem();
 
-        ConvertModel app = new ConvertModel();
         File source = new File(args[0]);
         File target = new File(args[1]);
 

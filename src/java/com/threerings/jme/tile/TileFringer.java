@@ -24,8 +24,10 @@ package com.threerings.jme.tile;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
 
 import com.samskivert.util.QuickSort;
 
@@ -83,7 +85,7 @@ public class TileFringer
      * using a fringe mask.
      */
     public BufferedImage getFringeTile (
-        TileSource tiles, int col, int row, HashMap masks)
+        TileSource tiles, int col, int row, Map<String, BufferedImage> masks)
     {
         // get the type of the tile we are considering
         String baseType = tiles.getTileType(col, row);
@@ -141,7 +143,7 @@ public class TileFringer
      * Compose a fringe tile out of the various fringe images needed.
      */
     protected BufferedImage composeFringeTile (
-        String baseType, FringerRec[] fringers, HashMap masks, int hashValue)
+        String baseType, FringerRec[] fringers, Map<String, BufferedImage> masks, int hashValue)
     {
         // sort the array so that higher priority fringers get drawn first
         QuickSort.sort(fringers);
@@ -180,7 +182,7 @@ public class TileFringer
      */
     protected void stampTileImage (
         Graphics2D gfx, String fringerType, int index,
-        HashMap masks, int hashValue)
+        Map<String, BufferedImage> masks, int hashValue)
     {
         FringeConfiguration.FringeRecord frec =
             _config.getFringe(fringerType, hashValue);
@@ -195,7 +197,7 @@ public class TileFringer
         if (frec.mask) {
             // it's a mask; look for it in the cache
             String maskkey = fringerType + ":" + frec.name + ":" + index;
-            BufferedImage mimg = (BufferedImage)masks.get(maskkey);
+            BufferedImage mimg = masks.get(maskkey);
             if (mimg == null) {
                 BufferedImage fsrc = getSubimage(fsimg, index);
                 BufferedImage bsrc = _isrc.getTileSource(fringerType);
@@ -250,7 +252,7 @@ public class TileFringer
             return new int[0];
         }
 
-        ArrayList indexes = new ArrayList();
+        List<Integer> indexes = Lists.newArrayList();
         int weebits = 0;
         for (int ii=(start + 1) % NUM_FRINGEBITS; ii != start;
              ii = (ii + 1) % NUM_FRINGEBITS) {
@@ -274,14 +276,14 @@ public class TileFringer
 
         int[] ret = new int[indexes.size()];
         for (int ii=0; ii < ret.length; ii++) {
-            ret[ii] = ((Integer) indexes.get(ii)).intValue();
+            ret[ii] = indexes.get(ii).intValue();
         }
         return ret;
     }
 
     /** A record for holding information about a particular fringe as
      * we're computing what it will look like. */
-    protected static class FringerRec implements Comparable
+    protected static class FringerRec implements Comparable<FringerRec>
     {
         public String fringerType;
         public int priority;
@@ -310,8 +312,8 @@ public class TileFringer
             return toArray(0);
         }
 
-        public int compareTo (Object o) {
-            return priority - ((FringerRec) o).priority;
+        public int compareTo (FringerRec o) {
+            return priority - o.priority;
         }
 
         public String toString () {

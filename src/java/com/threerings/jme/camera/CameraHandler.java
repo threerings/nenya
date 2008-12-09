@@ -28,6 +28,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 import com.samskivert.util.ObserverList;
+import com.threerings.jme.JmeApp;
 
 /**
  * Provides various useful mechanisms for manipulating the camera.
@@ -376,21 +377,20 @@ public class CameraHandler
     }
 
     /** Used to dispatch {@link CameraPath.Observer#pathCompleted}. */
-    protected static class CompletedOp implements ObserverList.ObserverOp
+    protected static class CompletedOp implements ObserverList.ObserverOp<CameraPath.Observer>
     {
         public CompletedOp (CameraPath path) {
             _path = path;
         }
-        public boolean apply (Object observer) {
-            return ((CameraPath.Observer)observer).pathCompleted(_path);
+        public boolean apply (CameraPath.Observer observer) {
+            return observer.pathCompleted(_path);
         }
         protected CameraPath _path;
     }
 
     protected Camera _camera;
     protected CameraPath _campath;
-    protected ObserverList _campathobs =
-        new ObserverList(ObserverList.SAFE_IN_ORDER_NOTIFY);
+    protected ObserverList<CameraPath.Observer> _campathobs = ObserverList.newSafeInOrder();
 
     protected Matrix3f _rotm = new Matrix3f();
     protected Vector3f _temp = new Vector3f();

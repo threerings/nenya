@@ -22,18 +22,14 @@
 package com.threerings.jme.tools;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -421,8 +417,7 @@ public class ModelViewer extends JmeCanvasApp
     protected void updateCameraPosition ()
     {
         Camera cam = _camhand.getCamera();
-        Vector3f pos = cam.getLocation(), dir = cam.getDirection(),
-            left = cam.getLeft();
+        Vector3f pos = cam.getLocation(), dir = cam.getDirection();
         float heading = -FastMath.atan2(dir.x, dir.y) * FastMath.RAD_TO_DEG,
             pitch = FastMath.asin(dir.z) * FastMath.RAD_TO_DEG;
         _campos.setText(

@@ -34,11 +34,7 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.OutputCapsule;
 
-import com.samskivert.util.StringUtil;
-
 import com.threerings.jme.util.JmeUtil;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * A procedural animation that rotates a node around at a constant angular

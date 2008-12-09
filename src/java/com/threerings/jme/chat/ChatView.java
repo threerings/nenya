@@ -21,8 +21,6 @@
 
 package com.threerings.jme.chat;
 
-import java.util.StringTokenizer;
-
 import com.jme.renderer.ColorRGBA;
 
 import com.jmex.bui.BButton;
@@ -33,8 +31,6 @@ import com.jmex.bui.event.ActionEvent;
 import com.jmex.bui.event.ActionListener;
 import com.jmex.bui.layout.BorderLayout;
 import com.jmex.bui.layout.GroupLayout;
-
-import com.threerings.util.Name;
 
 import com.threerings.crowd.chat.client.ChatDirector;
 import com.threerings.crowd.chat.client.ChatDisplay;

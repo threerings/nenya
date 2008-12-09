@@ -70,8 +70,7 @@ public interface ModelSpatial
      * @param frameId the frame id, which uniquely identifies one frame of
      * one animation
      * @param blend whether or not the stored frames will be retrieved by
-     * calls to {@link #blendAnimationFrames} as opposed to
-     * {@link #setAnimationFrames}
+     * calls to {@link #blendMeshFrames} as opposed to {@link #setMeshFrame}
      */
     public void storeMeshFrame (int frameId, boolean blend);
 

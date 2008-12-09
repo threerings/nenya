@@ -21,17 +21,15 @@
 
 package com.threerings.jme.model;
 
-import java.io.DataOutput;
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
@@ -42,8 +40,6 @@ import com.jme.util.export.OutputCapsule;
 
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.ShaderCache;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * A {@link Node} with a serialization mechanism tailored to stored models.
@@ -194,7 +190,7 @@ public class ModelNode extends Node
             "localRotation", null));
         setLocalScale((Vector3f)capsule.readSavable(
             "localScale", null));
-        ArrayList children = capsule.readSavableArrayList("children", null);
+        List<?> children = capsule.readSavableArrayList("children", null);
         if (children != null) {
             for (Object child : children) {
                 attachChild((Spatial)child);

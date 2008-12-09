@@ -23,7 +23,6 @@ package com.threerings.jme.util;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

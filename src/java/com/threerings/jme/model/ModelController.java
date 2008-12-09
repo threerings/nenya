@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import com.jme.scene.Controller;
-import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;

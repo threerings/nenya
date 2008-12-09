@@ -22,20 +22,12 @@
 package com.threerings.jme.camera;
 
 import com.jme.math.FastMath;
-import com.jme.math.Matrix3f;
-import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.RelativeMouse;
 import com.jme.input.action.*;
 import com.jme.input.action.InputActionEvent;
-
-import com.threerings.jme.JmeApp;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * Sets up camera controls for moving around from a top-down perspective,
@@ -47,7 +39,7 @@ public class GodViewHandler extends InputHandler
     /**
      * Creates the handler.
      *
-     * @param cam The camera to move with this handler.
+     * @param camhand The camera to move with this handler.
      */
     public GodViewHandler (CameraHandler camhand)
     {

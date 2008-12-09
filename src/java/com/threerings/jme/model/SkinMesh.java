@@ -22,8 +22,6 @@
 package com.threerings.jme.model;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -33,12 +31,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Matrix4f;
-import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
@@ -63,8 +61,6 @@ import com.samskivert.util.ListUtil;
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.ShaderCache;
 import com.threerings.jme.util.ShaderConfig;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * A triangle mesh that deforms according to a bone hierarchy.
@@ -98,7 +94,7 @@ public class SkinMesh extends ModelMesh
          *
          * @param bmap the mapping from prototype to instance bones
          */
-        public WeightGroup rebind (HashMap<Bone, Bone> bmap)
+        public WeightGroup rebind (Map<Bone, Bone> bmap)
         {
             WeightGroup wgroup = new WeightGroup();
             wgroup.vertexCount = vertexCount;
@@ -111,7 +107,7 @@ public class SkinMesh extends ModelMesh
         }
 
         // documentation inherited
-        public Class getClassTag ()
+        public Class<?> getClassTag ()
         {
             return getClass();
         }
@@ -169,7 +165,7 @@ public class SkinMesh extends ModelMesh
          *
          * @param pnodes a mapping from prototype nodes to instance nodes
          */
-        public Bone rebind (HashMap pnodes)
+        public Bone rebind (Map<ModelSpatial, ModelSpatial> pnodes)
         {
             Bone bone = new Bone((ModelNode)pnodes.get(node));
             bone.invRefTransform = invRefTransform;
@@ -178,7 +174,7 @@ public class SkinMesh extends ModelMesh
         }
 
         // documentation inherited
-        public Class getClassTag ()
+        public Class<?> getClassTag ()
         {
             return getClass();
         }

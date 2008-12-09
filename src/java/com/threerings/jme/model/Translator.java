@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import java.util.Properties;
 
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
@@ -34,11 +33,7 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.OutputCapsule;
 
-import com.samskivert.util.StringUtil;
-
 import com.threerings.jme.util.JmeUtil;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * A procedural animation that moves a node along a straight line at a constant velocity (then

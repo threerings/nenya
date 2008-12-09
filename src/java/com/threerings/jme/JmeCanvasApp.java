@@ -30,7 +30,6 @@ import java.awt.event.ComponentEvent;
 
 import org.lwjgl.LWJGLException;
 
-import com.jme.renderer.Renderer;
 import com.jme.renderer.lwjgl.LWJGLRenderer;
 import com.jme.scene.Node;
 import com.jme.system.DisplaySystem;

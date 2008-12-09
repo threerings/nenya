@@ -6,7 +6,6 @@ package com.threerings.jme.server;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import com.threerings.crowd.data.PlaceObject;
 import com.threerings.crowd.server.CrowdServer;
 import com.threerings.crowd.server.PlaceManager;
 

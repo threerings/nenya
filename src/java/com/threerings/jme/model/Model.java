@@ -25,21 +25,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 import java.nio.FloatBuffer;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.common.collect.Maps;
+
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -140,7 +138,7 @@ public class Model extends ModelNode
          *
          * @param pnodes a mapping from prototype nodes to instance nodes
          */
-        public Animation rebind (HashMap pnodes)
+        public Animation rebind (Map<ModelSpatial, ModelSpatial> pnodes)
         {
             Animation anim = new Animation();
             anim.frameRate = frameRate;
@@ -176,7 +174,7 @@ public class Model extends ModelNode
         }
 
         // documentation inherited
-        public Class getClassTag ()
+        public Class<?> getClassTag ()
         {
             return getClass();
         }
@@ -224,7 +222,7 @@ public class Model extends ModelNode
             capsule.write(pxforms, "transforms", null);
         }
 
-        protected Spatial[] rebind (Spatial[] targets, HashMap pnodes)
+        protected Spatial[] rebind (Spatial[] targets, Map<ModelSpatial, ModelSpatial> pnodes)
         {
             Spatial[] ntargets = new Spatial[targets.length];
             for (int ii = 0; ii < targets.length; ii++) {
@@ -312,7 +310,7 @@ public class Model extends ModelNode
         public int random;
 
         /** Maps original objects to their copies. */
-        public HashMap originalToCopy = new HashMap();
+        public Map<ModelSpatial, ModelSpatial> originalToCopy = Maps.newHashMap();
 
         public CloneCreator (Model toCopy)
         {
@@ -736,8 +734,7 @@ public class Model extends ModelNode
         } else {
             _anims = null;
         }
-        ArrayList controllers = capsule.readSavableArrayList(
-            "controllers", null);
+        List<?> controllers = capsule.readSavableArrayList("controllers", null);
         if (controllers != null) {
             for (Object ctrl : controllers) {
                 addController((Controller)ctrl);
@@ -877,7 +874,7 @@ public class Model extends ModelNode
         if (_anims != null) {
             mstore._anims = new HashMap<String, Animation>();
         }
-        mstore._pnodes = (HashMap)properties.originalToCopy.clone();
+        mstore._pnodes = Maps.newHashMap(properties.originalToCopy);
         mstore._animMode = _animMode;
         return mstore;
     }
@@ -1076,20 +1073,17 @@ public class Model extends ModelNode
         }
     }
 
-    /** A reference to the prototype, or <code>null</code> if this is a
-     * prototype. */
+    /** A reference to the prototype, or <code>null</code> if this is a prototype. */
     protected Model _prototype;
 
-    /** For prototype models, a customized clone creator used to generate
-     * instances. */
+    /** For prototype models, a customized clone creator used to generate instances. */
     protected CloneCreator _ccreator;
 
     /** The animation mode to use for this model. */
     protected AnimationMode _animMode;
 
-    /** For instances, maps prototype nodes to their corresponding instance
-     * nodes. */
-    protected HashMap _pnodes;
+    /** For instances, maps prototype nodes to their corresponding instance nodes. */
+    protected Map<ModelSpatial, ModelSpatial> _pnodes;
 
     /** The model properties. */
     protected Properties _props;

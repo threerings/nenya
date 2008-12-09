@@ -21,14 +21,11 @@
 
 package com.threerings.jme.tools;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,7 +42,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.batch.GeomBatch;
 import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.ObjectUtil;
@@ -59,7 +55,6 @@ import com.threerings.jme.model.ModelMesh;
 import com.threerings.jme.model.ModelNode;
 import com.threerings.jme.model.SkinMesh;
 import com.threerings.jme.util.JmeUtil;
-import com.threerings.jme.util.SpatialVisitor;
 
 import static com.threerings.jme.Log.log;
 

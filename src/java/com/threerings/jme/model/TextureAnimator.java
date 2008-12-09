@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.jme.image.Texture;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
@@ -35,13 +34,8 @@ import com.jme.util.export.JMEImporter;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.OutputCapsule;
 
-import com.samskivert.util.StringUtil;
-
 import com.threerings.jme.util.JmeUtil;
 import com.threerings.jme.util.JmeUtil.FrameState;
-import com.threerings.jme.util.SpatialVisitor;
-
-import static com.threerings.jme.Log.log;
 
 /**
  * Animates a model's textures by flipping between different parts.

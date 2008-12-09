@@ -41,8 +41,6 @@ import com.threerings.jme.util.JmeUtil;
 
 import com.threerings.jme.tools.ModelDef.TransformNode;
 
-import static com.threerings.jme.Log.log;
-
 /**
  * A basic representation for keyframe animations.
  */

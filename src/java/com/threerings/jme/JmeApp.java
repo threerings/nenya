@@ -45,7 +45,6 @@ import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
-import com.jme.input.Mouse;
 import com.jme.input.MouseInput;
 import com.jmex.bui.BRootNode;
 import com.jmex.bui.PolledRootNode;
@@ -203,7 +202,7 @@ public class JmeApp
                 // and process events until it's time to render the next
               PROCESS_EVENTS:
                 do {
-                    Runnable r = (Runnable)_evqueue.getNonBlocking();
+                    Runnable r = _evqueue.getNonBlocking();
                     if (r != null) {
                         r.run();
                     }
@@ -574,7 +573,7 @@ public class JmeApp
 
     protected Timer _timer;
     protected Thread _dispatchThread;
-    protected Queue _evqueue = new Queue();
+    protected Queue<Runnable> _evqueue = Queue.newQueue();
     protected long _lastTick;
     protected float _frameTime;
 

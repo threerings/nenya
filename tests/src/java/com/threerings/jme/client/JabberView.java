@@ -3,7 +3,6 @@
 
 package com.threerings.jme.client;
 
-import com.jmex.bui.BLabel;
 import com.jmex.bui.BWindow;
 import com.jmex.bui.layout.BorderLayout;
 

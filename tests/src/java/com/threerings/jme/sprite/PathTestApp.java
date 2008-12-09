@@ -14,7 +14,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Disk;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.LightState;
 import com.jme.util.LoggingSystem;
 

@@ -28,7 +28,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 
@@ -83,9 +82,7 @@ public class BuildSphereMap
         Vector3f vec = new Vector3f();
         for (int y = 0, idx = 0; y < size; y++) {
             for (int x = 0; x < size; x++, idx++) {
-                float vx = x / (size*0.5f) - 1f, vy = y / (size*0.5f) - 1f,
-                    d2 = vx*vx + vy*vy;
-                int p = 0;
+                float vx = x / (size*0.5f) - 1f, vy = y / (size*0.5f) - 1f, d2 = vx*vx + vy*vy;
                 if (d2 <= 1f) {
                     vec.set(vx, vy, FastMath.sqrt(1f - d2));
                     rgb[idx] = getCubeMapPixel(vec, sides);

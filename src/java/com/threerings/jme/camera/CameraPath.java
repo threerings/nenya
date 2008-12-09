@@ -21,8 +21,6 @@
 
 package com.threerings.jme.camera;
 
-import com.jme.renderer.Camera;
-
 /**
  * Used to move the camera along a particular path.
  */

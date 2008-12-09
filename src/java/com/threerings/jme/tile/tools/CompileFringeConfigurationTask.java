@@ -27,7 +27,6 @@ import java.io.Serializable;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-import com.samskivert.io.PersistenceException;
 import com.threerings.util.CompiledConfig;
 
 import com.threerings.jme.tile.tools.xml.FringeConfigurationParser;

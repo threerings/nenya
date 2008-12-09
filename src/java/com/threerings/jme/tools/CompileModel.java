@@ -23,11 +23,7 @@ package com.threerings.jme.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -41,9 +37,6 @@ import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.jme.model.Model;
-import com.threerings.jme.model.ModelMesh;
-import com.threerings.jme.model.ModelNode;
-import com.threerings.jme.model.SkinMesh;
 import com.threerings.jme.tools.ModelDef.TransformNode;
 import com.threerings.jme.tools.xml.AnimationParser;
 import com.threerings.jme.tools.xml.ModelParser;
