@@ -73,6 +73,19 @@ public class FlexUtil
     }
 
     /**
+     * Create an uneditable/unselectable multiline Text widget with 100% width.
+     */
+    public static function createWideText (text :String, style :String = null) :Text
+    {
+        var t :Text = new Text();
+        t.styleName = style;
+        t.percentWidth = 100;
+        t.selectable = false;
+        t.text = text;
+        return t;
+    }
+
+    /**
      * How hard would it have been for them make Spacer accept two optional arguments?
      */
     public static function createSpacer (width :int = 0, height :int = 0) :Spacer
