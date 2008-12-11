@@ -33,15 +33,15 @@ import com.threerings.util.CommandEvent;
 public class CommandCheckBox extends CheckBox
 {
     /**
-     * Create a command button.
+     * Create a command checkbox.
      *
-     * @param label the label text for the button.
+     * @param label the label text for the checkbox.
      * @param cmdOrFn either a String, which will be the CommandEvent command to dispatch,
      *        or a function, which will be called when clicked.
      * @param arg the argument for the CommentEvent or the function. If the arg is an Array
      *        then those parameters are used for calling the function.
      * Note that if arg is null, the actual argument passed will be the 'selected' state of the
-     * button. If you really want to call a method with no args, specify arg as an emtpy Array.
+     * checkbox. If you really want to call a method with no args, specify arg as an emtpy Array.
      */
     public function CommandCheckBox (label :String = null, cmdOrFn :* = null, arg :Object = null)
     {
