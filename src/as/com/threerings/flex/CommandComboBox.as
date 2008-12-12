@@ -36,16 +36,18 @@ import com.threerings.util.CommandEvent;
 public class CommandComboBox extends ComboBox
 {
     /**
-     * Create a command combobox. The 'data' attribute of the selectedItem object is used as
-     * an argument of the command or function.
+     * Create a command combobox.
      *
      * @param cmdOrFn either a String, which will be the CommandEvent command to dispatch,
      *        or a function, which will be called when changed.
+     * @param argName The attribute of the selectedItem object that used as the argument to the
+     *        command or function. If null, the entire selectedItem is passed as the argument.
      */
-    public function CommandComboBox (cmdOrFn :* = null)
+    public function CommandComboBox (cmdOrFn :* = null, argName :String = "data")
     {
         CommandButton.validateCmd(cmdOrFn);
         _cmdOrFn = cmdOrFn;
+        _argName = argName;
 
         addEventListener(ListEvent.CHANGE, handleChange);
     }
@@ -68,11 +70,16 @@ public class CommandComboBox extends ComboBox
 
     protected function handleChange (event :ListEvent) :void
     {
-        CommandEvent.dispatch(this, _cmdOrFn, this.selectedItem.data);
+        if (this.selectedItem != null) {
+            CommandEvent.dispatch(this, _cmdOrFn,
+                (_argName != null) ? this.selectedItem[_argName] : this.selectedItem);
+        }
     }
 
     /** The command (String) to submit, or the function (Function) to call
      * when changed,  */
     protected var _cmdOrFn :Object;
+
+    protected var _argName :String;
 }
 }
