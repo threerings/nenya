@@ -27,6 +27,7 @@ import mx.controls.ComboBox;
 import mx.events.ListEvent;
 
 import com.threerings.util.CommandEvent;
+import com.threerings.util.Util;
 
 /**
  * A combo box that dispatches a command (or calls a function) when it is toggled. NOTE: Unlike the
@@ -39,7 +40,7 @@ public class CommandComboBox extends ComboBox
      * The field of the selectedItem object used as the argument to the
      * command or function. If null, the entire selectedItem is passed as the argument.
      */
-    public var dataField :String;
+    public var dataField :String = "data";
 
     /**
      * Create a command combobox.
@@ -47,11 +48,10 @@ public class CommandComboBox extends ComboBox
      * @param cmdOrFn either a String, which will be the CommandEvent command to dispatch,
      *        or a function, which will be called when changed.
      */
-    public function CommandComboBox (cmdOrFn :* = null, dataField :String = "data")
+    public function CommandComboBox (cmdOrFn :* = null)
     {
         CommandButton.validateCmd(cmdOrFn);
         _cmdOrFn = cmdOrFn;
-        this.dataField = dataField;
 
         addEventListener(ListEvent.CHANGE, handleChange);
     }
@@ -73,21 +73,19 @@ public class CommandComboBox extends ComboBox
     }
 
     /**
-     * Handy function to lookup an option based on dataField and set it as the selected item.
-     * This probably only works for Array dataProviders.
+     * Set the selectedItem based on the data field.
      */
-    public function setSelectedValue (value :Object) :void
+    public function setSelectedData (data :Object) :void
     {
         for (var ii :int = 0; ii < dataProvider.length; ++ii) {
-            var v :Object = (this.dataField != null) ?
-                dataProvider[ii][this.dataField] : dataProvider[ii];
-            if (v == value) {
+            if (Util.equals(data,
+                    (dataField != null) ? dataProvider[ii][dataField] : dataProvider[ii])) {
                 this.selectedIndex = ii;
                 return;
             }
         }
 
-        // Assign to the prompt
+        // not found, clear the selection
         this.selectedIndex = -1;
     }
 
@@ -95,15 +93,15 @@ public class CommandComboBox extends ComboBox
      * The value that will be passed to the command or function based on dataField and the
      * current selected item.
      */
-    public function getSelectedValue () :Object
+    public function getSelectedData () :Object
     {
-        return (this.dataField != null) ? this.selectedItem[this.dataField] : this.selectedItem;
+        return (dataField != null) ? this.selectedItem[dataField] : this.selectedItem;
     }
 
     protected function handleChange (event :ListEvent) :void
     {
         if (this.selectedIndex != -1) {
-            CommandEvent.dispatch(this, _cmdOrFn, getSelectedValue());
+            CommandEvent.dispatch(this, _cmdOrFn, getSelectedData());
         }
     }
 
