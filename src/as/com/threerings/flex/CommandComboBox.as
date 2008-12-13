@@ -72,11 +72,38 @@ public class CommandComboBox extends ComboBox
         _cmdOrFn = fn;
     }
 
+    /**
+     * Handy function to lookup an option based by argName and set it as the selected item.
+     * This probably only works for Array dataProviders.
+     */
+    public function setSelectedValue (value :Object) :void
+    {
+        for (var ii :int = 0; ii < dataProvider.length; ++ii) {
+            var v :Object = (this.argName != null) ?
+                dataProvider[ii][this.argName] : dataProvider[ii];
+            if (v == value) {
+                this.selectedIndex = ii;
+                return;
+            }
+        }
+
+        // Assign to the prompt
+        this.selectedIndex = -1;
+    }
+
+    /**
+     * The value that will be passed to the command or function based on argName and the
+     * current selected item.
+     */
+    public function getSelectedValue () :Object
+    {
+        return (this.argName != null) ? this.selectedItem[this.argName] : this.selectedItem;
+    }
+
     protected function handleChange (event :ListEvent) :void
     {
-        if (this.selectedItem != null) {
-            CommandEvent.dispatch(this, _cmdOrFn,
-                (this.argName != null) ? this.selectedItem[this.argName] : this.selectedItem);
+        if (this.selectedIndex != -1) {
+            CommandEvent.dispatch(this, _cmdOrFn, getSelectedValue());
         }
     }
 
