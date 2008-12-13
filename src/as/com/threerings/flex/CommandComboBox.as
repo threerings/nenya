@@ -53,7 +53,7 @@ public class CommandComboBox extends ComboBox
         CommandButton.validateCmd(cmdOrFn);
         _cmdOrFn = cmdOrFn;
 
-        addEventListener(ListEvent.CHANGE, handleChange);
+        addEventListener(ListEvent.CHANGE, handleChange, false, int.MIN_VALUE);
     }
 
     /**
@@ -75,11 +75,10 @@ public class CommandComboBox extends ComboBox
     /**
      * Set the selectedItem based on the data field.
      */
-    public function setSelectedData (data :Object) :void
+    public function set selectedData (data :Object) :void
     {
         for (var ii :int = 0; ii < dataProvider.length; ++ii) {
-            if (Util.equals(data,
-                    (dataField != null) ? dataProvider[ii][dataField] : dataProvider[ii])) {
+            if (Util.equals(data, itemToData(dataProvider[ii]))) {
                 this.selectedIndex = ii;
                 return;
             }
@@ -93,15 +92,24 @@ public class CommandComboBox extends ComboBox
      * The value that will be passed to the command or function based on dataField and the
      * current selected item.
      */
-    public function getSelectedData () :Object
+    public function get selectedData () :Object
     {
-        return (dataField != null) ? this.selectedItem[dataField] : this.selectedItem;
+        return itemToData(this.selectedItem);
+    }
+
+    /**
+     * Extract the data from the specified item. This can be expanded in the future
+     * if we provide a 'dataFunction'.
+     */
+    protected function itemToData (item :Object) :Object
+    {
+        return (dataField == null) ? item : ((item == null) ? null : item[dataField]);
     }
 
     protected function handleChange (event :ListEvent) :void
     {
         if (this.selectedIndex != -1) {
-            CommandEvent.dispatch(this, _cmdOrFn, getSelectedData());
+            CommandEvent.dispatch(this, _cmdOrFn, selectedData);
         }
     }
 
