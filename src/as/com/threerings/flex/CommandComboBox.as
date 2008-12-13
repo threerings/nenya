@@ -36,10 +36,10 @@ import com.threerings.util.CommandEvent;
 public class CommandComboBox extends ComboBox
 {
     /**
-     * The attribute of the selectedItem object that used as the argument to the
+     * The field of the selectedItem object used as the argument to the
      * command or function. If null, the entire selectedItem is passed as the argument.
      */
-    public var argName :String;
+    public var argField :String;
 
     /**
      * Create a command combobox.
@@ -47,11 +47,11 @@ public class CommandComboBox extends ComboBox
      * @param cmdOrFn either a String, which will be the CommandEvent command to dispatch,
      *        or a function, which will be called when changed.
      */
-    public function CommandComboBox (cmdOrFn :* = null, argName :String = "data")
+    public function CommandComboBox (cmdOrFn :* = null, argField :String = "data")
     {
         CommandButton.validateCmd(cmdOrFn);
         _cmdOrFn = cmdOrFn;
-        this.argName = argName;
+        this.argField = argField;
 
         addEventListener(ListEvent.CHANGE, handleChange);
     }
@@ -73,14 +73,14 @@ public class CommandComboBox extends ComboBox
     }
 
     /**
-     * Handy function to lookup an option based by argName and set it as the selected item.
+     * Handy function to lookup an option based on argField and set it as the selected item.
      * This probably only works for Array dataProviders.
      */
     public function setSelectedValue (value :Object) :void
     {
         for (var ii :int = 0; ii < dataProvider.length; ++ii) {
-            var v :Object = (this.argName != null) ?
-                dataProvider[ii][this.argName] : dataProvider[ii];
+            var v :Object = (this.argField != null) ?
+                dataProvider[ii][this.argField] : dataProvider[ii];
             if (v == value) {
                 this.selectedIndex = ii;
                 return;
@@ -92,12 +92,12 @@ public class CommandComboBox extends ComboBox
     }
 
     /**
-     * The value that will be passed to the command or function based on argName and the
+     * The value that will be passed to the command or function based on argField and the
      * current selected item.
      */
     public function getSelectedValue () :Object
     {
-        return (this.argName != null) ? this.selectedItem[this.argName] : this.selectedItem;
+        return (this.argField != null) ? this.selectedItem[this.argField] : this.selectedItem;
     }
 
     protected function handleChange (event :ListEvent) :void
