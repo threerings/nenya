@@ -600,10 +600,14 @@ public class MediaContainer extends Sprite
         var info :LoaderInfo = (event.target as LoaderInfo);
         removeListeners(info);
 
-//        trace("Loading complete: " + info.url +
-//            ", childAllowsParent=" + info.childAllowsParent +
-//            ", parentAllowsChild=" + info.parentAllowsChild +
-//            ", sameDomain=" + info.sameDomain);
+        // attempt to make bitmaps look good
+        try {
+            if (info.loader.content is Bitmap) {
+                Bitmap(info.loader.content).smoothing = true;
+            }
+        } catch (err :Error) {
+            // cope
+        }
 
         updateContentDimensions(info.width, info.height);
         updateLoadingProgress(1, 1);
