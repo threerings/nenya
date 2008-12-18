@@ -30,16 +30,15 @@ import com.threerings.util.CommandEvent;
 import com.threerings.util.Util;
 
 /**
- * A combo box that dispatches a command (or calls a function) when it is toggled. NOTE: Unlike the
- * other Command* controls, CommandComboBox does not guarantee that the CommandEvent is dispatched
- * after notifying all other listeners.
+ * A combo box that dispatches a command (or calls a callback) when an item is selected.
+ * The argument will be the 'data' value of the selected item.
+ * NOTE: Unlike the other Command* controls, CommandComboBox allows a null cmd/callback
+ * to be specified.
  */
 public class CommandComboBox extends ComboBox
 {
-    /**
-     * The field of the selectedItem object used as the argument to the
-     * command or function. If null, the entire selectedItem is passed as the argument.
-     */
+    /** The field of the selectedItem object used as the 'data'. If this property is null,
+     * then the item is the data. */
     public var dataField :String = "data";
 
     /**
@@ -103,12 +102,12 @@ public class CommandComboBox extends ComboBox
      */
     protected function itemToData (item :Object) :Object
     {
-        return (dataField == null) ? item : ((item == null) ? null : item[dataField]);
+        return (item == null || dataField == null) ? item : item[dataField];
     }
 
     protected function handleChange (event :ListEvent) :void
     {
-        if (this.selectedIndex != -1) {
+        if (_cmdOrFn != null && this.selectedIndex != -1) {
             CommandEvent.dispatch(this, _cmdOrFn, selectedData);
         }
     }
