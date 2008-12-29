@@ -15,12 +15,20 @@ import flash.geom.ColorTransform;
 public class SimpleIconButton extends SimpleButton
 {
     /**
-     * Constructor.
-     * 
+     * Constructor. @see #setIcon()
+     */
+    public function SimpleIconButton (icon :*)
+    {
+        setIcon(icon);
+    }
+
+    /**
+     * Update the icon for this button.
+     *
      * @param icon a BitmapData, or Bitmap (from which the BitmapData will be extracted), or
      *             a Class that instantiates into either a BitmapData or Bitmap.
      */
-    public function SimpleIconButton (icon :*)
+    public function setIcon (icon :*) :void
     {
         var bmp :BitmapData = ImageUtil.toBitmapData(icon);
         if (bmp == null) {
