@@ -16,6 +16,7 @@ import flash.media.Video;
 
 import flash.text.TextField;
 
+import com.threerings.util.Log;
 import com.threerings.util.MethodQueue;
 
 // TODO: use PreferredCamera?
@@ -84,7 +85,7 @@ public class CameraSnapshotter extends Sprite
                 removeChild(_video);
             }
             _bitmap = null;
-            _video = null;
+            detachVideo();
         }
 
         _camera = camera;
@@ -108,8 +109,9 @@ public class CameraSnapshotter extends Sprite
     {
         clearSnapshot();
         removeChild(_video);
-        _camera.setMode(width, height, fps, favorArea);
 
+        detachVideo();
+        _camera.setMode(width, height, fps, favorArea);
         attachVideo();
     }
 
@@ -125,13 +127,13 @@ public class CameraSnapshotter extends Sprite
         // than leaving everything alone, which mostly didn't work. But then again,
         // this code is specifically saying: "fuck up the scale", so if Adobe fixes their
         // bug in the future, this will cause broken behavior.
-        _bitmap.bitmapData.draw(_video,
-            new Matrix(_camera.width / 160, 0, 0, _camera.height / 120));
-//        com.threerings.util.Log.testing("Camera stuff",
-//            "camera.width", _camera.width, "camera.height", _camera.height,
-//            "video.width", _video.width, "video.height", _video.height,
-//            "videoWidth", _video.videoWidth, "videoHeight", _video.videoHeight,
-//            "bitmap.width", _bitmap.width, "bitmap.height", _bitmap.height);
+        _bitmap.bitmapData.draw(_video);
+            //new Matrix(_camera.width / 160, 0, 0, _camera.height / 120));
+        Log.getLog(this).debug("Camera snapshotted",
+            "camera.width", _camera.width, "camera.height", _camera.height,
+            "video.width", _video.width, "video.height", _video.height,
+            "videoWidth", _video.videoWidth, "videoHeight", _video.videoHeight,
+            "bitmap.width", _bitmap.width, "bitmap.height", _bitmap.height);
 
         if (_video.parent != null) {
             removeChild(_video);
@@ -162,10 +164,8 @@ public class CameraSnapshotter extends Sprite
 
     protected function attachVideo () :void
     {
-        if (_video != null) {
-            // shut down the old video
-            _video.attachCamera(null);
-        }
+        // detach any old first
+        detachVideo();
 
         _video = new Video(_camera.width, _camera.height);
         // the constructor args don't seem to do dick, so we set the values again...
@@ -174,6 +174,14 @@ public class CameraSnapshotter extends Sprite
         _video.attachCamera(_camera);
         addChild(_video);
         _bitmap = new Bitmap(new BitmapData(_camera.width, _camera.height, false));
+    }
+
+    protected function detachVideo () :void
+    {
+        if (_video != null) {
+            _video.attachCamera(null);
+            _video = null;
+        }
     }
 
     protected var _camera :Camera;
