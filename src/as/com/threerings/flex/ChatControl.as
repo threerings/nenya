@@ -89,21 +89,26 @@ public class ChatControl extends HBox
         return _but;
     }
 
+    override public function set enabled (en :Boolean) :void
+    {
+        // don't call super (and the only time these aren't around is during construction)
+        if (_txt != null) {
+            _txt.enabled = en;
+            _but.enabled = en;
+        }
+    }
+
+    override public function get enabled () :Boolean
+    {
+        return _txt.enabled;
+    }
+
     /**
      * Request focus to this chat control.
      */
     override public function setFocus () :void
     {
         _txt.setFocus();
-    }
-
-    /**
-     * Enables or disables our chat input.
-     */
-    public function setEnabled (enabled :Boolean) :void
-    {
-        _txt.enabled = enabled;
-        _but.enabled = enabled;
     }
 
     /**
