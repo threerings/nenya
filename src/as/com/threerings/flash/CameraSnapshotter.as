@@ -126,7 +126,7 @@ public class CameraSnapshotter extends Sprite
         // this code is specifically saying: "fuck up the scale", so if Adobe fixes their
         // bug in the future, this will cause broken behavior.
         _bitmap.bitmapData.draw(_video,
-            new Matrix(_camera.width / 320, 0, 0, _camera.height / 240));
+            new Matrix(_camera.width / 160, 0, 0, _camera.height / 120));
 //        com.threerings.util.Log.testing("Camera stuff",
 //            "camera.width", _camera.width, "camera.height", _camera.height,
 //            "video.width", _video.width, "video.height", _video.height,
