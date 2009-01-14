@@ -19,7 +19,6 @@ import flash.text.TextField;
 import com.threerings.util.Log;
 import com.threerings.util.MethodQueue;
 
-// TODO: use PreferredCamera?
 public class CameraSnapshotter extends Sprite
 {
     /**
@@ -78,7 +77,7 @@ public class CameraSnapshotter extends Sprite
     public function setCamera (camera :Camera) :void
     {
         if (_video != null) {
-            if (_bitmap.parent != null) {
+            if (_bitmap != null && _bitmap.parent != null) {
                 removeChild(_bitmap);
             }
             if (_video.parent != null) {
@@ -88,12 +87,34 @@ public class CameraSnapshotter extends Sprite
             detachVideo();
         }
 
+        if (_camera != null) {
+            _camera.removeEventListener(StatusEvent.STATUS, handleCameraStatus);
+        }
+
         _camera = camera;
         if (_camera == null) {
             return;
         }
+        _camera.addEventListener(StatusEvent.STATUS, handleCameraStatus);
+        if (_camera.muted) {
+            return;
+
+        } else if (_correctionWidth == 0) {
+            setCorrection();
+        }
 
         attachVideo();
+    }
+
+    protected function handleCameraStatus (event :StatusEvent) :void
+    {
+        if (event.code == "Camera.Unmuted") {
+            setCorrection();
+            attachVideo();
+
+        } else {
+            detachVideo();
+        }
     }
 
     public function getCameraName () :String
@@ -108,7 +129,9 @@ public class CameraSnapshotter extends Sprite
     public function setMode (width :int, height :int, fps :Number, favorArea :Boolean = true) :void
     {
         clearSnapshot();
-        removeChild(_video);
+        if (_video != null) {
+            removeChild(_video);
+        }
 
         detachVideo();
         _camera.setMode(width, height, fps, favorArea);
@@ -121,19 +144,8 @@ public class CameraSnapshotter extends Sprite
             return; // throw exception?
         }
 
-        // NOTE: we specify a matrix to scale the video, because no matter what size it really
-        // is, it will usually snapshot as if it were at the smallest size. STRANGE.
-        // Note that this stupid hack doesn't always work, but it mostly works, and it's better
-        // than leaving everything alone, which mostly didn't work. But then again,
-        // this code is specifically saying: "fuck up the scale", so if Adobe fixes their
-        // bug in the future, this will cause broken behavior.
-        _bitmap.bitmapData.draw(_video);
-            //new Matrix(_camera.width / 160, 0, 0, _camera.height / 120));
-        Log.getLog(this).debug("Camera snapshotted",
-            "camera.width", _camera.width, "camera.height", _camera.height,
-            "video.width", _video.width, "video.height", _video.height,
-            "videoWidth", _video.videoWidth, "videoHeight", _video.videoHeight,
-            "bitmap.width", _bitmap.width, "bitmap.height", _bitmap.height);
+        _bitmap.bitmapData.draw(_video,
+            new Matrix(_camera.width / _correctionWidth, 0, 0, _camera.height / _correctionHeight));
 
         if (_video.parent != null) {
             removeChild(_video);
@@ -146,10 +158,10 @@ public class CameraSnapshotter extends Sprite
         if (_camera == null) {
             return;
         }
-        if (_bitmap.parent != null) {
+        if (_bitmap != null && _bitmap.parent != null) {
             removeChild(_bitmap);
         }
-        if (_video.parent == null) {
+        if (_video != null && _video.parent == null) {
             addChild(_video);
         }
     }
@@ -160,6 +172,16 @@ public class CameraSnapshotter extends Sprite
             return null;
         }
         return _bitmap.bitmapData;
+    }
+
+    /**
+     * There appears to be a bug with the camera that "locks" it to the size it was at when
+     * it was unmuted.
+     */
+    protected function setCorrection () :void
+    {
+        _correctionWidth = _camera.width;
+        _correctionHeight = _camera.height;
     }
 
     protected function attachVideo () :void
@@ -189,5 +211,9 @@ public class CameraSnapshotter extends Sprite
     protected var _video :Video;
 
     protected var _bitmap :Bitmap;
+
+    protected var _correctionWidth :int;
+
+    protected var _correctionHeight :int;
 }
 }
