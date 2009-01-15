@@ -162,6 +162,7 @@ public class MisoScenePanel extends VirtualMediaPanel
         clearScene();
         // Don't repaint immediately if we've gotten new penders from our rethink
         _delayRepaint = rethink() > 0;
+        System.err.println("MST REF SCENE: " + _delayRepaint);
         _remgr.invalidateRegion(_vbounds);
     }
 
@@ -730,6 +731,7 @@ public class MisoScenePanel extends VirtualMediaPanel
             _ulpos.setLocation(_tcoords);
             if (rethink() > 0) {
                 _delayRepaint = mightDelayPaint;
+                System.err.println("MST VIEW LOC DID CHANGE: " + _delayRepaint);
                 // If this is a complete repaint, turn off visibility while we're resolving to
                 // keep child components or media panels from drawing.
                 if (_delayRepaint) {
@@ -944,14 +946,22 @@ public class MisoScenePanel extends VirtualMediaPanel
         // once all the visible pending blocks have completed their
         // resolution, recompute our visible object set and show ourselves
         if (_visiBlocks.remove(block) && _visiBlocks.size() == 0) {
-            recomputeVisible();
-            log.info("Restoring repaint... ", "left", _pendingBlocks, "view",
-                StringUtil.toString(_vbounds));
-            _delayRepaint = false;
-            // Need to restore visibility as it may have been turned of as a result of the delay
-            setVisible(true);
-            _remgr.invalidateRegion(_vbounds);
+            allBlocksFinished();
         }
+    }
+
+    /**
+     * Called to handle the proceedings once our last resolving block has been finished.
+     */
+    protected void allBlocksFinished ()
+    {
+        recomputeVisible();
+        log.info("Restoring repaint... ", "left", _pendingBlocks, "view",
+            StringUtil.toString(_vbounds));
+        _delayRepaint = false;
+        // Need to restore visibility as it may have been turned of as a result of the delay
+        setVisible(true);
+        _remgr.invalidateRegion(_vbounds);
     }
 
     /**

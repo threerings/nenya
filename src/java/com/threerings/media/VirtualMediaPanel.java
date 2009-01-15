@@ -236,7 +236,11 @@ public class VirtualMediaPanel extends MediaPanel
     protected void didTick (long tickStamp)
     {
         super.didTick(tickStamp);
+        adjustBoundsCenter();
+    }
 
+    protected void adjustBoundsCenter ()
+    {
         int width = getWidth(), height = getHeight();
 
         // adjusts our view location to track any pathable we might be
