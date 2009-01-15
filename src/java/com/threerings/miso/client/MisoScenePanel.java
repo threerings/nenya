@@ -162,7 +162,6 @@ public class MisoScenePanel extends VirtualMediaPanel
         clearScene();
         // Don't repaint immediately if we've gotten new penders from our rethink
         _delayRepaint = rethink() > 0;
-        System.err.println("MST REF SCENE: " + _delayRepaint);
         _remgr.invalidateRegion(_vbounds);
     }
 
@@ -731,7 +730,6 @@ public class MisoScenePanel extends VirtualMediaPanel
             _ulpos.setLocation(_tcoords);
             if (rethink() > 0) {
                 _delayRepaint = mightDelayPaint;
-                System.err.println("MST VIEW LOC DID CHANGE: " + _delayRepaint);
                 // If this is a complete repaint, turn off visibility while we're resolving to
                 // keep child components or media panels from drawing.
                 if (_delayRepaint) {
