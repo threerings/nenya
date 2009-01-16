@@ -32,14 +32,24 @@ import flash.geom.Rectangle;
 public class DisplayUtil
 {
     /**
+     * Sets the top-left pixel of a DisplayObject to the given location, relative to another
+     * DisplayObject's coordinate space.
+     */
+    public static function positionBoundsRelative (disp :DisplayObject, relativeTo :DisplayObject,
+        x :Number, y :Number) :void
+    {
+        var bounds :Rectangle = disp.getBounds(relativeTo);
+        disp.x = x - bounds.left;
+        disp.y = y - bounds.top;
+    }
+
+    /**
      * Sets the top-left pixel of a DisplayObject to the given location, taking the
      * object's bounds into account.
      */
     public static function positionBounds (disp :DisplayObject, x :Number, y :Number) :void
     {
-        var bounds :Rectangle = disp.getBounds(disp);
-        disp.x = x - bounds.left;
-        disp.y = y - bounds.top;
+        positionBoundsRelative(disp, disp, x, y);
     }
 
     /**
