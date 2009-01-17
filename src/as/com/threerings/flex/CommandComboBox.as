@@ -102,7 +102,14 @@ public class CommandComboBox extends ComboBox
      */
     protected function itemToData (item :Object) :Object
     {
-        return (item == null || dataField == null) ? item : item[dataField];
+        if (item != null && dataField != null) {
+            try {
+                return item[dataField];
+            } catch (re :ReferenceError) {
+                // fallback to just returning the item
+            }
+        }
+        return item;
     }
 
     protected function handleChange (event :ListEvent) :void
