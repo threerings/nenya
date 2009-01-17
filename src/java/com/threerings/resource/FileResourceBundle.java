@@ -59,10 +59,9 @@ public class FileResourceBundle extends ResourceBundle
      * Constructs a resource bundle with the supplied jar file.
      *
      * @param source a file object that references our source jar file.
-     * @param delay if true, the bundle will wait until someone calls
-     * {@link #sourceIsReady} before allowing access to its resources.
-     * @param unpack if true the bundle will unpack itself into a
-     * temporary directory
+     * @param delay if true, the bundle will wait until someone calls {@link #sourceIsReady}
+     * before allowing access to its resources.
+     * @param unpack if true the bundle will unpack itself into a temporary directory
      */
     public FileResourceBundle (File source, boolean delay, boolean unpack)
     {
@@ -102,8 +101,7 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     /**
-     * Returns the {@link File} from which resources are fetched for this
-     * bundle.
+     * Returns the {@link File} from which resources are fetched for this bundle.
      */
     public File getSource ()
     {
@@ -111,8 +109,7 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     /**
-     * @return true if the bundle is fully downloaded and successfully
-     * unpacked.
+     * @return true if the bundle is fully downloaded and successfully unpacked.
      */
     public boolean isUnpacked ()
     {
@@ -121,11 +118,11 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     /**
-     * Called by the resource manager once it has ensured that our
-     * resource jar file is up to date and ready for reading.
+     * Called by the resource manager once it has ensured that our resource jar file is up to date
+     * and ready for reading.
      *
-     * @return true if we successfully unpacked our resources, false if we
-     * encountered errors in doing so.
+     * @return true if we successfully unpacked our resources, false if we encountered errors in
+     * doing so.
      */
     public boolean sourceIsReady ()
     {
@@ -137,8 +134,7 @@ public class FileResourceBundle extends ResourceBundle
             try {
                 resolveJarFile();
             } catch (IOException ioe) {
-                log.warning("Failure resolving jar file '" + _source +
-                            "': " + ioe + ".");
+                log.warning("Failure resolving jar file", "source", _source, ioe);
                 wipeBundle(true);
                 return false;
             }
@@ -146,8 +142,7 @@ public class FileResourceBundle extends ResourceBundle
             log.info("Unpacking into " + _cache + "...");
             if (!_cache.exists()) {
                 if (!_cache.mkdir()) {
-                    log.warning("Failed to create bundle cache directory '" +
-                                _cache + "'.");
+                    log.warning("Failed to create bundle cache directory", "dir", _cache);
                     closeJar();
                     // we are hopelessly fucked
                     return false;
@@ -168,12 +163,10 @@ public class FileResourceBundle extends ResourceBundle
             try {
                 _unpacked.createNewFile();
                 if (!_unpacked.setLastModified(_sourceLastMod)) {
-                    log.warning("Failed to set last mod on stamp file '" +
-                                _unpacked + "'.");
+                    log.warning("Failed to set last mod on stamp file", "file", _unpacked);
                 }
             } catch (IOException ioe) {
-                log.warning("Failure creating stamp file '" + _unpacked +
-                            "': " + ioe + ".");
+                log.warning("Failure creating stamp file", "file", _unpacked, ioe);
                 // no need to stick a fork in things at this point
             }
         }
@@ -182,9 +175,8 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     /**
-     * Clears out everything associated with this resource bundle in the
-     * hopes that we can download it afresh and everything will work the
-     * next time around.
+     * Clears out everything associated with this resource bundle in the hopes that we can
+     * download it afresh and everything will work the next time around.
      */
     public void wipeBundle (boolean deleteJar)
     {
@@ -202,28 +194,26 @@ public class FileResourceBundle extends ResourceBundle
         // that we ensure that it is revalidated
         File vfile = new File(FileUtil.resuffix(_source, ".jar", ".jarv"));
         if (vfile.exists() && !vfile.delete()) {
-            log.warning("Failed to delete " + vfile + ".");
+            log.warning("Failed to delete vfile", "file", vfile);
         }
 
         // close and delete our source jar file
         if (deleteJar && _source != null) {
             closeJar();
             if (!_source.delete()) {
-                log.warning("Failed to delete " + _source +
-                            " [exists=" + _source.exists() + "].");
+                log.warning("Failed to delete source",
+                    "source", _source, "exists", _source.exists());
             }
         }
     }
 
     /**
-     * Returns a file from which the specified resource can be loaded.
-     * This method will unpack the resource into a temporary directory and
-     * return a reference to that file.
+     * Returns a file from which the specified resource can be loaded. This method will unpack the
+     * resource into a temporary directory and return a reference to that file.
      *
      * @param path the path to the resource in this jar file.
      *
-     * @return a file from which the resource can be loaded or null if no
-     * such resource exists.
+     * @return a file from which the resource can be loaded or null if no such resource exists.
      */
     public File getResourceFile (String path)
         throws IOException
@@ -251,7 +241,7 @@ public class FileResourceBundle extends ResourceBundle
 
         JarEntry entry = _jarSource.getJarEntry(path);
         if (entry == null) {
-//             Log.info("Couldn't locate " + path + " in " + _jarSource + ".");
+//             log.info("Couldn't locate path in jar", "path", path, "jar", _jarSource);
             return null;
         }
 
@@ -266,9 +256,9 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     /**
-     * Returns true if this resource bundle contains the resource with the
-     * specified path. This avoids actually loading the resource, in the
-     * event that the caller only cares to know that the resource exists.
+     * Returns true if this resource bundle contains the resource with the specified path. This
+     * avoids actually loading the resource, in the event that the caller only cares to know that
+     * the resource exists.
      */
     public boolean containsResource (String path)
     {
@@ -296,15 +286,13 @@ public class FileResourceBundle extends ResourceBundle
     }
 
     /**
-     * Creates the internal jar file reference if we've not already got
-     * it; we do this lazily so as to avoid any jar- or zip-file-related
-     * antics until and unless doing so is required, and because the
-     * resource manager would like to be able to create bundles before the
-     * associated files have been fully downloaded.
+     * Creates the internal jar file reference if we've not already got it; we do this lazily so
+     * as to avoid any jar- or zip-file-related antics until and unless doing so is required, and
+     * because the resource manager would like to be able to create bundles before the associated
+     * files have been fully downloaded.
      *
-     * @return true if the jar file could not yet be resolved because we
-     * haven't yet heard from the resource manager that it is ready for us
-     * to access, false if all is cool.
+     * @return true if the jar file could not yet be resolved because we haven't yet heard from
+     * the resource manager that it is ready for us to access, false if all is cool.
      */
     protected boolean resolveJarFile ()
         throws IOException
@@ -316,8 +304,7 @@ public class FileResourceBundle extends ResourceBundle
         }
 
         if (!_source.exists()) {
-            throw new IOException("Missing jar file for resource bundle: " +
-                                  _source + ".");
+            throw new IOException("Missing jar file for resource bundle: " + _source + ".");
         }
 
         try {
@@ -327,8 +314,7 @@ public class FileResourceBundle extends ResourceBundle
             return false;
 
         } catch (IOException ioe) {
-            String msg = "Failed to resolve resource bundle jar file '" +
-                _source + "'";
+            String msg = "Failed to resolve resource bundle jar file '" + _source + "'";
             log.warning(msg + ".", ioe);
             throw (IOException) new IOException(msg).initCause(ioe);
         }
@@ -344,8 +330,7 @@ public class FileResourceBundle extends ResourceBundle
                 _jarSource.close();
             }
         } catch (Exception ioe) {
-            log.warning("Failed to close jar file [path=" + _source +
-                        ", error=" + ioe + "].");
+            log.warning("Failed to close jar file", "path", _source, "error", ioe);
         }
     }
 
@@ -407,8 +392,7 @@ public class FileResourceBundle extends ResourceBundle
     /** The last modified time of our source jar file. */
     protected long _sourceLastMod = -1;
 
-    /** A file whose timestamp indicates whether or not our existing jar
-     * file has been unpacked. */
+    /** A file whose timestamp indicates whether or not our existing jar file has been unpacked. */
     protected File _unpacked;
 
     /** A directory into which we unpack files from our bundle. */

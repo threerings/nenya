@@ -66,8 +66,7 @@ public class ImageManager
             }
 
             ImageKey okey = (ImageKey)other;
-            return ((okey.daprov.getIdent().equals(daprov.getIdent())) &&
-                    (okey.path.equals(path)));
+            return ((okey.daprov.getIdent().equals(daprov.getIdent())) && (okey.path.equals(path)));
         }
 
         @Override
@@ -101,7 +100,7 @@ public class ImageManager
 
         // create our image cache
         int icsize = getCacheSize();
-        log.debug("Creating image cache [size=" + icsize + "k].");
+        log.debug("Creating image cache", "size", (icsize + "k"));
         _ccache = new LRUHashMap<ImageKey, CacheRecord>(
                 icsize * 1024, new LRUHashMap.ItemSizer<CacheRecord>() {
             public int computeSize (CacheRecord value) {
@@ -266,10 +265,10 @@ public class ImageManager
             crec = _ccache.get(key);
         }
         if (crec != null) {
-//             Log.info("Cache hit [key=" + key + ", crec=" + crec + "].");
+//             log.info("Cache hit", "key", key, "crec", crec);
             return crec.getImage(zations, _ccache);
         }
-//         Log.info("Cache miss [key=" + key + ", crec=" + crec + "].");
+//         log.info("Cache miss", "key", key, "crec", crec);
 
         // load up the raw image
         BufferedImage image = loadImage(key);
@@ -279,8 +278,8 @@ public class ImageManager
             image = new BufferedImage(10, 10, BufferedImage.TYPE_BYTE_INDEXED);
         }
 
-//         Log.info("Loaded " + key.path + ", image=" + image +
-//                  ", size=" + ImageUtil.getEstimatedMemoryUsage(image));
+//         log.info("Loaded Image", "path", key.path, "image", image,
+//                  "size", ImageUtil.getEstimatedMemoryUsage(image));
 
         // create a cache record
         crec = new CacheRecord(key, image);
@@ -439,8 +438,8 @@ public class ImageManager
             }
             eff = _ccache.getTrackedEffectiveness();
         }
-        log.info("ImageManager LRU [mem=" + (size / 1024) + "k, size=" + _ccache.size() +
-            ", hits=" + eff[0] + ", misses=" + eff[1] + ", totalKeys=" + _keySet.size() + "].");
+        log.info("ImageManager LRU", "mem", ((size / 1024) + "k"), "size", _ccache.size(),
+            "hits", eff[0], "misses", eff[1], "totalKeys", _keySet.size());
     }
 
     /** Maintains a source image and a set of colorized versions in the image cache. */
@@ -482,8 +481,8 @@ public class ImageManager
                 return cimage;
 
             } catch (Exception re) {
-                log.warning("Failure recoloring image [source" + _key +
-                            ", zations=" + StringUtil.toString(zations) + ", error=" + re + "].");
+                log.warning("Failure recoloring image",
+                    "source", _key, "zations", StringUtil.toString(zations), "error", re);
                 // return the uncolorized version
                 return _source;
             }

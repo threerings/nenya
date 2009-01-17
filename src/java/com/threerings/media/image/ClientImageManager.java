@@ -32,9 +32,8 @@ import com.threerings.resource.ResourceManager;
 import com.threerings.media.MediaPrefs;
 
 /**
- * Provides a single point of access for image retrieval and caching - just like the
- * ImageManager but adds a tie in to the RuntimeAdjust system to control caching and
- * mirage creation.
+ * Provides a single point of access for image retrieval and caching - just like the ImageManager
+ * but adds a tie in to the RuntimeAdjust system to control caching and mirage creation.
  */
 public class ClientImageManager extends ImageManager
 {
@@ -106,10 +105,10 @@ public class ClientImageManager extends ImageManager
     protected static RuntimeAdjust.IntAdjust _cacheSize = new RuntimeAdjust.IntAdjust(
         "Size (in kb of memory used) of the image manager LRU cache [requires restart]",
         "narya.media.image.cache_size", MediaPrefs.config, DEFAULT_CACHE_SIZE);
-    
+
     /**
-     * Cache size to be used in this run.  Adjusted by setCacheSize without affecting
-     * the stored value.
+     * Cache size to be used in this run. Adjusted by setCacheSize without affecting the stored
+     * value.
      */
     protected static int _runCacheSize = _cacheSize.getValue();
 
