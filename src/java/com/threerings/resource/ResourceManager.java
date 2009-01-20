@@ -868,9 +868,19 @@ public class ResourceManager
             return null;
         } else if (useFastIO) {
             return FastImageIO.read(file);
-        } else {
-            return ImageIO.read(file);
         }
+        return ImageIO.read(file);
+    }
+
+    protected static BufferedImage loadImage (InputStream iis, boolean useFastIO)
+        throws IOException
+    {
+        if (iis == null) {
+            return null;
+        } else if (useFastIO) {
+            return FastImageIO.read(iis);
+        }
+        return ImageIO.read(iis);
     }
 
     /**
