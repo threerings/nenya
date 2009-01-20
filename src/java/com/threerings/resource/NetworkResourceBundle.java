@@ -44,7 +44,7 @@ public class NetworkResourceBundle extends ResourceBundle
     {
         this(root, path, null);
     }
-    
+
     public NetworkResourceBundle (String root, String path, HashSet<String> rsrcList)
     {
         if (!root.endsWith("/")) {
@@ -56,7 +56,7 @@ public class NetworkResourceBundle extends ResourceBundle
             log.warning("Created malformed URL for resource. [root=" + root + ", path=" + path);
         }
         _ident = path;
-        
+
         _rsrcList = rsrcList;
     }
 
@@ -74,11 +74,11 @@ public class NetworkResourceBundle extends ResourceBundle
         if (!inResourceList(path)) {
             return null;
         }
-        
+
         URL resourceUrl = new URL(_bundleURL, path);
         return getResource(resourceUrl);
     }
-    
+
     protected static InputStream getResource(URL resourceUrl)
     {
         URLConnection ucon = null;
@@ -91,7 +91,7 @@ public class NetworkResourceBundle extends ResourceBundle
         if (ucon == null) {
             return null;
         }
-        
+
         try {
             ucon.connect();
             return ucon.getInputStream();
@@ -112,7 +112,7 @@ public class NetworkResourceBundle extends ResourceBundle
         if (in == null) {
             return null;
         }
-        return ResourceManager.loadImage(in);
+        return ResourceManager.loadImage(in, useFastIO);
     }
 
     /**
@@ -123,7 +123,7 @@ public class NetworkResourceBundle extends ResourceBundle
     {
         return _rsrcList == null || _rsrcList.contains(_ident + path);
     }
-    
+
     /**
      * Returns a string representation of this resource bundle.
      */
@@ -138,7 +138,7 @@ public class NetworkResourceBundle extends ResourceBundle
 
     /** Our root url to the resources in this bundle. */
     protected URL _bundleURL;
-    
+
     /** A list of all the resources included in this bundle. */
     protected HashSet<String> _rsrcList;
 }
