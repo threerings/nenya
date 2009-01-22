@@ -91,16 +91,11 @@ public class ChatControl extends HBox
 
     override public function set enabled (en :Boolean) :void
     {
-        // don't call super (and the only time these aren't around is during construction)
+        super.enabled = en;
         if (_txt != null) {
             _txt.enabled = en;
             _but.enabled = en;
         }
-    }
-
-    override public function get enabled () :Boolean
-    {
-        return _txt.enabled;
     }
 
     /**
