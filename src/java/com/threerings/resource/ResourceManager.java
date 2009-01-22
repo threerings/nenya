@@ -842,8 +842,8 @@ public class ResourceManager
     /**
      * Creates an appropriate bundle for fetching resources from files.
      */
-    protected FileResourceBundle createFileResourceBundle(
-        File source, boolean delay, boolean unpack)
+    protected FileResourceBundle createFileResourceBundle (File source, boolean delay,
+        boolean unpack)
     {
         return new FileResourceBundle(source, delay, unpack);
     }
@@ -851,8 +851,8 @@ public class ResourceManager
     /**
      * Creates an appropriate bundle for fetching resources from the network.
      */
-    protected ResourceBundle createNetworkResourceBundle(
-        String root, String path, HashSet<String> rsrcList)
+    protected ResourceBundle createNetworkResourceBundle (String root, String path,
+        HashSet<String> rsrcList)
     {
         return new NetworkResourceBundle(root, path, rsrcList);
     }
