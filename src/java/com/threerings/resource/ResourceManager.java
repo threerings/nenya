@@ -851,7 +851,7 @@ public class ResourceManager
     /**
      * Creates an appropriate bundle for fetching resources from the network.
      */
-    protected NetworkResourceBundle createNetworkResourceBundle(
+    protected ResourceBundle createNetworkResourceBundle(
         String root, String path, HashSet<String> rsrcList)
     {
         return new NetworkResourceBundle(root, path, rsrcList);
@@ -872,7 +872,11 @@ public class ResourceManager
         return ImageIO.read(file);
     }
 
-    protected static BufferedImage loadImage (InputStream iis, boolean useFastIO)
+    /**
+     * Loads an image from the given input stream. Supports formats supported by {@link ImageIO}
+     * as well as {@link FastImageIO} based on the useFastIO param.
+     */
+    public static BufferedImage loadImage (InputStream iis, boolean useFastIO)
         throws IOException
     {
         if (iis == null) {
