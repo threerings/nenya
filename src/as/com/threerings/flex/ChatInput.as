@@ -8,6 +8,11 @@ import flash.events.FocusEvent;
 import mx.controls.TextInput;
 
 /**
+ * The class name of an image to use as the input prompt.
+ */
+[Style(name="prompt", type="Class")]
+
+/**
  * A special TextInput for entering Chat. One of these is used in ChatControl.
  *
  * A standard TextInput has the stupid behavior of selecting all the text when it receives
@@ -18,14 +23,34 @@ public class ChatInput extends TextInput
 {
     public function ChatInput ()
     {
-        styleName = "chatInput";
         width = 147;
         showPrompt(true);
     }
 
+    override public function stylesInitialized () :void
+    {
+        super.stylesInitialized();
+
+        checkShowPrompt();
+    }
+
+    override public function styleChanged (styleProp :String) :void
+    {
+        super.styleChanged(styleProp);
+
+        if (styleProp == "prompt") {
+            checkShowPrompt();
+        }
+    }
+
+    protected function checkShowPrompt () :void
+    {
+        showPrompt(focusManager == null || focusManager.getFocus() != this);
+    }
+
     protected function showPrompt (show :Boolean) :void
     {
-        setStyle("backgroundImage", (show && ("" == text)) ? PROMPT : undefined);
+        setStyle("backgroundImage", (show && ("" == text)) ? getStyle("prompt") : undefined);
     }
 
     override protected function focusInHandler (event :FocusEvent) :void
@@ -46,8 +71,5 @@ public class ChatInput extends TextInput
         super.focusOutHandler(event);
         showPrompt(true);
     }
-
-    [Embed(source="typetochat.png")]
-    protected static const PROMPT :Class; 
 }
 }
