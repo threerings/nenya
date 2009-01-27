@@ -38,8 +38,7 @@ public class DisplayUtil
                                           newChild :DisplayObject,
                                           below :DisplayObject) :void
     {
-        var ii :int = (below.parent == container ? container.getChildIndex(below) : 0);
-        container.addChildAt(newChild, ii);
+        container.addChildAt(newChild, container.getChildIndex(below));
     }
 
     /**
@@ -49,8 +48,7 @@ public class DisplayUtil
                                           newChild :DisplayObject,
                                           above :DisplayObject) :void
     {
-        var ii :int = (above.parent == container ? container.getChildIndex(above) + 1 : 0);
-        container.addChildAt(newChild, ii);
+        container.addChildAt(newChild, container.getChildIndex(above) + 1);
     }
 
     /**
