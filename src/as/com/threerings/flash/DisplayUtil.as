@@ -32,6 +32,28 @@ import flash.geom.Rectangle;
 public class DisplayUtil
 {
     /**
+     * Adds newChild to container, directly below another child of the container.
+     */
+    public static function addChildBelow (container :DisplayObjectContainer,
+                                          newChild :DisplayObject,
+                                          below :DisplayObject) :void
+    {
+        var ii :int = (below.parent == container ? container.getChildIndex(below) : 0);
+        container.addChildAt(newChild, ii);
+    }
+
+    /**
+     * Adds newChild to container, directly above another child of the container.
+     */
+    public static function addChildAbove (container :DisplayObjectContainer,
+                                          newChild :DisplayObject,
+                                          above :DisplayObject) :void
+    {
+        var ii :int = (above.parent == container ? container.getChildIndex(above) + 1 : 0);
+        container.addChildAt(newChild, ii);
+    }
+
+    /**
      * Sets the top-left pixel of a DisplayObject to the given location, relative to another
      * DisplayObject's coordinate space.
      */
