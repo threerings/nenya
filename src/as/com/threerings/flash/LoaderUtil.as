@@ -20,16 +20,16 @@ public class LoaderUtil
         } catch (e1 :Error) {
             // ignore
         }
-//        try {
-//            loader.unloadAndStop();
-//        } catch (e2 :Error) {
+        try {
+            loader.unloadAndStop();
+        } catch (e2 :Error) {
             // hmm, maybe they are using FP9 still
             try {
                 loader.unload();
             } catch (e3 :Error) {
                 // ignore
             }
-//        }
+        }
     }
 }
 }
