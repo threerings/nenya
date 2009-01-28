@@ -34,29 +34,17 @@ import mx.core.UIComponent;
 public class FlexUtil
 {
     /**
-     * Creates a label with the supplied text and tooltip, and optionally applies a style class to
-     * it.
+     * Creates a label with the supplied text, and optionally applies a style class and tooltip
+     * to it.
      */
-    public static function createTipLabel (
-        text :String, toolTip :String, style :String = null) :Label
+    public static function createLabel (
+        text :String, style :String = null, toolTip :String = null) :Label
     {
         var label :Label = new Label();
         label.text = text;
-        if (toolTip != null) {
-            label.toolTip = toolTip;
-        }
-        if (style != null) {
-            label.styleName = style;
-        }
+        label.styleName = style;
+        label.toolTip = toolTip;
         return label;
-    }
-
-    /**
-     * Creates a label with the supplied text, and optionally applies a style class to it.
-     */
-    public static function createLabel (text :String, style :String = null) :Label
-    {
-        return createTipLabel(text, null, style);
     }
 
     /**
