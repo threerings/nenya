@@ -112,7 +112,7 @@ public class NetworkResourceBundle extends ResourceBundle
         if (in == null) {
             return null;
         }
-        return ResourceManager.loadImage(in, useFastIO);
+        return ResourceManager.loadImage(in, false);
     }
 
     /**
