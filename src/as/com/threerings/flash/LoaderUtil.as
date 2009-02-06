@@ -22,13 +22,12 @@ public class LoaderUtil
         }
         try {
             //loader.unloadAndStop();
+            // always try calling it, so that if it's missing we can fall back
             loader["unloadAndStop"]();
-            trace("content unloadAndStopped");
         } catch (e2 :Error) {
             // hmm, maybe they are using FP9 still
             try {
                 loader.unload();
-                trace("content unloaded");
             } catch (e3 :Error) {
                 // ignore
             }
