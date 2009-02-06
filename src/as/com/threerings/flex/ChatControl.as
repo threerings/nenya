@@ -9,7 +9,6 @@ import flash.events.Event;
 import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
-import flash.events.TextEvent;
 
 import flash.ui.Keyboard;
 
@@ -22,6 +21,7 @@ import mx.controls.TextInput;
 import mx.events.FlexEvent;
 
 import com.threerings.util.ArrayUtil;
+import com.threerings.util.MethodQueue;
 import com.threerings.util.StringUtil;
 
 import com.threerings.flex.CommandButton;
@@ -139,8 +139,16 @@ public class ChatControl extends HBox
             return;
         }
 
-        // if there was no error, clear the entry area in prep for the next entry event
-        _txt.text = "";
+        // If there was no error, clear the entry area in prep for the next entry event
+        MethodQueue.callLater(function () : void {
+            // WORKAROUND
+            // Originally we cleared the text immediately, but with flex 3.2 this broke
+            // for *some* people. Weird! We're called from the event dispatcher for the
+            // enter key, so it's possible that the default action is booching it?
+            // In any case, this could possibly be removed in the future by the ambitious.
+            // Note also: Flex's built-in callLater() doesn't work, but MethodQueue does. WTF?!?
+            _txt.text = "";
+        });
         _histidx = -1;
     }
 
