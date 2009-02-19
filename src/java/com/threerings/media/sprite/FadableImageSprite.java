@@ -55,7 +55,7 @@ public class FadableImageSprite extends OrientableImageSprite
 
     /**
      * Puts this sprite on the specified path and fades it in over the specified duration.
-     * 
+     *
      * @param path the path to move along
      * @param fadePortion the portion of time to spend fading in, from 0.0f (no time) to 1.0f (the
      * entire time)
@@ -71,7 +71,7 @@ public class FadableImageSprite extends OrientableImageSprite
 
     /**
      * Puts this sprite on the specified path and fades it out over the specified duration.
-     * 
+     *
      * @param path the path to move along
      * @param pathDuration the duration of the path
      * @param fadePortion the portion of time to spend fading out, from 0.0f (no time) to 1.0f
@@ -92,7 +92,7 @@ public class FadableImageSprite extends OrientableImageSprite
     /**
      * Puts this sprite on the specified path, fading it in over the specified duration at the
      * beginning and fading it out at the end.
-     * 
+     *
      * @param path the path to move along
      * @param pathDuration the duration of the path
      * @param fadePortion the portion of time to spend fading in/out, from 0.0f (no time) to 1.0f
@@ -161,12 +161,12 @@ public class FadableImageSprite extends OrientableImageSprite
     @Override
     public void pathCompleted (long timestamp)
     {
-        super.pathCompleted(timestamp);
         if (_fadeInDuration != -1) {
             completeFadeIn();
         } else if (_fadeOutDuration != -1) {
             completeFadeOut();
         }
+        super.pathCompleted(timestamp);
     }
 
     /** Completes the process of fading in. */
