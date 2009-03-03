@@ -106,6 +106,18 @@ public class CommandMenu extends Menu
     }
 
     /**
+     * Add a separator to the specified menu, unless it would not make sense to do so, because
+     * the menu is empty or already ends with a separator.
+     */
+    public static function addSeparator (menuItems :Array) :void
+    {
+        const len :int = menuItems.length;
+        if (len > 0 && menuItems[len - 1].type != "separator") {
+            menuItems.push({ type: "separator" });
+        }
+    }
+
+    /**
      * The mx.controls.Menu class overrides setting and getting the verticalScrollPolicy
      * basically setting the verticalScrollPolicy did nothing, and getting it always returned
      * ScrollPolicy.OFF.  So that's not going to work if we want the menu to scroll. Here we 
