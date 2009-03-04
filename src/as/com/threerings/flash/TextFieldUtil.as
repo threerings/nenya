@@ -24,6 +24,7 @@ package com.threerings.flash {
 import com.threerings.util.StringUtil;
 import com.threerings.util.Util;
 
+import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.filters.GlowFilter;
@@ -32,6 +33,7 @@ import flash.system.System;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
+import flash.utils.Dictionary;
 
 public class TextFieldUtil
 {
@@ -178,6 +180,22 @@ public class TextFieldUtil
     }
 
     /**
+     * Install listeners on the specified TextField such that the mouseEnabled property
+     * is only true when the mouse is over a link.
+     */
+    public static function trackOnlyLinksMouseable (textField :TextField, on :Boolean = true) :void
+    {
+        if (on) {
+            _mouseables[textField] = true;
+            // always add the listener, seems easier than checking to see.
+            _frameDispatcher.addEventListener(Event.ENTER_FRAME, handleTrackMouseable);
+
+        } else {
+            delete _mouseables[textField];
+        }
+    }
+
+    /**
      * Internal method related to tracking a single selectable TextField.
      */
     protected static function handleTrackedSelection (event :MouseEvent) :void
@@ -196,6 +214,27 @@ public class TextFieldUtil
                 _lastSelected.addEventListener(Event.REMOVED_FROM_STAGE, handleLastSelectedRemoved);
                 updateSelection(field);
             }
+        }
+    }
+
+    /**
+     * Checks every damn frame to see if we should make a TextField mouse-enabled.
+     */
+    protected static function handleTrackMouseable (event :Event) :void
+    {
+        var seen :Boolean = false;
+        for (var f :* in _mouseables) {
+            var field :TextField = f; // fucking hack of a language doesn't iterate non-string keys
+            seen = true;
+            if (field.stage != null) {
+                var charIndex :int = field.getCharIndexAtPoint(field.mouseX, field.mouseY);
+                field.mouseEnabled = (charIndex >= 0) && (charIndex < field.length) &&
+                    !StringUtil.isBlank(field.getTextFormat(charIndex).url);
+            }
+        }
+        if (!seen) {
+            // try to remove the listener as soon as we can
+            _frameDispatcher.removeEventListener(Event.ENTER_FRAME, handleTrackMouseable);
         }
     }
 
@@ -245,6 +284,10 @@ public class TextFieldUtil
 
     /** The last tracked TextField to be selected. */
     protected static var _lastSelected :TextField;
+
+    protected static var _mouseables :Dictionary = new Dictionary(true); // weak keys
+
+    protected static const _frameDispatcher :Sprite = new Sprite();
 
     protected static const MASK_FIELD_PROPS :Object = { outlineColor: true };
 
