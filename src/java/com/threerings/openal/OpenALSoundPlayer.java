@@ -113,7 +113,7 @@ public class OpenALSoundPlayer extends SoundPlayer
     public void setClipVolume (final float vol)
     {
         super.setClipVolume(vol);
-        _ticker.postRunnable(new Runnable() {
+        getSoundQueue().postRunnable(new Runnable() {
             public void run () {
                 _alSoundManager.setBaseGain(vol);
             }});
@@ -173,7 +173,7 @@ public class OpenALSoundPlayer extends SoundPlayer
         InputStream rsrc = _loader.getSound(bundle, path);
         final StreamDecoder dec = new OggStreamDecoder();
         dec.init(rsrc);
-        getSoundQueue().postRunnable(new Runnable(){
+        getSoundQueue().postRunnable(new Runnable() {
             public void run () {
                 Stream s = new Stream(_alSoundManager) {
                     @Override
@@ -287,14 +287,15 @@ public class OpenALSoundPlayer extends SoundPlayer
     @Override
     public void shutdown ()
     {
-        getSoundQueue().postRunnable(new Runnable(){
+        getSoundQueue().postRunnable(new Runnable() {
             public void run () {
                 _group.dispose();
                 _locked.clear();
                 for (Stream stream : _alSoundManager.getStreams()) {
                     stream.dispose();
                 }
-            }});
+            }
+        });
     }
 
     /**
@@ -307,7 +308,7 @@ public class OpenALSoundPlayer extends SoundPlayer
         Preconditions.checkNotNull(bundle,
             "Unable to find the bundle name for a package [package=%s, key=%s]", pkgPath, key);
         String[] names = _loader.getPaths(pkgPath, key);
-        Preconditions.checkNotNull(bundle, "No such sound [package=%s, key=%s]", pkgPath, key);
+        Preconditions.checkNotNull(names, "No such sound [package=%s, key=%s]", pkgPath, key);
         String[] paths = new String[names.length];
         for (int ii = 0; ii < paths.length; ii++) {
             paths[ii] = bundle + ":" + names[ii];
