@@ -120,7 +120,7 @@ public class SparkAnimation extends Animation
      */
     protected int randomDirection ()
     {
-        return RandomUtil.getChance(2) ? -1 : 1;
+        return RandomUtil.getBoolean() ? -1 : 1;
     }
 
     @Override
