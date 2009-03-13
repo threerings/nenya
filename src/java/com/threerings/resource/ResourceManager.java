@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -852,7 +853,7 @@ public class ResourceManager
      * Creates an appropriate bundle for fetching resources from the network.
      */
     protected ResourceBundle createNetworkResourceBundle (String root, String path,
-        HashSet<String> rsrcList)
+        Set<String> rsrcList)
     {
         return new NetworkResourceBundle(root, path, rsrcList);
     }

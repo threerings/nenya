@@ -21,32 +21,25 @@
 
 package com.threerings.resource;
 
+import static com.threerings.resource.Log.log;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessControlException;
-
-import java.util.HashSet;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.awt.image.BufferedImage;
-
-import static com.threerings.resource.Log.log;
+import java.util.Set;
 
 /**
  * Resource bundle that retrieves its contents via HTTP over the network from a root URL.
  */
-public class NetworkResourceBundle extends ResourceBundle
+public class NetworkResourceBundle extends KnownAvailabilityResourceBundle
 {
-    public NetworkResourceBundle (String root, String path)
+    public NetworkResourceBundle (String root, String path, Set<String> rsrcList)
     {
-        this(root, path, null);
-    }
-
-    public NetworkResourceBundle (String root, String path, HashSet<String> rsrcList)
-    {
+        super(rsrcList);
         if (!root.endsWith("/")) {
             root += "/";
         }
@@ -56,8 +49,6 @@ public class NetworkResourceBundle extends ResourceBundle
             log.warning("Created malformed URL for resource. [root=" + root + ", path=" + path);
         }
         _ident = path;
-
-        _rsrcList = rsrcList;
     }
 
     @Override // documentation inherited
@@ -71,7 +62,7 @@ public class NetworkResourceBundle extends ResourceBundle
         throws IOException
     {
         // If we can reject it before opening a connection, then save the network latency.
-        if (!inResourceList(path)) {
+        if (!isPossiblyAvailable(_ident + path)) {
             return null;
         }
 
@@ -81,14 +72,11 @@ public class NetworkResourceBundle extends ResourceBundle
 
     protected static InputStream getResource(URL resourceUrl)
     {
-        URLConnection ucon = null;
+        URLConnection ucon;
         try {
             ucon = resourceUrl.openConnection();
         } catch (IOException ioe) {
             log.warning("Unable to open connection [url=" + resourceUrl + ", ex=" + ioe + "]");
-        }
-
-        if (ucon == null) {
             return null;
         }
 
@@ -116,15 +104,6 @@ public class NetworkResourceBundle extends ResourceBundle
     }
 
     /**
-     * Returns whether we believe the path to be available.  If we have no list, we assume
-     *  everything may be available.
-     */
-    protected boolean inResourceList (String path)
-    {
-        return _rsrcList == null || _rsrcList.contains(_ident + path);
-    }
-
-    /**
      * Returns a string representation of this resource bundle.
      */
     @Override
@@ -138,7 +117,4 @@ public class NetworkResourceBundle extends ResourceBundle
 
     /** Our root url to the resources in this bundle. */
     protected URL _bundleURL;
-
-    /** A list of all the resources included in this bundle. */
-    protected HashSet<String> _rsrcList;
 }
