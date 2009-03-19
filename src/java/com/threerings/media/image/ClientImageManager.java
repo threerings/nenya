@@ -1,8 +1,8 @@
 //
-// $Id: ImageManager.java 433 2008-03-06 18:31:04Z mthomas $
+// $Id$
 //
 // Nenya library - tools for developing networked games
-// Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved
+// Copyright (C) 2002-2009 Three Rings Design, Inc., All Rights Reserved
 // http://www.threerings.net/code/nenya/
 //
 // This library is free software; you can redistribute it and/or modify it

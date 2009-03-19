@@ -2,7 +2,7 @@
 // $Id$
 //
 // Nenya library - tools for developing networked games
-// Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved
+// Copyright (C) 2002-2009 Three Rings Design, Inc., All Rights Reserved
 // http://www.threerings.net/code/nenya/
 //
 // This library is free software; you can redistribute it and/or modify it
@@ -12,7 +12,7 @@
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public
