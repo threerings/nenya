@@ -250,7 +250,7 @@ public class Mp3AudioPlayer extends EventDispatcher
         if (_loop) {
             play0();
         } else {
-            updateState(MediaPlayerCodes.STATE_PAUSED);
+            updateState(MediaPlayerCodes.STATE_STOPPED);
         }
     }
 

@@ -27,5 +27,8 @@ public class MediaPlayerCodes
     public static const STATE_PLAYING :int = 2;
 
     public static const STATE_PAUSED :int = 3;
+
+    /** Indicates that the playhead reached the end and the media has stopped. */
+    public static const STATE_STOPPED :int = 4;
 }
 }
