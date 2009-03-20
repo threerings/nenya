@@ -156,10 +156,12 @@ public class Mp3AudioPlayer extends EventDispatcher
                 // ignore
             }
         }
-        _state = MediaPlayerCodes.STATE_UNREADY;
-        checkNeedTimer();
+        _sound = null;
+        _isComplete = false;
         _lastPosition = NaN;
         _cliData = null;
+        updateState(MediaPlayerCodes.STATE_UNREADY);
+        handlePositionCheck();
     }
 
     override public function addEventListener (
