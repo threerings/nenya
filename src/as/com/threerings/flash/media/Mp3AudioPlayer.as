@@ -37,7 +37,7 @@ public class Mp3AudioPlayer extends EventDispatcher
     /**
      * Load and immediately start playing some audio!
      */
-    public function load (url :String) :void
+    public function load (url :String, clientData :Object = null) :void
     {
         _isComplete = false;
         _lastPosition = 0;
@@ -46,7 +46,16 @@ public class Mp3AudioPlayer extends EventDispatcher
         _sound.addEventListener(IOErrorEvent.IO_ERROR, handleError);
         _sound.addEventListener(Event.COMPLETE, handleLoadingComplete);
         _sound.load(new URLRequest(url), new SoundLoaderContext(1000, true));
+        _cliData = clientData;
         play();
+    }
+
+    /**
+     * Get any client data associated with the media currently playing.
+     */
+    public function getClientData () :Object
+    {
+        return _cliData;
     }
 
     // from AudioPlayer
@@ -150,6 +159,7 @@ public class Mp3AudioPlayer extends EventDispatcher
         _state = MediaPlayerCodes.STATE_UNREADY;
         checkNeedTimer();
         _lastPosition = NaN;
+        _cliData = null;
     }
 
     override public function addEventListener (
@@ -260,6 +270,8 @@ public class Mp3AudioPlayer extends EventDispatcher
     }
 
     protected var _sound :Sound;
+
+    protected var _cliData :Object;
 
     protected var _chan :SoundChannel;
 
