@@ -7,6 +7,7 @@ import mx.core.IFactory;
 import mx.core.ScrollPolicy;
 
 import mx.collections.ArrayCollection;
+import mx.collections.IList;
 import mx.collections.Sort;
 
 import mx.controls.List;
@@ -64,6 +65,15 @@ public class DSetList extends List
     public function refresh () :void
     {
         _data.refresh();
+    }
+
+    /**
+     * Scroll so that the entry with the specified key is visible.
+     */
+    public function scrollToKey (key :Object) :Boolean
+    {
+        var scrollIdx :int = findKeyIndex(key, false);
+        return (scrollIdx == -1) ? false : scrollToIndex(scrollIdx);
     }
 
     /**
@@ -148,12 +158,13 @@ public class DSetList extends List
     }
 
     /**
-     * Find the index of the specified entry key from the raw list.
+     * Find the index of the specified entry key from the raw or filtered list.
      */
-    protected function findKeyIndex (key :Object) :int
+    protected function findKeyIndex (key :Object, raw :Boolean = true) :int
     {
-        for (var ii :int = 0; ii < _data.list.length; ii++) {
-            if (Util.equals(key, DSet_Entry(_data.list.getItemAt(ii)).getKey())) {
+        var list :IList = raw ? _data.list : _data;
+        for (var ii :int = 0; ii < list.length; ii++) {
+            if (Util.equals(key, DSet_Entry(list.getItemAt(ii)).getKey())) {
                 return ii;
             }
         }
