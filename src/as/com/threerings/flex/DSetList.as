@@ -14,19 +14,21 @@ import mx.controls.List;
 import com.threerings.util.Util;
 
 import com.threerings.presents.dobj.AttributeChangedEvent;
-import com.threerings.presents.dobj.AttributeChangeAdapter;
+import com.threerings.presents.dobj.DEvent;
 import com.threerings.presents.dobj.DObject;
 import com.threerings.presents.dobj.DSet;
 import com.threerings.presents.dobj.DSet_Entry;
 import com.threerings.presents.dobj.EntryAddedEvent;
 import com.threerings.presents.dobj.EntryUpdatedEvent;
 import com.threerings.presents.dobj.EntryRemovedEvent;
-import com.threerings.presents.dobj.SetAdapter;
+import com.threerings.presents.dobj.EventListener;
+import com.threerings.presents.dobj.NamedEvent;
 
 /**
  * A list that renders the contents of a DSet.
  */
 public class DSetList extends List
+    implements EventListener
 {
     public function DSetList (
         renderer :IFactory, sortFn :Function = null, filterFn :Function = null)
@@ -79,10 +81,7 @@ public class DSetList extends List
         _object = object;
         _field = field;
         _refreshFields = refreshFields;
-        _attrListener = new AttributeChangeAdapter(attrChanged);
-        _setListener = new SetAdapter(entryAdded, entryUpdated, entryRemoved);
-        _object.addListener(_attrListener);
-        _object.addListener(_setListener);
+        _object.addListener(this);
 
         setEntries(_object[_field] as DSet);
     }
@@ -92,11 +91,8 @@ public class DSetList extends List
      */
     public function shutdown () :void
     {
-        if (_attrListener != null) {
-            _object.removeListener(_attrListener);
-            _object.removeListener(_setListener);
-            _attrListener = null;
-            _setListener = null;
+        if (_object != null) {
+            _object.removeListener(this);
             _object = null;
             _field = null;
             _refreshFields = null;
@@ -113,58 +109,42 @@ public class DSetList extends List
     }
 
     /**
-     * Handle a change to the entire set.
+     * From com.threerings.presents.dobj.EventListener. Not actually part of the public API.
      */
-    protected function attrChanged (event :AttributeChangedEvent) :void
+    public function eventReceived (event :DEvent) :void
     {
-        var name :String = event.getName();
+        if (!(event is NamedEvent)) {
+            return;
+        }
+        var name :String = NamedEvent(event).getName();
         if (name == _field) {
-            setEntries(event.getValue() as DSet);
+            if (event is EntryAddedEvent) {
+                _data.list.addItem(EntryAddedEvent(event).getEntry());
 
-        } else if (_refreshFields.indexOf(name) != -1) {
-            refresh();
-        }
-    }
+            } else if (event is EntryUpdatedEvent) {
+                var entry :DSet_Entry = EntryUpdatedEvent(event).getEntry();
+                var upIdx :int = findKeyIndex(entry.getKey());
+                if (upIdx != -1) {
+                    _data.list.setItemAt(entry, upIdx);
+                }
 
-    /**
-     * Handle an addition to the set.
-     */
-    protected function entryAdded (event :EntryAddedEvent) :void
-    {
-        if (event.getName() == _field) {
-            _data.list.addItem(event.getEntry());
-            refresh();
-        }
-    }
+            } else if (event is EntryRemovedEvent) {
+                var remIdx :int = findKeyIndex(EntryRemovedEvent(event).getKey());
+                if (remIdx != -1) {
+                    _data.list.removeItemAt(remIdx);
+                }
 
-    /**
-     * Handle an update to the set.
-     */
-    protected function entryUpdated (event :EntryUpdatedEvent) :void
-    {
-        if (event.getName() == _field) {
-            var entry :DSet_Entry = event.getEntry();
-            var idx :int = findKeyIndex(entry.getKey());
-            if (idx == -1) {
-                throw new Error();
+            } else if (event is AttributeChangedEvent) {
+                setEntries(AttributeChangedEvent(event).getValue() as DSet);
+                return; // skip the full refresh
             }
-            _data.list.setItemAt(entry, idx);
-            refresh();
-        }
-    }
 
-    /**
-     * Handle a removal from the set.
-     */
-    protected function entryRemoved (event :EntryRemovedEvent) :void
-    {
-        if (event.getName() == _field) {
-            var idx :int = findKeyIndex(event.getKey());
-            if (idx != -1) {
-                _data.list.removeItemAt(idx);
-                refresh();
-            }
+        } else if (-1 == _refreshFields.indexOf(name)) {
+            return; // this name is not our concern: do nothing
         }
+
+        // we reach this line if the event was for a _refreshField, or a Set event on _field
+        refresh();
     }
 
     /**
@@ -192,9 +172,5 @@ public class DSetList extends List
 
     /** Fields on which to watch for updates and call refresh(). */
     protected var _refreshFields :Array;
-
-    /** Our listeners, so that we don't junk-up our public interface. */
-    protected var _attrListener :AttributeChangeAdapter;
-    protected var _setListener :SetAdapter;
 }
 }
