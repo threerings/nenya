@@ -38,8 +38,7 @@ public abstract class TimedPath implements Path
         // sanity check some things
         if (duration <= 0) {
             log.warning("Requested path with illegal duration (<=0) " +
-                        "[duration=" + duration + "]");
-            Thread.dumpStack();
+                        "[duration=" + duration + "]", new Exception());
             duration = 1; // assume something short but non-zero
         }
 

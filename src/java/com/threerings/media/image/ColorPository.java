@@ -382,8 +382,7 @@ public class ColorPository implements Serializable
                 return crec;
             }
         }
-        log.warning("No such color class [class=" + className + "].");
-        Thread.dumpStack();
+        log.warning("No such color class [class=" + className + "].", new Exception());
         return null;
     }
 
@@ -397,10 +396,8 @@ public class ColorPository implements Serializable
             // if they request color class zero, we assume they're just
             // decoding a blank colorprint, otherwise we complain
             if (classId != 0) {
-                log.warning("Requested unknown color class " +
-                            "[classId=" + classId +
-                            ", colorId=" + colorId + "].");
-                Thread.dumpStack();
+                log.warning("Requested unknown color class [classId=" + classId +
+                            ", colorId=" + colorId + "].", new Exception());
             }
             return null;
         }
@@ -414,9 +411,8 @@ public class ColorPository implements Serializable
     {
         ClassRecord record = getClassRecord(className);
         if (record == null) {
-            log.warning("Requested unknown color class " +
-                "[className=" + className + ", colorName=" + colorName + "].");
-            Thread.dumpStack();
+            log.warning("Requested unknown color class [className=" + className +
+                        ", colorName=" + colorName + "].", new Exception());
             return null;
         }
 

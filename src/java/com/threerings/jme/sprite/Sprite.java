@@ -162,8 +162,7 @@ public class Sprite extends Node
     {
         if (_path == null) {
             log.warning("pathCompleted() called on pathless sprite " +
-                        "(re-completed?) [sprite=" + this + "].");
-            Thread.dumpStack();
+                        "(re-completed?) [sprite=" + this + "].", new Exception());
             return;
         }
 

@@ -138,8 +138,7 @@ public class KeyboardManager
     {
         // report incorrect usage
         if (enabled && _target == null) {
-            log.warning("Attempt to enable uninitialized keyboard manager!");
-            Thread.dumpStack();
+            log.warning("Attempt to enable uninitialized keyboard manager!", new Exception());
             return;
         }
 

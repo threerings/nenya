@@ -128,8 +128,7 @@ public abstract class AbstractMediaManager
     public void fastForward (long timeDelta)
     {
         if (_tickStamp > 0) {
-            log.warning("Egads! Asked to fastForward() during a tick.");
-            Thread.dumpStack();
+            log.warning("Egads! Asked to fastForward() during a tick.", new Exception());
         }
 
         for (int ii = 0, nn = _media.size(); ii < nn; ii++) {
@@ -165,8 +164,7 @@ public abstract class AbstractMediaManager
     public void renderOrderDidChange (AbstractMedia media)
     {
         if (_tickStamp > 0) {
-            log.warning("Egads! Render order changed during a tick.");
-            Thread.dumpStack();
+            log.warning("Egads! Render order changed during a tick.", new Exception());
         }
 
         _media.remove(media);
@@ -193,8 +191,8 @@ public abstract class AbstractMediaManager
     protected boolean insertMedia (AbstractMedia media)
     {
         if (_media.contains(media)) {
-            log.warning("Attempt to insert media more than once [media=" + media + "].");
-            Thread.dumpStack();
+            log.warning("Attempt to insert media more than once [media=" + media + "].",
+                        new Exception());
             return false;
         }
 
@@ -256,8 +254,7 @@ public abstract class AbstractMediaManager
     protected void clearMedia ()
     {
         if (_tickStamp > 0) {
-            log.warning("Egads! Requested to clearMedia() during a tick.");
-            Thread.dumpStack();
+            log.warning("Egads! Requested to clearMedia() during a tick.", new Exception());
         }
 
         for (int ii = _media.size() - 1; ii >= 0; ii--) {
@@ -289,7 +286,8 @@ public abstract class AbstractMediaManager
     }
 
     /** Used to sort media by render order. */
-    protected static final Comparator<AbstractMedia> RENDER_ORDER = new Comparator<AbstractMedia>() {
+    protected static final Comparator<AbstractMedia> RENDER_ORDER =
+        new Comparator<AbstractMedia>() {
         public int compare (AbstractMedia am1, AbstractMedia am2) {
             return am1.renderCompareTo(am2);
         }

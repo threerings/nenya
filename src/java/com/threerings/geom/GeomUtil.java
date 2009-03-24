@@ -202,8 +202,8 @@ public class GeomUtil
     public static Rectangle grow (Rectangle source, Rectangle target)
     {
         if (target == null) {
-            log.warning("Can't grow with null rectangle [src=" + source + ", tgt=" + target + "].");
-            Thread.dumpStack();
+            log.warning("Can't grow with null rectangle [src=" + source + ", tgt=" + target + "].",
+                        new Exception());
         } else if (source == null) {
             source = new Rectangle(target);
         } else {

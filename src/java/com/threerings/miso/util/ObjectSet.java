@@ -51,8 +51,7 @@ public class ObjectSet
             // log a warning because the caller shouldn't be doing this
             log.warning("Requested to add an object to a set that already " +
                         "contains such an object [ninfo=" + info +
-                        ", oinfo=" + _objs[ipos] + "].");
-            Thread.dumpStack();
+                        ", oinfo=" + _objs[ipos] + "].", new Exception());
             return false;
         }
 

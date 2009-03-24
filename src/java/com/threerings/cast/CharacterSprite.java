@@ -129,8 +129,7 @@ public class CharacterSprite extends ImageSprite
     {
         // sanity check
         if (action == null) {
-            log.warning("Refusing to set null action sequence " + this + ".");
-            Thread.dumpStack();
+            log.warning("Refusing to set null action sequence " + this + ".", new Exception());
             return;
         }
 
@@ -147,8 +146,7 @@ public class CharacterSprite extends ImageSprite
     {
         if (orient < 0 || orient >= FINE_DIRECTION_COUNT) {
             log.info("Refusing to set invalid orientation [sprite=" + this +
-                     ", orient=" + orient + "].");
-            Thread.dumpStack();
+                     ", orient=" + orient + "].", new Exception());
             return;
         }
 
@@ -285,8 +283,7 @@ public class CharacterSprite extends ImageSprite
         if (_descrip.getComponentIds() == null ||
             _descrip.getComponentIds().length == 0) {
             log.warning("Invalid character descriptor [sprite=" + this +
-                        ", descrip=" + _descrip + "].");
-            Thread.dumpStack();
+                        ", descrip=" + _descrip + "].", new Exception());
         }
     }
 

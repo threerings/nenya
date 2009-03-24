@@ -298,8 +298,7 @@ public class MediaPanel extends JComponent
     public void setOpaque (boolean opaque)
     {
         if (!opaque) {
-            log.warning("Media panels shouldn't be setOpaque(false).");
-            Thread.dumpStack();
+            log.warning("Media panels shouldn't be setOpaque(false).", new Exception());
         }
         super.setOpaque(true);
     }
@@ -435,8 +434,7 @@ public class MediaPanel extends JComponent
             Rectangle clip = dirty[ii];
             // sanity-check the dirty rectangle
             if (clip == null) {
-                log.warning("Found null dirty rect painting media panel?!");
-                Thread.dumpStack();
+                log.warning("Found null dirty rect painting media panel?!", new Exception());
                 continue;
             }
 

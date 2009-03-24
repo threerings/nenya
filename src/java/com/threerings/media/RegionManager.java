@@ -68,14 +68,13 @@ public class RegionManager
     {
         // make sure we're on an AWT thread
         if (!EventQueue.isDispatchThread()) {
-            log.warning("Oi! Region dirtied on non-AWT thread [rect=" + rect + "].");
-            Thread.dumpStack();
+            log.warning("Oi! Region dirtied on non-AWT thread [rect=" + rect + "].",
+                        new Exception());
         }
 
         // sanity check
         if (rect == null) {
-            log.warning("Attempt to dirty a null rect!?");
-            Thread.dumpStack();
+            log.warning("Attempt to dirty a null rect!?", new Exception());
             return;
         }
 
@@ -98,8 +97,7 @@ public class RegionManager
     {
         if (width < 0 || height < 0) {
             log.warning("Attempt to add invalid dirty region?! " +
-                        "[size=" + width + "x" + height + "].");
-            Thread.dumpStack();
+                        "[size=" + width + "x" + height + "].", new Exception());
             return false;
 
         } else if (width == 0 || height == 0) {

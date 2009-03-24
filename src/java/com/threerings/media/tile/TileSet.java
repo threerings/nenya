@@ -323,8 +323,8 @@ public abstract class TileSet
         if (tileIndex >= 0 && tileIndex < tcount) {
             return true;
         } else {
-            log.warning("Requested invalid tile [tset=" + this + ", index=" + tileIndex + "].");
-            Thread.dumpStack();
+            log.warning("Requested invalid tile [tset=" + this + ", index=" + tileIndex + "].",
+                        new Exception());
             return false;
         }
     }
