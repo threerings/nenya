@@ -246,6 +246,21 @@ public abstract class TileSet
     }
 
     /**
+     * Returns prepared versions of the images that would be used for each of the tiles. Because
+     * tilesets are often used simply to provide access to a collection of uniform images, this
+     * method is provided to bypass the creation of a {@link Tile} objects when all that is
+     * desired is access to the underlying images.
+     */
+    public Mirage[] getTileMirages ()
+    {
+        Mirage[] mirages = new Mirage[getTileCount()];
+        for (int ii = 0; ii < mirages.length; ii++) {
+            mirages[ii] = getTileMirage(ii);
+        }
+        return mirages;
+    }
+
+    /**
      * Returns a prepared version of the image that would be used by the tile at the specified
      * index. Because tilesets are often used simply to provide access to a collection of uniform
      * images, this method is provided to bypass the creation of a {@link Tile} object when all
