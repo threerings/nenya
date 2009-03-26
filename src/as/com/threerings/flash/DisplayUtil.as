@@ -32,6 +32,15 @@ import flash.geom.Rectangle;
 public class DisplayUtil
 {
     /**
+     * Transforms a point from one DisplayObject's coordinate space to another's.
+     */
+    public static function transformPoint (p :Point, fromDisp :DisplayObject, toDisp :DisplayObject)
+        :Point
+    {
+        return toDisp.globalToLocal(fromDisp.localToGlobal(p));
+    }
+
+    /**
      * Adds newChild to container, directly below another child of the container.
      */
     public static function addChildBelow (container :DisplayObjectContainer,
