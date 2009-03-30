@@ -33,7 +33,7 @@
     <include name="jorbis-0.0.15.jar"/>
     <include name="jl1.0.jar"/>
     <!-- ActionScript dependencies -->
-    <include name="naryalib.swc"/>
-    <include name="flexlib.swc"/>
+    <include name="naryalib*.swc"/>
+    <include name="flexlib*.swc"/>
   </fileset>
 </project>
