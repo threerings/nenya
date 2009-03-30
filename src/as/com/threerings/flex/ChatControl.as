@@ -25,7 +25,6 @@ import com.threerings.util.MethodQueue;
 import com.threerings.util.StringUtil;
 
 import com.threerings.flex.CommandButton;
-import com.threerings.flex.CommandMenu;
 
 import com.threerings.crowd.chat.client.ChatDirector;
 import com.threerings.crowd.chat.data.ChatCodes;

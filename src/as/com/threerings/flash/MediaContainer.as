@@ -63,7 +63,7 @@ import com.threerings.util.ValueEvent;
 import com.threerings.util.Util;
 
 import com.threerings.flash.media.FlvVideoPlayer;
-import com.threerings.flash.media.MediaPlayerCodes;
+// import com.threerings.flash.media.MediaPlayerCodes;
 import com.threerings.flash.media.SimpleVideoDisplay;
 import com.threerings.flash.media.VideoPlayer;
 
