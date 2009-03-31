@@ -51,7 +51,7 @@ public class Vector2
     {
         return new Vector2(t.x - s.x, t.y - s.y);
     }
-    
+
     /**
      * Creates a Vector2 of magnitude 'len' that has been rotated about the origin by 'radians'.
      */
@@ -64,17 +64,17 @@ public class Vector2
             Math.sin(radians) * len);  // == len * (sin(theta)*x + cos(theta)*y)
     }
 
-    /** 
-     * Constructs a Vector2 from the given values. 
+    /**
+     * Constructs a Vector2 from the given values.
      */
     public function Vector2 (x :Number = 0, y :Number = 0)
     {
         this.x = x;
         this.y = y;
     }
-    
-    /** 
-     * Sets the vector's components to the given values. 
+
+    /**
+     * Sets the vector's components to the given values.
      */
     public function set (x :Number, y :Number) :void
     {
@@ -82,8 +82,8 @@ public class Vector2
         this.y = y;
     }
 
-    /** 
-     * Returns the dot product of this vector with vector v. 
+    /**
+     * Returns the dot product of this vector with vector v.
      */
     public function dot (v :Vector2) :Number
     {
@@ -98,16 +98,16 @@ public class Vector2
         return new Point(x, y);
     }
 
-    /** 
-     * Returns a copy of this Vector2. 
+    /**
+     * Returns a copy of this Vector2.
      */
     public function clone () :Vector2
     {
         return new Vector2(x, y);
     }
-    
-    /** 
-     * Returns the angle represented by this Vector2, in radians. 
+
+    /**
+     * Returns the angle represented by this Vector2, in radians.
      */
     public function get angle () :Number
     {
@@ -115,34 +115,34 @@ public class Vector2
         return (angle >= 0 ? angle : angle + (2 * Math.PI));
     }
 
-    /** 
-     * Returns this vector's length. 
+    /**
+     * Returns this vector's length.
      */
     public function get length () :Number
     {
         return Math.sqrt(x * x + y * y);
     }
 
-    /** 
-     * Sets this vector's length. 
+    /**
+     * Sets this vector's length.
      */
     public function set length (newLen :Number) :void
     {
         var scale :Number = newLen / this.length;
-        
+
         x *= scale;
         y *= scale;
     }
 
-    /** 
-     * Returns the square of this vector's length. 
+    /**
+     * Returns the square of this vector's length.
      */
     public function get lengthSquared () :Number
     {
         return (x * x + y * y);
     }
 
-    /** 
+    /**
      * Rotates the vector in place by 'radians'.
      * Returns a reference to 'this', for chaining.
      */
@@ -154,34 +154,34 @@ public class Vector2
         var oldX :Number = x;
         x = (cosTheta * oldX) - (sinTheta * y);
         y = (sinTheta * oldX) + (cosTheta * y);
-        
+
         return this;
     }
 
-    /** 
+    /**
      * Returns a rotated copy of this vector.
      */
     public function rotate (radians :Number) :Vector2
     {
         return this.clone().rotateLocal(radians);
     }
-    
-    /** 
-     * Normalizes the vector in place and returns its original length. 
+
+    /**
+     * Normalizes the vector in place and returns its original length.
      */
     public function normalizeLocalAndGetLength () :Number
     {
         var length :Number = this.length;
-        
+
         x /= length;
         y /= length;
-        
+
         return length;
     }
 
-    /** 
+    /**
      * Normalizes this vector in place.
-     * Returns a reference to 'this', for chaining. 
+     * Returns a reference to 'this', for chaining.
      */
     public function normalizeLocal () :Vector2
     {
@@ -189,19 +189,19 @@ public class Vector2
 
         x *= lengthInverse;
         y *= lengthInverse;
-        
+
         return this;
     }
 
-    /** 
-     * Returns a normalized copy of the vector. 
+    /**
+     * Returns a normalized copy of the vector.
      */
     public function normalize () :Vector2
     {
         return this.clone().normalizeLocal();
     }
 
-    /** 
+    /**
      * Adds another Vector2 to this, in place.
      * Returns a reference to 'this', for chaining.
      */
@@ -209,11 +209,11 @@ public class Vector2
     {
         x += v.x;
         y += v.y;
-        
+
         return this;
     }
 
-    /** 
+    /**
      * Returns a copy of this vector added to 'v'.
      */
     public function add (v :Vector2) :Vector2
@@ -221,7 +221,7 @@ public class Vector2
         return this.clone().addLocal(v);
     }
 
-    /** 
+    /**
      * Subtracts another vector from this one, in place.
      * Returns a reference to 'this', for chaining.
      */
@@ -229,12 +229,12 @@ public class Vector2
     {
         x -= v.x;
         y -= v.y;
-        
+
         return this;
     }
 
-    /** 
-     * Returns (this - v). 
+    /**
+     * Returns (this - v).
      */
     public function subtract (v :Vector2) :Vector2
     {
@@ -242,9 +242,9 @@ public class Vector2
     }
 
     /**
-     * Returns a vector that is perpendicular to this.
-     * If ccw = true, the perpendicular vector is rotated 90 degrees counter-clockwise from this vector,
-     * otherwise it's rotated 90 degrees clockwise.
+     * Returns a vector that is perpendicular to this one.
+     * If ccw = true, the perpendicular vector is rotated 90 degrees counter-clockwise from this
+     * vector, otherwise it's rotated 90 degrees clockwise.
      */
     public function getPerp (ccw :Boolean = true) :Vector2
     {
@@ -262,7 +262,7 @@ public class Vector2
     {
         x *= value;
         y *= value;
-        
+
         return this;
     }
 
@@ -279,29 +279,29 @@ public class Vector2
     {
         x = -x;
         y = -y;
-        
+
         return this;
     }
 
-    /** 
-     * Returns a copy of the vector, inverted. 
+    /**
+     * Returns a copy of the vector, inverted.
      */
     public function invert () :Vector2
     {
        return this.clone().invertLocal();
     }
-    
-    /** 
+
+    /**
      * Returns true if this vector is equal to v.
      */
     public function equals (v :Vector2) :Boolean
     {
         return (x == v.x && y == v.y);
     }
-    
-    /** 
-     * Returns true if the components of v are equal to the components of this Vector2, 
-     * within the given epsilon. 
+
+    /**
+     * Returns true if the components of v are equal to the components of this Vector2,
+     * within the given epsilon.
      */
     public function similar (v :Vector2, epsilon :Number) :Boolean
     {
