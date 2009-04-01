@@ -1066,11 +1066,14 @@ public class MisoScenePanel extends VirtualMediaPanel
                 } else {
                     indic.update(icon, tiptext);
                 }
+                dirtyIndicator(indic);
             }
         }
         // clear out any no longer used indicators
         for (SceneObject toremove : _unupdated.keySet()) {
-            _indicators.remove(toremove).removed();
+            SceneObjectIndicator indic = _indicators.remove(toremove);
+            indic.removed();
+            dirtyIndicator(indic);
         }
 
         _indicatorsLaidOut = false;
