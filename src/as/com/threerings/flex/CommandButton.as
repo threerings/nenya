@@ -70,6 +70,14 @@ public class CommandButton extends Button
     }
 
     /**
+     * Get the argument (or arguments, in an Array).
+     */
+    public function getArg () :Object
+    {
+        return _arg;
+    }
+
+    /**
      * Emulate a user click, dispatching all relevant events.
      */
     public function activate () :void
@@ -86,7 +94,7 @@ public class CommandButton extends Button
     override protected function clickHandler (event :MouseEvent) :void
     {
         super.clickHandler(event);
-        processCommandClick(this, event, _cmdOrFn, _arg);
+        processCommandClick(this, event, _cmdOrFn, getArg());
     }
 
     internal static function validateCmd (cmdOrFn :Object) :void
