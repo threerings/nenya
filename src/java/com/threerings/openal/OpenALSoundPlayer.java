@@ -388,7 +388,11 @@ public class OpenALSoundPlayer extends SoundPlayer
                     }
                 }
                 newTime = _timer.getElapsedMillis();
-                _alSoundManager.updateStreams((newTime - _lastTick)/ 1000F);
+                try {
+                    _alSoundManager.updateStreams((newTime - _lastTick) / 1000F);
+                } catch (Throwable t) {
+                    log.warning("Updating OpenAL streams barfed.", t);
+                }
             }
             _lastTick = newTime;
         }
