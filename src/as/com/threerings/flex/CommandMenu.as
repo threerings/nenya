@@ -370,7 +370,7 @@ public class CommandMenu extends Menu
         }
         if (_upping) {
             var displayObj :DisplayObject = DisplayObject(row);
-            var rowLoc :Point = displayObj.localToGlobal(new Point(row.x, row.y));
+            var rowLoc :Point = displayObj.localToGlobal(new Point());
             submenu.y = rowLoc.y - submenu.getExplicitOrMeasuredHeight() + displayObj.height;
         }
 
