@@ -369,9 +369,8 @@ public class CommandMenu extends Menu
             submenu.x -= submenu.getExplicitOrMeasuredWidth();
         }
         if (_upping) {
-            var displayObj :DisplayObject = DisplayObject(row);
-            var rowLoc :Point = displayObj.localToGlobal(new Point());
-            submenu.y = rowLoc.y - submenu.getExplicitOrMeasuredHeight() + displayObj.height;
+            var rowLoc :Point = row.localToGlobal(new Point());
+            submenu.y = rowLoc.y - submenu.getExplicitOrMeasuredHeight() + row.height;
         }
 
         var fitting :Rectangle = _fitting || screen;
