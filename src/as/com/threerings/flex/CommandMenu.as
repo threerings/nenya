@@ -65,6 +65,9 @@ use namespace mx_internal;
  * IFlexDisplayObject to use as the icon. This will only be applied if the "icon" property
  * (which specifies a Class) is not used.
  *
+ * Another 'type' now supported is "title", which gives the label for that item the style
+ * '.menuTitle' and disables it. Your ".menuTitle" style should use the disabledColor.
+ *
  * Example dataProvider array:
  * [ { label: "Go home", icon: homeIconClass,
  *     command: Controller.GO_HOME, arg: homeId },
@@ -103,6 +106,26 @@ public class CommandMenu extends Menu
         menu.setDispatcher(dispatcher);
         Menu.popUpMenu(menu, null, items); // does not actually pop up, but needed.
         return menu;
+    }
+
+    /**
+     * Add a title to the TOP of the specified menu.
+     *
+     * @param icon may be a Class or IFlexDisplayObject.
+     */
+    public static function addTitle (
+        menuItems :Array, title :String, icon :* = null, separatorAfter :Boolean = true) :void
+    {
+        var o :Object = { label: title, type: "title" };
+        if (icon is Class) {
+            o["icon"] = icon;
+        } else if (icon is IFlexDisplayObject) {
+            o["iconObj"] = icon;
+        }
+        if (separatorAfter) {
+            menuItems.unshift({ type: "separator" });
+        }
+        menuItems.unshift(o);
     }
 
     /**

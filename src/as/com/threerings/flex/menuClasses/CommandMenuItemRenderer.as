@@ -24,6 +24,8 @@ package com.threerings.flex.menuClasses {
 
 import flash.display.DisplayObject;
 
+import mx.controls.Menu;
+import mx.controls.menuClasses.IMenuDataDescriptor;
 import mx.controls.menuClasses.MenuItemRenderer;
 
 public class CommandMenuItemRenderer extends MenuItemRenderer
@@ -41,6 +43,17 @@ public class CommandMenuItemRenderer extends MenuItemRenderer
             icon = CommandListData(listData).iconObject;
             if (icon != null) {
                 addChild(DisplayObject(icon));
+            }
+        }
+
+        if (label.visible) {
+            var dataDescriptor :IMenuDataDescriptor = Menu(listData.owner).dataDescriptor;
+            var typeVal :String = dataDescriptor.getType(data);
+            if (typeVal == "title") {
+                dataDescriptor.setEnabled(data, false);
+                label.enabled = false;
+                label.styleName = "menuTitle";
+                invalidateDisplayList();
             }
         }
     }
