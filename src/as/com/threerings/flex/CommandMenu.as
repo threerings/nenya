@@ -120,7 +120,7 @@ public class CommandMenu extends Menu
         if (icon is Class) {
             o["icon"] = icon;
         } else if (icon is IFlexDisplayObject) {
-            o["iconObj"] = icon;
+            o["iconObject"] = icon;
         }
         if (separatorAfter) {
             menuItems.unshift({ type: "separator" });
