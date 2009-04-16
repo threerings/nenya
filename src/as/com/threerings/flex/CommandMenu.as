@@ -176,6 +176,7 @@ public class CommandMenu extends Menu
         itemRenderer = new ClassFactory(getItemRenderer());
 
         verticalScrollPolicy = ScrollPolicy.OFF;
+        variableRowHeight = true;
         addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
     }
 
