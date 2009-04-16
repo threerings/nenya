@@ -45,5 +45,22 @@ public class ColorUtil
         }
         return result;
     }
+
+    /**
+     * Returns a color's Hue value, in degrees. 0<=Hue<=360.
+     * http://en.wikipedia.org/wiki/Hue
+     */
+    public static function getHue (color :uint) :Number
+    {
+        var r :Number = (color >> 16) & 0xff;
+        var g :Number = (color >> 8) & 0xff;
+        var b :Number = color & 0xff;
+
+        var hue :Number = R2D * Math.atan2(ROOT_3 * (g - b), 2 * (r - g - b));
+        return (hue >= 0 ? hue : hue + 360);
+    }
+
+    protected static const ROOT_3 :Number = Math.sqrt(3);
+    protected static const R2D :Number = 180 / Math.PI; // radians to degrees
 }
 }
