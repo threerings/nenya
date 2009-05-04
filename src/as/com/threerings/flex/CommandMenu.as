@@ -157,8 +157,7 @@ public class CommandMenu extends Menu
 
         itemsSizeChanged = true;
 
-        if (_verticalScrollPolicy != newPolicy)
-        {
+        if (_verticalScrollPolicy != newPolicy) {
             _verticalScrollPolicy = newPolicy;
             dispatchEvent(new Event("verticalScrollPolicyChanged"));
         }
