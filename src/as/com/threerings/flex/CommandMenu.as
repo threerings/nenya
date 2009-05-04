@@ -26,10 +26,12 @@ import flash.display.DisplayObjectContainer;
 
 import flash.events.Event;
 import flash.events.IEventDispatcher;
+import flash.events.MouseEvent;
 
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
+import mx.controls.Button;
 import mx.controls.Menu;
 import mx.controls.listClasses.BaseListData;
 import mx.controls.listClasses.IListItemRenderer;
@@ -178,6 +180,7 @@ public class CommandMenu extends Menu
         verticalScrollPolicy = ScrollPolicy.OFF;
         variableRowHeight = true;
         addEventListener(MenuEvent.ITEM_CLICK, itemClicked);
+        addEventListener(MenuEvent.MENU_HIDE, menuHidden);
     }
 
     /** 
@@ -187,6 +190,17 @@ public class CommandMenu extends Menu
     protected function getItemRenderer () :Class
     {
         return CommandMenuItemRenderer;
+    }
+
+    /**
+     * Configure the button that popped-up this menu, which enables two features:
+     * 1) If the button is clicked again while the menu is up, it won't re-trigger, the menu will
+     *    just close.
+     * 2) However the menu closes, if the button is a toggle, it will be de-selected.
+     */
+    public function setTriggerButton (trigger :Button) :void
+    {
+        _trigger = trigger;
     }
 
     /**
@@ -276,6 +290,17 @@ public class CommandMenu extends Menu
             maxHeight = fitting.height;
             y = fitting.y;
         }
+
+        // set up some stuff to clean up and behave
+        systemManager.topLevelSystemManager.getSandboxRoot().addEventListener(
+            MouseEvent.MOUSE_DOWN, handleMouseDownOutside, false, 1, true);
+    }
+
+    override public function hide () :void
+    {
+        super.hide();
+        systemManager.topLevelSystemManager.getSandboxRoot().removeEventListener(
+            MouseEvent.MOUSE_DOWN, handleMouseDownOutside);
     }
 
     /** 
@@ -340,6 +365,37 @@ public class CommandMenu extends Menu
                                   _dispatcher, cmdOrFn, arg);
         }
         // else: no warning. There may be non-command menu items mixed in.
+    }
+
+    /**
+     * Handles MenuEvent.MENU_HIDE.
+     */
+    protected function menuHidden (event :MenuEvent) :void 
+    {
+        // don't react to submenu hides
+        if ((event.menu == this) && (_trigger != null) && _trigger.toggle) {
+            _trigger.selected = false;
+        }
+    }
+
+    /**
+     * Handle a down-popping click outside the menu.
+     */
+    protected function handleMouseDownOutside (event :MouseEvent) :void
+    {
+        if (event.target == _trigger) {
+            _trigger.addEventListener(
+                MouseEvent.CLICK, handleTriggerClick, false, int.MAX_VALUE, true);
+        }
+    }
+
+    /**
+     * Suppress the click that wants to land on the trigger button.
+     */
+    protected function handleTriggerClick (event :MouseEvent) :void
+    {
+        event.stopImmediatePropagation();
+        _trigger.removeEventListener(MouseEvent.CLICK, handleTriggerClick);
     }
 
     // from ScrollableArrowMenu..
@@ -473,6 +529,7 @@ public class CommandMenu extends Menu
     }
 
     protected var _dispatcher :IEventDispatcher;
+    protected var _trigger :Button;
     protected var _lefting :Boolean = false;
     protected var _upping :Boolean = false;
     protected var _fitting :Rectangle = null;
