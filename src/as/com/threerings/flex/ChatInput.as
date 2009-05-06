@@ -5,7 +5,11 @@ package com.threerings.flex {
 
 import flash.events.FocusEvent;
 
+import flash.text.TextField;
+
 import mx.controls.TextInput;
+
+import com.threerings.flash.TextFieldUtil;
 
 /**
  * The class name of an image to use as the input prompt.
@@ -51,6 +55,13 @@ public class ChatInput extends TextInput
     protected function showPrompt (show :Boolean) :void
     {
         setStyle("backgroundImage", (show && ("" == text)) ? getStyle("prompt") : undefined);
+    }
+
+    override protected function createChildren () :void
+    {
+        super.createChildren();
+
+        TextFieldUtil.setFocusable(TextField(textField));
     }
 
     override protected function focusInHandler (event :FocusEvent) :void
