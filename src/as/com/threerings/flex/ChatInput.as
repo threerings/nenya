@@ -61,6 +61,9 @@ public class ChatInput extends TextInput
     {
         super.createChildren();
 
+        // For some reason, in embeds, during certain circumstances, it's really hard to focus
+        // chat. This makes that work better. The problem was *not* testable locally, only
+        // on embeds in production. (I don't know why.)
         TextFieldUtil.setFocusable(TextField(textField));
     }
 
