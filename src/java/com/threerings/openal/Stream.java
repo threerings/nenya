@@ -93,7 +93,7 @@ public abstract class Stream
         }
         if (_state == AL10.AL_INITIAL) {
             _qidx = _qlen = 0;
-            queueBuffers(NUM_BUFFERS);
+            queueBuffers(_buffers.length);
         }
         _source.play();
         _state = AL10.AL_PLAYING;
@@ -193,7 +193,7 @@ public abstract class Stream
         }
         for (int ii = 0; ii < played; ii++) {
             _source.unqueueBuffers(_buffers[_qidx]);
-            _qidx = (_qidx + 1) % NUM_BUFFERS;
+            _qidx = (_qidx + 1) % _buffers.length;
             _qlen--;
         }
 
@@ -233,7 +233,7 @@ public abstract class Stream
     protected void queueBuffers (int buffers)
     {
         for (int ii = 0; ii < buffers; ii++) {
-            Buffer buffer = _buffers[(_qidx + _qlen) % NUM_BUFFERS];
+            Buffer buffer = _buffers[(_qidx + _qlen) % _buffers.length];
             if (populateBuffer(buffer)) {
                 _source.queueBuffers(buffer);
                 _qlen++;
@@ -252,7 +252,7 @@ public abstract class Stream
     protected boolean populateBuffer (Buffer buffer)
     {
         if (_abuf == null) {
-            _abuf = ByteBuffer.allocateDirect(BUFFER_SIZE).order(ByteOrder.nativeOrder());
+            _abuf = ByteBuffer.allocateDirect(getBufferSize()).order(ByteOrder.nativeOrder());
         }
         _abuf.clear();
         int read = 0;
@@ -288,6 +288,22 @@ public abstract class Stream
     protected abstract int populateBuffer (ByteBuffer buf)
         throws IOException;
 
+    /**
+     * Returns the size in bytes of the buffers to use.
+     */
+    protected int getBufferSize ()
+    {
+        return 131072;
+    }
+
+    /**
+     * Returns the number of buffers to use.
+     */
+    protected int getNumBuffers ()
+    {
+        return 4;
+    }
+
     /** The manager to which the stream was added. */
     protected SoundManager _soundmgr;
 
@@ -295,7 +311,7 @@ public abstract class Stream
     protected Source _source;
 
     /** The buffers through which we cycle. */
-    protected Buffer[] _buffers = new Buffer[NUM_BUFFERS];
+    protected Buffer[] _buffers = new Buffer[getNumBuffers()];
 
     /** The starting index and length of the current queue in {@link #_buffers}. */
     protected int _qidx, _qlen;
@@ -317,12 +333,6 @@ public abstract class Stream
 
     /** The OpenAL state of the stream. */
     protected int _state = AL10.AL_INITIAL;
-
-    /** The size of the buffers in bytes. */
-    protected static final int BUFFER_SIZE = 131072;
-
-    /** The number of buffers to use. */
-    protected static final int NUM_BUFFERS = 4;
 
     /** Fading modes. */
     protected enum FadeMode { NONE, IN, OUT, OUT_DISPOSE };
