@@ -27,6 +27,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.StringUtil;
 
 import com.samskivert.swing.RadialMenu;
@@ -34,15 +36,14 @@ import com.samskivert.swing.RadialMenu;
 import static com.threerings.miso.Log.log;
 
 /**
- * Objects in scenes can be configured to generate action events.  Those
- * events are grouped into types and an object action handler can be
- * registered to handle all actions of a particular type.
+ * Objects in scenes can be configured to generate action events. Those events are grouped into
+ * types and an object action handler can be registered to handle all actions of a particular
+ * type.
  */
 public class ObjectActionHandler
 {
     /**
-     * Returns true if we should allow this object action, false if we
-     * should not.
+     * Returns true if we should allow this object action, false if we should not.
      */
     public boolean actionAllowed (String action)
     {
@@ -50,10 +51,9 @@ public class ObjectActionHandler
     }
 
     /**
-     * Returns true if we should display the text for the action.  By default
-     *  this returns whether the action is allowed or not, but can be
-     *  overridden by subclasses. This is used to completely hide actions that
-     *  should not be visible without the proper privileges.
+     * Returns true if we should display the text for the action. By default this returns whether
+     * the action is allowed or not, but can be overridden by subclasses. This is used to
+     * completely hide actions that should not be visible without the proper privileges.
      */
     public boolean isVisible (String action)
     {
@@ -69,8 +69,8 @@ public class ObjectActionHandler
     }
 
     /**
-     * Returns the tooltip icon for the specified action or null if the
-     * action has no tooltip icon.
+     * Returns the tooltip icon for the specified action or null if the action has no tooltip
+     * icon.
      */
     public Icon getTipIcon (String action)
     {
@@ -90,14 +90,12 @@ public class ObjectActionHandler
      */
     public void handleAction (SceneObject scobj, ActionEvent event)
     {
-        log.warning("Unknown object action [scobj=" + scobj +
-                    ", action=" + event + "].");
+        log.warning("Unknown object action", "scobj", scobj, "action", event);
     }
 
     /**
-     * Returns the type associated with this action command (which is
-     * mapped to a registered object action handler) or the empty string
-     * if it has no type.
+     * Returns the type associated with this action command (which is mapped to a registered
+     * object action handler) or the empty string if it has no type.
      */
     public static String getType (String command)
     {
@@ -106,8 +104,7 @@ public class ObjectActionHandler
     }
 
     /**
-     * Returns the unqualified object action (minus the type, see {@link
-     * #getType}).
+     * Returns the unqualified object action (minus the type, see {@link #getType}).
      */
     public static String getAction (String command)
     {
@@ -124,8 +121,7 @@ public class ObjectActionHandler
     }
 
     /**
-     * Looks up the object action handler associated with the specified
-     * command.
+     * Looks up the object action handler associated with the specified command.
      */
     public static ObjectActionHandler lookup (String command)
     {
@@ -133,17 +129,15 @@ public class ObjectActionHandler
     }
 
     /**
-     * Registers an object action handler which will be called when a user
-     * clicks on an object in a scene that has an associated action.
+     * Registers an object action handler which will be called when a user clicks on an object in
+     * a scene that has an associated action.
      */
     public static void register (String prefix, ObjectActionHandler handler)
     {
         // make sure we know about potential funny business
         if (_oahandlers.containsKey(prefix)) {
-            log.warning("Warning! Overwriting previous object action " +
-                        "handler registration, all hell could shortly " +
-                        "break loose [prefix=" + prefix +
-                        ", handler=" + handler + "].");
+            log.warning("Warning! Overwriting previous object action handler registration, all " +
+                        "hell could shortly break loose", "prefix", prefix, "handler", handler);
         }
         _oahandlers.put(prefix, handler);
     }
@@ -157,6 +151,5 @@ public class ObjectActionHandler
     }
 
     /** Our registered object action handlers. */
-    protected static HashMap<String, ObjectActionHandler> _oahandlers =
-        new HashMap<String, ObjectActionHandler>();
+    protected static HashMap<String, ObjectActionHandler> _oahandlers = Maps.newHashMap();
 }
