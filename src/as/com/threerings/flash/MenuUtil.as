@@ -31,18 +31,17 @@ import com.threerings.util.CommandEvent;
 public class MenuUtil
 {
     /**
-     * Create a menu item that will submit a controller command when selected.
+     * Create a context menu item that will submit a command when selected.
      */
-    public static function createControllerMenuItem (
-            caption :String, cmdOrFn :Object, arg :Object = null,
-            separatorBefore :Boolean = false, enabled :Boolean = true,
-            visible :Boolean = true) :ContextMenuItem
+    public static function createCommandContextMenuItem (
+        caption :String, cmdOrFn :Object, arg :Object = null,
+        separatorBefore :Boolean = false, enabled :Boolean = true) :ContextMenuItem
     {
-        var item :ContextMenuItem =
-            new ContextMenuItem(caption, separatorBefore, enabled, visible);
+        var item :ContextMenuItem = new ContextMenuItem(caption, separatorBefore, enabled);
         item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,
             function (event :ContextMenuEvent) :void {
-                CommandEvent.dispatch(event.mouseTarget, cmdOrFn, arg);
+                // mouseTarget may be null due to security reasons
+                CommandEvent.dispatch(event.mouseTarget || event.contextMenuOwner, cmdOrFn, arg);
             });
         return item;
     }
