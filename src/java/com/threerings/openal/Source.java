@@ -27,6 +27,7 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
 
 /**
  * Represents an OpenAL source object.
@@ -287,6 +288,30 @@ public class Source
     public int getBuffersProcessed ()
     {
         return AL10.alGetSourcei(_id, AL10.AL_BUFFERS_PROCESSED);
+    }
+
+    /**
+     * Returns the position offset of the source within the queued buffers, in seconds.
+     */
+    public float getSecOffset ()
+    {
+        return AL10.alGetSourcef(_id, AL11.AL_SEC_OFFSET);
+    }
+
+    /**
+     * Returns the position offset of the source within the queued buffers, in samples.
+     */
+    public int getSampleOffset ()
+    {
+        return AL10.alGetSourcei(_id, AL11.AL_SAMPLE_OFFSET);
+    }
+
+    /**
+     * Returns the position offset of the source within the queued buffers, in bytes.
+     */
+    public int getByteOffset ()
+    {
+        return AL10.alGetSourcei(_id, AL11.AL_BYTE_OFFSET);
     }
 
     /**
