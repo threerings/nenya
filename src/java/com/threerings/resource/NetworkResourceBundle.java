@@ -32,6 +32,8 @@ import java.net.URLConnection;
 import java.security.AccessControlException;
 import java.util.Set;
 
+import com.samskivert.util.Logger;
+
 /**
  * Resource bundle that retrieves its contents via HTTP over the network from a root URL.
  */
@@ -109,7 +111,8 @@ public class NetworkResourceBundle extends KnownAvailabilityResourceBundle
     @Override
     public String toString ()
     {
-        return "[url=" + _bundleURL + "]";
+        return Logger.format(getClass().getSimpleName(), "url", _bundleURL, "ident", _ident,
+            "knownResources", (_rsrcs != null));
     }
 
     /** Our identifier for this bundle. */
