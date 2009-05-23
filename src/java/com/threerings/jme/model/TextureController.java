@@ -23,6 +23,8 @@ package com.threerings.jme.model;
 
 import java.util.HashMap;
 
+import com.google.common.collect.Maps;
+
 import com.jme.image.Texture;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;

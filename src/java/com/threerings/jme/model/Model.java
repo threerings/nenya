@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;

@@ -23,6 +23,8 @@ package com.threerings.jme.util;
 
 import java.util.ArrayList;
 
+import com.google.common.collect.Lists;
+
 import com.jme.image.Texture;
 import com.jme.light.Light;
 import com.jme.scene.state.FogState;

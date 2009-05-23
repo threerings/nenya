@@ -37,6 +37,8 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 
+import com.google.common.collect.Maps;
+
 import com.jme.image.Image;
 import com.jmex.bui.BImage;
 

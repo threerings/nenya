@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 
+import com.google.common.collect.Sets;
+
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 import com.jme.util.export.JMEExporter;

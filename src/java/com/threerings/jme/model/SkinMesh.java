@@ -33,6 +33,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.bounding.BoundingVolume;

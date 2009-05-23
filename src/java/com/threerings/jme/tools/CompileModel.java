@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import com.google.common.collect.Maps;
+
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;

@@ -36,6 +36,8 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+import com.google.common.collect.Lists;
+
 import com.jme.util.LoggingSystem;
 import com.jmex.model.XMLparser.Converters.AseToJme;
 import com.jmex.model.XMLparser.Converters.DummyDisplaySystem;

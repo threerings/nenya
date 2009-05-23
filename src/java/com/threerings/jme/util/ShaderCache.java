@@ -35,6 +35,9 @@ import java.util.HashSet;
 
 import org.lwjgl.opengl.ARBShaderObjects;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.ShaderAttribute;
