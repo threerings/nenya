@@ -69,7 +69,7 @@ public class LabelSprite extends Sprite
         _bounds.width = size.width;
         _bounds.height = size.height;
     }
-    
+
     @Override
     protected void init ()
     {
@@ -81,7 +81,7 @@ public class LabelSprite extends Sprite
         }
 
         // size the bounds to fit our label
-        updateBounds();        
+        updateBounds();
     }
 
     @Override

@@ -125,7 +125,7 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
             }
         }
     }
-    
+
     /**
      * @return the x offset into the source image for the image at index
      */

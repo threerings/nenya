@@ -68,7 +68,7 @@ public class BundleUtil
      *
      * @exception IOException thrown if an I/O error occurs while reading the object from the
      * bundle.
-     */     
+     */
     public static Object loadObject (ResourceBundle bundle, String path, boolean wipeOnFailure)
         throws IOException, ClassNotFoundException
     {

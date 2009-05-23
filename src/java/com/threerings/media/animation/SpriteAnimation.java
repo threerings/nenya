@@ -59,7 +59,7 @@ public class SpriteAnimation extends Animation
             _sprite.move(_path);
             _path = null;
         }
-    }    
+    }
 
     @Override
     public void paint (Graphics2D gfx)

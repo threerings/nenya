@@ -154,13 +154,13 @@ public class Handler extends URLStreamHandler
         String[] bits = StringUtil.split(query, "&");
         int width = -1, height = -1, tidx = -1;
         try {
-            for (int ii = 0; ii < bits.length; ii++) {
-                if (bits[ii].startsWith("width=")) {
-                    width = Integer.parseInt(bits[ii].substring(6));
-                } else if (bits[ii].startsWith("height=")) {
-                    height = Integer.parseInt(bits[ii].substring(7));
-                } else if (bits[ii].startsWith("tile=")) {
-                    tidx = Integer.parseInt(bits[ii].substring(5));
+            for (String bit : bits) {
+                if (bit.startsWith("width=")) {
+                    width = Integer.parseInt(bit.substring(6));
+                } else if (bit.startsWith("height=")) {
+                    height = Integer.parseInt(bit.substring(7));
+                } else if (bit.startsWith("tile=")) {
+                    tidx = Integer.parseInt(bit.substring(5));
                 }
             }
         } catch (NumberFormatException nfe) {

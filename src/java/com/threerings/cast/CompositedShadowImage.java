@@ -66,7 +66,7 @@ public class CompositedShadowImage extends CompositedMultiFrameImage
     public int getYOrigin (int index) {
         return _sources[0].frames.getYOrigin(_orient, index);
     }
-    
+
     @Override
     protected CompositedMirage createCompositedMirage (int index) {
         // Always use a CompositedVolatileMirage for ShadowImage since we need to draw into it.
@@ -91,7 +91,7 @@ public class CompositedShadowImage extends CompositedMultiFrameImage
         bounds.setBounds(getX(index), getY(index), _images[index].getWidth(),
             _images[index].getHeight());
     }
-    
+
     /**
      * @return the x offset into the source image for the image at index
      */

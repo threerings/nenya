@@ -43,7 +43,7 @@ public class MirageIcon implements Icon
     {
         _mirage.paint((Graphics2D)g, x, y);
     }
-    
+
     // documentation inherited from interface
     public int getIconWidth()
     {

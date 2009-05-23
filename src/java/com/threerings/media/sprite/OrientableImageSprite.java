@@ -40,7 +40,7 @@ public class OrientableImageSprite extends ImageSprite
      */
     public OrientableImageSprite ()
     {}
-    
+
     /**
      * Creates a new orientable image sprite.
      *
@@ -50,7 +50,7 @@ public class OrientableImageSprite extends ImageSprite
     {
         super(image);
     }
-    
+
     /**
      * Creates a new orientable image sprite.
      *
@@ -60,91 +60,91 @@ public class OrientableImageSprite extends ImageSprite
     {
         super(frames);
     }
-    
+
     /**
      * Computes and returns the rotation transform for this
      * sprite.
      *
      * @return the newly computed rotation transform
-     */ 
+     */
     private AffineTransform getRotationTransform ()
     {
         double theta;
-        
+
         switch (_orient) {
             case NORTH:
             default:
                 theta = 0.0;
                 break;
-            
+
             case SOUTH:
                 theta = Math.PI;
                 break;
-                    
+
             case EAST:
                 theta = Math.PI*0.5;
                 break;
-                
+
             case WEST:
                 theta = -Math.PI*0.5;
                 break;
-                
+
             case NORTHEAST:
                 theta = Math.PI*0.25;
                 break;
-            
+
             case NORTHWEST:
                 theta = -Math.PI*0.25;
                 break;
-                
+
             case SOUTHEAST:
                 theta = Math.PI*0.75;
                 break;
-                
+
             case SOUTHWEST:
                 theta = -Math.PI*0.75;
                 break;
-                
+
             case NORTHNORTHEAST:
                 theta = -Math.PI*0.125;
                 break;
-                
+
             case NORTHNORTHWEST:
                 theta = Math.PI*0.125;
                 break;
-                
+
             case SOUTHSOUTHEAST:
                 theta = -Math.PI*0.875;
                 break;
-                
+
             case SOUTHSOUTHWEST:
                 theta = Math.PI*0.875;
                 break;
-                
+
             case EASTNORTHEAST:
                 theta = -Math.PI*0.375;
                 break;
-                
+
             case EASTSOUTHEAST:
                 theta = -Math.PI*0.625;
                 break;
-                
+
             case WESTNORTHWEST:
                 theta = Math.PI*0.375;
                 break;
-                
+
             case WESTSOUTHWEST:
                 theta = Math.PI*0.625;
                 break;
         }
-        
+
         return AffineTransform.getRotateInstance(
             theta,
             (_ox - _oxoff) + _frames.getWidth(_frameIdx)/2,
             (_oy - _oyoff) + _frames.getHeight(_frameIdx)/2
         );
     }
-    
+
     @Override
     protected void accomodateFrame (int frameIdx, int width, int height)
     {
@@ -156,39 +156,39 @@ public class OrientableImageSprite extends ImageSprite
                 height
             )
         );
-        
+
         area.transform(getRotationTransform());
-        
+
         _bounds = area.getBounds();
     }
-    
+
     @Override
     public void setOrientation (int orient)
     {
         super.setOrientation(orient);
-        
+
         layout();
     }
-    
+
     @Override
     public void paint (Graphics2D graphics)
     {
         AffineTransform at = graphics.getTransform();
-        
+
         graphics.transform(getRotationTransform());
-        
+
         if (_frames != null) {
             _frames.paintFrame(
-                graphics, 
-                _frameIdx, 
-                _ox - _oxoff, 
+                graphics,
+                _frameIdx,
+                _ox - _oxoff,
                 _oy - _oyoff
             );
         }
         else {
             super.paint(graphics);
         }
-        
+
         graphics.setTransform(at);
     }
 }

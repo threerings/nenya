@@ -168,7 +168,7 @@ public class IconManager
 
     /** A cache of our icon tilesets. */
     protected Map<String, TileSet> _icons = new LRUHashMap<String, TileSet>(ICON_CACHE_SIZE);
-    
+
     /** The suffix we append to an icon set name to obtain the tileset
      * image path configuration parameter. */
     protected static final String PATH_SUFFIX = ".path";

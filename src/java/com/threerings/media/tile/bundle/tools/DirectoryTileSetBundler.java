@@ -88,21 +88,21 @@ public class DirectoryTileSetBundler extends TileSetBundler
                         // write the trimmed tileset image to the destination output stream
                         File outFile = new File(target, imagePath);
                         FileOutputStream fout = null;
-                        
+
                         if (outFile.lastModified() > newestMod) {
                             // Our file's newer than the newest bundle mod - up to date.
                             // So don't actually do anything
-                            
+
                             // TODO: Ideally, we'd like to skip re-trimming altogether, since that's
                             // expensive, but for the moment, we're at least doing half as much by
                             // not writing out the trimmed image.
-                            
+
                         } else {
                             // It's changed, so let's open the file & do all that jazz
                             outFile.getParentFile().mkdirs();
                             fout = new FileOutputStream(outFile);
                         }
-                        
+
                         TrimmedObjectTileSet tset =
                             TrimmedObjectTileSet.trimObjectTileSet((ObjectTileSet)set, fout, "png");
                         tset.setImagePath(imagePath);

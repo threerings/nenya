@@ -40,7 +40,7 @@ import static com.threerings.media.Log.log;
  * it can provide a tileset repository which loads up tilesets using whatever repository mechanism
  * is implemented by the supplied repository. In the latter case, tilesets are loaded by a unique
  * identifier.
- * 
+ *
  * <p> Loading tilesets by hand is intended for things like toolbar icons or games with a single
  * set of tiles (think Stratego, for example). Loading tilesets from a repository supports games
  * with vast numbers of tiles to which more tiles may be added on the fly (think the tiles for an
@@ -51,7 +51,7 @@ public class TileManager
     /**
      * Creates a tile manager and provides it with a reference to the image manager from which it
      * will load tileset images.
-     * 
+     *
      * @param imgr the image manager via which the tile manager will decode and cache images.
      */
     public TileManager (ImageManager imgr)
@@ -145,9 +145,9 @@ public class TileManager
     /**
      * Returns the tileset with the specified id. Tilesets are fetched from the tileset repository
      * supplied via {@link #setTileSetRepository}, and are subsequently cached.
-     * 
+     *
      * @param tileSetId the unique identifier for the desired tileset.
-     * 
+     *
      * @exception NoSuchTileSetException thrown if no tileset exists with the specified id or if
      * an underlying error occurs with the tileset repository's persistence mechanism.
      */
@@ -169,7 +169,7 @@ public class TileManager
 
     /**
      * Returns the tileset with the specified name.
-     * 
+     *
      * @throws NoSuchTileSetException if no tileset with the specified name is available via our
      * configured tile set repository.
      */
@@ -191,7 +191,7 @@ public class TileManager
 
     /**
      * Returns the {@link Tile} object with the specified fully qualified tile id.
-     * 
+     *
      * @see TileUtil#getFQTileId
      */
     public Tile getTile (int fqTileId)
@@ -203,7 +203,7 @@ public class TileManager
     /**
      * Returns the {@link Tile} object with the specified fully qualified tile id. The supplied
      * colorizer will be used to recolor the tile.
-     * 
+     *
      * @see TileUtil#getFQTileId
      */
     public Tile getTile (int fqTileId, TileSet.Colorizer rizer)
@@ -214,10 +214,10 @@ public class TileManager
 
     /**
      * Returns the {@link Tile} object from the specified tileset at the specified index.
-     * 
+     *
      * @param tileSetId the tileset id.
      * @param tileIndex the index of the tile to be retrieved.
-     * 
+     *
      * @return the tile object.
      */
     public Tile getTile (int tileSetId, int tileIndex, TileSet.Colorizer rizer)

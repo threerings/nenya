@@ -101,8 +101,8 @@ public class SwissArmyTileSet extends TileSet
     {
         // compute our number of tiles
         _numTiles = 0;
-        for (int i = 0; i < _tileCounts.length; i++) {
-            _numTiles += _tileCounts[i];
+        for (int count : _tileCounts) {
+            _numTiles += count;
         }
     }
 

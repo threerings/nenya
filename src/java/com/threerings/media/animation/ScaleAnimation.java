@@ -154,7 +154,7 @@ public class ScaleAnimation extends Animation
         }
 
         // Smooth out the image scaling
-        // 
+        //
         // FIXME: Should this be turned off when the painting is done?
         gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                              RenderingHints.VALUE_INTERPOLATION_BILINEAR);

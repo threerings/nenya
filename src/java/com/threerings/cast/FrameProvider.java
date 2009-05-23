@@ -41,7 +41,7 @@ public interface FrameProvider
      * Returns the file path of the animation frames (in the eight sprite directions) for the
      * specified action of the specified component. May return a path to the default action or
      * null if the specified action does not exist for the specified component.
-     * 
+     *
      * @param existentPaths the set of all paths for which there are valid frames.
      */
     public String getFramePath (

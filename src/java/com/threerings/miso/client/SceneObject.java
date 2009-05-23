@@ -259,7 +259,7 @@ public class SceneObject
         refreshObjectTile(panel.getSceneMetrics(), panel.getTileManager(),
             panel.getColorizer(info));
     }
-    
+
     /**
      * Reloads and recolorizes our object tile. It is not intended for the actual object tile used
      * by a scene object to change in its lifetime, only attributes of that object like its

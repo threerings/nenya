@@ -38,7 +38,7 @@ public class SceneBlockResolver extends LoopingThread
     {
         super("SceneBlockResolver");
     }
-    
+
     /**
      * Queues up a scene block for resolution.
      */
@@ -51,7 +51,7 @@ public class SceneBlockResolver extends LoopingThread
             _queue.append(block);
         }
     }
-    
+
     /**
      * Temporarily suspends the scene block resolution thread.
      */

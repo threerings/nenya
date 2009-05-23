@@ -118,7 +118,7 @@ public abstract class Animation extends AbstractMedia
     {
         removeObserver(obs);
     }
-    
+
     /** Whether the animation is finished. */
     protected boolean _finished = false;
 

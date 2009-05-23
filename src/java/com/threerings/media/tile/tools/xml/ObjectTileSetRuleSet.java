@@ -173,7 +173,7 @@ public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
                     set.setSpotOrients(sorients);
                 }
             });
-    
+
         digester.addRule(
             _path + "/constraints",
                 new CallMethodSpecialRule() {

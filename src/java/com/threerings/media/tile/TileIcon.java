@@ -46,7 +46,7 @@ public class TileIcon implements Icon
     {
         _tile.paint((Graphics2D)g, x, y);
     }
-    
+
     // documentation inherited from interface
     public int getIconWidth ()
     {

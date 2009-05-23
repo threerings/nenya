@@ -49,17 +49,17 @@ public class DumpBundle
             System.exit(-1);
         }
 
-        for (int i = 0; i < args.length; i++) {
+        for (String arg : args) {
             // oh the hackery
-            if (args[i].equals("-tiles")) {
+            if (arg.equals("-tiles")) {
                 dumpTiles = true;
                 continue;
             }
 
-            File file = new File(args[i]);
+            File file = new File(arg);
             try {
                 TileSetBundle tsb = null;
-                if (args[i].endsWith(".jar")) {
+                if (arg.endsWith(".jar")) {
                     ResourceBundle bundle = new FileResourceBundle(file);
                     tsb = BundleUtil.extractBundle(bundle);
                     tsb.init(bundle);
@@ -81,7 +81,7 @@ public class DumpBundle
                 }
 
             } catch (Exception e) {
-                System.err.println("Error dumping bundle [path=" + args[i] +
+                System.err.println("Error dumping bundle [path=" + arg +
                                    ", error=" + e + "].");
                 e.printStackTrace();
             }

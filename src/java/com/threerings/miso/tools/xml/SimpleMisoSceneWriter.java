@@ -81,8 +81,7 @@ public class SimpleMisoSceneWriter implements NestableWriter
         }
 
         // write our uninteresting object tile information
-        for (int ii = 0; ii < model.objectInfo.length; ii++) {
-            ObjectInfo info = model.objectInfo[ii];
+        for (ObjectInfo info : model.objectInfo) {
             AttributesImpl attrs = new AttributesImpl();
             attrs.addAttribute("", "tileId", "", "",
                                String.valueOf(info.tileId));

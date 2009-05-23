@@ -73,7 +73,7 @@ public class SpriteIcon implements Icon
                             y + _sprite.getYOffset() + _padding);
         _sprite.paint((Graphics2D)g);
     }
-    
+
     // documentation inherited from interface
     public int getIconWidth ()
     {

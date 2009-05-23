@@ -71,12 +71,12 @@ public class ModeUtil
 
         // but we only add modes that meet our minimum requirements
         TreeSet<DisplayMode> mset = new TreeSet<DisplayMode>(mcomp);
-        for (int i = 0; i < modes.length; i++) {
-            if (modes[i].getWidth() == width &&
-                modes[i].getHeight() == height &&
-                modes[i].getBitDepth() >= minimumDepth &&
-                modes[i].getRefreshRate() <= 75) {
-                mset.add(modes[i]);
+        for (DisplayMode mode : modes) {
+            if (mode.getWidth() == width &&
+                mode.getHeight() == height &&
+                mode.getBitDepth() >= minimumDepth &&
+                mode.getRefreshRate() <= 75) {
+                mset.add(mode);
             }
         }
 

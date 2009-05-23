@@ -256,7 +256,7 @@ public class ImageUtil
 //     */
 //    public static Area createImageMask (BufferedImage src)
 //    {
-//        Raster srcdata = src.getData(); 
+//        Raster srcdata = src.getData();
 //        int wid = src.getWidth(), hei = src.getHeight();
 //        Log.info("creating area of (" + wid + ", " + hei + ")");
 //        Area a = new Area(new Rectangle(wid, hei));

@@ -98,7 +98,7 @@ public class SpriteManager extends AbstractMediaManager
         }
         return null;
     }
-    
+
     /**
      * Add a sprite to the set of sprites managed by this manager.
      *

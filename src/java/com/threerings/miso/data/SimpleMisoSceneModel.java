@@ -130,8 +130,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
     public void getObjects (Rectangle region, ObjectSet set)
     {
         // first look for intersecting interesting objects
-        for (int ii = 0; ii < objectInfo.length; ii++) {
-            ObjectInfo info = objectInfo[ii];
+        for (ObjectInfo info : objectInfo) {
             if (region.contains(info.x, info.y)) {
                 set.insert(info);
             }

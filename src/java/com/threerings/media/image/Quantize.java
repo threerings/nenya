@@ -58,7 +58,7 @@ package com.threerings.media.image;
  * nodes in the reduced tree.<p>
  *
  * Here is the copyright notice from ImageMagick:
- * 
+ *
  * <pre>
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Permission is hereby granted, free of charge, to any person obtaining a    %
@@ -283,9 +283,9 @@ public class Quantize {
 %  written permission from ISI.
 %
 */
-    
+
     final static boolean QUICK = false;
-    
+
     final static int MAX_RGB = 255;
     final static int MAX_NODES = 266817;
     final static int MAX_TREE_DEPTH = 8;
@@ -308,7 +308,7 @@ public class Quantize {
 
     /**
      * Reduce the image to the given number of colors.
-     * 
+     *
      * @param pixels an in/out parameter that should initially contain
      * [A]RGB values but that will contain color palette indicies upon return.
      *
@@ -321,7 +321,7 @@ public class Quantize {
         cube.assignment();
         return cube.colormap;
     }
-    
+
     static class Cube {
         int pixels[][];
         int max_colors;
@@ -329,7 +329,7 @@ public class Quantize {
 
         // do we have transparent pixels?
         boolean hasTrans = false;
-        
+
         Node root;
         int depth;
 
@@ -358,7 +358,7 @@ public class Quantize {
             } else if (depth < 2) {
                 depth = 2;
             }
-            
+
             root = new Node(this);
         }
 
@@ -506,7 +506,7 @@ public class Quantize {
             colormap = new int[colors];
             colors = 0;
             root.colormap();
-  
+
             int pixels[][] = this.pixels;
 
             int width = pixels.length;
@@ -515,7 +515,7 @@ public class Quantize {
             Search search = new Search();
 
             int transPad = hasTrans ? 1 : 0;
-            
+
             // convert to indexed color
             for (int x = width; x-- > 0; ) {
                 for (int y = height; y-- > 0; ) {
@@ -587,7 +587,7 @@ public class Quantize {
 
             // the pixel count for this node and all children
             long number_pixels;
-            
+
             // the pixel count for this node
             int unique;
             // the sum of all pixels contained in this node
@@ -606,12 +606,12 @@ public class Quantize {
                 this.level = 0;
 
                 this.number_pixels = Long.MAX_VALUE;
-            
+
                 this.mid_red   = (MAX_RGB + 1) >> 1;
                 this.mid_green = (MAX_RGB + 1) >> 1;
                 this.mid_blue  = (MAX_RGB + 1) >> 1;
             }
-        
+
             Node(Node parent, int id, int level) {
                 this.cube = parent.cube;
                 this.parent = parent;

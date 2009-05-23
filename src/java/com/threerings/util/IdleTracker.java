@@ -232,7 +232,7 @@ public abstract class IdleTracker
     protected static final int ABANDONED = 2;
 
     // we want to observe all mouse and keyboard events
-    protected static final long EVENT_MASK =         
+    protected static final long EVENT_MASK =
         AWTEvent.MOUSE_EVENT_MASK |
         AWTEvent.MOUSE_MOTION_EVENT_MASK |
         AWTEvent.MOUSE_WHEEL_EVENT_MASK |

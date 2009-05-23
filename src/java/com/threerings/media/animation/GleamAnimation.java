@@ -45,7 +45,7 @@ public class GleamAnimation extends Animation
     /**
      * Creates a gleam animation with the supplied sprite. The sprite will be faded to the
      * specified color and then back again.
-     * 
+     *
      * @param fadeIn if true, the sprite itself will be faded in as we fade up to the gleam color
      * and the gleam color will fade out, leaving just the sprite imagery.
      */
@@ -59,7 +59,7 @@ public class GleamAnimation extends Animation
      * Creates a gleam animation with the supplied sprite. The sprite will be faded to the
      * specified color and then back again. The sprite may be already added to the supplied sprite
      * manager or not, but when the animation is complete, it will have been added.
-     * 
+     *
      * @param fadeIn if true, the sprite itself will be faded in as we fade up to the gleam color
      * and the gleam color will fade out, leaving just the sprite imagery.
      */
@@ -74,7 +74,7 @@ public class GleamAnimation extends Animation
         _downmillis = downmillis;
         _fadeIn = fadeIn;
     }
-    
+
     @Override // documentation inherited
     public void tick (long timestamp)
     {

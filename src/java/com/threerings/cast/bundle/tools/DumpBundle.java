@@ -47,8 +47,8 @@ public class DumpBundle
             System.exit(-1);
         }
 
-        for (int i = 0; i < args.length; i++) {
-            File file = new File(args[i]);
+        for (String arg : args) {
+            File file = new File(arg);
             try {
                 ResourceBundle bundle = new FileResourceBundle(file);
 
@@ -69,7 +69,7 @@ public class DumpBundle
                 dumpTable("components: ", comps);
 
             } catch (Exception e) {
-                System.err.println("Error dumping bundle [path=" + args[i] +
+                System.err.println("Error dumping bundle [path=" + arg +
                                    ", error=" + e + "].");
                 e.printStackTrace();
             }
@@ -81,5 +81,5 @@ public class DumpBundle
         if (table != null) {
             System.out.println(prefix + StringUtil.toString(table.entrySet().iterator()));
         }
-    }        
+    }
 }

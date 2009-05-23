@@ -49,7 +49,7 @@ public class Keyboard
     }
 
     /**
-     * Returns whether the native keyboard interface is available. 
+     * Returns whether the native keyboard interface is available.
      */
     public static boolean isAvailable ()
     {

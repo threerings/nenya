@@ -122,7 +122,7 @@ public class BrowserUtil
                 }
 
                 // if we're on windows, make a last ditch effort
-                String[] cmd = new String[] { 
+                String[] cmd = new String[] {
                     "C:\\Program Files\\Internet Explorer\\" +
                     "IEXPLORE.EXE", "\"" + _url.toString() + "\""};
                 Process process = Runtime.getRuntime().exec(cmd);

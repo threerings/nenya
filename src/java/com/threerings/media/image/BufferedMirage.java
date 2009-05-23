@@ -33,7 +33,7 @@ public class BufferedMirage implements Mirage
     {
         this(image, 1);
     }
-    
+
     /**
      * @param percentageOfDataBuffer - the percentage of image's data buffer used by image for use
      * in getEstimatedMemory. ie if this image is a subimage of another image, and they share a
@@ -81,7 +81,7 @@ public class BufferedMirage implements Mirage
     {
         return _image;
     }
-    
+
     protected float _percentageOfDataBuffer;
 
     protected BufferedImage _image;

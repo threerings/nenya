@@ -96,8 +96,8 @@ public class SparseMisoSceneWriter implements NestableWriter
             }
 
             // write our interesting object tile information
-            for (int ii = 0; ii < sect.objectInfo.length; ii++) {
-                writeInterestingObject(sect.objectInfo[ii], writer);
+            for (ObjectInfo element : sect.objectInfo) {
+                writeInterestingObject(element, writer);
             }
             writer.endElement("objects");
             writer.endElement("section");
@@ -106,7 +106,7 @@ public class SparseMisoSceneWriter implements NestableWriter
     }
 
     /**
-     * Writes <code>info</code> out to <code>writer</code>. 
+     * Writes <code>info</code> out to <code>writer</code>.
      */
     public static void writeInterestingObject (ObjectInfo info, DataWriter writer)
         throws SAXException

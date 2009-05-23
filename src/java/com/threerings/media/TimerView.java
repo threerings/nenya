@@ -143,7 +143,7 @@ public class TimerView
 
         // Stop any current processing
         stop();
-        
+
         // Record the timer's full duration and effective start time
         _duration = duration;
 
@@ -185,7 +185,7 @@ public class TimerView
 
         // Prevent it from being unpaused
         _lastUpdate = Long.MIN_VALUE;
-    }        
+    }
 
     /**
      * Pause the timer from processing.

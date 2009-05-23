@@ -95,8 +95,8 @@ public class ClassRuleSet extends RuleSetBase
             public Object parse (String text) {
                 String[] orients = StringUtil.parseStringArray(text);
                 ArrayIntSet oset = new ArrayIntSet();
-                for (int ii = 0; ii < orients.length; ii++) {
-                    oset.add(DirectionUtil.fromShortString(orients[ii]));
+                for (String orient : orients) {
+                    oset.add(DirectionUtil.fromShortString(orient));
                 }
                 return oset;
             }

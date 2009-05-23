@@ -40,7 +40,7 @@ public class FadeEffect
         }
 
         // save things off
-        _startAlpha = alpha; 
+        _startAlpha = alpha;
         _step = step;
         _target = target;
 

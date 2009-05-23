@@ -47,11 +47,11 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
     public UniformTileSetRuleSet(){
         this(TILESET_PATH);
     }
-    
+
     public UniformTileSetRuleSet(String tilesetPath){
         _tilesetPath = tilesetPath;
     }
-    
+
     @Override
     public void addRuleInstances (Digester digester)
     {

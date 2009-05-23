@@ -44,7 +44,7 @@ public class CompositeMirage implements Mirage
         for (Mirage m : _mirages) {
             mem += m.getEstimatedMemoryUsage();
         }
-        
+
         return mem;
     }
 

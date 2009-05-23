@@ -23,8 +23,8 @@ package com.threerings.miso.client;
 
 import java.awt.Rectangle;
 
-/**  
- * Exposes an operation to be applied to tiles by {@link TileOpApplicator}. 
+/**
+ * Exposes an operation to be applied to tiles by {@link TileOpApplicator}.
  */
 public interface TileOp
 {
