@@ -28,6 +28,7 @@ import java.util.Map;
 
 import java.awt.Point;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.samskivert.util.LRUHashMap;
@@ -179,7 +180,7 @@ public class CharacterManager
             frames = createCompositeFrames(descrip, action);
             _actionFrames.put(key, frames);
         }
-        
+
         // periodically report our frame image cache performance
         if (!_cacheStatThrottle.throttleOp()) {
             long size = getEstimatedCacheMemoryUsage();
@@ -264,10 +265,10 @@ public class CharacterManager
 
         // maps components by class name for masks
         HashMap<String, ArrayList<TranslatedComponent>> ccomps =
-            new HashMap<String, ArrayList<TranslatedComponent>>();
+            Maps.newHashMap();
 
         // create colorized versions of all of the source action frames
-        ArrayList<ComponentFrames> sources = new ArrayList<ComponentFrames>(ccount);
+        ArrayList<ComponentFrames> sources = Lists.newArrayListWithCapacity(ccount);
         for (int ii = 0; ii < ccount; ii++) {
             ComponentFrames cframes = new ComponentFrames();
             sources.add(cframes);
@@ -291,20 +292,18 @@ public class CharacterManager
             TranslatedComponent tcomp = new TranslatedComponent(ccomp, xlation);
             ArrayList<TranslatedComponent> tcomps = ccomps.get(ccomp.componentClass.name);
             if (tcomps == null) {
-                ccomps.put(ccomp.componentClass.name,
-                    tcomps = new ArrayList<TranslatedComponent>());
+                ccomps.put(ccomp.componentClass.name, tcomps = Lists.newArrayList());
             }
             tcomps.add(tcomp);
 
             // if this component has a shadow, make a note of it
             if (ccomp.componentClass.isShadowed()) {
                 if (shadows == null) {
-                    shadows = new HashMap<String, ArrayList<TranslatedComponent>>();
+                    shadows = Maps.newHashMap();
                 }
                 ArrayList<TranslatedComponent> shadlist = shadows.get(ccomp.componentClass.shadow);
                 if (shadlist == null) {
-                    shadows.put(ccomp.componentClass.shadow,
-                                shadlist = new ArrayList<TranslatedComponent>());
+                    shadows.put(ccomp.componentClass.shadow, shadlist = Lists.newArrayList());
                 }
                 shadlist.add(tcomp);
             }
@@ -349,7 +348,7 @@ public class CharacterManager
         // create a fake component for the shadow layer
         cframes.ccomp = new CharacterComponent(-1, "shadow", cclass, null);
 
-        ArrayList<ComponentFrames> sources = new ArrayList<ComponentFrames>();
+        ArrayList<ComponentFrames> sources = Lists.newArrayList();
         for (TranslatedComponent scomp : scomps) {
             ComponentFrames source = new ComponentFrames();
             source.ccomp = scomp.ccomp;
@@ -384,7 +383,7 @@ public class CharacterManager
         String action, CharacterComponent ccomp, ActionFrames cframes,
         ArrayList<TranslatedComponent> mcomps)
     {
-        ArrayList<ComponentFrames> sources = new ArrayList<ComponentFrames>();
+        ArrayList<ComponentFrames> sources = Lists.newArrayList();
         sources.add(new ComponentFrames(ccomp, cframes));
         for (TranslatedComponent mcomp : mcomps) {
             ActionFrames mframes = mcomp.getFrames(action, StandardActions.CROP_TYPE);
@@ -435,7 +434,7 @@ public class CharacterManager
 
     /** A table of composited action sequences (these don't reference the
      * actual image data directly and thus take up little memory). */
-    protected Map<Tuple<CharacterDescriptor, String>, ActionFrames> _actionFrames = 
+    protected Map<Tuple<CharacterDescriptor, String>, ActionFrames> _actionFrames =
         Maps.newHashMap();
 
     /** A cache of composited animation frames. */
@@ -457,7 +456,7 @@ public class CharacterManager
             "Size (in kb of memory used) of the character manager LRU " +
             "action cache [requires restart]", "narya.cast.action_cache_size",
             CastPrefs.config, 32768);
-    
+
     /**
      * Cache size to be used in this run.  Adjusted by setCacheSize without affecting
      * the stored value.

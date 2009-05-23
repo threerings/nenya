@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 import java.io.Serializable;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;
 
@@ -49,7 +51,7 @@ public class FringeConfiguration implements Serializable
         public int priority;
 
         /** A list of the possible tilesets that can be used for fringing. */
-        public ArrayList<FringeTileSetRecord> tilesets = new ArrayList<FringeTileSetRecord>();
+        public ArrayList<FringeTileSetRecord> tilesets = Lists.newArrayList();
 
         /** Used when parsing the tilesets definitions. */
         public void addTileset (FringeTileSetRecord record)

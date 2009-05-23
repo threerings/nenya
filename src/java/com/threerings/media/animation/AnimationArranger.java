@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 import java.awt.Rectangle;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.swing.util.SwingUtil;
 
 import static com.threerings.media.Log.log;
@@ -42,7 +44,7 @@ public class AnimationArranger
     public void positionAvoidAnimation (Animation anim, Rectangle viewBounds)
     {
         Rectangle abounds = new Rectangle(anim.getBounds());
-        @SuppressWarnings("unchecked") ArrayList<Animation> avoidables = 
+        @SuppressWarnings("unchecked") ArrayList<Animation> avoidables =
             (ArrayList<Animation>) _avoidAnims.clone();
         // if we are able to place it somewhere, do so
         if (SwingUtil.positionRect(abounds, viewBounds, avoidables)) {
@@ -56,7 +58,7 @@ public class AnimationArranger
     }
 
     /** The animations that other animations may wish to avoid. */
-    protected ArrayList<Animation> _avoidAnims = new ArrayList<Animation>();
+    protected ArrayList<Animation> _avoidAnims = Lists.newArrayList();
 
     /** Automatically removes avoid animations when they're done. */
     protected AnimationAdapter _avoidAnimObs = new AnimationAdapter() {

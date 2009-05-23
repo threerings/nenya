@@ -130,5 +130,5 @@ public class ConvertModelTask extends Task
     }
 
     /** A list of filesets that contain tileset bundle definitions. */
-    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
+    protected ArrayList<FileSet> _filesets = Lists.newArrayList();
 }

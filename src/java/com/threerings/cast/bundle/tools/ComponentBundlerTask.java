@@ -51,6 +51,8 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.ComparableArrayList;
 import com.samskivert.util.FileUtil;
@@ -152,7 +154,7 @@ public class ComponentBundlerTask extends Task
 
         // check to see if any of the source files are newer than the
         // target file
-        ArrayList<Object> sources = new ArrayList<Object>();
+        ArrayList<Object> sources = Lists.newArrayList();
         sources.addAll(_filesets);
         sources.add(_mapfile);
         sources.add(_actionDef);
@@ -186,8 +188,8 @@ public class ComponentBundlerTask extends Task
                 File fromDir = fs.getDir(getProject());
                 String[] srcFiles = ds.getIncludedFiles();
 
-                for (int f = 0; f < srcFiles.length; f++) {
-                    File cfile = new File(fromDir, srcFiles[f]);
+                for (String srcFile : srcFiles) {
+                    File cfile = new File(fromDir, srcFile);
                     // determine the [class, name, action] triplet
                     String[] info = decomposePath(cfile.getPath());
 
@@ -214,11 +216,11 @@ public class ComponentBundlerTask extends Task
                     // crop files
                     String action = info[2];
                     String ext = BundleUtil.IMAGE_EXTENSION;
-                    for (int aa = 0; aa < AUX_EXTS.length; aa++) {
+                    for (String element : AUX_EXTS) {
                         File afile = new File(
-                            FileUtil.resuffix(cfile, ext, AUX_EXTS[aa] + ext));
+                            FileUtil.resuffix(cfile, ext, element + ext));
                         if (afile.exists()) {
-                            info[2] = action + AUX_EXTS[aa];
+                            info[2] = action + element;
                             processComponent(info, aset, afile, fout, newest);
                         }
                     }
@@ -314,8 +316,8 @@ public class ComponentBundlerTask extends Task
             File fromDir = fs.getDir(getProject());
             String[] srcFiles = ds.getIncludedFiles();
             long newest = 0L;
-            for (int f = 0; f < srcFiles.length; f++) {
-                File cfile = new File(fromDir, srcFiles[f]);
+            for (String srcFile : srcFiles) {
+                File cfile = new File(fromDir, srcFile);
                 newest = Math.max(newest, cfile.lastModified());
             }
             return newest;
@@ -667,7 +669,7 @@ public class ComponentBundlerTask extends Task
     protected String _root;
 
     /** A list of filesets that contain tile images. */
-    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
+    protected ArrayList<FileSet> _filesets = Lists.newArrayList();
 
     /** Used to separate keys and values in the map file. */
     protected static final String SEP_STR = " := ";

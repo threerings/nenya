@@ -31,6 +31,8 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.FileUtil;
 
 import com.threerings.util.CompiledConfig;
@@ -153,5 +155,5 @@ public class CompiledConfigTask extends Task
     protected File _target;
     protected File _dest;
     protected String _parser;
-    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
+    protected ArrayList<FileSet> _filesets = Lists.newArrayList();
 }

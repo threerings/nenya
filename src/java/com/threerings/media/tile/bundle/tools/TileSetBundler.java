@@ -43,6 +43,8 @@ import org.xml.sax.SAXException;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.HashIntMap;
 
@@ -137,7 +139,7 @@ public class TileSetBundler
         Digester digester = new Digester();
 
         // push our mappings array onto the stack
-        ArrayList<Mapping> mappings = new ArrayList<Mapping>();
+        ArrayList<Mapping> mappings = Lists.newArrayList();
         digester.push(mappings);
 
         // create a mapping object for each mapping entry and append it to
@@ -232,7 +234,7 @@ public class TileSetBundler
     {
         // stick an array list on the top of the stack into which we will
         // collect parsed tilesets
-        ArrayList<TileSet> sets = new ArrayList<TileSet>();
+        ArrayList<TileSet> sets = Lists.newArrayList();
         _digester.push(sets);
 
         // parse the tilesets
@@ -367,7 +369,7 @@ public class TileSetBundler
             // write all of the image files to the bundle, converting the
             // tilesets to trimmed tilesets in the process
             Iterator<Integer> iditer = bundle.enumerateTileSetIds();
-            
+
             // Store off the updated TileSets in a separate Map so we can wait to change the
             // bundle till we're done iterating.
             HashIntMap<TileSet> toUpdate = new HashIntMap<TileSet>();

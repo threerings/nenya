@@ -33,6 +33,8 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.IntTuple;
 
 import com.threerings.media.util.MathUtil;
@@ -159,7 +161,7 @@ public class ResolutionView extends JPanel
 
     protected MisoScenePanel _panel;
     protected MisoSceneMetrics _metrics;
-    protected HashMap<IntTuple, BlockGlyph> _blocks = new HashMap<IntTuple, BlockGlyph>();
+    protected HashMap<IntTuple, BlockGlyph> _blocks = Maps.newHashMap();
 
     protected static final int TILE_SIZE = 10;
     protected static final int MAX_WIDTH = 30;

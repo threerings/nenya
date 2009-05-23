@@ -30,6 +30,8 @@ import java.util.Set;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.ArrayUtil;
 import com.samskivert.util.IntMap;
 import com.samskivert.util.StringUtil;
@@ -157,7 +159,7 @@ public class SceneBlock
         // resolve our objects
         ObjectSet set = new ObjectSet();
         _model.getObjects(_bounds, set);
-        ArrayList<SceneObject> scobjs = new ArrayList<SceneObject>();
+        ArrayList<SceneObject> scobjs = Lists.newArrayList();
         now = System.currentTimeMillis();
         for (int ii = 0, ll = set.size(); ii < ll; ii++) {
             SceneObject scobj = makeSceneObject(set.get(ii));

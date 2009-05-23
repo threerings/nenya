@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 import org.lwjgl.openal.AL10;
 
+import com.google.common.collect.Lists;
+
 import static com.threerings.openal.Log.log;
 
 /**
@@ -147,5 +149,5 @@ public class SoundGroup
     protected SoundManager _manager;
     protected ClipProvider _provider;
 
-    protected ArrayList<PooledSource> _sources = new ArrayList<PooledSource>();
+    protected ArrayList<PooledSource> _sources = Lists.newArrayList();
 }

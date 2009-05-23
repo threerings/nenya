@@ -21,7 +21,6 @@
 
 package com.threerings.media.util;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -64,7 +63,7 @@ public class PerformanceMonitor
         Map<String, PerformanceAction> actions = _observers.get(obs);
         if (actions == null) {
             // create it if it didn't exist
-            _observers.put(obs, actions = new HashMap<String, PerformanceAction>());
+            _observers.put(obs, actions = Maps.newHashMap());
         }
 
         // add the action to the set we're tracking
@@ -147,7 +146,7 @@ public class PerformanceMonitor
     }
 
     /** The observers monitoring some set of actions. */
-    protected static Map<PerformanceObserver, Map<String, PerformanceAction>> _observers = 
+    protected static Map<PerformanceObserver, Map<String, PerformanceAction>> _observers =
         Maps.newHashMap();
 
     /** Used to obtain high resolution time stamps. */
@@ -207,7 +206,7 @@ class PerformanceAction
     /** The number of milliseconds between each checkpoint. */
     protected long _delta;
 
-    /** The time the last time a checkpoint was made. */ 
+    /** The time the last time a checkpoint was made. */
     protected long _lastDelta;
 
     /** The number of ticks since the last checkpoint. */

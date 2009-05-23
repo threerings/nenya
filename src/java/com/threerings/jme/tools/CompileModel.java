@@ -111,7 +111,7 @@ public class CompileModel
 
         // preprocess the model and animations to determine which nodes never move, which never
         // move within an animation, and which never move with respect to others
-        HashMap<String, TransformNode> tnodes = new HashMap<String, TransformNode>();
+        HashMap<String, TransformNode> tnodes = Maps.newHashMap();
         Node troot = mdef.createTransformTree(props, tnodes);
         for (AnimationDef adef : adefs) {
             adef.filterTransforms(troot, tnodes);
@@ -119,7 +119,7 @@ public class CompileModel
         mdef.mergeSpatials(tnodes);
 
         // load the model content
-        HashMap<String, Spatial> nodes = new HashMap<String, Spatial>();
+        HashMap<String, Spatial> nodes = Maps.newHashMap();
         Model model = mdef.createModel(props, nodes);
         model.initPrototype();
 

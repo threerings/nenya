@@ -21,7 +21,6 @@
 
 package com.threerings.media.tile.tools.xml;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,8 @@ import java.io.InputStream;
 import org.xml.sax.SAXException;
 
 import org.apache.commons.digester.Digester;
+
+import com.google.common.collect.Lists;
 
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.xml.ValidatedSetNextRule;
@@ -144,7 +145,7 @@ public class XMLTileSetParser
     {
         // stick an array list on the top of the stack for collecting
         // parsed tilesets
-        List<TileSet> setlist = new ArrayList<TileSet>();
+        List<TileSet> setlist = Lists.newArrayList();
         _digester.push(setlist);
 
         // now fire up the digester to parse the stream

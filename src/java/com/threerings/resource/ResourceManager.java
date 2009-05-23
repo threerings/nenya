@@ -50,6 +50,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.samskivert.io.StreamUtil;
@@ -293,7 +294,7 @@ public class ResourceManager
         Properties config = loadConfig(configPath);
 
         // resolve the configured resource sets
-        List<ResourceBundle> dlist = new ArrayList<ResourceBundle>();
+        List<ResourceBundle> dlist = Lists.newArrayList();
         Enumeration<?> names = config.propertyNames();
         while (names.hasMoreElements()) {
             String key = (String)names.nextElement();
@@ -464,7 +465,7 @@ public class ResourceManager
         }
 
         // start a thread to unpack our bundles
-        ArrayList<ResourceBundle> list = new ArrayList<ResourceBundle>();
+        ArrayList<ResourceBundle> list = Lists.newArrayList();
         list.add(bundle);
         Unpacker unpack = new Unpacker(list, new InitObserver() {
             public void progress (int percent, long remaining) {
@@ -804,7 +805,7 @@ public class ResourceManager
     protected void resolveResourceSet (
         String setName, String definition, String setType, List<ResourceBundle> dlist)
     {
-        List<ResourceBundle> set = new ArrayList<ResourceBundle>();
+        List<ResourceBundle> set = Lists.newArrayList();
         StringTokenizer tok = new StringTokenizer(definition, ":");
         while (tok.hasMoreTokens()) {
             set.add(createResourceBundle(setType, tok.nextToken().trim(), dlist));

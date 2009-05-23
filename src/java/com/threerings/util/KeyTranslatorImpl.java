@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.HashIntMap;
 
 /**
@@ -47,7 +50,7 @@ public class KeyTranslatorImpl
      * Adds a mapping from a key press to an action command string that will auto-repeat at the
      * specified repeat rate. Overwrites any existing mapping and repeat rate that may have
      * already been registered.
-     * 
+     *
      * @param rate the number of times each second that the key press should be repeated while the
      * key is down, or <code>0</code> to disable auto-repeat for the key.
      */
@@ -60,7 +63,7 @@ public class KeyTranslatorImpl
      * Adds a mapping from a key press to an action command string that will auto-repeat at the
      * specified repeat rate after the specified auto-repeat delay has expired. Overwrites any
      * existing mapping for the specified key code that may have already been registered.
-     * 
+     *
      * @param rate the number of times each second that the key press should be repeated while the
      * key is down; passing <code>0</code> will result in no repeating.
      * @param repeatDelay the delay in milliseconds before auto-repeating key press events will be
@@ -116,7 +119,7 @@ public class KeyTranslatorImpl
         KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? null : krec.pressCommand;
     }
-    
+
     // documentation inherited from interface KeyTranslator
     public String getPressCommand (char ch)
     {
@@ -130,7 +133,7 @@ public class KeyTranslatorImpl
         KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? null : krec.releaseCommand;
     }
-    
+
     // documentation inherited from interface KeyTranslator
     public String getReleaseCommand (char ch)
     {
@@ -144,7 +147,7 @@ public class KeyTranslatorImpl
         KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? DEFAULT_REPEAT_RATE : krec.repeatRate;
     }
-    
+
     // documentation inherited from interface KeyTranslator
     public int getRepeatRate (char ch)
     {
@@ -158,7 +161,7 @@ public class KeyTranslatorImpl
         KeyRecord krec = _keys.get(keyCode);
         return (krec == null) ? DEFAULT_REPEAT_DELAY : krec.repeatDelay;
     }
-    
+
     // documentation inherited from interface KeyTranslator
     public long getRepeatDelay (char ch)
     {
@@ -169,7 +172,7 @@ public class KeyTranslatorImpl
     // documentation inherited from interface KeyTranslator
     public Iterator<String> enumeratePressCommands ()
     {
-        ArrayList<String> commands = new ArrayList<String>();
+        ArrayList<String> commands = Lists.newArrayList();
         for (KeyRecord rec : _keys.values()) {
             commands.add(rec.pressCommand);
         }
@@ -180,7 +183,7 @@ public class KeyTranslatorImpl
     // documentation inherited from interface KeyTranslator
     public Iterator<String> enumerateReleaseCommands ()
     {
-        ArrayList<String> commands = new ArrayList<String>();
+        ArrayList<String> commands = Lists.newArrayList();
         for (KeyRecord rec : _keys.values()) {
             commands.add(rec.releaseCommand);
         }
@@ -195,7 +198,7 @@ public class KeyTranslatorImpl
 
         /** The command to be posted when the key is released. */
         public String releaseCommand;
-        
+
         /** The rate in presses per second at which the key is to be auto-repeated. */
         public int repeatRate;
 
@@ -205,14 +208,14 @@ public class KeyTranslatorImpl
          */
         public long repeatDelay;
     }
-    
+
     /** The keys for which commands are registered. */
     protected HashIntMap<KeyRecord> _keys = new HashIntMap<KeyRecord>();
 
     /**
      * Any commands we wish to perform upon key typed events for characters.
      */
-    protected HashMap<Character,KeyRecord> _charCommands = new HashMap<Character,KeyRecord>();
+    protected HashMap<Character,KeyRecord> _charCommands = Maps.newHashMap();
 
     /** The default key press repeat rate. */
     protected static final int DEFAULT_REPEAT_RATE = 5;

@@ -24,6 +24,8 @@ package com.threerings.cast.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.CollectionUtil;
 import com.samskivert.util.RandomUtil;
 
@@ -46,9 +48,9 @@ public class CastUtil
         String gender, ComponentRepository crepo)
     {
         // get all available classes
-        ArrayList<ComponentClass> classes = new ArrayList<ComponentClass>();
-        for (int i = 0; i < CLASSES.length; i++) {
-            String cname = gender + "/" + CLASSES[i];
+        ArrayList<ComponentClass> classes = Lists.newArrayList();
+        for (String element : CLASSES) {
+            String cname = gender + "/" + element;
             ComponentClass cclass = crepo.getComponentClass(cname);
 
             // make sure the component class exists
@@ -76,7 +78,7 @@ public class CastUtil
             ComponentClass cclass = classes.get(ii);
 
             // get the components available for this class
-            ArrayList<Integer> choices = new ArrayList<Integer>();
+            ArrayList<Integer> choices = Lists.newArrayList();
             Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
             CollectionUtil.addAll(choices, iter);
 

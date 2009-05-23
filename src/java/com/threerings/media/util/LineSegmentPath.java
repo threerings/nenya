@@ -29,6 +29,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.StringUtil;
 
 import com.threerings.util.DirectionCodes;
@@ -237,7 +239,7 @@ public class LineSegmentPath
         if (ox != nx || oy != ny) {
             pable.setLocation(nx, ny);
             return true;
-        }        
+        }
 
         return false;
     }
@@ -340,7 +342,7 @@ public class LineSegmentPath
             addNode(p.x, p.y, dir);
             last = p;
         }
-    }        
+    }
 
     /**
      * Gets the next node in the path.
@@ -348,10 +350,10 @@ public class LineSegmentPath
     protected PathNode getNextNode ()
     {
         return _niter.next();
-    }        
+    }
 
     /** The nodes that make up the path. */
-    protected ArrayList<PathNode> _nodes = new ArrayList<PathNode>();
+    protected ArrayList<PathNode> _nodes = Lists.newArrayList();
 
     /** We use this when moving along this path. */
     protected Iterator<PathNode> _niter;
@@ -371,7 +373,7 @@ public class LineSegmentPath
     /** The path velocity in pixels per millisecond. */
     protected float _vel = DEFAULT_VELOCITY;
 
-    /** When moving, the pathable position including fractional pixels. */ 
+    /** When moving, the pathable position including fractional pixels. */
     protected float _movex, _movey;
 
     /** When moving, the distance to move on each axis per tick. */

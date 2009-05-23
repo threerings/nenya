@@ -35,8 +35,7 @@ public class PathSequence
     implements Path
 {
     /**
-     * Conveniently construct a path sequence with the two specified
-     * paths.
+     * Conveniently construct a path sequence with the two specified paths.
      */
     public PathSequence (Path first, Path second)
     {

@@ -22,7 +22,6 @@
 package com.threerings.cast.bundle.tools;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -40,6 +39,9 @@ import java.io.OutputStream;
 import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import com.samskivert.util.Tuple;
 
@@ -203,8 +205,8 @@ public class MetadataBundlerTask extends Task
         }
 
         // now create our mappings
-        Map<String, ActionSequence> actmap = new HashMap<String, ActionSequence>();
-        Map<String, TileSet> setmap = new HashMap<String, TileSet>();
+        Map<String, ActionSequence> actmap = Maps.newHashMap();
+        Map<String, TileSet> setmap = Maps.newHashMap();
 
         // create the action map
         for (int i = 0; i < setlist.size(); i++) {
@@ -239,7 +241,7 @@ public class MetadataBundlerTask extends Task
                             "add", Object.class.getName());
 
         ArrayList<?> setlist = parseList(digester, _classDef);
-        Map<String, ComponentClass> clmap = new HashMap<String, ComponentClass>();
+        Map<String, ComponentClass> clmap = Maps.newHashMap();
 
         // create the action map
         for (int i = 0; i < setlist.size(); i++) {
@@ -257,7 +259,7 @@ public class MetadataBundlerTask extends Task
             FileInputStream fin = new FileInputStream(path);
             BufferedInputStream bin = new BufferedInputStream(fin);
 
-            ArrayList<Object> setlist = new ArrayList<Object>();
+            ArrayList<Object> setlist = Lists.newArrayList();
             digester.push(setlist);
 
             // now fire up the digester to parse the stream

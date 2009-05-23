@@ -222,7 +222,7 @@ public class SkinMesh extends ModelMesh
         _weightGroups = weightGroups;
 
         // compile a list of all referenced bones
-        HashSet<Bone> bones = new HashSet<Bone>();
+        HashSet<Bone> bones = Sets.newHashSet();
         for (WeightGroup group : weightGroups) {
             Collections.addAll(bones, group.bones);
         }
@@ -238,7 +238,7 @@ public class SkinMesh extends ModelMesh
             return;
         }
         if (_osconfigs == null) {
-            _osconfigs = new ArrayList<SkinShaderConfig>(1);
+            _osconfigs = Lists.newArrayListWithCapacity(1);
         }
         SkinShaderConfig osconfig = (SkinShaderConfig)_sconfig.clone();
         osconfig.getState().uniforms = _sconfig.getState().uniforms;
@@ -299,7 +299,7 @@ public class SkinMesh extends ModelMesh
         mstore._useDisplayLists = _useDisplayLists;
         mstore._invRefTransform = _invRefTransform;
         mstore._bones = new Bone[_bones.length];
-        HashMap<Bone, Bone> bmap = new HashMap<Bone, Bone>();
+        HashMap<Bone, Bone> bmap = Maps.newHashMap();
         for (int ii = 0; ii < _bones.length; ii++) {
             bmap.put(_bones[ii], mstore._bones[ii] =
                 _bones[ii].rebind(properties.originalToCopy));

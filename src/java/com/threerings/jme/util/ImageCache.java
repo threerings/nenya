@@ -380,16 +380,13 @@ public class ImageCache
     protected ResourceManager _rsrcmgr;
 
     /** A cache of {@link Image} instances. */
-    protected HashMap<String,WeakReference<Image>> _imgcache =
-        new HashMap<String,WeakReference<Image>>();
+    protected HashMap<String,WeakReference<Image>> _imgcache = Maps.newHashMap();
 
     /** A cache of {@link BImage} instances. */
-    protected HashMap<String,WeakReference<BImage>> _buicache =
-        new HashMap<String,WeakReference<BImage>>();
+    protected HashMap<String,WeakReference<BImage>> _buicache = Maps.newHashMap();
 
     /** A cache of {@link BufferedImage} instances. */
-    protected HashMap<String,WeakReference<BufferedImage>> _bufcache =
-        new HashMap<String,WeakReference<BufferedImage>>();
+    protected HashMap<String,WeakReference<BufferedImage>> _bufcache = Maps.newHashMap();
 
     /** Used to create buffered images in a format compatible with OpenGL. */
     protected static ComponentColorModel GL_ALPHA_MODEL = new ComponentColorModel(

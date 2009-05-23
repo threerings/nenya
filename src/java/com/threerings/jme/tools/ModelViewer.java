@@ -738,8 +738,7 @@ public class ModelViewer extends JmeCanvasApp
                 }
                 return tstate;
             }
-            protected HashMap<String, TextureState> _tstates =
-                new HashMap<String, TextureState>();
+            protected HashMap<String, TextureState> _tstates = Maps.newHashMap();
         });
         _model.updateRenderState();
     }

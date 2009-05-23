@@ -27,6 +27,8 @@ import java.util.Comparator;
 
 import java.awt.Graphics2D;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.SortableArrayList;
 
 import com.threerings.media.sprite.Sprite;
@@ -663,7 +665,7 @@ public class DirtyItemList
     protected Comparator<DirtyItem> _rcomp = new RenderComparator();
 
     /** Unused dirty items. */
-    protected ArrayList<DirtyItem> _freelist = new ArrayList<DirtyItem>();
+    protected ArrayList<DirtyItem> _freelist = Lists.newArrayList();
 
     /** Whether to log debug info when comparing pairs of dirty items. */
     protected static final boolean DEBUG_COMPARE = false;

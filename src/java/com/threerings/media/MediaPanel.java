@@ -37,6 +37,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.MouseInputAdapter;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.event.AncestorAdapter;
 import com.samskivert.swing.event.CommandEvent;
@@ -367,7 +369,7 @@ public class MediaPanel extends JComponent
      */
     public void addObscurer (Obscurer obscurer) {
         if (_obscurerList == null) {
-            _obscurerList = new ArrayList<Obscurer>();
+            _obscurerList = Lists.newArrayList();
         }
         _obscurerList.add(obscurer);
     }
@@ -640,7 +642,7 @@ public class MediaPanel extends JComponent
          */
         protected Sprite getHit (MouseEvent me)
         {
-            ArrayList<Sprite> list = new ArrayList<Sprite>();
+            ArrayList<Sprite> list = Lists.newArrayList();
             getSpriteManager().getHitSprites(list, me.getX(), me.getY());
             for (int ii = 0, nn = list.size(); ii < nn; ii++) {
                 Object o = list.get(ii);

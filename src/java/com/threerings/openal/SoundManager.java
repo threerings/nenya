@@ -30,6 +30,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.samskivert.util.IntListUtil;
@@ -393,7 +394,7 @@ public class SoundManager
     protected Queue<ClipBuffer> _toLoad;
 
     /** The list of active streams. */
-    protected ArrayList<Stream> _streams = new ArrayList<Stream>();
+    protected ArrayList<Stream> _streams = Lists.newArrayList();
 
     /** The list of sources to be deleted. */
     protected int[] _finalizedSources;

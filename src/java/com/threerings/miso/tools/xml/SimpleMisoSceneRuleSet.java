@@ -28,6 +28,8 @@ import org.xml.sax.Attributes;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.xml.CallMethodSpecialRule;
 import com.samskivert.xml.SetFieldRule;
 import com.samskivert.xml.SetPropertyFieldsRule;
@@ -85,9 +87,9 @@ public class SimpleMisoSceneRuleSet implements NestableRuleSet
             public void parseAndSet (String bodyText, Object target)
                 throws Exception
             {
-                @SuppressWarnings("unchecked") ArrayList<ObjectInfo> ilist = 
+                @SuppressWarnings("unchecked") ArrayList<ObjectInfo> ilist =
                     (ArrayList<ObjectInfo>)target;
-                ArrayList<ObjectInfo> ulist = new ArrayList<ObjectInfo>();
+                ArrayList<ObjectInfo> ulist = Lists.newArrayList();
                 SimpleMisoSceneModel model = (SimpleMisoSceneModel)
                     digester.peek(1);
 

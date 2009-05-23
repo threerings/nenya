@@ -31,6 +31,8 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+import com.google.common.collect.Lists;
+
 import com.threerings.media.tile.tools.MapFileTileSetIDBroker;
 
 /**
@@ -92,8 +94,8 @@ public class TileSetBundlerTask extends Task
                 File fromDir = fs.getDir(getProject());
                 String[] srcFiles = ds.getIncludedFiles();
 
-                for (int f = 0; f < srcFiles.length; f++) {
-                    cfile = new File(fromDir, srcFiles[f]);
+                for (String srcFile : srcFiles) {
+                    cfile = new File(fromDir, srcFile);
 
                     // figure out the bundle file based on the definition
                     // file
@@ -158,5 +160,5 @@ public class TileSetBundlerTask extends Task
     protected File _mapfile;
 
     /** A list of filesets that contain tileset bundle definitions. */
-    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
+    protected ArrayList<FileSet> _filesets = Lists.newArrayList();
 }

@@ -28,6 +28,8 @@ import java.io.IOException;
 
 import java.nio.ByteBuffer;
 
+import com.google.common.collect.Lists;
+
 /**
  * An audio stream read from one or more files.
  */
@@ -93,7 +95,7 @@ public class FileStream extends Stream
     protected StreamDecoder _decoder;
 
     /** The queue of files to play after the current one. */
-    protected ArrayList<QueuedFile> _queue = new ArrayList<QueuedFile>();
+    protected ArrayList<QueuedFile> _queue = Lists.newArrayList();
 
     /** A file queued for play. */
     protected class QueuedFile

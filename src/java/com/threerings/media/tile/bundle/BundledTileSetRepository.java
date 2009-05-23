@@ -24,6 +24,8 @@ package com.threerings.media.tile.bundle;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.IntMap;
@@ -74,7 +76,7 @@ public class BundledTileSetRepository
     }
 
     /**
-     * Initializes our bundles, 
+     * Initializes our bundles,
      */
     protected void initBundles (ResourceManager rmgr, String name)
     {
@@ -91,12 +93,12 @@ public class BundledTileSetRepository
         }
 
         HashIntMap<TileSet> idmap = new HashIntMap<TileSet>();
-        HashMap<String, Integer> namemap = new HashMap<String, Integer>();
+        HashMap<String, Integer> namemap = Maps.newHashMap();
 
         // iterate over the resource bundles in the set, loading up the
         // tileset bundles in each resource bundle
-        for (int i = 0; i < rbundles.length; i++) {
-            addBundle(idmap, namemap, rbundles[i]);
+        for (ResourceBundle rbundle : rbundles) {
+            addBundle(idmap, namemap, rbundle);
         }
 
         // fill in our bundles array and wake up any waiters

@@ -28,6 +28,8 @@ import java.util.TreeSet;
 
 import java.awt.Point;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.HashIntMap;
 
 /**
@@ -270,7 +272,7 @@ public class AStarPathUtil
     protected static List<Point> getNodePath (Node n)
     {
         Node cur = n;
-        ArrayList<Point> path = new ArrayList<Point>();
+        ArrayList<Point> path = Lists.newArrayList();
 
         while (cur != null) {
             // add to the head of the list since we're traversing from
@@ -337,7 +339,7 @@ public class AStarPathUtil
 
             // construct the open and closed lists
             open = new TreeSet<Node>();
-            closed = new ArrayList<Node>();
+            closed = Lists.newArrayList();
         }
 
         /**

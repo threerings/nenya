@@ -42,6 +42,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RandomUtil;
@@ -759,7 +761,7 @@ public class JavaSoundPlayer extends SoundPlayer
      * The set of locked audio clips; this is separate from the LRU so that locking clips doesn't
      * booch up an otherwise normal caching agenda.
      */
-    protected HashMap<SoundKey,byte[][]> _lockedClips = new HashMap<SoundKey,byte[][]>();
+    protected HashMap<SoundKey,byte[][]> _lockedClips = Maps.newHashMap();
 
     /** Soundkey command constants. */
     protected static final byte PLAY = 0;

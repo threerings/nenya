@@ -53,8 +53,7 @@ public class AnimationDef
     public static class FrameDef
     {
         /** Transform for affected nodes. */
-        public ArrayList<TransformDef> transforms =
-            new ArrayList<TransformDef>();
+        public ArrayList<TransformDef> transforms = Lists.newArrayList();
 
         public void addTransform (TransformDef transform)
         {
@@ -122,14 +121,13 @@ public class AnimationDef
         {
             return new Model.Transform(
                 new Vector3f(translation[0], translation[1], translation[2]),
-                new Quaternion(rotation[0], rotation[1], rotation[2],
-                    rotation[3]),
+                new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3]),
                 new Vector3f(scale[0], scale[1], scale[2]));
         }
     }
 
     /** The individual frames of the animation. */
-    public ArrayList<FrameDef> frames = new ArrayList<FrameDef>();
+    public ArrayList<FrameDef> frames = Lists.newArrayList();
 
     public void addFrame (FrameDef frame)
     {
@@ -185,8 +183,8 @@ public class AnimationDef
         Properties props, HashMap<String, Spatial> nodes, HashMap<String, TransformNode> tnodes)
     {
         // find all affected nodes
-        HashSet<Spatial> staticTargets = new HashSet<Spatial>(),
-            transformTargets = new HashSet<Spatial>();
+        HashSet<Spatial> staticTargets = Sets.newHashSet(),
+            transformTargets = Sets.newHashSet();
         for (int ii = 0, nn = frames.size(); ii < nn; ii++) {
             frames.get(ii).addTransformTargets(nodes, tnodes, staticTargets, transformTargets);
         }

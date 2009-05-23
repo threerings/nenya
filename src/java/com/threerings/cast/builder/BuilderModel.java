@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.CollectionUtil;
 
 import com.threerings.cast.ComponentClass;
@@ -84,7 +87,7 @@ public class BuilderModel
     {
         List<Integer> list = _components.get(cclass);
         if (list == null) {
-            list = new ArrayList<Integer>();
+            list = Lists.newArrayList();
         }
         return list;
     }
@@ -129,7 +132,7 @@ public class BuilderModel
                 Integer cid = iter.next();
                 ArrayList<Integer> clist = _components.get(cclass);
                 if (clist == null) {
-                    _components.put(cclass, clist = new ArrayList<Integer>());
+                    _components.put(cclass, clist = Lists.newArrayList());
                 }
 
                 clist.add(cid);
@@ -138,14 +141,14 @@ public class BuilderModel
     }
 
     /** The currently selected character components. */
-    protected HashMap<ComponentClass, Integer> _selected = new HashMap<ComponentClass, Integer>();
+    protected HashMap<ComponentClass, Integer> _selected = Maps.newHashMap();
 
     /** The hashtable of available component ids for each class. */
-    protected HashMap<ComponentClass, ArrayList<Integer>> _components = new HashMap<ComponentClass, ArrayList<Integer>>();
+    protected HashMap<ComponentClass, ArrayList<Integer>> _components = Maps.newHashMap();
 
     /** The list of all available component classes. */
-    protected ArrayList<ComponentClass> _classes = new ArrayList<ComponentClass>();
+    protected ArrayList<ComponentClass> _classes = Lists.newArrayList();
 
     /** The model listeners. */
-    protected ArrayList<BuilderModelListener> _listeners = new ArrayList<BuilderModelListener>();
+    protected ArrayList<BuilderModelListener> _listeners = Lists.newArrayList();
 }

@@ -32,6 +32,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.io.PersistenceException;
 import com.samskivert.util.QuickSort;
 
@@ -60,14 +62,14 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
             _nextTileSetID = readInt(bin);
             _storedTileSetID = _nextTileSetID;
             // read in our mappings
-            _map = new HashMap<String, Integer>();
+            _map = Maps.newHashMap();
             readMapFile(bin, _map);
 
             bin.close();
 
         } catch (FileNotFoundException fnfe) {
             // create a blank map if our map file doesn't exist
-            _map = new HashMap<String, Integer>();
+            _map = Maps.newHashMap();
 
         } catch (Exception e) {
             // other errors are more fatal
@@ -170,8 +172,8 @@ public class MapFileTileSetIDBroker implements TileSetIDBroker
             lines[ii] = key + SEP_STR + value;
         }
         QuickSort.sort(lines);
-        for (int ii = 0; ii < lines.length; ii++) {
-            bout.write(lines[ii], 0, lines[ii].length());
+        for (String line : lines) {
+            bout.write(line, 0, line.length());
             bout.newLine();
         }
         bout.flush();

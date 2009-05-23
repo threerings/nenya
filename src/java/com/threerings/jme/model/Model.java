@@ -365,7 +365,7 @@ public class Model extends ModelNode
         protected Model _toCopy;
 
         /** The set of added properties. */
-        protected HashSet<String> _properties = new HashSet<String>();
+        protected HashSet<String> _properties = Sets.newHashSet();
     }
 
     /**
@@ -443,7 +443,7 @@ public class Model extends ModelNode
     public void addAnimation (String name, Animation anim)
     {
         if (_anims == null) {
-            _anims = new HashMap<String, Animation>();
+            _anims = Maps.newHashMap();
         }
         _anims.put(name, anim);
 
@@ -727,7 +727,7 @@ public class Model extends ModelNode
         if (animNames != null) {
             Savable[] animValues = capsule.readSavableArray(
                 "animValues", null);
-            _anims = new HashMap<String, Animation>();
+            _anims = Maps.newHashMap();
             for (int ii = 0; ii < animNames.length; ii++) {
                 _anims.put(animNames[ii], (Animation)animValues[ii]);
             }
@@ -839,7 +839,7 @@ public class Model extends ModelNode
     {
         // collect the instance's animation and controller targets and lock
         // recursively
-        HashSet<Spatial> targets = new HashSet<Spatial>();
+        HashSet<Spatial> targets = Sets.newHashSet();
         for (String aname : getAnimationNames()) {
             Collections.addAll(targets, getAnimation(aname).transformTargets);
         }
@@ -872,7 +872,7 @@ public class Model extends ModelNode
         }
         mstore._prototype = this;
         if (_anims != null) {
-            mstore._anims = new HashMap<String, Animation>();
+            mstore._anims = Maps.newHashMap();
         }
         mstore._pnodes = Maps.newHashMap(properties.originalToCopy);
         mstore._animMode = _animMode;

@@ -161,7 +161,7 @@ public class ModelMesh extends TriMesh
     public void addOverlay (RenderState[] overlay)
     {
         if (_overlays == null) {
-            _overlays = new ArrayList<RenderState[]>(1);
+            _overlays = Lists.newArrayListWithCapacity(1);
         }
         _overlays.add(overlay);
     }
@@ -461,7 +461,7 @@ public class ModelMesh extends TriMesh
     @Override // documentation inherited
     protected void setupBatchList ()
     {
-        batchList = new ArrayList<GeomBatch>(1);
+        batchList = Lists.newArrayListWithCapacity(1);
         TriangleBatch batch = createModelBatch();
         batch.setParentGeom(this);
         batchList.add(batch);

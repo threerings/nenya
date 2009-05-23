@@ -31,6 +31,8 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.SwingUtilities;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.RunAnywhere;
 
 import com.threerings.media.image.ImageUtil;
@@ -462,5 +464,5 @@ public class VirtualMediaPanel extends MediaPanel
     protected Rectangle _abounds = new Rectangle();
 
     /** A list of entities to be informed when the view scrolls. */
-    protected ArrayList<ViewTracker> _trackers = new ArrayList<ViewTracker>();
+    protected ArrayList<ViewTracker> _trackers = Lists.newArrayList();
 }

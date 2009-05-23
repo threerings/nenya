@@ -29,6 +29,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
+import com.google.common.collect.Lists;
+
 /**
  * Represents an OpenAL source object.
  */
@@ -420,5 +422,5 @@ public class Source
     protected float _coneOuterGain;
 
     /** The source's queue of buffers (storing them keeps them from being garbage-collected). */
-    protected ArrayList<Buffer> _queue = new ArrayList<Buffer>();
+    protected ArrayList<Buffer> _queue = Lists.newArrayList();
 }

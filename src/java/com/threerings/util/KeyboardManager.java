@@ -36,6 +36,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.Interval;
 import com.samskivert.util.ObserverList;
@@ -69,7 +71,7 @@ public class KeyboardManager
     public interface KeyObserver
     {
         /**
-         * Called whenever a key event occurs for a particular key. 
+         * Called whenever a key event occurs for a particular key.
          */
         public void handleKeyEvent (int id, int keyCode, long timestamp);
     }
@@ -180,7 +182,7 @@ public class KeyboardManager
                 if (_window != null) {
                     _window.addWindowFocusListener(this);
                 }
-            }            
+            }
 
             // assume the keyboard focus since we were just enabled
             _focus = true;
@@ -275,7 +277,7 @@ public class KeyboardManager
 
         case KeyEvent.KEY_TYPED:
             return keyTyped(e);
-            
+
         default:
             return false;
         }
@@ -311,7 +313,7 @@ public class KeyboardManager
 
         return hasCommand;
     }
-    
+
     /**
      * Called when Swing notifies us that a key has been typed while the
      * keyboard manager is active.
@@ -330,18 +332,18 @@ public class KeyboardManager
             // keyboard repeating turned on. Oh well.
             if (_shouldDisableNativeRepeat) {
                 _shouldDisableNativeRepeat = false;
-            
+
                 if (Keyboard.isAvailable()) {
                     Keyboard.setKeyRepeat(!_shouldDisableNativeRepeat);
                 }
             }
-            
+
             KeyInfo info = _chars.get(keyChar);
             if (info == null) {
                 info = new KeyInfo(keyChar);
                 _chars.put(keyChar, info);
             }
-            
+
             // remember the last time this key was pressed
             info.setPressTime(RunAnywhere.getWhen(e));
         }
@@ -351,7 +353,7 @@ public class KeyboardManager
 
         return hasCommand;
     }
-    
+
     /**
      * Called when Swing notifies us that a key has been released while
      * the keyboard manager is active.
@@ -453,7 +455,7 @@ public class KeyboardManager
             _pressDelay = (rate == 0) ? 0 : (1000L / rate);
             _repeatDelay = _xlate.getRepeatDelay(_keyCode);
         }
-        
+
         /**
          * Constructs a key info object for the given character.
          */
@@ -467,7 +469,7 @@ public class KeyboardManager
             _pressDelay = (rate == 0) ? 0 : (1000L / rate);
             _repeatDelay = _xlate.getRepeatDelay(_keyChar);
         }
-        
+
         /**
          * Returns true if we're based off a character & key typed events rather than a keycode
          * and key pressed/released events.
@@ -494,7 +496,7 @@ public class KeyboardManager
                     "repeatDelay", _repeatDelay,
                     "scheduled", _scheduled);
             }
-            
+
             if (_lastPress == 0 && _pressCommand != null) {
                 // post the initial key press command
                 postPress(time);
@@ -527,7 +529,7 @@ public class KeyboardManager
         {
             release(time);
             _lastRelease = time;
-            
+
             if (_debugTyping.getValue()) {
                 log.info("setReleaseTime",
                     "time", time,
@@ -585,7 +587,7 @@ public class KeyboardManager
                     "repeatDelay", _repeatDelay,
                     "scheduled", _scheduled);
             }
-            
+
             // bail if we're not currently pressed
             if (_lastPress == 0) {
                 return;
@@ -616,7 +618,7 @@ public class KeyboardManager
             long now = System.currentTimeMillis();
             long deltaPress = now - _lastPress;
             long deltaRelease = now - _lastRelease;
-            
+
             if (_debugTyping.getValue()) {
                 log.info("expired",
                     "time", now,
@@ -636,7 +638,7 @@ public class KeyboardManager
                 log.info("Interval",
                     "key", _keyText, "deltaPress", deltaPress, "deltaRelease", deltaRelease);
             }
-            
+
             // cease repeating if we're certain the key is now up, or repeat the key
             // command if we're certain the key is still down
             if (_lastRelease != _lastPress) {
@@ -674,7 +676,7 @@ public class KeyboardManager
                     "repeatDelay", _repeatDelay,
                     "scheduled", _scheduled);
             }
-            
+
             if (!isCharacterBased()) {
                 notifyObservers(KeyEvent.KEY_PRESSED, _keyCode, timestamp);
             } else {
@@ -700,7 +702,7 @@ public class KeyboardManager
                     "repeatDelay", _repeatDelay,
                     "scheduled", _scheduled);
             }
-            
+
             notifyObservers(KeyEvent.KEY_RELEASED, _keyCode, timestamp);
             Controller.postAction(_target, _releaseCommand);
         }
@@ -731,7 +733,7 @@ public class KeyboardManager
 
         /** The key code associated with this key info object, if any. */
         protected int _keyCode = KeyEvent.VK_UNDEFINED;
-        
+
         /** The character associated with this key info object, if any. */
         protected char _keyChar;
 
@@ -785,9 +787,9 @@ public class KeyboardManager
 
     /** A hashtable mapping key codes to {@link KeyInfo} objects. */
     protected HashIntMap<KeyInfo> _keys = new HashIntMap<KeyInfo>();
-    
+
     /** A hashtable mapping characters to {@link KeyInfo} objects. */
-    protected HashMap<Character,KeyInfo> _chars = new HashMap<Character,KeyInfo>();
+    protected HashMap<Character,KeyInfo> _chars = Maps.newHashMap();
 
     /** Whether the keyboard manager currently has the keyboard focus. */
     protected boolean _focus;
@@ -814,13 +816,13 @@ public class KeyboardManager
 
     /** Whether native key auto-repeating was enabled when the keyboard manager was last enabled. */
     protected boolean _nativeRepeat;
-    
+
     /** Whether we want to disable native key auto-repeating. If we're dealing with wacky keys that
      * send only key typed events, we might need to fall back to letting that happen so things work
      * right.
      */
     protected boolean _shouldDisableNativeRepeat = true;
-    
+
     /** A debug hook that toggles excessive logging to help debug keyTyped behavior. */
     protected static RuntimeAdjust.BooleanAdjust _debugTyping = new RuntimeAdjust.BooleanAdjust(
         "Toggles key typed debugging", "nenya.util.keyboard",

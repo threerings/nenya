@@ -40,6 +40,8 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.text.JTextComponent;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.HashIntMap;
 
 /**
@@ -266,7 +268,7 @@ public class KeyDispatcher
         new LinkedList<JTextComponent>();
 
     /** Global key listeners. */
-    protected ArrayList<KeyListener> _listeners = new ArrayList<KeyListener>();
+    protected ArrayList<KeyListener> _listeners = Lists.newArrayList();
 
     /** Keys that are currently held down. */
     protected HashIntMap<KeyEvent> _downKeys = new HashIntMap<KeyEvent>();

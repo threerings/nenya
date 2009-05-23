@@ -74,11 +74,11 @@ public abstract class ShaderConfig
         // reconfigure the shader state, generating the derived definitions only if the
         // required configuration isn't in the cache
         String vert = getVertexShader(), frag = getFragmentShader();
-        ArrayList<String> defs = new ArrayList<String>();
+        ArrayList<String> defs = Lists.newArrayList();
         getDefinitions(defs);
         String[] darray = defs.toArray(new String[defs.size()]), ddarray = null;
         if (!_scache.isLoaded(vert, frag, darray)) {
-            ArrayList<String> ddefs = new ArrayList<String>();
+            ArrayList<String> ddefs = Lists.newArrayList();
             getDerivedDefinitions(ddefs);
             ddarray = ddefs.toArray(new String[ddefs.size()]);
         }

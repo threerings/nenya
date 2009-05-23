@@ -56,6 +56,8 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.QuickSort;
 
 import com.samskivert.swing.HGroupLayout;
@@ -250,7 +252,7 @@ public class RecolorImage extends JPanel
         Graphics gfx = img.getGraphics();
         int y = 0;
 
-        ArrayList<Integer> sortedKeys = new ArrayList<Integer>();
+        ArrayList<Integer> sortedKeys = Lists.newArrayList();
         sortedKeys.addAll(colClass.colors.keySet());
 
         QuickSort.sort(sortedKeys, new Comparator<Integer>() {
@@ -340,7 +342,7 @@ public class RecolorImage extends JPanel
 
             _classList.removeAllItems();
             Iterator<ColorPository.ClassRecord> iter = _colRepo.enumerateClasses();
-            ArrayList<String> names = new ArrayList<String>();
+            ArrayList<String> names = Lists.newArrayList();
             while (iter.hasNext()) {
                 String str = iter.next().name;
                 names.add(str);

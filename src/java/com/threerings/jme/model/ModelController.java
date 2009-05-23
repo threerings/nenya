@@ -53,7 +53,7 @@ public abstract class ModelController extends Controller
         if (anims.length == 0) {
             return;
         }
-        _animations = new HashSet<String>();
+        _animations = Sets.newHashSet();
         Collections.addAll(_animations, anims);
     }
     
@@ -120,7 +120,7 @@ public abstract class ModelController extends Controller
         _target = (Spatial)capsule.readSavable("target", null);
         String[] anims = capsule.readStringArray("animations", null);
         if (anims != null) {
-            _animations = new HashSet<String>();
+            _animations = Sets.newHashSet();
             Collections.addAll(_animations, anims);
         } else {
             _animations = null;

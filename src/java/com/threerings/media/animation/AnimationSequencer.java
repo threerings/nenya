@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.StringUtil;
 
 import static com.threerings.media.Log.log;
@@ -284,10 +286,10 @@ public class AnimationSequencer extends Animation
     protected AnimationManager _animmgr;
 
     /** Animations that have not been fired. */
-    protected ArrayList<AnimRecord> _queued = new ArrayList<AnimRecord>();
+    protected ArrayList<AnimRecord> _queued = Lists.newArrayList();
 
     /** Animations that are currently running. */
-    protected ArrayList<AnimRecord> _running = new ArrayList<AnimRecord>();
+    protected ArrayList<AnimRecord> _running = Lists.newArrayList();
 
     /** The timestamp at which we fired the last animation. */
     protected long _lastStamp;

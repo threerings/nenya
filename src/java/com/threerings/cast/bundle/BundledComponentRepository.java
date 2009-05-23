@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.samskivert.util.IntIntMap;
@@ -256,7 +257,7 @@ public class BundledComponentRepository
         // we have a hash of lists for mapping components by class/name
         ArrayList<CharacterComponent> comps = _classComps.get(cclass);
         if (comps == null) {
-            comps = new ArrayList<CharacterComponent>();
+            comps = Lists.newArrayList();
             _classComps.put(cclass, comps);
         }
         if (!comps.contains(component)) {

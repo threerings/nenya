@@ -32,6 +32,8 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+import com.google.common.collect.Lists;
+
 /**
  * Creates a file that lists all the resources in a fileset out to an index file.
  */
@@ -44,19 +46,19 @@ public class ResourceIndexerTask extends Task
     {
         _filesets.add(set);
     }
-    
+
     public void setIndexFile (String file)
     {
         _indexFile = file;
     }
-    
+
     @Override
     public void execute () throws BuildException
     {
         PrintWriter fout = null;
         try {
             fout = new PrintWriter(new FileWriter(_indexFile));
-            
+
             for (FileSet fs : _filesets) {
                 DirectoryScanner ds = fs.getDirectoryScanner(getProject());
                 String[] srcFiles = ds.getIncludedFiles();
@@ -64,7 +66,7 @@ public class ResourceIndexerTask extends Task
                     fout.println(filename);
                 }
             }
-            
+
         } catch (IOException ioe) {
             throw new BuildException(ioe);
         } finally {
@@ -75,8 +77,8 @@ public class ResourceIndexerTask extends Task
     }
 
     /** A list of filesets that contain files to include in the index. */
-    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
-    
+    protected ArrayList<FileSet> _filesets = Lists.newArrayList();
+
     /** The name of the file to which we should write the index. */
     protected String _indexFile;
 }

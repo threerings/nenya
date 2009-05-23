@@ -58,7 +58,7 @@ public abstract class TextureController extends ModelController
     protected void initTextures ()
     {
         // find and clone all textures under the target
-        final HashMap<Texture, Texture> clones = new HashMap<Texture, Texture>();
+        final HashMap<Texture, Texture> clones = Maps.newHashMap();
         new SpatialVisitor<ModelMesh>(ModelMesh.class) {
             protected void visit (ModelMesh mesh) {
                 TextureState otstate = (TextureState)mesh.getRenderState(RenderState.RS_TEXTURE);

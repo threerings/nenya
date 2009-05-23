@@ -156,7 +156,7 @@ public class ModelDef
         public HashArrayList<Vertex> vertices = new HashArrayList<Vertex>();
 
         /** The triangle indices. */
-        public ArrayList<Integer> indices = new ArrayList<Integer>();
+        public ArrayList<Integer> indices = Lists.newArrayList();
 
         /** Whether or not any of the vertices have texture coordinates. */
         public boolean tcoords;
@@ -265,7 +265,7 @@ public class ModelDef
                 Triangle triangle = new Triangle(tverts);
                 for (Vertex tvert : tverts) {
                     if (tvert.triangles == null) {
-                        tvert.triangles = new ArrayList<Triangle>();
+                        tvert.triangles = Lists.newArrayList();
                     }
                     tvert.triangles.add(triangle);
                 }
@@ -410,10 +410,8 @@ public class ModelDef
             }
 
             // create and set the final weight groups
-            SkinMesh.WeightGroup[] wgroups =
-                new SkinMesh.WeightGroup[_groups.size()];
-            HashMap<String, SkinMesh.Bone> bones =
-                new HashMap<String, SkinMesh.Bone>();
+            SkinMesh.WeightGroup[] wgroups = new SkinMesh.WeightGroup[_groups.size()];
+            HashMap<String, SkinMesh.Bone> bones = Maps.newHashMap();
             int ii = 0;
             int mweights = 0, tweights = 0;
             for (Map.Entry<Set<String>, WeightGroupDef> entry :
@@ -444,7 +442,7 @@ public class ModelDef
         protected void configureMesh (Properties props)
         {
             // divide the vertices up by weight groups
-            _groups = new HashMap<Set<String>, WeightGroupDef>();
+            _groups = Maps.newHashMap();
             for (int ii = 0, nn = vertices.size(); ii < nn; ii++) {
                 SkinVertex svertex = (SkinVertex)vertices.get(ii);
                 Set<String> bones = svertex.boneWeights.keySet();
@@ -597,8 +595,7 @@ public class ModelDef
     public static class SkinVertex extends Vertex
     {
         /** The bones influencing the vertex, mapped by name. */
-        public HashMap<String, BoneWeight> boneWeights =
-            new HashMap<String, BoneWeight>();
+        public HashMap<String, BoneWeight> boneWeights = Maps.newHashMap();
 
         public void addBoneWeight (BoneWeight weight)
         {
@@ -616,7 +613,7 @@ public class ModelDef
         /** Finds the bone nodes influencing this vertex. */
         public HashSet<ModelNode> getBones (HashMap<String, Spatial> nodes)
         {
-            HashSet<ModelNode> bones = new HashSet<ModelNode>();
+            HashSet<ModelNode> bones = Sets.newHashSet();
             for (String bone : boneWeights.keySet()) {
                 Spatial node = nodes.get(bone);
                 if (node instanceof ModelNode) {
@@ -651,10 +648,10 @@ public class ModelDef
     public static class WeightGroupDef
     {
         /** The indices of the affected vertex. */
-        public ArrayList<Integer> indices = new ArrayList<Integer>();
+        public ArrayList<Integer> indices = Lists.newArrayList();
 
         /** The interleaved vertex weights. */
-        public ArrayList<Float> weights = new ArrayList<Float>();
+        public ArrayList<Float> weights = Lists.newArrayList();
     }
 
     /** Contains the transform of a node for preprocessing. */
@@ -754,7 +751,7 @@ public class ModelDef
     }
 
     /** The meshes and bones comprising the model. */
-    public ArrayList<SpatialDef> spatials = new ArrayList<SpatialDef>();
+    public ArrayList<SpatialDef> spatials = Lists.newArrayList();
 
     public void addSpatial (SpatialDef spatial)
     {
@@ -775,7 +772,7 @@ public class ModelDef
 
         // resolve the parents and collect the names of the bones
         Node root = new Node("root");
-        HashSet<String> bones = new HashSet<String>();
+        HashSet<String> bones = Sets.newHashSet();
         for (TransformNode node : nodes.values()) {
             if (node.spatial.parent == null) {
                 root.attachChild(node);
@@ -811,7 +808,7 @@ public class ModelDef
         root.updateGeometricState(0f, true);
         for (TransformNode node : nodes.values()) {
             node.baseLocalTransform = new Matrix4f(node.localTransform);
-            node.relativeTransforms = new ArrayList<Tuple<TransformNode, Matrix4f>>();
+            node.relativeTransforms = Lists.newArrayList();
             for (TransformNode onode : nodes.values()) {
                 if (node == onode || !node.canMerge(props, onode)) {
                     continue;
@@ -858,9 +855,8 @@ public class ModelDef
             nodes.put(spatial.getName(), spatial);
         }
 
-        // then go through again, resolving any name references and attaching
-        // root children
-        HashSet<Spatial> referenced = new HashSet<Spatial>();
+        // then go through again, resolving any name references and attaching root children
+        HashSet<Spatial> referenced = Sets.newHashSet();
         for (int ii = 0, nn = spatials.size(); ii < nn; ii++) {
             SpatialDef sdef = spatials.get(ii);
             sdef.resolveReferences(nodes, referenced);
@@ -1036,6 +1032,6 @@ public class ModelDef
         }
 
         /** Maps elements to their indices in the list. */
-        protected HashMap<Object, Integer> _indices = new HashMap<Object, Integer>();
+        protected HashMap<Object, Integer> _indices = Maps.newHashMap();
     }
 }

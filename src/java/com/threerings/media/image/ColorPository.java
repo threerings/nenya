@@ -34,6 +34,8 @@ import java.text.ParseException;
 
 import java.awt.Color;
 
+import com.google.common.collect.Lists;
+
 import com.samskivert.util.HashIntMap;
 import com.samskivert.util.RandomUtil;
 import com.samskivert.util.StringUtil;
@@ -133,7 +135,7 @@ public class ColorPository implements Serializable
         {
             // figure out our starter ids if we haven't already
             if (_starters == null) {
-                ArrayList<ColorRecord> list = new ArrayList<ColorRecord>();
+                ArrayList<ColorRecord> list = Lists.newArrayList();
                 for (ColorRecord color : colors.values()) {
                     if (color.starter) {
                         list.add(color);
@@ -144,8 +146,8 @@ public class ColorPository implements Serializable
 
             // sanity check
             if (_starters.length < 1) {
-                log.warning("Requested random starting color from " +
-                            "colorless component class " + this + "].");
+                log.warning("Requested random starting color from colorless component class",
+                    "class", this);
                 return null;
             }
 

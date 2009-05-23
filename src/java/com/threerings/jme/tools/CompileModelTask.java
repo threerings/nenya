@@ -81,5 +81,5 @@ public class CompileModelTask extends Task
     protected File _dest;
 
     /** A list of filesets that contain XML models. */
-    protected ArrayList<FileSet> _filesets = new ArrayList<FileSet>();
+    protected ArrayList<FileSet> _filesets = Lists.newArrayList();
 }

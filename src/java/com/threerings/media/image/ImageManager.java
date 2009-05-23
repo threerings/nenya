@@ -36,7 +36,9 @@ import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
@@ -477,7 +479,7 @@ public class ImageManager
             }
 
             if (_colorized == null) {
-                _colorized = new ArrayList<Tuple<Colorization[], BufferedImage>>();
+                _colorized = Lists.newArrayList();
             }
 
             // we search linearly through our list of colorized copies because it is not likely to
@@ -540,7 +542,7 @@ public class ImageManager
     protected LRUHashMap<ImageKey, CacheRecord> _ccache;
 
     /** The set of all keys we've ever seen. */
-    protected HashSet<ImageKey> _keySet = new HashSet<ImageKey>();
+    protected HashSet<ImageKey> _keySet = Sets.newHashSet();
 
     /** Throttle our cache status logging to once every 300 seconds. */
     protected Throttle _cacheStatThrottle = new Throttle(1, 300000L);

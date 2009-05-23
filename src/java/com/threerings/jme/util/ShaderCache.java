@@ -218,7 +218,7 @@ public class ShaderCache
         public String frag;
 
         /** The set of preprocessor definitions. */
-        public HashSet<String> defs = new HashSet<String>();
+        public HashSet<String> defs = Sets.newHashSet();
 
         public ShaderKey (String vert, String frag, String[] defs)
         {
@@ -253,8 +253,8 @@ public class ShaderCache
     protected ResourceManager _rsrcmgr;
 
     /** Maps shader names to source strings. */
-    protected HashMap<String, String> _sources = new HashMap<String, String>();
+    protected HashMap<String, String> _sources = Maps.newHashMap();
 
     /** Maps shader keys to linked program ids. */
-    protected HashMap<ShaderKey, Integer> _programIds = new HashMap<ShaderKey, Integer>();
+    protected HashMap<ShaderKey, Integer> _programIds = Maps.newHashMap();
 }
