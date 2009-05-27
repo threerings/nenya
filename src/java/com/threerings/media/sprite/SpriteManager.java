@@ -28,7 +28,8 @@ import java.util.List;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 
-import com.samskivert.util.Predicate;
+import com.google.common.base.Predicate;
+
 import com.samskivert.util.SortableArrayList;
 
 import com.threerings.media.AbstractMedia;
@@ -148,7 +149,7 @@ public class SpriteManager extends AbstractMediaManager
         int idxoff = 0;
         for (int ii = 0, ll = _sprites.size(); ii < ll; ii++) {
             Sprite sprite = _sprites.get(ii-idxoff);
-            if (pred.isMatch(sprite)) {
+            if (pred.apply(sprite)) {
                 _sprites.remove(sprite);
                 sprite.invalidate();
                 sprite.shutdown();
