@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -226,12 +227,19 @@ public class BundledComponentRepository
     // documentation inherited
     public Iterator<Integer> enumerateComponentIds (final ComponentClass compClass)
     {
-        return Iterators.filter(_components.keySet().iterator(), new Predicate<Integer>() {
-            public boolean apply (Integer input) {
-                CharacterComponent comp = _components.get(input);
-                return comp.componentClass.equals(compClass);
-            }
-        });
+        Predicate<Map.Entry<Integer,CharacterComponent>> pred =
+            new Predicate<Map.Entry<Integer,CharacterComponent>>() {
+                public boolean apply (Map.Entry<Integer,CharacterComponent> entry) {
+                    return entry.getValue().componentClass.equals(compClass);
+                }
+            };
+        Function<Map.Entry<Integer,CharacterComponent>,Integer> func =
+            new Function<Map.Entry<Integer,CharacterComponent>,Integer>() {
+                public Integer apply (Map.Entry<Integer,CharacterComponent> entry) {
+                    return entry.getKey();
+                }
+            };
+        return Iterators.transform(Iterators.filter(_components.entrySet().iterator(), pred), func);
     }
 
     /**
