@@ -32,13 +32,14 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.samskivert.util.IntIntMap;
 import com.samskivert.util.IntMap;
 import com.samskivert.util.IntMaps;
-import com.samskivert.util.Predicate;
 import com.samskivert.util.Tuple;
 
 import com.threerings.util.DirectionCodes;
@@ -225,13 +226,13 @@ public class BundledComponentRepository
     // documentation inherited
     public Iterator<Integer> enumerateComponentIds (final ComponentClass compClass)
     {
-        return new Predicate<Integer>() {
+        return Iterators.filter(_components.keySet().iterator(), new Predicate<Integer>() {
             @Override
-            public boolean isMatch (Integer input) {
+            public boolean apply (Integer input) {
                 CharacterComponent comp = _components.get(input);
                 return comp.componentClass.equals(compClass);
             }
-        }.filter(_components.keySet().iterator());
+        });
     }
 
     /**
