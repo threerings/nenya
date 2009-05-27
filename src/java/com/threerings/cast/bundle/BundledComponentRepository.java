@@ -227,7 +227,6 @@ public class BundledComponentRepository
     public Iterator<Integer> enumerateComponentIds (final ComponentClass compClass)
     {
         return Iterators.filter(_components.keySet().iterator(), new Predicate<Integer>() {
-            @Override
             public boolean apply (Integer input) {
                 CharacterComponent comp = _components.get(input);
                 return comp.componentClass.equals(compClass);
