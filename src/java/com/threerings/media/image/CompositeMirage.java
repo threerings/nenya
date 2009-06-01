@@ -26,14 +26,9 @@ import java.awt.image.BufferedImage;
 
 public class CompositeMirage implements Mirage
 {
-    public CompositeMirage (Mirage[] mirages)
+    public CompositeMirage (Mirage... mirages)
     {
         _mirages = mirages;
-    }
-
-    public CompositeMirage (Mirage mirage1, Mirage mirage2)
-    {
-        _mirages = new Mirage[]{mirage1, mirage2};
     }
 
     // documentation inherited from interface Mirage
