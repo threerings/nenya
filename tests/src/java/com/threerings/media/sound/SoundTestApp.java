@@ -42,10 +42,10 @@ public class SoundTestApp
 
     public void run ()
     {
-        for (int ii = 0; ii < _keys.length; ii++) {
-            System.out.println("Playing " + _keys[ii] + ".");
+        for (String _key : _keys) {
+            System.out.println("Playing " + _key + ".");
             _soundmgr.play(JavaSoundPlayer.DEFAULT,
-                           "com/threerings/media/sound/", _keys[ii]);
+                           "com/threerings/media/sound/", _key);
         }
         _soundmgr.shutdown();
 

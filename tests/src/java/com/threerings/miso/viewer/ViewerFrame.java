@@ -76,7 +76,7 @@ public class ViewerFrame extends ManagedJFrame
         // if we had an old panel, remove it
         if (_panel != null) {
             getContentPane().remove(_panel);
-        }    
+        }
 
         // now add the new one
         _panel = panel;
