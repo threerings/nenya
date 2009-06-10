@@ -74,6 +74,16 @@ public class SoundManager
     }
 
     /**
+     * Shuts down the sound manager.
+     */
+    public void shutdown ()
+    {
+        if (isInitialized()) {
+            AL.destroy();
+        }
+    }
+
+    /**
      * Returns true if we were able to initialize the sound system.
      */
     public boolean isInitialized ()
