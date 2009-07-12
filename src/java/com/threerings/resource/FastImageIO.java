@@ -41,7 +41,7 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.WritableRaster;
 
-import org.apache.commons.io.IOUtils;
+import com.samskivert.io.StreamUtil;
 
 /**
  * Provides routines for writing and reading uncompressed 8-bit color
@@ -134,7 +134,7 @@ public class FastImageIO
     public static BufferedImage read (InputStream in)
         throws IOException
     {
-        return read(ByteBuffer.wrap(IOUtils.toByteArray(in)));
+        return read(ByteBuffer.wrap(StreamUtil.toByteArray(in)));
     }
 
     /**

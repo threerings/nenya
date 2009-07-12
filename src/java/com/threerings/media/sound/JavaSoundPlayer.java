@@ -40,21 +40,18 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import org.apache.commons.io.IOUtils;
-
 import com.google.common.collect.Maps;
 
+import com.samskivert.io.StreamUtil;
+import com.samskivert.swing.RuntimeAdjust;
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.Queue;
 import com.samskivert.util.RandomUtil;
 import com.samskivert.util.RunQueue;
 import com.samskivert.util.StringUtil;
 
-import com.samskivert.swing.RuntimeAdjust;
-
-import com.threerings.resource.ResourceManager;
-
 import com.threerings.media.MediaPrefs;
+import com.threerings.resource.ResourceManager;
 
 import static com.threerings.media.Log.log;
 
@@ -510,7 +507,7 @@ public class JavaSoundPlayer extends SoundPlayer
                 InputStream stream = getTestClip(key);
                 if (stream != null) {
                     data = new byte[1][];
-                    data[0] = IOUtils.toByteArray(stream);
+                    data[0] = StreamUtil.toByteArray(stream);
 
                 } else {
                     data = _loader.load(key.pkgPath, key.key);

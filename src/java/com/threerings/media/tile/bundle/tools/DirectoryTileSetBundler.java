@@ -31,7 +31,7 @@ import java.io.ObjectOutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.IOUtils;
+import com.samskivert.io.StreamUtil;
 
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
@@ -137,7 +137,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
                         outFile.getParentFile().mkdirs();
                         FileOutputStream fout = new FileOutputStream(outFile);
                         FileInputStream imgin = new FileInputStream(ifile);
-                        IOUtils.copy(imgin, fout);
+                        StreamUtil.copy(imgin, fout);
                     } catch (Exception e) {
                         String msg = "Failure bundling image " + ifile + ": " + e;
                         throw (IOException) new IOException(msg).initCause(e);

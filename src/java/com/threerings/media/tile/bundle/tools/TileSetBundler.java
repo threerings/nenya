@@ -35,17 +35,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import java.awt.image.BufferedImage;
-
 import javax.imageio.ImageIO;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
-import org.apache.commons.digester.Digester;
-import org.apache.commons.io.IOUtils;
-
-import com.google.common.collect.Lists;
-
 import com.samskivert.io.PersistenceException;
+import com.samskivert.io.StreamUtil;
 import com.samskivert.util.HashIntMap;
 
 import com.threerings.resource.FastImageIO;
@@ -429,7 +426,7 @@ public class TileSetBundler
                         } else {
                             jar.putNextEntry(new JarEntry(imagePath));
                             FileInputStream imgin = new FileInputStream(ifile);
-                            IOUtils.copy(imgin, jar);
+                            StreamUtil.copy(imgin, jar);
                         }
                     } catch (Exception e) {
                         String msg = "Failure bundling image " + ifile +

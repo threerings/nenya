@@ -27,8 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
-
+import com.samskivert.io.StreamUtil;
 import com.samskivert.util.Config;
 import com.samskivert.util.ConfigUtil;
 import com.samskivert.util.LRUHashMap;
@@ -170,7 +169,7 @@ public class SoundLoader
             }
         }
 
-        return IOUtils.toByteArray(clipin);
+        return StreamUtil.toByteArray(clipin);
     }
 
     protected ResourceManager _rmgr;

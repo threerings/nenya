@@ -33,8 +33,7 @@ import java.io.InputStream;
 
 import java.awt.image.BufferedImage;
 
-import org.apache.commons.io.IOUtils;
-
+import com.samskivert.io.StreamUtil;
 import com.samskivert.util.FileUtil;
 import com.samskivert.util.StringUtil;
 
@@ -248,7 +247,7 @@ public class FileResourceBundle extends ResourceBundle
         // copy the resource into the temporary file
         BufferedOutputStream fout = new BufferedOutputStream(new FileOutputStream(tfile));
         InputStream jin = _jarSource.getInputStream(entry);
-        IOUtils.copy(jin, fout);
+        StreamUtil.copy(jin, fout);
         jin.close();
         fout.close();
 
