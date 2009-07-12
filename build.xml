@@ -81,9 +81,9 @@
   </target>
 
   <!-- adds readField and writeField methods to Stremable classes -->
-  <target name="procstream">
-    <taskdef name="instream" classpathref="classpath"
-             classname="com.threerings.presents.tools.InstrumentStreamableTask"/>
+  <target name="procstream" depends="prepare">
+    <taskdef resource="com/threerings/presents/tools.properties"
+             classpath="${deploy.dir}/lib/narya-tools.jar"/>
     <!-- now instrument the associated files -->
     <instream outdir="${classes.dir}">
       <path refid="classpath"/>
