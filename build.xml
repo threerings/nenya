@@ -84,7 +84,6 @@
   <target name="procstream" depends="prepare">
     <taskdef resource="com/threerings/presents/tools.properties"
              classpath="${deploy.dir}/lib/narya-tools.jar"/>
-    <!-- now instrument the associated files -->
     <instream outdir="${classes.dir}">
       <path refid="classpath"/>
       <fileset dir="${classes.dir}" includes="**/data/*.class"/>
