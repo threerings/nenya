@@ -89,7 +89,7 @@ public abstract class CalibratingTimer
      */
     public float getMaxDriftRatio ()
     {
-    	return _maxDriftRatio;
+        return _maxDriftRatio;
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class CalibratingTimer
      */
     public void clearMaxDriftRatio ()
     {
-    	_maxDriftRatio = 1.0F;
+        _maxDriftRatio = 1.0F;
     }
 
     /** Returns the difference between _startStamp and current() */
@@ -143,7 +143,7 @@ public abstract class CalibratingTimer
                 _driftRatio = 1.0F;
             }
             if (Math.abs(drift - 1.0) > Math.abs(_maxDriftRatio - 1.0)) {
-            	_maxDriftRatio = drift;
+                _maxDriftRatio = drift;
             }
 
         } else if (_driftRatio != 1.0) {

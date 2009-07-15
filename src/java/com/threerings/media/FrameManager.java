@@ -225,11 +225,11 @@ public abstract class FrameManager
      */
     public float getMaxTimerDriftRatio ()
     {
-    	if (_timer instanceof CalibratingTimer) {
-    	    return ((CalibratingTimer)_timer).getMaxDriftRatio();
-    	} else {
-    		return 1.0F;
-    	}
+        if (_timer instanceof CalibratingTimer) {
+            return ((CalibratingTimer)_timer).getMaxDriftRatio();
+        } else {
+            return 1.0F;
+        }
     }
 
     /**
