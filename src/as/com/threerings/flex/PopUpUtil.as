@@ -8,7 +8,7 @@ import flash.geom.Rectangle;
 
 import mx.core.UIComponent;
 
-import com.threerings.flash.DisplayUtil;
+import com.threerings.display.DisplayUtil;
 
 /**
  * Flex popup utilities.

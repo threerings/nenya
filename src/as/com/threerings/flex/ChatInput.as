@@ -9,7 +9,7 @@ import flash.text.TextField;
 
 import mx.controls.TextInput;
 
-import com.threerings.flash.TextFieldUtil;
+import com.threerings.text.TextFieldUtil;
 
 /**
  * The class name of an image to use as the input prompt.
