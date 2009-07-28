@@ -39,6 +39,10 @@ import com.samskivert.io.ByteArrayOutInputStream;
 import com.samskivert.net.AttachableURLFactory;
 import com.samskivert.util.StringUtil;
 
+import com.threerings.media.image.ColorPository;
+import com.threerings.media.image.Colorization;
+import com.threerings.media.image.ImageUtil;
+
 import com.threerings.geom.GeomUtil;
 
 import static com.threerings.resource.Log.log;
@@ -153,6 +157,8 @@ public class Handler extends URLStreamHandler
         // parse the query string
         String[] bits = StringUtil.split(query, "&");
         int width = -1, height = -1, tidx = -1;
+        String zationClass = null;
+        int zationColorId = -1;
         try {
             for (String bit : bits) {
                 if (bit.startsWith("width=")) {
@@ -161,6 +167,10 @@ public class Handler extends URLStreamHandler
                     height = Integer.parseInt(bit.substring(7));
                 } else if (bit.startsWith("tile=")) {
                     tidx = Integer.parseInt(bit.substring(5));
+                } else if (bit.startsWith("zationClass=")) {
+                    zationClass = bit.substring(12);
+                } else if (bit.startsWith("zationColorId=")) {
+                    zationColorId = Integer.parseInt(bit.substring(14));
                 }
             }
         } catch (NumberFormatException nfe) {
@@ -179,6 +189,16 @@ public class Handler extends URLStreamHandler
             src.getWidth(), src.getHeight(), width, height, tidx);
         BufferedImage tile = src.getSubimage(
             trect.x, trect.y, trect.width, trect.height);
+        if (zationClass != null && zationColorId >= 0) {
+            try {
+                ColorPository pository = ColorPository.loadColorPository(_rmgr);
+                Colorization zation = pository.getColorization(zationClass, zationColorId);
+                tile = ImageUtil.recolorImage(tile, zation.rootColor, zation.range, zation.offsets);
+            } catch (Exception e) {
+                log.warning("Trouble recoloring image in resource handler.", e);
+            }
+        }
+
         ByteArrayOutInputStream data = new ByteArrayOutInputStream();
         ImageIO.write(tile, "PNG", data);
         return data.getInputStream();
