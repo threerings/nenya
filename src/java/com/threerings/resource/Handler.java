@@ -21,6 +21,9 @@
 
 package com.threerings.resource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -35,6 +38,8 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import com.google.common.collect.Maps;
+
 import com.samskivert.io.ByteArrayOutInputStream;
 import com.samskivert.net.AttachableURLFactory;
 import com.samskivert.util.StringUtil;
@@ -48,17 +53,16 @@ import com.threerings.geom.GeomUtil;
 import static com.threerings.resource.Log.log;
 
 /**
- * This class is not used directly, except by a registering ResourceManager
- * so that we can load data from the resource manager using URLs of the form
- * <code>resource://&lt;resourceSet&gt;/&lt;path&gt;</code>. ResourceSet may
- * be the empty string to load from the default resource sets.
+ * This class is not used directly, except by a registering ResourceManager so that we can load
+ * data from the resource manager using URLs of the form
+ * <code>resource://&lt;resourceSet&gt;/&lt;path&gt;</code>. ResourceSet may be the empty string
+ * to load from the default resource sets.
  */
 public class Handler extends URLStreamHandler
 {
     /**
-     * Register this class to handle "resource" urls
-     * ("resource://<i>resourceSet</i>/<i>path</i>") with the specified
-     * ResourceManager.
+     * Register this class to handle "resource" urls ("resource://<i>resourceSet</i>/<i>path</i>")
+     * with the specified ResourceManager.
      */
     public static void registerHandler (ResourceManager rmgr)
     {
@@ -109,8 +113,8 @@ public class Handler extends URLStreamHandler
                     this.connected = true;
 
                 } catch (IOException ioe) {
-                    log.warning("Could not find resource [url=" + this.url +
-                        ", error=" + ioe.getMessage() + "].");
+                    log.warning("Could not find resource",
+                        "url", this.url, "error", ioe.getMessage());
                     throw ioe; // rethrow
                 }
             }
@@ -139,26 +143,23 @@ public class Handler extends URLStreamHandler
     }
 
     /**
-     * Does some magic to allow a subset of an image to be extracted,
-     * reencoded as a PNG and then spat back out to the Java content
-     * handler system for inclusion in internal documentation.
+     * Does some magic to allow a subset of an image to be extracted, reencoded as a PNG and then
+     * spat back out to the Java content handler system for inclusion in internal documentation.
      */
     protected InputStream getStream (String bundle, String path, String query)
         throws IOException
     {
         // we can only do this with PNGs
         if (!path.endsWith(".png")) {
-            log.warning("Requested sub-tile of non-PNG resource " +
-                        "[bundle=" + bundle + ", path=" + path +
-                        ", dims=" + query + "].");
+            log.warning("Requested sub-tile of non-PNG resource",
+                "bundle", bundle, "path", path, "dims", query);
             return _rmgr.getResource(bundle, path);
         }
 
         // parse the query string
         String[] bits = StringUtil.split(query, "&");
         int width = -1, height = -1, tidx = -1;
-        String zationClass = null;
-        int zationColorId = -1;
+        HashMap<String, String> zations = null;
         try {
             for (String bit : bits) {
                 if (bit.startsWith("width=")) {
@@ -167,17 +168,20 @@ public class Handler extends URLStreamHandler
                     height = Integer.parseInt(bit.substring(7));
                 } else if (bit.startsWith("tile=")) {
                     tidx = Integer.parseInt(bit.substring(5));
-                } else if (bit.startsWith("zationClass=")) {
-                    zationClass = bit.substring(12);
-                } else if (bit.startsWith("zationColorId=")) {
-                    zationColorId = Integer.parseInt(bit.substring(14));
+                } else if (bit.startsWith("zation=")) {
+                    String[] zation = bit.substring(7).split(":");
+                    if (zations == null) {
+                        zations = Maps.newHashMap();
+                    }
+
+                    zations.put(zation[0], zation[1]);
                 }
             }
         } catch (NumberFormatException nfe) {
         }
         if (width <= 0 || height <= 0 || tidx < 0) {
-            log.warning("Bogus sub-image dimensions [bundle=" + bundle +
-                        ", path=" + path + ", dims=" + query + "].");
+            log.warning("Bogus sub-image dimensions",
+                "bundle", bundle, "path", path, "dims", query);
             throw new FileNotFoundException(path);
         }
 
@@ -185,17 +189,32 @@ public class Handler extends URLStreamHandler
         // return an input stream for that
         BufferedImage src = StringUtil.isBlank(bundle) ?
             _rmgr.getImageResource(path) : _rmgr.getImageResource(bundle, path);
-        Rectangle trect = GeomUtil.getTile(
-            src.getWidth(), src.getHeight(), width, height, tidx);
-        BufferedImage tile = src.getSubimage(
-            trect.x, trect.y, trect.width, trect.height);
-        if (zationClass != null && zationColorId >= 0) {
-            try {
-                ColorPository pository = ColorPository.loadColorPository(_rmgr);
-                Colorization zation = pository.getColorization(zationClass, zationColorId);
-                tile = ImageUtil.recolorImage(tile, zation.rootColor, zation.range, zation.offsets);
-            } catch (Exception e) {
-                log.warning("Trouble recoloring image in resource handler.", e);
+        Rectangle trect = GeomUtil.getTile(src.getWidth(), src.getHeight(), width, height, tidx);
+        BufferedImage tile = src.getSubimage(trect.x, trect.y, trect.width, trect.height);
+        if (zations != null) {
+            ColorPository pository = ColorPository.loadColorPository(_rmgr);
+            for (Map.Entry<String, String> entry : zations.entrySet()) {
+                String zClass = entry.getKey();
+                String zColor = entry.getValue();
+                try {
+                    Colorization zation = null;
+
+                    // First try looking if we got a number
+                    try {
+                        zation = pository.getColorization(zClass, Integer.parseInt(zColor));
+                    } catch (NumberFormatException nfe) { }
+
+                    // If that didn't work, try it as a zation name
+                    if (zation == null) {
+                        pository.getColorization(zClass, zColor);
+                    }
+
+                    tile = ImageUtil.recolorImage(
+                        tile, zation.rootColor, zation.range, zation.offsets);
+                } catch (Exception e) {
+                    log.warning("Trouble recoloring image in resource handler",
+                        "zClass", zClass, "zColor", zColor, e);
+                }
             }
         }
 
