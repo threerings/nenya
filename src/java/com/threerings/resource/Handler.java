@@ -206,7 +206,7 @@ public class Handler extends URLStreamHandler
 
                     // If that didn't work, try it as a zation name
                     if (zation == null) {
-                        pository.getColorization(zClass, zColor);
+                        zation = pository.getColorization(zClass, zColor);
                     }
 
                     tile = ImageUtil.recolorImage(
