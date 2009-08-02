@@ -65,7 +65,7 @@ public class OpenALSoundPlayer extends SoundPlayer
     {
         _loader = loader;
         try {
-            _alSoundManager = new MediaALSoundManager();
+            _alSoundManager = createSoundManager();
             _group = _alSoundManager.createGroup(this, SOURCE_COUNT);
         } catch (Throwable t) {
             log.warning("Unable to initialize OpenAL", "cause", t);
@@ -332,6 +332,14 @@ public class OpenALSoundPlayer extends SoundPlayer
             paths[ii] = bundle + ":" + names[ii];
         }
         return paths;
+    }
+
+    /**
+     * Creates our SoundManager.
+     */
+    protected SoundManager createSoundManager ()
+    {
+        return new MediaALSoundManager();
     }
 
     /**
