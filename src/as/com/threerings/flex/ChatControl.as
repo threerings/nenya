@@ -117,7 +117,7 @@ public class ChatControl extends HBox
     /**
      * Configures the background color of the text entry area.
      */
-    public function setChatColor (color :int) :void
+    public function setChatColor (color :uint) :void
     {
         _txt.setStyle("backgroundColor", color);
     }
