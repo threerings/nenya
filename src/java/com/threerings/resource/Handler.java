@@ -21,6 +21,7 @@
 
 package com.threerings.resource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.samskivert.io.ByteArrayOutInputStream;
@@ -193,29 +195,34 @@ public class Handler extends URLStreamHandler
         BufferedImage tile = src.getSubimage(trect.x, trect.y, trect.width, trect.height);
         if (zations != null) {
             ColorPository pository = ColorPository.loadColorPository(_rmgr);
+            ArrayList<Colorization> colorizations = Lists.newArrayList();
             for (Map.Entry<String, String> entry : zations.entrySet()) {
                 String zClass = entry.getKey();
                 String zColor = entry.getValue();
+
+                Colorization zation = null;
+
+                // First try looking if we got a number
                 try {
-                    Colorization zation = null;
+                    zation = pository.getColorization(zClass, Integer.parseInt(zColor));
+                } catch (NumberFormatException nfe) { }
 
-                    // First try looking if we got a number
-                    try {
-                        zation = pository.getColorization(zClass, Integer.parseInt(zColor));
-                    } catch (NumberFormatException nfe) { }
-
-                    // If that didn't work, try it as a zation name
-                    if (zation == null) {
-                        zation = pository.getColorization(zClass, zColor);
-                    }
-
-                    tile = ImageUtil.recolorImage(
-                        tile, zation.rootColor, zation.range, zation.offsets);
-                } catch (Exception e) {
-                    log.warning("Trouble recoloring image in resource handler",
-                        "zClass", zClass, "zColor", zColor, e);
+                // If that didn't work, try it as a zation name
+                if (zation == null) {
+                    zation = pository.getColorization(zClass, zColor);
                 }
+
+                if (zation == null) {
+                    log.warning("Couldn't figure out requested zation",
+                        "class", zClass, "color", zColor);
+                } else {
+                    colorizations.add(zation);
+                }
+
             }
+
+            tile = ImageUtil.recolorImage(tile,
+                colorizations.toArray(new Colorization[colorizations.size()]));
         }
 
         ByteArrayOutInputStream data = new ByteArrayOutInputStream();
