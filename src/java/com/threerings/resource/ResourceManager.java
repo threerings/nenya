@@ -534,32 +534,21 @@ public class ResourceManager
 
         // if we still didn't find anything, try the classloader; first try a locale-specific file
         if (_localePrefix != null) {
-            final String rpath = PathUtil.appendPath(
-                _rootPath, PathUtil.appendPath(_localePrefix, path));
-            in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-                public InputStream run () {
-                    return _loader.getResourceAsStream(rpath);
-                }
-            });
+            String rpath = PathUtil.appendPath(_rootPath, PathUtil.appendPath(_localePrefix, path));
+            in = getInputStreamFromClasspath(rpath);
             if (in != null) {
                 return in;
             }
         }
 
         // if we didn't find that, try locale-neutral
-        final String rpath = PathUtil.appendPath(_rootPath, path);
-        in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-            public InputStream run () {
-                return _loader.getResourceAsStream(rpath);
-            }
-        });
+        in = getInputStreamFromClasspath(PathUtil.appendPath(_rootPath, path));
         if (in != null) {
             return in;
         }
 
         // if we still haven't found it, we throw an exception
-        String errmsg = "Unable to locate resource [path=" + path + "]";
-        throw new FileNotFoundException(errmsg);
+        throw new FileNotFoundException("Unable to locate resource [path=" + path + "]");
     }
 
     /**
@@ -577,8 +566,7 @@ public class ResourceManager
             // try a localized version first
             BufferedImage image = null;
             if (_localePrefix != null) {
-                image =
-                    bundle.getImageResource(PathUtil.appendPath(_localePrefix, path), false);
+                image = bundle.getImageResource(PathUtil.appendPath(_localePrefix, path), false);
             }
 
             // if we didn't find that, try generic
@@ -599,32 +587,21 @@ public class ResourceManager
 
         // first try a locale-specific file
         if (_localePrefix != null) {
-            final String rpath = PathUtil.appendPath(
-                _rootPath, PathUtil.appendPath(_localePrefix, path));
-            InputStream in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-                public InputStream run () {
-                    return _loader.getResourceAsStream(rpath);
-                }
-            });
+            String rpath = PathUtil.appendPath(_rootPath, PathUtil.appendPath(_localePrefix, path));
+            InputStream in = getInputStreamFromClasspath(rpath);
             if (in != null) {
                 return loadImage(in);
             }
         }
 
         // if we still didn't find anything, try the classloader
-        final String rpath = PathUtil.appendPath(_rootPath, path);
-        InputStream in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-            public InputStream run () {
-                return _loader.getResourceAsStream(rpath);
-            }
-        });
+        InputStream in = getInputStreamFromClasspath(PathUtil.appendPath(_rootPath, path));
         if (in != null) {
             return loadImage(in);
         }
 
         // if we still haven't found it, we throw an exception
-        String errmsg = "Unable to locate image resource [path=" + path + "]";
-        throw new FileNotFoundException(errmsg);
+        throw new FileNotFoundException("Unable to locate image resource [path=" + path + "]");
     }
 
     /**
@@ -872,6 +849,18 @@ public class ResourceManager
             return FastImageIO.read(file);
         }
         return ImageIO.read(file);
+    }
+
+    /**
+     * Returns an InputStream from this manager's classloader for the given path.
+     */
+    protected InputStream getInputStreamFromClasspath (final String fullyQualifiedPath)
+    {
+        return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+            public InputStream run () {
+                return _loader.getResourceAsStream(fullyQualifiedPath);
+            }
+        });
     }
 
     /**
