@@ -42,6 +42,8 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
+import com.samskivert.util.Logger;
+
 import com.samskivert.swing.Label;
 
 /**
@@ -120,14 +122,12 @@ public class ImageUtil
     /**
      * Recolors the supplied image using the supplied colorizations.
      */
-    public static BufferedImage recolorImage (
-        BufferedImage image, Colorization[] zations)
+    public static BufferedImage recolorImage (BufferedImage image, Colorization[] zations)
     {
         ColorModel cm = image.getColorModel();
         if (!(cm instanceof IndexColorModel)) {
-            String errmsg = "Unable to recolor images with non-index color " +
-                "model [cm=" + cm.getClass() + "]";
-            throw new RuntimeException(errmsg);
+            throw new RuntimeException(Logger.format(
+                "Unable to recolor images with non-index color model", "cm", cm.getClass()));
         }
 
         // now process the image
