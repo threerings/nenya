@@ -365,7 +365,7 @@ public class SceneObject
         _spotTri.addPoint(-3, -3);
         _spotTri.addPoint(3, -3);
         _spotTri.addPoint(0, 3);
-    };
+    }
 
     /** The alpha used to fill our bounds for warning purposes. */
     protected static final Composite ALPHA_WARN =

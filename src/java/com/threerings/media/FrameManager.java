@@ -727,7 +727,7 @@ public abstract class FrameManager
 
         /** Used to compute metrics. */
         protected long _lastTick;
-    };
+    }
 
     /** The window into which we do our rendering. */
     protected Window _window;

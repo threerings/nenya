@@ -408,7 +408,7 @@ public class OpenALSoundPlayer extends SoundPlayer
         protected MediaTimer _timer = FrameManager.createTimer();
 
         protected long _lastTick;
-    };
+    }
 
     /**
      * Loads a sound in its run method and calls subclasses with soundLoaded to let them know it's

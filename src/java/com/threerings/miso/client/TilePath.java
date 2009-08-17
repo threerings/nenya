@@ -26,8 +26,6 @@ import java.util.List;
 
 import java.awt.Point;
 
-import com.threerings.util.DirectionCodes;
-
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.util.LineSegmentPath;
 import com.threerings.media.util.MathUtil;
@@ -42,7 +40,6 @@ import com.threerings.miso.util.MisoUtil;
  * coordinates are updated as the path is traversed.
  */
 public class TilePath extends LineSegmentPath
-    implements DirectionCodes
 {
     /**
      * Constructs a tile path.

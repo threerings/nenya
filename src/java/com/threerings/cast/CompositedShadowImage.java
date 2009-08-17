@@ -108,4 +108,4 @@ public class CompositedShadowImage extends CompositedMultiFrameImage
 
     /** The alpha value at which we render our shadow. */
     protected AlphaComposite _shadowAlpha;
-};
+}

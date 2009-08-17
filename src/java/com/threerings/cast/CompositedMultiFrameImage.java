@@ -320,4 +320,4 @@ public class CompositedMultiFrameImage
         protected int _index;
         protected Point _origin = new Point();
     }
-};
+}

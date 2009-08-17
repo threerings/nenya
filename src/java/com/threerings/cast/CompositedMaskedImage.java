@@ -139,4 +139,4 @@ public class CompositedMaskedImage extends CompositedMultiFrameImage
     protected int getY (int index) {
         return ((VolatileMirage)_images[index]).getY();
     }
-};
+}

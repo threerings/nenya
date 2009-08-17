@@ -142,5 +142,5 @@ public class BrowserUtil
         protected Process _process;
         protected URL _url;
         protected ResultListener<Void> _listener;
-    };
+    }
 }

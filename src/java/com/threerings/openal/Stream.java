@@ -335,5 +335,5 @@ public abstract class Stream
     protected int _state = AL10.AL_INITIAL;
 
     /** Fading modes. */
-    protected enum FadeMode { NONE, IN, OUT, OUT_DISPOSE };
+    protected enum FadeMode { NONE, IN, OUT, OUT_DISPOSE }
 }

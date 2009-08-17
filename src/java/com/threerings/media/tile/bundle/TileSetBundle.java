@@ -26,8 +26,6 @@ import java.util.Iterator;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
 import java.awt.image.BufferedImage;
 
 import com.samskivert.util.HashIntMap;
@@ -43,7 +41,7 @@ import com.threerings.media.tile.TileSet;
  * on the local filesystem.
  */
 public class TileSetBundle extends HashIntMap<TileSet>
-    implements Serializable, ImageDataProvider
+    implements ImageDataProvider
 {
     /**
      * Initializes this resource bundle with a reference to the jarfile from which it was loaded
