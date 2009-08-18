@@ -38,6 +38,7 @@ public class CommandMenuItemRenderer extends MenuItemRenderer
     override protected function commitProperties () :void
     {
         super.commitProperties();
+        // Note: a menu with no items will have a null listData
 
         if ((icon == null) && (listData is CommandListData)) {
             icon = CommandListData(listData).iconObject;
@@ -46,7 +47,7 @@ public class CommandMenuItemRenderer extends MenuItemRenderer
             }
         }
 
-        if (label.visible) {
+        if (label.visible && (listData != null)) {
             var dataDescriptor :IMenuDataDescriptor = Menu(listData.owner).dataDescriptor;
             var typeVal :String = dataDescriptor.getType(data);
             if (typeVal == "title") {
