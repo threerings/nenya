@@ -34,7 +34,8 @@ import mx.managers.SystemManager;
 import mx.styles.CSSStyleDeclaration;
 import mx.styles.StyleManager;
 
-import com.threerings.util.HashMap;
+import com.threerings.util.Map;
+import com.threerings.util.Maps;
 
 /**
  * A better CursorManager.
@@ -275,7 +276,7 @@ public class CursorManager
     }
 
     /** A mapping of all assigned cursor ids. */
-    private static const _cursors :HashMap = new HashMap();
+    private static const _cursors :Map = Maps.newMapOf(int);
 
     private static var _currentCursorId :int = 0; // SYSTEM_CURSOR
 
