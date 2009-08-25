@@ -245,9 +245,9 @@ public class Sound
      *
      * @param loop whether or not to loop the sampe until {@link #stop}ped.
      */
-    public void play (StartObserver obs, boolean loop)
+    public boolean play (StartObserver obs, boolean loop)
     {
-        play(true, loop, obs);
+        return play(true, loop, obs);
     }
 
     /**
