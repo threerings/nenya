@@ -22,8 +22,8 @@
 package com.threerings.media.tools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 
 import java.io.File;
@@ -58,8 +58,7 @@ import javax.swing.event.ChangeListener;
 
 import com.google.common.collect.Lists;
 
-import com.samskivert.util.QuickSort;
-
+import com.samskivert.util.PrefsConfig;
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.VGroupLayout;
 import com.samskivert.swing.util.SwingUtil;
@@ -94,11 +93,11 @@ public class RecolorImage extends JPanel
         file.add(_imagePath = new JTextField());
         _imagePath.setEditable(false);
         JButton browse = new JButton("Browse...");
-        browse.setActionCommand("browse");
+        browse.setActionCommand(BROWSE_FOR_IMAGE_FILE);
         browse.addActionListener(this);
         file.add(browse, HGroupLayout.FIXED);
         JButton reload = new JButton("Reload");
-        reload.setActionCommand("reload");
+        reload.setActionCommand(RELOAD_IMAGE);
         reload.addActionListener(this);
         file.add(reload, HGroupLayout.FIXED);
         add(file, VGroupLayout.FIXED);
@@ -109,7 +108,7 @@ public class RecolorImage extends JPanel
         colFile.add(_colFilePath = new JTextField());
         _colFilePath.setEditable(false);
         browse = new JButton("Browse...");
-        browse.setActionCommand("browse_colorize");
+        browse.setActionCommand(BROWSE_FOR_COLORIZATION_FILE);
         browse.addActionListener(this);
         colFile.add(browse, HGroupLayout.FIXED);
         add(colFile, VGroupLayout.FIXED);
@@ -137,7 +136,7 @@ public class RecolorImage extends JPanel
         controls.add(new JLabel("Target color:"), HGroupLayout.FIXED);
         controls.add(_target = new JTextField());
         JButton update = new JButton("Update");
-        update.setActionCommand("update");
+        update.setActionCommand(UPDATE_TARGET_COLOR);
         update.addActionListener(this);
         controls.add(update, HGroupLayout.FIXED);
         add(controls, VGroupLayout.FIXED);
@@ -165,7 +164,7 @@ public class RecolorImage extends JPanel
         hlay.setJustification(HGroupLayout.CENTER);
         JPanel buttons = new JPanel(hlay);
         JButton convert = new JButton("Convert");
-        convert.setActionCommand("convert");
+        convert.setActionCommand(CONVERT);
         convert.addActionListener(this);
         buttons.add(convert);
         add(buttons, VGroupLayout.FIXED);
@@ -180,13 +179,11 @@ public class RecolorImage extends JPanel
 
         // we'll be using a file chooser
         String cwd = System.getProperty("user.dir");
-        if (cwd == null) {
-            _chooser = new JFileChooser();
-            _colChooser = new JFileChooser();
-        } else {
-            _chooser = new JFileChooser(cwd);
-            _colChooser = new JFileChooser(cwd);
-        }
+
+        String image = CONFIG.getValue(LAST_IMAGE_KEY, cwd);
+        String colorization = CONFIG.getValue(LAST_COLORIZATION_KEY, cwd);
+        _chooser = new JFileChooser(image);
+        _colChooser = new JFileChooser(colorization);
     }
 
     /**
@@ -221,8 +218,7 @@ public class RecolorImage extends JPanel
                 float valO = _valueO.getValue();
                 float[] offsets = new float[] { hueO, satO, valO };
 
-                image = ImageUtil.recolorImage(
-                    _image, new Color(color), dists, offsets);
+                image = ImageUtil.recolorImage(_image, new Color(color), dists, offsets);
             }
             _newImage.setIcon(new ImageIcon(image));
             _status.setText("Recolored image.");
@@ -247,23 +243,17 @@ public class RecolorImage extends JPanel
         int classId = colClass.classId;
 
         BufferedImage img = new BufferedImage(_image.getWidth(),
-            _image.getHeight()*colClass.colors.size(),
-            BufferedImage.TYPE_INT_ARGB);
+            _image.getHeight()*colClass.colors.size(), BufferedImage.TYPE_INT_ARGB);
         Graphics gfx = img.getGraphics();
         int y = 0;
 
-        ArrayList<Integer> sortedKeys = Lists.newArrayList();
-        sortedKeys.addAll(colClass.colors.keySet());
 
-        QuickSort.sort(sortedKeys, new Comparator<Integer>() {
-                public int compare (Integer i1, Integer i2) {
-                    return i1 - i2;
-                }
-            });
+        Integer[] sortedKeys =
+            colClass.colors.keySet().toArray(new Integer[colClass.colors.size()]);
+        Arrays.sort(sortedKeys);
 
         for (int key : sortedKeys) {
-            Colorization coloriz =
-                _colRepo.getColorization(classId, key);
+            Colorization coloriz = _colRepo.getColorization(classId, key);
             BufferedImage subImg = ImageUtil.recolorImage(
                     _image, coloriz.rootColor, coloriz.range, coloriz.offsets);
 
@@ -279,9 +269,9 @@ public class RecolorImage extends JPanel
     {
         String cmd = event.getActionCommand();
 
-        if (cmd.equals("convert")) {
+        if (cmd.equals(CONVERT)) {
             convert();
-        } else if (cmd.equals("update")) {
+        } else if (cmd.equals(UPDATE_TARGET_COLOR)) {
             // obtain the target color and offset
             try {
                 int source = Integer.parseInt(_source.getText(), 16);
@@ -298,14 +288,14 @@ public class RecolorImage extends JPanel
                 _status.setText("Invalid value: " + nfe.getMessage());
             }
 
-        } else if (cmd.equals("browse")) {
+        } else if (cmd.equals(BROWSE_FOR_IMAGE_FILE)) {
             int result = _chooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 setImage(_chooser.getSelectedFile());
             }
-        } else if (cmd.equals("reload")) {
+        } else if (cmd.equals(RELOAD_IMAGE)) {
             setImage(_chooser.getSelectedFile());
-        } else if (cmd.equals("browse_colorize")) {
+        } else if (cmd.equals(BROWSE_FOR_COLORIZATION_FILE)) {
             int result = _colChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 setColorizeFile(_colChooser.getSelectedFile());
@@ -320,6 +310,7 @@ public class RecolorImage extends JPanel
             _imagePath.setText(path.getPath());
             _oldImage.setIcon(new ImageIcon(_image));
 
+            CONFIG.setValue(LAST_IMAGE_KEY, path.getAbsolutePath());
         } catch (IOException ioe) {
             _status.setText("Error opening image file: " + ioe);
         }
@@ -333,11 +324,9 @@ public class RecolorImage extends JPanel
         try {
             if (path.getName().endsWith("xml")) {
                 ColorPositoryParser parser = new ColorPositoryParser();
-                _colRepo =
-                    (ColorPository)(parser.parseConfig(path));
+                _colRepo = (ColorPository)(parser.parseConfig(path));
             } else {
-                _colRepo =
-                    ColorPository.loadColorPository(new FileInputStream(path));
+                _colRepo = ColorPository.loadColorPository(new FileInputStream(path));
             }
 
             _classList.removeAllItems();
@@ -355,6 +344,8 @@ public class RecolorImage extends JPanel
 
             _classList.setSelectedIndex(0);
             _colFilePath.setText(path.getPath());
+
+            CONFIG.setValue(LAST_COLORIZATION_KEY, path.getAbsolutePath());
         }  catch (Exception ex) {
             _status.setText("Error opening colorization file: " + ex);
         }
@@ -389,8 +380,7 @@ public class RecolorImage extends JPanel
      */
     protected class SliderAndLabel extends JPanel
     {
-        public SliderAndLabel (float minf, float maxf, float valuef)
-        {
+        public SliderAndLabel (float minf, float maxf, float valuef) {
             int min = (int)(minf*CONVERSION);
             int max = (int)(maxf*CONVERSION);
             int value = (int)(valuef*CONVERSION);
@@ -400,8 +390,7 @@ public class RecolorImage extends JPanel
 
             _slider.addChangeListener(new ChangeListener() {
                 public void stateChanged (ChangeEvent ce) {
-                    _intField.setText(String.valueOf(
-                        (_slider.getValue())/CONVERSION));
+                    _intField.setText(String.valueOf((_slider.getValue())/CONVERSION));
 
                     convert();
                 }
@@ -410,13 +399,11 @@ public class RecolorImage extends JPanel
             add(_slider);
         }
 
-        public float getValue ()
-        {
+        public float getValue () {
             return _slider.getValue()/CONVERSION;
         }
 
-        public void setValue (float val)
-        {
+        public void setValue (float val) {
             _slider.setValue((int)(val*CONVERSION));
         }
 
@@ -481,4 +468,19 @@ public class RecolorImage extends JPanel
     protected static final String IMAGE_PATH =
         // "bundles/components/pirate/torso/regular/standing.png";
         "bundles/components/pirate/head/regular/standing.png";
+
+    /** The actions for our various buttons. */
+    protected static final String BROWSE_FOR_IMAGE_FILE = "browse_image";
+    protected static final String RELOAD_IMAGE = "reload_image";
+    protected static final String BROWSE_FOR_COLORIZATION_FILE = "browse_colorize";
+    protected static final String UPDATE_TARGET_COLOR = "update_target";
+    protected static final String CONVERT = "convert";
+
+    /** Where we can stash our preferences. */
+    protected static final PrefsConfig CONFIG =
+        new PrefsConfig("rsrc/config/threerings/recolorimage");
+
+    /** Keys for our preferences. */
+    protected static final String LAST_IMAGE_KEY = "last_image";
+    protected static final String LAST_COLORIZATION_KEY = "last_colorization";
 }
