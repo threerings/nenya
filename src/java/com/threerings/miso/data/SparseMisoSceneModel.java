@@ -322,8 +322,8 @@ public class SparseMisoSceneModel extends MisoSceneModel
                 visitor.visit(oinfo);
             }
             if (!interestingOnly) {
-                ObjectInfo info = new ObjectInfo();
                 for (int oo = 0; oo < sect.objectTileIds.length; oo++) {
+                    ObjectInfo info = new ObjectInfo();
                     info.tileId = sect.objectTileIds[oo];
                     info.x = sect.objectXs[oo];
                     info.y = sect.objectYs[oo];
