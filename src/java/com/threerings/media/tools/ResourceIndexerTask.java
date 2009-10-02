@@ -57,7 +57,7 @@ public class ResourceIndexerTask extends Task
     {
         PrintWriter fout = null;
         try {
-            fout = new PrintWriter(new FileWriter(_indexFile));
+            fout = new PrintWriter(new FileWriter(getProject().getBaseDir() + "/" + _indexFile));
 
             for (FileSet fs : _filesets) {
                 DirectoryScanner ds = fs.getDirectoryScanner(getProject());
