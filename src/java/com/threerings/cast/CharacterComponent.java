@@ -107,6 +107,12 @@ public class CharacterComponent implements Serializable
     }
 
     @Override
+    public int hashCode ()
+    {
+    	return componentId;
+    }
+
+    @Override
     public String toString ()
     {
         return StringUtil.fieldsToString(this);
