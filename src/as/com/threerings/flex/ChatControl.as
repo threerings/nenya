@@ -21,7 +21,7 @@ import mx.controls.TextInput;
 import mx.events.FlexEvent;
 
 import com.threerings.util.ArrayUtil;
-import com.threerings.util.MethodQueue;
+import com.threerings.util.DelayUtil;
 import com.threerings.util.StringUtil;
 
 import com.threerings.flex.CommandButton;
@@ -139,13 +139,13 @@ public class ChatControl extends HBox
         }
 
         // If there was no error, clear the entry area in prep for the next entry event
-        MethodQueue.callLater(function () : void {
+        DelayUtil.delayFrame(function () : void {
             // WORKAROUND
             // Originally we cleared the text immediately, but with flex 3.2 this broke
             // for *some* people. Weird! We're called from the event dispatcher for the
             // enter key, so it's possible that the default action is booching it?
             // In any case, this could possibly be removed in the future by the ambitious.
-            // Note also: Flex's built-in callLater() doesn't work, but MethodQueue does. WTF?!?
+            // Note also: Flex's built-in callLater() doesn't work, but DelayUtil does. WTF?!?
             _txt.text = "";
         });
         _histidx = -1;
