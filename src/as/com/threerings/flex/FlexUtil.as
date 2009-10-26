@@ -21,12 +21,17 @@
 
 package com.threerings.flex {
 
+import flash.display.DisplayObject;
+
 import mx.controls.Label;
 import mx.controls.Spacer;
 import mx.controls.Text;
 
 import mx.core.Container;
 import mx.core.UIComponent;
+
+import mx.containers.HBox;
+import mx.containers.VBox;
 
 /**
  * Flex-related utility methods.
@@ -110,6 +115,52 @@ public class FlexUtil
         component.visible = visible;
         component.includeInLayout = visible;
         return visible;
+    }
+
+    /**
+     * Creates a new container of the given class and adds the given children to it.
+     */
+    public static function createContainer (clazz :Class, ...children) :Container
+    {
+        var container :Container = new clazz() as Container;
+        for each (var comp :UIComponent in children) {
+            container.addChild(comp);
+        }
+        return container;
+    }
+
+    /**
+     * Creates a new HBox container and adds the given children to it.
+     */
+    public static function createHBox (...children) :Container
+    {
+        children.unshift(HBox);
+        return createContainer.apply(null, children);
+    }
+
+    /**
+     * Creates a new VBox container and adds the given children to it.
+     */
+    public static function createVBox (...children) :Container
+    {
+        children.unshift(VBox);
+        return createContainer.apply(null, children);
+    }
+
+    /**
+     * Creates a simple UIComponent that wraps a display object.
+     */
+    public static function wrap (obj :DisplayObject) :FlexWrapper
+    {
+        return new FlexWrapper(obj);
+    }
+
+    /**
+     * Creates a simple UIComponent that wraps a display object and inherits its size.
+     */
+    public static function wrapSized (obj :DisplayObject) :FlexWrapper
+    {
+        return new FlexWrapper(obj, true);
     }
 }
 }
