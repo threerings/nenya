@@ -132,19 +132,19 @@ public class FlexUtil
     /**
      * Creates a new HBox container and adds the given children to it.
      */
-    public static function createHBox (...children) :Container
+    public static function createHBox (...children) :HBox
     {
         children.unshift(HBox);
-        return createContainer.apply(null, children);
+        return createContainer.apply(null, children) as HBox;
     }
 
     /**
      * Creates a new VBox container and adds the given children to it.
      */
-    public static function createVBox (...children) :Container
+    public static function createVBox (...children) :VBox
     {
         children.unshift(VBox);
-        return createContainer.apply(null, children);
+        return createContainer.apply(null, children) as VBox;
     }
 
     /**
