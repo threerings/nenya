@@ -30,11 +30,9 @@ import com.samskivert.util.StringUtil;
 import com.threerings.media.sprite.Sprite;
 
 /**
- * The character component represents a single component that can be
- * composited with other character components to generate an image
- * representing a complete character displayable in any of the eight
- * compass directions as detailed in the {@link Sprite} class direction
- * constants.
+ * The character component represents a single component that can be composited with other
+ * character components to generate an image representing a complete character displayable in any
+ * of the eight compass directions as detailed in the {@link Sprite} class direction constants.
  */
 public class CharacterComponent implements Serializable
 {
@@ -48,18 +46,16 @@ public class CharacterComponent implements Serializable
     public ComponentClass componentClass;
 
     /**
-     * Constructs a character component with the specified id of the
-     * specified class.
+     * Constructs a character component with the specified id of the specified class.
      */
-    public CharacterComponent (int componentId, String name,
-                               ComponentClass compClass, FrameProvider fprov)
+    public CharacterComponent (
+        int componentId, String name, ComponentClass compClass, FrameProvider fprov)
     {
         this.componentId = componentId;
         this.name = name;
         this.componentClass = compClass;
         _frameProvider = fprov;
     }
-
 
     /**
      * Returns the render priority appropriate for this component at the specified action and
@@ -71,11 +67,11 @@ public class CharacterComponent implements Serializable
     }
 
     /**
-     * Returns the image frames for the specified action animation or null if
-     * no animation for the specified action is available for this component.
+     * Returns the image frames for the specified action animation or null if no animation for the
+     * specified action is available for this component.
      *
-     * @param type null for the normal action frames or one of the custom
-     * action sub-types: {@link StandardActions#SHADOW_TYPE}, etc.
+     * @param type null for the normal action frames or one of the custom action sub-types:
+     * {@link StandardActions#SHADOW_TYPE}, etc.
      */
     public ActionFrames getFrames (String action, String type)
     {
@@ -83,11 +79,11 @@ public class CharacterComponent implements Serializable
     }
 
     /**
-     * Returns the path to the image frames for the specified action animation or null if
-     * no animation for the specified action is available for this component.
+     * Returns the path to the image frames for the specified action animation or null if no
+     * animation for the specified action is available for this component.
      *
-     * @param type null for the normal action frames or one of the custom
-     * action sub-types: {@link StandardActions#SHADOW_TYPE}, etc.
+     * @param type null for the normal action frames or one of the custom action sub-types:
+     * {@link StandardActions#SHADOW_TYPE}, etc.
      *
      * @param existentPaths the set of all paths for which there are valid frames.
      */

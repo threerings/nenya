@@ -47,14 +47,14 @@ import com.threerings.resource.ResourceManager;
 import static com.threerings.media.Log.log;
 
 /**
- * A repository of image recoloration information. It was called the
- * recolor repository but the re-s cancelled one another out.
+ * A repository of image recoloration information. It was called the recolor repository but the
+ * re-s cancelled one another out.
  */
 public class ColorPository implements Serializable
 {
     /**
-     * Used to store information on a class of colors. These are public to
-     * simplify the XML parsing process, so pay them no mind.
+     * Used to store information on a class of colors. These are public to simplify the XML
+     * parsing process, so pay them no mind.
      */
     public static class ClassRecord implements Serializable
     {
@@ -87,8 +87,8 @@ public class ColorPository implements Serializable
         {
             // validate the color id
             if (record.colorId > 255) {
-                log.warning("Refusing to add color record; colorId > 255 " +
-                            "[class=" + this + ", record=" + record + "].");
+                log.warning("Refusing to add color record; colorId > 255",
+                    "class", this, "record", record);
             } else {
                 record.cclass = this;
                 colors.put(record.colorId, record);
@@ -96,14 +96,12 @@ public class ColorPository implements Serializable
         }
 
         /**
-         * Translants a color identified in string form into the id that
-         * should be used to look up its information.  Throws an
-         * exception if no color could be found that associates with
+         * Translates a color identified in string form into the id that should be used to look up
+         * its information. Throws an exception if no color could be found that associates with
          * that name.
          *
-         * FIXME: This lookup could be sped up a lot with some cached
-         * data tables if it looked like this function would get called
-         * in time critical situations.
+         * FIXME: This lookup could be sped up a lot with some cached data tables if it looked
+         * like this function would get called in time critical situations.
          */
         public int getColorId (String name)
             throws ParseException
@@ -129,8 +127,7 @@ public class ColorPository implements Serializable
             throw new ParseException("No color named '" + name + "'", 0);
         }
 
-        /** Returns a random starting id from the entries in this
-         * class. */
+        /** Returns a random starting id from the entries in this class. */
         public ColorRecord randomStartingColor ()
         {
             // figure out our starter ids if we haven't already
@@ -296,9 +293,8 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Returns true if the specified color is legal for use at character
-     * creation time. false is always returned for non-existent colors or
-     * classes.
+     * Returns true if the specified color is legal for use at character creation time. false is
+     * always returned for non-existent colors or classes.
      */
     public boolean isLegalStartColor (int classId, int colorId)
     {
@@ -359,7 +355,7 @@ public class ColorPository implements Serializable
             try {
                 colorId = crec.getColorId(colorName);
             } catch (ParseException pe) {
-                log.info("Error getting colorization by name. [error=" + pe + "]");
+                log.info("Error getting colorization by name", "error", pe);
                 return null;
             }
 
@@ -372,8 +368,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Loads up a colorization class by name and logs a warning if it
-     * doesn't exist.
+     * Loads up a colorization class by name and logs a warning if it doesn't exist.
      */
     public ClassRecord getClassRecord (String className)
     {
@@ -384,7 +379,7 @@ public class ColorPository implements Serializable
                 return crec;
             }
         }
-        log.warning("No such color class [class=" + className + "].", new Exception());
+        log.warning("No such color class", "class", className, new Exception());
         return null;
     }
 
@@ -398,8 +393,8 @@ public class ColorPository implements Serializable
             // if they request color class zero, we assume they're just
             // decoding a blank colorprint, otherwise we complain
             if (classId != 0) {
-                log.warning("Requested unknown color class [classId=" + classId +
-                            ", colorId=" + colorId + "].", new Exception());
+                log.warning("Requested unknown color class",
+                    "classId", classId, "colorId", colorId, new Exception());
             }
             return null;
         }
@@ -413,8 +408,8 @@ public class ColorPository implements Serializable
     {
         ClassRecord record = getClassRecord(className);
         if (record == null) {
-            log.warning("Requested unknown color class [className=" + className +
-                        ", colorName=" + colorName + "].", new Exception());
+            log.warning("Requested unknown color class",
+                "className", className, "colorName", colorName, new Exception());
             return null;
         }
 
@@ -422,7 +417,7 @@ public class ColorPository implements Serializable
         try {
             colorId = record.getColorId(colorName);
         } catch (ParseException pe) {
-            log.info("Error getting color record by name. [error=" + pe + "]");
+            log.info("Error getting color record by name", "error", pe);
             return null;
         }
 
@@ -430,8 +425,8 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Adds a fully configured color class record to the pository. This is
-     * only called by the XML parsing code, so pay it no mind.
+     * Adds a fully configured color class record to the pository. This is only called by the XML
+     * parsing code, so pay it no mind.
      */
     public void addClass (ClassRecord record)
     {
@@ -452,8 +447,7 @@ public class ColorPository implements Serializable
         try {
             return loadColorPository(rmgr.getResource(CONFIG_PATH));
         } catch (IOException ioe) {
-            log.warning("Failure loading color pository [path=" + CONFIG_PATH +
-                        ", error=" + ioe + "].");
+            log.warning("Failure loading color pository", "path", CONFIG_PATH, "error", ioe);
             return new ColorPository();
         }
     }
@@ -467,7 +461,7 @@ public class ColorPository implements Serializable
         try {
             return (ColorPository)CompiledConfig.loadConfig(source);
         } catch (IOException ioe) {
-            log.warning("Failure loading color pository: " + ioe + ".");
+            log.warning("Failure loading color pository", "ioe", ioe);
             return new ColorPository();
         }
     }
@@ -481,8 +475,7 @@ public class ColorPository implements Serializable
         try {
             CompiledConfig.saveConfig(path, posit);
         } catch (IOException ioe) {
-            log.warning("Failure saving color pository " +
-                        "[path=" + path + ", error=" + ioe + "].");
+            log.warning("Failure saving color pository", "path", path, "error", ioe);
         }
     }
 
