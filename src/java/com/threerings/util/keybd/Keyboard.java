@@ -75,8 +75,8 @@ public class Keyboard
             }
 
         } catch (Throwable t) {
-            log.warning("Failed to load native keyboard library " +
-                        "[cause=" + t + "].");
+            log.info("Failed to load native keyboard library " +
+                     "[cause=" + t + "].");
             _haveLib = false;
         }
     }
