@@ -85,7 +85,6 @@ public class SceneObjectTip extends LabelSausage
      *
      * @param tipFor the scene object that we're a tip for.
      * @param boundary the boundary of all displayable space.
-     * @param othertips other tip boundaries that we should avoid.
      */
     public void layout (Graphics2D gfx, SceneObject tipFor, Rectangle boundary)
     {

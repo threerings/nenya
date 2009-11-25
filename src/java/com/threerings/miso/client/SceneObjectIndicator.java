@@ -21,8 +21,6 @@
 
 package com.threerings.miso.client;
 
-import java.util.Collection;
-
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
@@ -55,7 +53,7 @@ public interface SceneObjectIndicator
 
     /**
      * Paints the indicator in the scene. Always called after
-     * {@link #layout(Graphics2D, SceneObject, Rectangle, Collection)}
+     * {@link #layout(Graphics2D, SceneObject, Rectangle)}
      */
     public void paint (Graphics2D gfx);
 
