@@ -21,8 +21,6 @@
 
 package com.threerings.miso.client;
 
-import java.util.Collection;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -77,6 +75,11 @@ public class SceneObjectTip extends LabelSausage
         super(new Label(text, _foreground, _font), icon);
     }
 
+    public boolean isLaidOut ()
+    {
+        return _label.isLaidOut();
+    }
+
     /**
      * Called to initialize the tip so that it can be painted.
      *
@@ -84,8 +87,7 @@ public class SceneObjectTip extends LabelSausage
      * @param boundary the boundary of all displayable space.
      * @param othertips other tip boundaries that we should avoid.
      */
-    public void layout (Graphics2D gfx, SceneObject tipFor, Rectangle boundary,
-                        Collection<Rectangle> othertips)
+    public void layout (Graphics2D gfx, SceneObject tipFor, Rectangle boundary)
     {
         layout(gfx, ICON_PAD, EXTRA_PAD);
         bounds = new Rectangle(_size);

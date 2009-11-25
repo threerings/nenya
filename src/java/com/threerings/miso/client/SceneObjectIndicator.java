@@ -41,8 +41,12 @@ public interface SceneObjectIndicator
     /**
      * Positions the indicator in the scene in relation to <code>key</code>
      */
-    public void layout (Graphics2D gfx, SceneObject key, Rectangle viewBounds,
-        Collection<Rectangle> otherIndicators);
+    public void layout (Graphics2D gfx, SceneObject key, Rectangle viewBounds);
+
+    /**
+     * Returns whether the indicator has already been laid out (and thus doesn't need to be again)
+     */
+    public boolean isLaidOut ();
 
     /**
      * Called when the indicator is removed from the scene.

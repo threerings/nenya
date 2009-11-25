@@ -1321,11 +1321,12 @@ public class MisoScenePanel extends VirtualMediaPanel
     {
         // make sure the indicators are ready
         if (!_indicatorsLaidOut) {
-            List<Rectangle> boundaries = Lists.newArrayList();
             for (Map.Entry<SceneObject, SceneObjectIndicator> entry : _indicators.entrySet()) {
-                entry.getValue().layout(gfx, entry.getKey(), _vbounds, boundaries);
-                dirtyIndicator(entry.getValue());
-                boundaries.add(entry.getValue().getBounds());
+                SceneObjectIndicator indic = entry.getValue();
+                if (!indic.isLaidOut()) {
+                    indic.layout(gfx, entry.getKey(), _vbounds);
+                    dirtyIndicator(indic);
+                }
             }
             _indicatorsLaidOut = true;
         }
