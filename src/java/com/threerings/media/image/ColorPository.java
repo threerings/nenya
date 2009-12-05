@@ -23,6 +23,7 @@ package com.threerings.media.image;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import java.io.File;
@@ -86,8 +87,8 @@ public class ColorPository implements Serializable
         public void addColor (ColorRecord record)
         {
             // validate the color id
-            if (record.colorId > 255) {
-                log.warning("Refusing to add color record; colorId > 255",
+            if (record.colorId > 127) {
+                log.warning("Refusing to add color record; colorId > 127",
                     "class", this, "record", record);
             } else {
                 record.cclass = this;
@@ -249,6 +250,11 @@ public class ColorPository implements Serializable
     public Iterator<ClassRecord> enumerateClasses ()
     {
         return _classes.values().iterator();
+    }
+
+    public Collection<ClassRecord>  getClasses ()
+    {
+        return _classes.values();
     }
 
     /**

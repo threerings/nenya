@@ -103,7 +103,7 @@ public class ObjectInfo extends SimpleStreamableObject
      */
     public int getPrimaryZation ()
     {
-        return (zations & 0xFFFF);
+        return (zations & 0xFF);
     }
 
     /**
@@ -111,15 +111,31 @@ public class ObjectInfo extends SimpleStreamableObject
      */
     public int getSecondaryZation ()
     {
-        return ((zations >> 16) & 0xFFFF);
+        return ((zations >> 16) & 0xFF);
+    }
+
+    /**
+     * Returns the tertiary colorization assignment.
+     */
+    public int getTertiaryZation ()
+    {
+        return ((zations >> 24) & 0xFF);
+    }
+
+    /**
+     * Returns the quaternary colorization assignment.
+     */
+    public int getQuaternaryZation ()
+    {
+        return ((zations >> 8) & 0xFF);
     }
 
     /**
      * Sets the primary and secondary colorization assignments.
      */
-    public void setZations (short primary, short secondary)
+    public void setZations (byte primary, byte secondary, byte tertiary, byte quaternary)
     {
-        zations = ((secondary << 16) | primary);
+        zations = (primary | (secondary << 16) | (tertiary << 24) | (quaternary << 8));
     }
 
     /**
