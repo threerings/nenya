@@ -21,15 +21,6 @@
 
 package com.threerings.media.tools;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -39,11 +30,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -59,6 +58,7 @@ import javax.swing.event.ChangeListener;
 import com.google.common.collect.Lists;
 
 import com.samskivert.util.PrefsConfig;
+
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.VGroupLayout;
 import com.samskivert.swing.util.SwingUtil;
@@ -66,6 +66,7 @@ import com.samskivert.swing.util.SwingUtil;
 import com.threerings.media.image.ColorPository;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageUtil;
+import com.threerings.media.image.ColorPository.ColorRecord;
 import com.threerings.media.image.tools.xml.ColorPositoryParser;
 
 /**
@@ -125,6 +126,9 @@ public class RecolorImage extends JPanel
         _classList.addActionListener(al);
 
         add(colMode, VGroupLayout.FIXED);
+
+        add(_labelColors = new JCheckBox("Label Colorizations"), VGroupLayout.FIXED);
+        _labelColors.addActionListener(al);
 
         JPanel controls = new JPanel(new HGroupLayout(HGroupLayout.STRETCH));
         controls.add(new JLabel("Source color:"), HGroupLayout.FIXED);
@@ -200,7 +204,7 @@ public class RecolorImage extends JPanel
             BufferedImage image;
             if (_mode.isSelected()) {
                 // All recolorings from file.
-                image = getAllRecolors();
+                image = getAllRecolors(_labelColors.isSelected());
                 if (image == null) {
                     return;
                 }
@@ -232,7 +236,7 @@ public class RecolorImage extends JPanel
     /**
      * Gets an image with all recolorings of the selection colorization class.
      */
-    public BufferedImage getAllRecolors ()
+    public BufferedImage getAllRecolors (boolean label)
     {
         if (_colRepo == null) {
             return null;
@@ -245,6 +249,7 @@ public class RecolorImage extends JPanel
         BufferedImage img = new BufferedImage(_image.getWidth(),
             _image.getHeight()*colClass.colors.size(), BufferedImage.TYPE_INT_ARGB);
         Graphics gfx = img.getGraphics();
+        gfx.setColor(Color.BLACK);
         int y = 0;
 
 
@@ -258,6 +263,12 @@ public class RecolorImage extends JPanel
                     _image, coloriz.rootColor, coloriz.range, coloriz.offsets);
 
             gfx.drawImage(subImg, 0, y, null, null);
+
+            if (label) {
+                ColorRecord crec = _colRepo.getColorRecord(classId, key);
+                gfx.drawString(crec.name, 2, y + gfx.getFontMetrics().getHeight() + 2);
+                gfx.drawRect(0, y, _image.getWidth() - 1, _image.getHeight());
+            }
 
             y += subImg.getHeight();
         }
@@ -462,6 +473,7 @@ public class RecolorImage extends JPanel
 
     protected JComboBox _classList;
     protected JToggleButton _mode;
+    protected JCheckBox _labelColors;
 
     protected ColorPository _colRepo;
 
