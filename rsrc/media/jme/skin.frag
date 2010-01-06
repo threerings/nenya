@@ -2,7 +2,7 @@
 // $Id: ImageCache.java 158 2007-02-24 00:38:17Z mdb $
 //
 // Nenya library - tools for developing networked games
-// Copyright (C) 2002-2007 Three Rings Design, Inc., All Rights Reserved
+// Copyright (C) 2002-2010 Three Rings Design, Inc., All Rights Reserved
 // http://www.threerings.net/code/nenya/
 //
 // This library is free software; you can redistribute it and/or modify it
