@@ -226,7 +226,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
         }
 
         @Override
-        public Object clone () {
+        public Section clone () {
             try {
                 Section section = (Section)super.clone();
                 section.baseTileIds = baseTileIds.clone();
@@ -236,7 +236,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
                 section.objectInfo = objectInfo.clone();
                 return section;
             } catch (CloneNotSupportedException cnse) {
-                throw new RuntimeException(cnse);
+                throw new AssertionError(cnse);
             }
         }
 
@@ -453,7 +453,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
     }
 
     @Override
-    public Object clone ()
+    public SparseMisoSceneModel clone ()
     {
         SparseMisoSceneModel model = (SparseMisoSceneModel)super.clone();
         model._sections = new StreamableHashIntMap<Section>();

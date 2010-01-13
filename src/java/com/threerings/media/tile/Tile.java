@@ -135,12 +135,12 @@ public class Tile // implements Cloneable
 //     /**
 //      * Creates a shallow copy of this tile object.
 //      */
-//     public Object clone ()
+//     public Tile clone ()
 //     {
 //         try {
 //             return (Tile)super.clone();
 //         } catch (CloneNotSupportedException cnse) {
-//             throw new RuntimeException(cnse);
+//             throw new AssertionError(cnse);
 //         }
 //     }
 

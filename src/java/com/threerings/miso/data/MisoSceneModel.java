@@ -112,12 +112,12 @@ public abstract class MisoSceneModel extends SimpleStreamableObject
     public abstract boolean removeObject (ObjectInfo info);
 
     @Override
-    public Object clone ()
+    public MisoSceneModel clone ()
     {
         try {
-            return super.clone();
+            return (MisoSceneModel) super.clone();
         } catch (CloneNotSupportedException cnse) {
-            throw new RuntimeException(cnse);
+            throw new AssertionError(cnse);
         }
     }
 }

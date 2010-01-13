@@ -189,7 +189,7 @@ public class SimpleMisoSceneModel extends MisoSceneModel
     }
 
     @Override
-    public Object clone ()
+    public SimpleMisoSceneModel clone ()
     {
         SimpleMisoSceneModel model = (SimpleMisoSceneModel)super.clone();
         model.baseTileIds = baseTileIds.clone();

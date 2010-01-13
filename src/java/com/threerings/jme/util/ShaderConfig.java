@@ -88,11 +88,10 @@ public abstract class ShaderConfig
     }
 
     @Override // documentation inherited
-    public Object clone ()
+    public ShaderConfig clone ()
     {
-        ShaderConfig other = null;
         try {
-            other = (ShaderConfig)super.clone();
+            ShaderConfig other = (ShaderConfig)super.clone();
             other._state =
                 DisplaySystem.getDisplaySystem().getRenderer().createGLSLShaderObjectsState();
             other._state.setProgramID(_state.getProgramID());
@@ -112,10 +111,11 @@ public abstract class ShaderConfig
                     other._textures[ii] = (TextureConfig)_textures[ii].clone();
                 }
             }
+            return other;
+
         } catch (CloneNotSupportedException e) {
-            // will not happen
+            throw new AssertionError(e);
         }
-        return other;
     }
 
     /**
@@ -309,13 +309,12 @@ public abstract class ShaderConfig
         }
 
         @Override // documentation inherited
-        public Object clone ()
+        public LightConfig clone ()
         {
             try {
-                return super.clone();
+                return (LightConfig) super.clone();
             } catch (CloneNotSupportedException e) {
-                // will not happen
-                return null;
+                throw new AssertionError(e);
             }
         }
 
@@ -341,13 +340,12 @@ public abstract class ShaderConfig
         }
 
         @Override // documentation inherited
-        public Object clone ()
+        public TextureConfig clone ()
         {
             try {
-                return super.clone();
+                return (TextureConfig) super.clone();
             } catch (CloneNotSupportedException e) {
-                // will not happen
-                return null;
+                throw new AssertionError(e);
             }
         }
 

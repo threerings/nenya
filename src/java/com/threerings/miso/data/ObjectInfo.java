@@ -166,12 +166,12 @@ public class ObjectInfo extends SimpleStreamableObject
     }
 
     @Override
-    public Object clone ()
+    public ObjectInfo clone ()
     {
         try {
-            return super.clone();
+            return (ObjectInfo) super.clone();
         } catch (CloneNotSupportedException cnse) {
-            throw new RuntimeException(cnse);
+            throw new AssertionError(cnse);
         }
     }
 
