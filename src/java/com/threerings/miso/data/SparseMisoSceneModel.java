@@ -459,7 +459,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
         model._sections = new StreamableHashIntMap<Section>();
         for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
             Section sect = iter.next();
-            model.setSection((Section)sect.clone());
+            model.setSection(sect.clone());
         }
         return model;
     }

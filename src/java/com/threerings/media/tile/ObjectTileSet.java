@@ -27,9 +27,8 @@ import com.samskivert.util.StringUtil;
 import com.threerings.media.image.Colorization;
 
 /**
- * The object tileset supports the specification of object information for
- * object tiles in addition to all of the features of the swiss army
- * tileset.
+ * The object tileset supports the specification of object information for object tiles in
+ * addition to all of the features of the swiss army tileset.
  *
  * @see ObjectTile
  */
@@ -64,9 +63,8 @@ public class ObjectTileSet extends SwissArmyTileSet
     public static final String LOW = "_LOW";
 
     /**
-     * Sets the widths (in unit tile count) of the objects in this
-     * tileset. This must be accompanied by a call to {@link
-     * #setObjectHeights}.
+     * Sets the widths (in unit tile count) of the objects in this tileset. This must be
+     * accompanied by a call to {@link #setObjectHeights}.
      */
     public void setObjectWidths (int[] objectWidths)
     {
@@ -74,9 +72,8 @@ public class ObjectTileSet extends SwissArmyTileSet
     }
 
     /**
-     * Sets the heights (in unit tile count) of the objects in this
-     * tileset. This must be accompanied by a call to {@link
-     * #setObjectWidths}.
+     * Sets the heights (in unit tile count) of the objects in this tileset. This must be
+     * accompanied by a call to {@link #setObjectWidths}.
      */
     public void setObjectHeights (int[] objectHeights)
     {
@@ -108,8 +105,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     }
 
     /**
-     * Provides a set of colorization classes that apply to objects in
-     * this tileset.
+     * Provides a set of colorization classes that apply to objects in this tileset.
      */
     public void setColorizations (String[] zations)
     {
@@ -150,8 +146,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     }
 
     /**
-     * Returns the x coordinate of the spot associated with the specified
-     * tile index.
+     * Returns the x coordinate of the spot associated with the specified tile index.
      */
     public int getXSpot (int tileIdx)
     {
@@ -159,8 +154,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     }
 
     /**
-     * Returns the y coordinate of the spot associated with the specified
-     * tile index.
+     * Returns the y coordinate of the spot associated with the specified tile index.
      */
     public int getYSpot (int tileIdx)
     {
@@ -168,8 +162,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     }
 
     /**
-     * Returns the orientation of the spot associated with the specified
-     * tile index.
+     * Returns the orientation of the spot associated with the specified tile index.
      */
     public int getSpotOrient (int tileIdx)
     {
@@ -177,8 +170,8 @@ public class ObjectTileSet extends SwissArmyTileSet
     }
 
     /**
-     * Returns the list of constraints associated with the specified tile
-     * index, or <code>null</code> if the index has no constraints.
+     * Returns the list of constraints associated with the specified tile index, or
+     * <code>null</code> if the index has no constraints.
      */
     public String[] getConstraints (int tileIdx)
     {
@@ -251,8 +244,7 @@ public class ObjectTileSet extends SwissArmyTileSet
             otile.setPriority(_priorities[tileIndex]);
         }
         if (_xspots != null) {
-            otile.setSpot(_xspots[tileIndex], _yspots[tileIndex],
-                          _sorients[tileIndex]);
+            otile.setSpot(_xspots[tileIndex], _yspots[tileIndex], _sorients[tileIndex]);
         }
         if (_constraints != null) {
             otile.setConstraints(_constraints[tileIndex]);
