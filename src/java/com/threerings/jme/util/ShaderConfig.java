@@ -102,13 +102,13 @@ public abstract class ShaderConfig
             if (_lights != null) {
                 other._lights = _lights.clone();
                 for (int ii = 0; ii < _lights.length; ii++) {
-                    other._lights[ii] = (LightConfig)_lights[ii].clone();
+                    other._lights[ii] = _lights[ii].clone();
                 }
             }
             if (_textures != null) {
                 other._textures = _textures.clone();
                 for (int ii = 0; ii < _textures.length; ii++) {
-                    other._textures[ii] = (TextureConfig)_textures[ii].clone();
+                    other._textures[ii] = _textures[ii].clone();
                 }
             }
             return other;
