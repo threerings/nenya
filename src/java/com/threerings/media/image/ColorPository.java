@@ -90,6 +90,9 @@ public class ColorPository implements Serializable
             if (record.colorId > 127) {
                 log.warning("Refusing to add color record; colorId > 127",
                     "class", this, "record", record);
+            } else if (colors.containsKey(record.colorId)) {
+                log.warning("Refusing to add duplicate colorId",
+                    "class", this, "record", record, "existing", colors.get(record.colorId));
             } else {
                 record.cclass = this;
                 colors.put(record.colorId, record);
