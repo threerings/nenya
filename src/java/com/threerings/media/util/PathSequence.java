@@ -46,12 +46,21 @@ public class PathSequence
 
     /**
      * Construct a path sequence with the list of paths.
-     * Note: Paths may be added to the end of the list while
-     * the pathable is still traversing earlier paths!
+     *
+     * Note: Paths may be added to the end of the list while the pathable is still traversing
+     * earlier paths!
      */
     public PathSequence (List<Path> paths)
     {
         _paths = paths;
+    }
+
+    /**
+     * Add a new path to the end of our current list.
+     */
+    public void addPath (Path path)
+    {
+        _paths.add(path);
     }
 
     // documentation inherited from interface Path
@@ -62,9 +71,8 @@ public class PathSequence
             @Override
             public void pathCompleted (long timeStamp) {
                 long initStamp;
-                // if we just finished a timed path, we can figure out how
-                // long ago it really finished and init the next path at
-                // that time in the past.
+                // if we just finished a timed path, we can figure out how long ago it really
+                // finished and init the next path at that time in the past.
                 if (_curPath instanceof TimedPath) {
                     initStamp = _lastInit + ((TimedPath) _curPath)._duration;
                 } else {
@@ -81,8 +89,7 @@ public class PathSequence
     public boolean tick (Pathable pable, long tickStamp)
     {
         if (pable != _pable) {
-            log.warning("PathSequence ticked with different path than " +
-                "it was inited with.");
+            log.warning("PathSequence ticked with different path than it was inited with.");
         }
         return _curPath.tick(_pableRep, tickStamp);
     }

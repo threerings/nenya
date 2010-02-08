@@ -28,9 +28,8 @@ import com.samskivert.util.ObserverList;
 import com.threerings.media.AbstractMedia;
 
 /**
- * The animation class is an abstract class that should be extended to
- * provide animation functionality. It is generally used in conjunction
- * with an {@link AnimationManager}.
+ * The animation class is an abstract class that should be extended to provide animation
+ * functionality. It is generally used in conjunction with an {@link AnimationManager}.
  */
 public abstract class Animation extends AbstractMedia
 {
@@ -45,8 +44,7 @@ public abstract class Animation extends AbstractMedia
     }
 
     /**
-     * Returns true if the animation has finished all of its business,
-     * false if not.
+     * Returns true if the animation has finished all of its business, false if not.
      */
     public boolean isFinished ()
     {
@@ -54,8 +52,7 @@ public abstract class Animation extends AbstractMedia
     }
 
     /**
-     * If this animation has run to completion, it can be reset to prepare
-     * it for another go.
+     * If this animation has run to completion, it can be reset to prepare it for another go.
      */
     public void reset ()
     {
@@ -87,8 +84,8 @@ public abstract class Animation extends AbstractMedia
     }
 
     /**
-     * Called when the animation is finished and the animation manager is
-     * about to remove it from service.
+     * Called when the animation is finished and the animation manager is about to remove it from
+     * service.
      */
     protected void willFinish (long tickStamp)
     {
@@ -96,8 +93,8 @@ public abstract class Animation extends AbstractMedia
     }
 
     /**
-     * Called when the animation is finished and the animation manager has
-     * removed it from service.
+     * Called when the animation is finished and the animation manager has removed it from
+     * service.
      */
     protected void didFinish (long tickStamp)
     {

@@ -33,9 +33,8 @@ public class SpriteAnimation extends Animation
     implements PathObserver
 {
     /**
-     * Constructs a sprite animation for the given sprite. The first time
-     * the animation is ticked, the sprite will be added to the given
-     * sprite manager and started along the supplied path.
+     * Constructs a sprite animation for the given sprite. The first time the animation is ticked,
+     * the sprite will be added to the given sprite manager and started along the supplied path.
      */
     public SpriteAnimation (SpriteManager spritemgr, Sprite sprite, Path path)
     {

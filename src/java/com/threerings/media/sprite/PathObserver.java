@@ -25,15 +25,14 @@ import com.threerings.media.FrameManager;
 import com.threerings.media.util.Path;
 
 /**
- * An interface to be implemented by classes that would like to be
- * notified when a sprite completes or cancels its path.
+ * An interface to be implemented by classes that would like to be notified when a sprite
+ * completes or cancels its path.
  */
 public interface PathObserver
 {
     /**
-     * Called when a sprite's path is cancelled either because a new path
-     * was started or the path was explicitly cancelled with {@link
-     * Sprite#cancelMove}.
+     * Called when a sprite's path is cancelled either because a new path was started or the path
+     * was explicitly cancelled with {@link Sprite#cancelMove}.
      */
     public void pathCancelled (Sprite sprite, Path path);
 
@@ -42,9 +41,9 @@ public interface PathObserver
      *
      * @param sprite the sprite that completed its path.
      * @param path the path that was completed.
-     * @param when the tick stamp of the media tick on which the path was
-     * completed (see {@link FrameManager#tick}) (this may not be in the
-     * same time domain as {@link System#currentTimeMillis}).
+     * @param when the tick stamp of the media tick on which the path was completed (see
+     * {@link FrameManager#tick}) (this may not be in the same time domain as
+     * {@link System#currentTimeMillis}).
      */
     public void pathCompleted (Sprite sprite, Path path, long when);
 }

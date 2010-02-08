@@ -25,9 +25,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 /**
- * Displays nothing, but does so for a specified amount of time. Useful
- * when you want to get an animation completed event in some period of
- * time but don't actually need to display anything.
+ * Displays nothing, but does so for a specified amount of time. Useful when you want to get an
+ * animation completed event in some period of time but don't actually need to display anything.
  */
 public class BlankAnimation extends Animation
 {

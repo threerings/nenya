@@ -33,21 +33,19 @@ import com.samskivert.util.StringUtil;
 import static com.threerings.media.Log.log;
 
 /**
- * An animation that provides facilities for adding a sequence of
- * animations that are fired after a fixed time interval has elapsed or
- * after previous animations in the sequence have completed. Facilities
- * are also provided for running code upon the completion of animations in
- * the sequence.
+ * An animation that provides facilities for adding a sequence of animations that are fired after
+ * a fixed time interval has elapsed or after previous animations in the sequence have completed.
+ * Facilities are also provided for running code upon the completion of animations in the
+ * sequence.
  */
 public class AnimationSequencer extends Animation
 {
     /**
-     * Constructs an animation sequencer with the expectation that
-     * animations will be added via subsequent calls to {@link
-     * #addAnimation}.
+     * Constructs an animation sequencer with the expectation that animations will be added via
+     * subsequent calls to {@link #addAnimation}.
      *
-     * @param animmgr the animation manager to which to add our animations
-     * when they are ready to start.
+     * @param animmgr the animation manager to which to add our animations when they are ready to
+     * start.
      */
     public AnimationSequencer (AnimationManager animmgr)
     {
@@ -56,32 +54,25 @@ public class AnimationSequencer extends Animation
     }
 
     /**
-     * Adds the supplied animation to the sequence with the given
-     * parameters. Note that care should be taken if this is called after
-     * the animation sequence has begun firing animations. Do not add new
-     * animations after the final animation in the sequence has been
-     * started or you run the risk of attempting to add an animation to
-     * the sequence after it thinks that it has finished (in which case
-     * this method will fail).
+     * Adds the supplied animation to the sequence with the given parameters. Note that care
+     * should be taken if this is called after the animation sequence has begun firing animations.
+     * Do not add new animations after the final animation in the sequence has been started or you
+     * run the risk of attempting to add an animation to the sequence after it thinks that it has
+     * finished (in which case this method will fail).
      *
-     * @param anim the animation to be sequenced, or null if the
-     * completion action should be run immediately when this "animation"
-     * is ready to fired.
-     * @param delta the number of milliseconds following the
-     * <em>start</em> of the previous animation in the queue that this
-     * animation should be started; 0 if it should be started
-     * simultaneously with its predecessor int the queue; -1 if it should
-     * be started when its predecessor has completed.
-     * @param completionAction a runnable to be executed when this
-     * animation completes.
+     * @param anim the animation to be sequenced, or null if the completion action should be run
+     * immediately when this "animation" is ready to fired.
+     * @param delta the number of milliseconds following the <em>start</em> of the previous
+     * animation in the queue that this animation should be started; 0 if it should be started
+     * simultaneously with its predecessor int the queue; -1 if it should be started when its
+     * predecessor has completed.
+     * @param completionAction a runnable to be executed when this animation completes.
      */
-    public void addAnimation (
-        Animation anim, long delta, Runnable completionAction)
+    public void addAnimation (Animation anim, long delta, Runnable completionAction)
     {
         // sanity check
         if (_finished) {
-            throw new IllegalStateException(
-                "Animation added to finished sequencer");
+            throw new IllegalStateException("Animation added to finished sequencer");
         }
 
         // if this guy is triggering on a previous animation, grab that
@@ -100,8 +91,7 @@ public class AnimationSequencer extends Animation
             // otherwise we have no trigger, we'll just start ASAP
         }
 
-        AnimRecord arec = new AnimRecord(
-            anim, delta, trigger, completionAction);
+        AnimRecord arec = new AnimRecord(anim, delta, trigger, completionAction);
 //         Log.info("Queued " + arec + ".");
         _queued.add(arec);
     }
@@ -174,11 +164,10 @@ public class AnimationSequencer extends Animation
     }
 
     /**
-     * Called when the time comes to start an animation.  Derived classes
-     * may override this method and pass the animation on to their
-     * animation manager and do whatever else they need to do with
-     * operating animations. The default implementation simply adds them
-     * to the media panel supplied when we were constructed.
+     * Called when the time comes to start an animation. Derived classes may override this method
+     * and pass the animation on to their animation manager and do whatever else they need to do
+     * with operating animations. The default implementation simply adds them to the media panel
+     * supplied when we were constructed.
      *
      * @param anim the animation to be displayed.
      * @param tickStamp the timestamp at which this animation was fired.
@@ -196,37 +185,31 @@ public class AnimationSequencer extends Animation
 
     protected class AnimRecord extends AnimationAdapter
     {
-        public AnimRecord (Animation anim, long delta, AnimRecord trigger,
-                           Runnable completionAction) {
+        public AnimRecord (
+            Animation anim, long delta, AnimRecord trigger, Runnable completionAction) {
             _anim = anim;
             _delta = delta;
             _trigger = trigger;
             _completionAction = completionAction;
         }
 
-        public boolean readyToFire (long now, long lastStamp)
-        {
+        public boolean readyToFire (long now, long lastStamp) {
             if (_delta == -1) {
-                // if we have no trigger, that means we should start
-                // immediately, otherwise we wait until our trigger is no
-                // longer running (they are guaranteed not to be still
-                // queued at this point because readyToFire is only called
-                // on an animation after all animations previous in the
-                // queue have been started)
-                return (_trigger == null) ?
-                    true : !_running.contains(_trigger);
+                // if we have no trigger, that means we should start immediately, otherwise we wait
+                // until our trigger is no longer running (they are guaranteed not to be still
+                // queued at this point because readyToFire is only called on an animation after
+                // all animations previous in the queue have been started)
+                return (_trigger == null) ? true : !_running.contains(_trigger);
 
             } else {
                 return (lastStamp + _delta <= now);
             }
         }
 
-        public void fire (long when)
-        {
+        public void fire (long when) {
 //             Log.info("Firing " + this + " at " + (when%10000) + ".");
 
-            // if we have an animation, start it up and await its
-            // completion
+            // if we have an animation, start it up and await its completion
             if (_anim != null) {
                 startAnimation(_anim, when);
                 _anim.addAnimationObserver(this);
@@ -238,8 +221,7 @@ public class AnimationSequencer extends Animation
             }
         }
 
-        public void fireCompletion (long when)
-        {
+        public void fireCompletion (long when) {
 //             Log.info("Completing " + this + " at " + (when%10000) + ".");
 
             // call the completion action, if there is one
@@ -254,22 +236,19 @@ public class AnimationSequencer extends Animation
             // make a note that this animation is complete
             _running.remove(this);
 
-            // kids, don't try this at home; we call tick() immediately so
-            // that any animations triggered on the completion of previous
-            // animations can trigger on the completion of this animation
-            // rather than having to wait until the next tick to do so
+            // kids, don't try this at home; we call tick() immediately so that any animations
+            // triggered on the completion of previous animations can trigger on the completion of
+            // this animation rather than having to wait until the next tick to do so
             tick(when);
         }
 
         @Override
-        public void animationCompleted (Animation anim, long when)
-        {
+        public void animationCompleted (Animation anim, long when) {
             fireCompletion(when);
         }
 
         @Override
-        public String toString ()
-        {
+        public String toString () {
             return "[anim=" + StringUtil.shortClassName(_anim) +
                 ((_anim == null) ? "" : ("/" + _anim.hashCode())) +
                 ", action=" + _completionAction +

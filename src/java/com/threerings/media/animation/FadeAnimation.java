@@ -27,9 +27,8 @@ import java.awt.Rectangle;
 import com.threerings.media.effects.FadeEffect;
 
 /**
- * An animation that displays an image fading from one alpha level to
- * another in specified increments over time.  The animation is finished
- * when the specified target alpha is reached.
+ * An animation that displays an image fading from one alpha level to another in specified
+ * increments over time. The animation is finished when the specified target alpha is reached.
  */
 public abstract class FadeAnimation extends Animation
 {
@@ -41,8 +40,7 @@ public abstract class FadeAnimation extends Animation
      * @param step the alpha amount to step by each millisecond.
      * @param target the target alpha level.
      */
-    protected FadeAnimation (
-        Rectangle bounds, float alpha, float step, float target)
+    protected FadeAnimation (Rectangle bounds, float alpha, float step, float target)
     {
         super(bounds);
         _effect = new FadeEffect(alpha, step, target);
