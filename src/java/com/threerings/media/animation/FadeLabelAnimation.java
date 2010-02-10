@@ -37,8 +37,7 @@ public class FadeLabelAnimation extends FadeAnimation
     /**
      * Creates a label fading animation.
      */
-    public FadeLabelAnimation (Label label, int x, int y,
-                               float alpha, float step, float target)
+    public FadeLabelAnimation (Label label, int x, int y, float alpha, float step, float target)
     {
         super(new Rectangle(x, y, 0, 0), alpha, step, target);
         _label = label;

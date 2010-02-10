@@ -31,8 +31,7 @@ import com.samskivert.swing.Label;
 public class FloatingTextAnimation extends Animation
 {
     /**
-     * Constructs an animation for the given text centered at the given
-     * coordinates.
+     * Constructs an animation for the given text centered at the given coordinates.
      */
     public FloatingTextAnimation (Label label, int x, int y)
     {
@@ -40,8 +39,8 @@ public class FloatingTextAnimation extends Animation
     }
 
     /**
-     * Constructs an animation for the given text centered at the given
-     * coordinates. The animation will float up the screen for 30 pixels.
+     * Constructs an animation for the given text centered at the given coordinates. The animation
+     * will float up the screen for 30 pixels.
      */
     public FloatingTextAnimation (Label label, int x, int y, long floatPeriod)
     {
@@ -49,14 +48,13 @@ public class FloatingTextAnimation extends Animation
     }
 
     /**
-     * Constructs an animation for the given text starting at the given
-     * coordinates and floating toward the specified coordinates.
+     * Constructs an animation for the given text starting at the given coordinates and floating
+     * toward the specified coordinates.
      */
-    public FloatingTextAnimation (Label label, int sx, int sy,
-                                  int destx, int desty, long floatPeriod)
+    public FloatingTextAnimation (
+        Label label, int sx, int sy, int destx, int desty, long floatPeriod)
     {
-        super(new Rectangle(sx, sy, label.getSize().width,
-                            label.getSize().height));
+        super(new Rectangle(sx, sy, label.getSize().width, label.getSize().height));
 
         // save things off
         _label = label;
@@ -110,9 +108,8 @@ public class FloatingTextAnimation extends Animation
     }
 
     /**
-     * Sets the duration of this score animation to the specified time in
-     * milliseconds.  This should be called before the animation is added
-     * to the animation manager.
+     * Sets the duration of this score animation to the specified time in milliseconds. This
+     * should be called before the animation is added to the animation manager.
      */
     public void setFloatPeriod (long floatPeriod)
     {
@@ -151,8 +148,7 @@ public class FloatingTextAnimation extends Animation
         _x = _startX + (int)(_dx * pctdone);
         _y = _startY + (int)(_dy * pctdone);
 
-        // only update our location and dirty ourselves if we actually
-        // moved or our alpha changed
+        // only update our location and dirty ourselves if we actually moved or our alpha changed
         if (ox != _x || oy != _y) {
             // dirty our old location
             invalidate();
@@ -192,8 +188,8 @@ public class FloatingTextAnimation extends Animation
     }
 
     /**
-     * Derived classes may wish to extend score animation and render more than
-     * just the standard single label.
+     * Derived classes may wish to extend score animation and render more than just the standard
+     * single label.
      *
      * @param x the upper left coordinate of the animation.
      * @param y the upper left coordinate of the animation.

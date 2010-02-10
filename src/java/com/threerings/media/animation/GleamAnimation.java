@@ -35,9 +35,8 @@ import com.threerings.media.util.LinearTimeFunction;
 import com.threerings.media.util.TimeFunction;
 
 /**
- * Washes all non-transparent pixels in a sprite with a particular color
- * (by compositing them with the solid color with progressively higher
- * alpha values) and then back again.
+ * Washes all non-transparent pixels in a sprite with a particular color (by compositing them with
+ * the solid color with progressively higher alpha values) and then back again.
  */
 public class GleamAnimation extends Animation
 {
@@ -96,8 +95,7 @@ public class GleamAnimation extends Animation
             return;
         }
 
-        // if the sprite is moved or changed size while we're gleaming it,
-        // track those changes
+        // if the sprite is moved or changed size while we're gleaming it, track those changes
         if (!_bounds.equals(_sprite.getBounds())) {
             Rectangle obounds = new Rectangle(_bounds);
             _bounds.setBounds(_sprite.getBounds());
@@ -110,7 +108,7 @@ public class GleamAnimation extends Animation
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void fastForward (long timeDelta)
     {
         if (_upfunc != null) {
@@ -120,7 +118,7 @@ public class GleamAnimation extends Animation
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void paint (Graphics2D gfx)
     {
         // TODO: recreate our off image if the sprite bounds changed; we
@@ -167,7 +165,7 @@ public class GleamAnimation extends Animation
         gfx.setComposite(ocomp);
     }
 
-    @Override // documentation inherited
+    @Override
     protected void willStart (long tickStamp)
     {
         _upfunc = new LinearTimeFunction(_minAlpha, _maxAlpha, _upmillis);
@@ -182,7 +180,7 @@ public class GleamAnimation extends Animation
         }
     }
 
-    @Override //documentation inherited
+    @Override
     protected void shutdown ()
     {
         super.shutdown();

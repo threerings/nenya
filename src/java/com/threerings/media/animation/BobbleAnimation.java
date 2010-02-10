@@ -29,8 +29,8 @@ import com.samskivert.util.RandomUtil;
 import com.threerings.media.image.Mirage;
 
 /**
- * An animation that bobbles an image around within a specific horizontal
- * and vertical pixel range for a given period of time.
+ * An animation that bobbles an image around within a specific horizontal and vertical pixel range
+ * for a given period of time.
  */
 public class BobbleAnimation extends Animation
 {
@@ -44,11 +44,9 @@ public class BobbleAnimation extends Animation
      * @param ry the vertical bobble range.
      * @param duration the time to animate in milliseconds.
      */
-    public BobbleAnimation (
-        Mirage image, int sx, int sy, int rx, int ry, int duration)
+    public BobbleAnimation (Mirage image, int sx, int sy, int rx, int ry, int duration)
     {
-        super(new Rectangle(sx - rx, sy - ry, image.getWidth() + rx,
-                            image.getHeight() + ry));
+        super(new Rectangle(sx - rx, sy - ry, image.getWidth() + rx, image.getHeight() + ry));
 
         // save things off
         _image = image;

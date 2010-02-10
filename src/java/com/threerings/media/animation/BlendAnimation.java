@@ -36,9 +36,8 @@ import com.threerings.media.util.TimeFunction;
 public class BlendAnimation extends Animation
 {
     /**
-     * Blends from the starting image through each successive image in the
-     * specified amount of time (blending between each image takes place
-     * in <code>delay</code> milliseconds).
+     * Blends from the starting image through each successive image in the specified amount of
+     * time (blending between each image takes place in <code>delay</code> milliseconds).
      */
     public BlendAnimation (int x, int y, Mirage[] images, int delay)
     {
@@ -77,12 +76,10 @@ public class BlendAnimation extends Animation
         float alpha = 1f - (_level % 100) / 100f;
 
         Composite ocomp = gfx.getComposite();
-        gfx.setComposite(AlphaComposite.getInstance(
-                             AlphaComposite.SRC_OVER, alpha));
+        gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
         _images[index].paint(gfx, _bounds.x, _bounds.y);
         if (index < _images.length-1) {
-            gfx.setComposite(AlphaComposite.getInstance(
-                                 AlphaComposite.SRC_OVER, 1f-alpha));
+            gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f-alpha));
             _images[index+1].paint(gfx, _bounds.x, _bounds.y);
         }
         gfx.setComposite(ocomp);

@@ -34,10 +34,9 @@ import com.samskivert.util.StringUtil;
 import com.threerings.media.image.Mirage;
 
 /**
- * An animation that displays an object exploding into chunks, fading out
- * as they fly apart.  The animation ends when all chunks have exited the
- * animation bounds, or when the given delay time (if any is specified)
- * has elapsed.
+ * An animation that displays an object exploding into chunks, fading out as they fly apart. The
+ * animation ends when all chunks have exited the animation bounds, or when the given delay time
+ * (if any is specified) has elapsed.
  */
 public class ExplodeAnimation extends Animation
 {
@@ -52,8 +51,7 @@ public class ExplodeAnimation extends Animation
         /** The number of image chunks on each axis. */
         public int xchunk, ychunk;
 
-        /** The maximum chunk velocity on each axis in pixels per
-         * millisecond. */
+        /** The maximum chunk velocity on each axis in pixels per millisecond. */
         public float xvel, yvel;
 
         /** The y-axis chunk acceleration in pixels per millisecond. */
@@ -62,8 +60,8 @@ public class ExplodeAnimation extends Animation
         /** The chunk rotational velocity in rotations per millisecond. */
         public float rvel;
 
-        /** The animation length in milliseconds, or -1 if the animation
-         * should continue until all pieces are outside the bounds. */
+        /** The animation length in milliseconds, or -1 if the animation should continue until
+         * all pieces are outside the bounds. */
         public long delay;
 
         @Override
@@ -74,8 +72,8 @@ public class ExplodeAnimation extends Animation
     }
 
     /**
-     * Constructs an explode animation with the chunks represented as
-     * filled rectangles of the specified color.
+     * Constructs an explode animation with the chunks represented as filled rectangles of the
+     * specified color.
      *
      * @param color the color to render the chunks in.
      * @param info the explode info object.
@@ -84,8 +82,7 @@ public class ExplodeAnimation extends Animation
      * @param width the width of the object.
      * @param height the height of the object.
      */
-    public ExplodeAnimation (
-        Color color, ExplodeInfo info, int x, int y, int width, int height)
+    public ExplodeAnimation (Color color, ExplodeInfo info, int x, int y, int width, int height)
     {
         super(info.bounds);
 
@@ -94,8 +91,8 @@ public class ExplodeAnimation extends Animation
     }
 
     /**
-     * Constructs an explode animation with the chunks represented as
-     * portions of the actual image.
+     * Constructs an explode animation with the chunks represented as portions of the actual
+     * image.
      *
      * @param image the image to animate.
      * @param info the explode info object.
@@ -104,8 +101,7 @@ public class ExplodeAnimation extends Animation
      * @param width the width of the object.
      * @param height the height of the object.
      */
-    public ExplodeAnimation (
-        Mirage image, ExplodeInfo info, int x, int y, int width, int height)
+    public ExplodeAnimation (Mirage image, ExplodeInfo info, int x, int y, int width, int height)
     {
         super(info.bounds);
 
@@ -114,8 +110,7 @@ public class ExplodeAnimation extends Animation
     }
 
     /**
-     * Initializes the animation with the attributes of the given explode
-     * info object.
+     * Initializes the animation with the attributes of the given explode info object.
      */
     protected void init (ExplodeInfo info, int x, int y, int width, int height)
     {
@@ -227,8 +222,7 @@ public class ExplodeAnimation extends Animation
         if (_info.delay != -1) {
             // set the alpha composite to reflect the current fade-out
             ocomp = gfx.getComposite();
-            gfx.setComposite(
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, _alpha));
+            gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, _alpha));
         }
 
         for (int ii = 0; ii < _chunkcount; ii++) {
@@ -303,8 +297,7 @@ public class ExplodeAnimation extends Animation
     /** The individual chunk dimensions in pixels. */
     protected int _cwid, _chei;
 
-    /** The individual chunk dimensions in pixels, halved for handy use in
-     * repeated calculations. */
+    /** The individual chunk dimensions in pixels, halved for handy use in repeated calculations. */
     protected int _hcwid, _hchei;
 
     /** The total number of image chunks. */

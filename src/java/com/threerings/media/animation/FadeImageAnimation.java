@@ -34,11 +34,9 @@ public class FadeImageAnimation extends FadeAnimation
     /**
      * Creates an image fading animation.
      */
-    public FadeImageAnimation (Mirage image, int x, int y,
-                               float alpha, float step, float target)
+    public FadeImageAnimation (Mirage image, int x, int y, float alpha, float step, float target)
     {
-        super(new Rectangle(x, y, image.getWidth(), image.getHeight()),
-              alpha, step, target);
+        super(new Rectangle(x, y, image.getWidth(), image.getHeight()), alpha, step, target);
         _image = image;
     }
 
