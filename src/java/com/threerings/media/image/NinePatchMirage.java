@@ -22,6 +22,7 @@ package com.threerings.media.image;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 /**
@@ -44,6 +45,19 @@ public class NinePatchMirage
         _ninePatch = ninePatch;
         _width = width;
         _height = height;
+    }
+
+    /**
+     * Returns a new Mirage that's a NinePatch stretched and positioned to contain the given
+     * Rectangle.
+     */
+    public static Mirage newNinePatchContaining(NinePatch ninePatch, Rectangle content)
+    {
+        Rectangle bounds = ninePatch.getBoundsSurrounding(content);
+
+        Mirage mirage = new NinePatchMirage(ninePatch, bounds.width, bounds.height);
+        return new TransformedMirage(mirage,
+            AffineTransform.getTranslateInstance(bounds.x, bounds.y), false);
     }
 
     public long getEstimatedMemoryUsage ()
