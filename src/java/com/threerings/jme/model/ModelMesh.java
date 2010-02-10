@@ -85,7 +85,7 @@ public class ModelMesh extends TriMesh
         super(name);
     }
 
-    @Override // documentation inherited
+    @Override
     public int hashCode ()
     {
         // hash on the name rather than the identity for consistent ordering
@@ -180,7 +180,7 @@ public class ModelMesh extends TriMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void reconstruct (
         FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors,
         FloatBuffer textures, IntBuffer indices)
@@ -290,7 +290,7 @@ public class ModelMesh extends TriMesh
         return mstore;
     }
 
-    @Override // documentation inherited
+    @Override
     public void updateWorldVectors ()
     {
         if (!_transformLocked) {
@@ -298,7 +298,7 @@ public class ModelMesh extends TriMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -334,7 +334,7 @@ public class ModelMesh extends TriMesh
             capsule.readIntBuffer("indexBuffer", null));
     }
 
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {
@@ -459,7 +459,7 @@ public class ModelMesh extends TriMesh
         // no-op
     }
 
-    @Override // documentation inherited
+    @Override
     protected void setupBatchList ()
     {
         batchList = Lists.newArrayListWithCapacity(1);
@@ -664,7 +664,7 @@ public class ModelMesh extends TriMesh
      * the base layer. */
     protected class ModelBatch extends TriangleBatch
     {
-        @Override // documentation inherited
+        @Override
         public void draw (Renderer r)
         {
             boolean drawing = (isEnabled() && r.isProcessingQueue());

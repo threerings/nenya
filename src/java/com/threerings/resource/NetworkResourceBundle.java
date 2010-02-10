@@ -53,13 +53,13 @@ public class NetworkResourceBundle extends KnownAvailabilityResourceBundle
         _ident = path;
     }
 
-    @Override // documentation inherited
+    @Override
     public String getIdent ()
     {
         return _ident;
     }
 
-    @Override // documentation inherited
+    @Override
     public InputStream getResource (String path)
         throws IOException
     {
@@ -94,7 +94,7 @@ public class NetworkResourceBundle extends KnownAvailabilityResourceBundle
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public BufferedImage getImageResource (String path, boolean useFastIO)
         throws IOException
     {

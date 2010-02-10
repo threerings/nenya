@@ -712,7 +712,7 @@ public class Model extends ModelNode
         fos.close();
     }
 
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -743,7 +743,7 @@ public class Model extends ModelNode
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {
@@ -770,7 +770,7 @@ public class Model extends ModelNode
         capsule.writeSavableArrayList(getControllers(), "controllers", null);
     }
 
-    @Override // documentation inherited
+    @Override
     public void resolveTextures (TextureProvider tprov)
     {
         super.resolveTextures(tprov);
@@ -852,7 +852,7 @@ public class Model extends ModelNode
         lockInstance(targets);
     }
 
-    @Override // documentation inherited
+    @Override
     public Spatial putClone (Spatial store, CloneCreator properties)
     {
         Model mstore = (Model)properties.originalToCopy.get(this);
@@ -880,7 +880,7 @@ public class Model extends ModelNode
         return mstore;
     }
 
-    @Override // documentation inherited
+    @Override
     public void updateGeometricState (float time, boolean initiator)
     {
         // if we were not visible the last time we were rendered, don't do a
@@ -915,7 +915,7 @@ public class Model extends ModelNode
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void onDraw (Renderer r)
     {
         // if we switch from invisible to visible, we have to do a last-minute

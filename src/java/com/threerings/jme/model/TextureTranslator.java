@@ -44,7 +44,7 @@ import static com.threerings.jme.Log.log;
  */
 public class TextureTranslator extends TextureController
 {
-    @Override // documentation inherited
+    @Override
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
@@ -67,7 +67,7 @@ public class TextureTranslator extends TextureController
         _translation.addLocal(_velocity.x * time, _velocity.y * time, 0f);
     }
     
-    @Override // documentation inherited
+    @Override
     public Controller putClone (
         Controller store, Model.CloneCreator properties)
     {
@@ -82,7 +82,7 @@ public class TextureTranslator extends TextureController
         return tstore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -91,7 +91,7 @@ public class TextureTranslator extends TextureController
         _velocity = (Vector2f)capsule.readSavable("velocity", null);
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {
@@ -100,7 +100,7 @@ public class TextureTranslator extends TextureController
         capsule.write(_velocity, "velocity", null);
     }
     
-    @Override // documentation inherited
+    @Override
     protected void initTextures ()
     {
         super.initTextures();

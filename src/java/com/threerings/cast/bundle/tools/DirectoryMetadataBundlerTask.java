@@ -31,7 +31,7 @@ import java.io.OutputStream;
  */
 public class DirectoryMetadataBundlerTask extends MetadataBundlerTask
 {
-    @Override // documentation inherited.
+    @Override
     protected OutputStream createOutputStream (File target)
         throws IOException
     {
@@ -39,7 +39,7 @@ public class DirectoryMetadataBundlerTask extends MetadataBundlerTask
         return null;
     }
 
-    @Override // documentation inherited
+    @Override
     protected OutputStream nextEntry (OutputStream lastEntry, String path)
         throws IOException
     {

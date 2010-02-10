@@ -80,7 +80,7 @@ public class BillboardController extends ModelController
         protected boolean _axial, _eyeRelativeX, _eyeRelativeZ;
     };
     
-    @Override // documentation inherited
+    @Override
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
@@ -130,7 +130,7 @@ public class BillboardController extends ModelController
         _rot.mult(lrot, lrot);
     }
     
-    @Override // documentation inherited
+    @Override
     public Controller putClone (
         Controller store, Model.CloneCreator properties)
     {
@@ -145,7 +145,7 @@ public class BillboardController extends ModelController
         return bstore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -155,7 +155,7 @@ public class BillboardController extends ModelController
             capsule.readString("alignment", "DIR_X_POS_Z"));
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {

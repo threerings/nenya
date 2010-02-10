@@ -230,14 +230,14 @@ public class ShaderCache
             Collections.addAll(this.defs, defs);
         }
 
-        @Override // documentation inherited
+        @Override
         public int hashCode ()
         {
             return (vert == null ? 0 : vert.hashCode()) + (frag == null ? 0 : frag.hashCode()) +
                 defs.hashCode();
         }
 
-        @Override // documentation inherited
+        @Override
         public boolean equals (Object obj)
         {
             ShaderKey okey = (ShaderKey)obj;
@@ -245,7 +245,7 @@ public class ShaderCache
                 defs.equals(okey.defs);
         }
 
-        @Override // documentation inherited
+        @Override
         public String toString ()
         {
             return "[vert=" + vert + ", frag=" + frag + ", defs=" + defs + "]";

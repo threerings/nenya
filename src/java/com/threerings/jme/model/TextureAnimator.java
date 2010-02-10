@@ -42,7 +42,7 @@ import com.threerings.jme.util.JmeUtil.FrameState;
  */
 public class TextureAnimator extends TextureController
 {
-    @Override // documentation inherited
+    @Override
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
@@ -68,7 +68,7 @@ public class TextureAnimator extends TextureController
             0f);
     }
     
-    @Override // documentation inherited
+    @Override
     public Controller putClone (
         Controller store, Model.CloneCreator properties)
     {
@@ -87,7 +87,7 @@ public class TextureAnimator extends TextureController
         return tstore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -100,7 +100,7 @@ public class TextureAnimator extends TextureController
         _repeatType = capsule.readInt("repeatType", Controller.RT_WRAP);
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {
@@ -113,7 +113,7 @@ public class TextureAnimator extends TextureController
         capsule.write(_repeatType, "repeatType", Controller.RT_WRAP);
     }
     
-    @Override // documentation inherited
+    @Override
     protected void initTextures ()
     {
         super.initTextures();

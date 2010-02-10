@@ -42,7 +42,7 @@ import com.threerings.jme.util.JmeUtil;
  */
 public class Rotator extends ModelController
 {
-    @Override // documentation inherited
+    @Override
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
@@ -60,7 +60,7 @@ public class Rotator extends ModelController
         _target.getLocalRotation().multLocal(_rot);
     }
     
-    @Override // documentation inherited
+    @Override
     public Controller putClone (
         Controller store, Model.CloneCreator properties)
     {
@@ -76,7 +76,7 @@ public class Rotator extends ModelController
         return rstore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -86,7 +86,7 @@ public class Rotator extends ModelController
         _velocity = capsule.readFloat("velocity", 0f);
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {

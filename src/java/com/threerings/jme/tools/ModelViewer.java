@@ -376,7 +376,7 @@ public class ModelViewer extends JmeCanvasApp
         run();
     }
 
-    @Override // documentation inherited
+    @Override
     public boolean init ()
     {
         if (!super.init()) {
@@ -388,7 +388,7 @@ public class ModelViewer extends JmeCanvasApp
         return true;
     }
 
-    @Override // documentation inherited
+    @Override
     protected void initDisplay ()
         throws JmeException
     {
@@ -397,7 +397,7 @@ public class ModelViewer extends JmeCanvasApp
         _ctx.getRenderer().getQueue().setTwoPassTransparency(false);
     }
 
-    @Override // documentation inherited
+    @Override
     protected void initInput ()
     {
         super.initInput();
@@ -430,13 +430,13 @@ public class ModelViewer extends JmeCanvasApp
             CAMPOS_FORMAT.format(pitch));
     }
 
-    @Override // documentation inherited
+    @Override
     protected CameraHandler createCameraHandler (Camera camera)
     {
         return new OrbitCameraHandler(camera);
     }
 
-    @Override // documentation inherited
+    @Override
     protected void initRoot ()
     {
         super.initRoot();
@@ -528,7 +528,7 @@ public class ModelViewer extends JmeCanvasApp
         }
     }
 
-    @Override // documentation inherited
+    @Override
     protected void initLighting ()
     {
         _dlight = new DirectionalLight();
@@ -962,7 +962,7 @@ public class ModelViewer extends JmeCanvasApp
             _spatial.setLocalScale(_scale.getValue() * 0.0001f);
         }
 
-        @Override // documentation inherited
+        @Override
         public void setVisible (boolean visible)
         {
             super.setVisible(visible);
@@ -1032,7 +1032,7 @@ public class ModelViewer extends JmeCanvasApp
     protected class MouseOrbiter extends MouseAdapter
         implements MouseMotionListener, MouseWheelListener
     {
-        @Override // documentation inherited
+        @Override
         public void mousePressed (MouseEvent e)
         {
             _mloc.setLocation(e.getX(), e.getY());
@@ -1081,7 +1081,7 @@ public class ModelViewer extends JmeCanvasApp
             _gpoint = super.getGroundPoint();
         }
 
-        @Override // documentation inherited
+        @Override
         public void panCamera (float x, float y) {
             Vector3f offset = _camera.getLeft().mult(-x).addLocal(
                 _camera.getUp().mult(y));
@@ -1090,7 +1090,7 @@ public class ModelViewer extends JmeCanvasApp
             _camera.onFrameChange();
         }
 
-        @Override // documentation inherited
+        @Override
         public Vector3f getGroundPoint ()
         {
             return _gpoint;

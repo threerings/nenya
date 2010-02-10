@@ -95,7 +95,7 @@ public class Buffer
         _id = 0;
     }
 
-    @Override // documentation inherited
+    @Override
     protected void finalize ()
         throws Throwable
     {

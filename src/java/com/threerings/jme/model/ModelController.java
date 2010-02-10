@@ -114,7 +114,7 @@ public abstract class ModelController extends Controller
         return mstore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -129,7 +129,7 @@ public abstract class ModelController extends Controller
         }
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {

@@ -360,7 +360,7 @@ public class Source
         _queue.clear();
     }
 
-    @Override // documentation inherited
+    @Override
     protected void finalize ()
         throws Throwable
     {

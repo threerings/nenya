@@ -37,7 +37,7 @@ import com.threerings.jme.util.SpatialVisitor;
  */
 public abstract class TextureController extends ModelController
 {
-    @Override // documentation inherited
+    @Override
     public void resolveTextures (TextureProvider tprov)
     {
         // reinitialize the cloned textures if we re-resolve

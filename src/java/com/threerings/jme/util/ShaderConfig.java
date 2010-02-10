@@ -87,7 +87,7 @@ public abstract class ShaderConfig
         return _scache.configureState(_state, vert, frag, darray, ddarray);
     }
 
-    @Override // documentation inherited
+    @Override
     public ShaderConfig clone ()
     {
         try {
@@ -308,7 +308,7 @@ public abstract class ShaderConfig
             return (otype != type);
         }
 
-        @Override // documentation inherited
+        @Override
         public LightConfig clone ()
         {
             try {
@@ -318,7 +318,7 @@ public abstract class ShaderConfig
             }
         }
 
-        @Override // documentation inherited
+        @Override
         public String toString ()
         {
             return Integer.toString(type);
@@ -339,7 +339,7 @@ public abstract class ShaderConfig
             return (omode != envMapMode);
         }
 
-        @Override // documentation inherited
+        @Override
         public TextureConfig clone ()
         {
             try {
@@ -349,7 +349,7 @@ public abstract class ShaderConfig
             }
         }
 
-        @Override // documentation inherited
+        @Override
         public String toString ()
         {
             return Integer.toString(envMapMode);

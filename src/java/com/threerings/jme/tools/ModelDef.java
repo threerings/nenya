@@ -390,7 +390,7 @@ public class ModelDef
     /** A triangle mesh that deforms according to bone positions. */
     public static class SkinMeshDef extends TriMeshDef
     {
-        @Override // documentation inherited
+        @Override
         public void getBoneNames (HashSet<String> bones)
         {
             for (Vertex vertex : vertices) {
@@ -398,13 +398,13 @@ public class ModelDef
             }
         }
 
-        @Override // documentation inherited
+        @Override
         protected ModelMesh createMesh ()
         {
             return new SkinMesh("mesh");
         }
 
-        @Override // documentation inherited
+        @Override
         public void resolveReferences (
             HashMap<String, Spatial> nodes, HashSet<Spatial> referenced)
         {
@@ -442,7 +442,7 @@ public class ModelDef
             ((SkinMesh)_mesh).setWeightGroups(wgroups);
         }
 
-        @Override // documentation inherited
+        @Override
         protected void configureMesh (Properties props)
         {
             // divide the vertices up by weight groups
@@ -579,13 +579,13 @@ public class ModelDef
             return StringUtil.toString(location);
         }
 
-        @Override // documentation inherited
+        @Override
         public int hashCode ()
         {
             return Arrays.hashCode(location) ^ Arrays.hashCode(normal) ^ Arrays.hashCode(tcoords);
         }
 
-        @Override // documentation inherited
+        @Override
         public boolean equals (Object obj)
         {
             Vertex overt = (Vertex)obj;
@@ -706,7 +706,7 @@ public class ModelDef
                 getLocalTranslation(), getLocalRotation(), getLocalScale(), localTransform);
         }
 
-        @Override // documentation inherited
+        @Override
         public void updateWorldVectors ()
         {
             super.updateWorldVectors();
@@ -973,21 +973,21 @@ public class ModelDef
      * are unique and non-null). */
     protected static class HashArrayList<E> extends ArrayList<E>
     {
-        @Override // documentation inherited
+        @Override
         public boolean add (E element)
         {
             add(size(), element);
             return true;
         }
 
-        @Override // documentation inherited
+        @Override
         public void add (int idx, E element)
         {
             super.add(idx, element);
             remapFrom(idx);
         }
 
-        @Override // documentation inherited
+        @Override
         public E remove (int idx)
         {
             E element = super.remove(idx);
@@ -996,27 +996,27 @@ public class ModelDef
             return element;
         }
 
-        @Override // documentation inherited
+        @Override
         public void clear ()
         {
             super.clear();
             _indices.clear();
         }
 
-        @Override // documentation inherited
+        @Override
         public int indexOf (Object obj)
         {
             Integer idx = _indices.get(obj);
             return (idx == null ? -1 : idx);
         }
 
-        @Override // documentation inherited
+        @Override
         public boolean contains (Object obj)
         {
             return _indices.containsKey(obj);
         }
 
-        @Override // documentation inherited
+        @Override
         public boolean remove (Object obj)
         {
             Integer idx = _indices.remove(obj);

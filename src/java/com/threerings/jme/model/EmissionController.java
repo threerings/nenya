@@ -37,7 +37,7 @@ import com.jme.util.export.OutputCapsule;
  */
 public abstract class EmissionController extends ModelController
 {
-    @Override // documentation inherited
+    @Override
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
@@ -45,7 +45,7 @@ public abstract class EmissionController extends ModelController
             props.getProperty("hide_target", "true"));
     }
     
-    @Override // documentation inherited
+    @Override
     public void init (Model model)
     {
         super.init(model);
@@ -59,7 +59,7 @@ public abstract class EmissionController extends ModelController
         }
     }
     
-    @Override // documentation inherited
+    @Override
     public Controller putClone (
         Controller store, Model.CloneCreator properties)
     {
@@ -72,7 +72,7 @@ public abstract class EmissionController extends ModelController
         return estore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -81,7 +81,7 @@ public abstract class EmissionController extends ModelController
         _hideTarget = capsule.readBoolean("hideTarget", true);
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {

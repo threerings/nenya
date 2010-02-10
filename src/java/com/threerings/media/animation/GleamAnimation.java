@@ -74,7 +74,7 @@ public class GleamAnimation extends Animation
         _fadeIn = fadeIn;
     }
 
-    @Override // documentation inherited
+    @Override
     public void tick (long timestamp)
     {
         if (timestamp - _lastUpdate < _millisBetweenUpdates) {

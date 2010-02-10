@@ -41,7 +41,7 @@ import com.threerings.jme.util.JmeUtil;
  */
 public class Translator extends ModelController
 {
-    @Override // documentation inherited
+    @Override
     public void configure (Properties props, Spatial target)
     {
         super.configure(props, target);
@@ -72,7 +72,7 @@ public class Translator extends ModelController
         _target.getLocalTranslation().interpolate(_from, _to, alpha);
     }
     
-    @Override // documentation inherited
+    @Override
     public Controller putClone (
         Controller store, Model.CloneCreator properties)
     {
@@ -90,7 +90,7 @@ public class Translator extends ModelController
         return tstore;
     }
     
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -102,7 +102,7 @@ public class Translator extends ModelController
         _repeatType = capsule.readInt("repeatType", Controller.RT_WRAP);
     }
     
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {

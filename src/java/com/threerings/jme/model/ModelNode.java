@@ -63,7 +63,7 @@ public class ModelNode extends Node
         super(name);
     }
 
-    @Override // documentation inherited
+    @Override
     public int hashCode ()
     {
         // hash on the name rather than the identity for consistent ordering
@@ -98,7 +98,7 @@ public class ModelNode extends Node
         return _modelTransform;
     }
 
-    @Override // documentation inherited
+    @Override
     public void updateWorldData (float time)
     {
         // we use locked bounds as an indication that we can skip the update
@@ -108,7 +108,7 @@ public class ModelNode extends Node
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void updateWorldBound ()
     {
         // don't bother updating if we know there are no visible descendants
@@ -117,7 +117,7 @@ public class ModelNode extends Node
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void updateWorldVectors ()
     {
         super.updateWorldVectors();
@@ -178,7 +178,7 @@ public class ModelNode extends Node
         return mstore;
     }
 
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -198,7 +198,7 @@ public class ModelNode extends Node
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {

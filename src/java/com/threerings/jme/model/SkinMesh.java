@@ -233,7 +233,7 @@ public class SkinMesh extends ModelMesh
         _bones = bones.toArray(new Bone[bones.size()]);
     }
 
-    @Override // documentation inherited
+    @Override
     public void addOverlay (RenderState[] overlay)
     {
         // add a cloned state config (with same uniforms) for the overlay
@@ -249,7 +249,7 @@ public class SkinMesh extends ModelMesh
         _osconfigs.add(osconfig);
     }
 
-    @Override // documentation inherited
+    @Override
     public void removeOverlay (RenderState[] overlay)
     {
         // remove the corresponding state config
@@ -263,7 +263,7 @@ public class SkinMesh extends ModelMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void reconstruct (
         FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors,
         FloatBuffer textures, IntBuffer indices)
@@ -274,7 +274,7 @@ public class SkinMesh extends ModelMesh
         _frames = new HashIntMap<Object>();
     }
 
-    @Override // documentation inherited
+    @Override
     public Spatial putClone (Spatial store, Model.CloneCreator properties)
     {
         SkinMesh mstore = (SkinMesh)properties.originalToCopy.get(this);
@@ -323,7 +323,7 @@ public class SkinMesh extends ModelMesh
         return mstore;
     }
 
-    @Override // documentation inherited
+    @Override
     public void read (JMEImporter im)
         throws IOException
     {
@@ -333,7 +333,7 @@ public class SkinMesh extends ModelMesh
             "weightGroups", null), new WeightGroup[0]));
     }
 
-    @Override // documentation inherited
+    @Override
     public void write (JMEExporter ex)
         throws IOException
     {
@@ -342,7 +342,7 @@ public class SkinMesh extends ModelMesh
         capsule.write(_weightGroups, "weightGroups", null);
     }
 
-    @Override // documentation inherited
+    @Override
     public void expandModelBounds ()
     {
         BoundingVolume obound = getBatch(0).getModelBound().clone(null);
@@ -350,7 +350,7 @@ public class SkinMesh extends ModelMesh
         getBatch(0).getModelBound().mergeLocal(obound);
     }
 
-    @Override // documentation inherited
+    @Override
     public void setReferenceTransforms ()
     {
         _invRefTransform = new Matrix4f();
@@ -368,7 +368,7 @@ public class SkinMesh extends ModelMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void lockStaticMeshes (
         Renderer renderer, boolean useVBOs, boolean useDisplayLists)
     {
@@ -394,7 +394,7 @@ public class SkinMesh extends ModelMesh
         _useDisplayLists = useDisplayLists && !_translucent;
     }
 
-    @Override // documentation inherited
+    @Override
     public void configureShaders (ShaderCache scache)
     {
         if (_disableShaders || !GLContext.getCapabilities().GL_ARB_vertex_shader ||
@@ -418,14 +418,14 @@ public class SkinMesh extends ModelMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void storeMeshFrame (int frameId, boolean blend)
     {
         _storeFrameId = frameId;
         _storeBlend = blend;
     }
 
-    @Override // documentation inherited
+    @Override
     public void setMeshFrame (int frameId)
     {
         TriangleBatch batch = getBatch(0),
@@ -439,7 +439,7 @@ public class SkinMesh extends ModelMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     public void blendMeshFrames (int frameId1, int frameId2, float alpha)
     {
         BlendFrame frame1 = (BlendFrame)_frames.get(frameId1),
@@ -452,7 +452,7 @@ public class SkinMesh extends ModelMesh
         nbuf.put(_nbuf);
     }
 
-    @Override // documentation inherited
+    @Override
     public void updateWorldData (float time)
     {
         super.updateWorldData(time);
@@ -568,7 +568,7 @@ public class SkinMesh extends ModelMesh
         }
     }
 
-    @Override // documentation inherited
+    @Override
     protected ModelBatch createModelBatch ()
     {
         // update the shader configs immediately before drawing
@@ -598,7 +598,7 @@ public class SkinMesh extends ModelMesh
         };
     }
 
-    @Override // documentation inherited
+    @Override
     protected void storeOriginalBuffers ()
     {
         super.storeOriginalBuffers();
@@ -659,19 +659,19 @@ public class SkinMesh extends ModelMesh
             }
         }
 
-        @Override // documentation inherited
+        @Override
         protected String getVertexShader ()
         {
             return "media/jme/skin.vert";
         }
 
-        @Override // documentation inherited
+        @Override
         protected String getFragmentShader ()
         {
             return "media/jme/skin.frag";
         }
 
-        @Override // documentation inherited
+        @Override
         protected void getDefinitions (ArrayList<String> defs)
         {
             super.getDefinitions(defs);
@@ -680,7 +680,7 @@ public class SkinMesh extends ModelMesh
             }
         }
 
-        @Override // documentation inherited
+        @Override
         protected void getDerivedDefinitions (ArrayList<String> ddefs)
         {
             super.getDerivedDefinitions(ddefs);
