@@ -41,6 +41,14 @@ public class Sound
     }
 
     /**
+     * Returns a reference to the group to which the sound belongs.
+     */
+    public SoundGroup getGroup ()
+    {
+        return _group;
+    }
+
+    /**
      * Returns the buffer of audio data associated with this sound.
      */
     public ClipBuffer getBuffer ()
