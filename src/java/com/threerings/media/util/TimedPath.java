@@ -24,8 +24,8 @@ package com.threerings.media.util;
 import static com.threerings.media.Log.log;
 
 /**
- * A base class for path implementations that endeavor to move their
- * pathables along a path in a specified number of milliseconds.
+ * A base class for path implementations that endeavor to move their pathables along a path in a
+ * specified number of milliseconds.
  */
 public abstract class TimedPath implements Path
 {
@@ -37,8 +37,8 @@ public abstract class TimedPath implements Path
     {
         // sanity check some things
         if (duration <= 0) {
-            log.warning("Requested path with illegal duration (<=0) " +
-                        "[duration=" + duration + "]", new Exception());
+            log.warning("Requested path with illegal duration (<=0)",
+                "duration", duration, new Exception());
             duration = 1; // assume something short but non-zero
         }
 
@@ -79,8 +79,7 @@ public abstract class TimedPath implements Path
     }
 
     /**
-     * An extensible method for generating a string representation of this
-     * instance.
+     * An extensible method for generating a string representation of this instance.
      */
     protected void toString (StringBuilder buf)
     {

@@ -91,23 +91,19 @@ public class ArcPath extends TimedPath
      */
     public Path getTranslatedInstance (int x, int y)
     {
-        int startx =
-            (int)(_center.x + Math.round(Math.cos(_sangle) * _xradius));
-        int starty =
-            (int)(_center.y + Math.round(Math.sin(_sangle) * _yradius));
+        int startx = (int)(_center.x + Math.round(Math.cos(_sangle) * _xradius));
+        int starty = (int)(_center.y + Math.round(Math.sin(_sangle) * _yradius));
 
         return new ArcPath(new Point(startx + x, starty + y),
             _xradius, _yradius, _sangle, _delta, _duration, _orient);
     }
 
     /**
-     * Sets the offset that is applied to the pathable whenever it is
-     * oriented. This offset is in clockwise units whose granularity is
-     * specified by the {@link #NORMAL} or {@link #FINE} setting supplied
-     * to the path at construct time. The intent here is to allow arc
-     * paths to be applied that don't orient the pathable in the direction
-     * they are traveling but instead in some fixed offset from that
-     * direction.
+     * Sets the offset that is applied to the pathable whenever it is oriented. This offset is in
+     * clockwise units whose granularity is specified by the {@link #NORMAL} or {@link #FINE}
+     * setting supplied to the path at construct time. The intent here is to allow arc paths to be
+     * applied that don't orient the pathable in the direction they are traveling but instead in
+     * some fixed offset from that direction.
      */
     public void setOrientOffset (int offset)
     {
@@ -136,8 +132,8 @@ public class ArcPath extends TimedPath
             angle = _sangle + _delta;
 
         } else {
-            // otherwise, compute the angle at which we should place the
-            // pathable based on the elapsed time
+            // otherwise, compute the angle at which we should place the pathable based on the
+            // elapsed time
             long elapsed = timestamp - _startStamp;
             angle = _sangle + _delta * elapsed / _duration;
         }
@@ -215,10 +211,9 @@ public class ArcPath extends TimedPath
     }
 
     /**
-     * Computes the position of an entity along the path defined by the
-     * supplied parameters assuming that it must finish the path in the
-     * specified duration (in millis) and has been traveling the path for
-     * the specified number of elapsed milliseconds.
+     * Computes the position of an entity along the path defined by the supplied parameters
+     * assuming that it must finish the path in the specified duration (in millis) and has been
+     * traveling the path for the specified number of elapsed milliseconds.
      */
     public static void computePosition (
         Point center, double xradius, double yradius, double angle, Point pos)
@@ -242,7 +237,6 @@ public class ArcPath extends TimedPath
     /** An orientation offset used when orienting our pathable. */
     protected int _orientOffset = 0;
 
-    /** A temporary point used when computing our position along the
-     * path. */
+    /** A temporary point used when computing our position along the path. */
     protected Point _tpos = new Point();
 }

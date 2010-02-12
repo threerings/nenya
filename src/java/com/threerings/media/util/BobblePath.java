@@ -36,8 +36,7 @@ public class BobblePath implements Path
      *
      * @param dx the variance in the x direction.
      * @param dy the variance in the y direction.
-     * @param duration the duration to bobble, or -1 to bobble until
-     * stop() is called.
+     * @param duration the duration to bobble, or -1 to bobble until stop() is called.
      */
     public BobblePath (int dx, int dy, long duration)
     {
@@ -49,8 +48,7 @@ public class BobblePath implements Path
      *
      * @param dx the variance in the x direction.
      * @param dy the variance in the y direction.
-     * @param duration the duration to bobble, or -1 to bobble until
-     * stop() is called.
+     * @param duration the duration to bobble, or -1 to bobble until stop() is called.
      * @param updateFreq how often to update the Pathable's location.
      */
     public BobblePath (int dx, int dy, long duration, long updateFreq)
@@ -67,8 +65,7 @@ public class BobblePath implements Path
     {
         if ((dx < 0) || (dy < 0) || ((dx == 0) && (dy == 0))) {
             throw new IllegalArgumentException(
-                "Variance values must be positive, " +
-                "and at least one must be non-zero.");
+                "Variance values must be positive, and at least one must be non-zero.");
         } else {
             _dx = dx;
             _dy = dy;
@@ -156,8 +153,7 @@ public class BobblePath implements Path
     }
 
     /**
-     * Update the position of the pathable or return false
-     * if it's already there.
+     * Update the position of the pathable or return false if it's already there.
      */
     protected boolean updatePositionTo (Pathable pable, int x, int y)
     {

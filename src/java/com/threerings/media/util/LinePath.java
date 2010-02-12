@@ -28,14 +28,14 @@ import java.awt.Point;
 import com.samskivert.util.StringUtil;
 
 /**
- * The line path is used to cause a pathable to go from point A to point B
- * in a certain number of milliseconds.
+ * The line path is used to cause a pathable to go from point A to point B in a certain number of
+ * milliseconds.
  */
 public class LinePath extends TimedPath
 {
     /**
-     * Constructs a line path between the two specified points that will
-     * be followed in the specified number of milliseconds.
+     * Constructs a line path between the two specified points that will be followed in the
+     * specified number of milliseconds.
      */
     public LinePath (int x1, int y1, int x2, int y2, long duration)
     {
@@ -43,8 +43,8 @@ public class LinePath extends TimedPath
     }
 
     /**
-     * Constructs a line path between the two specified points that will
-     * be followed in the specified number of milliseconds.
+     * Constructs a line path between the two specified points that will be followed in the
+     * specified number of milliseconds.
      */
     public LinePath (Point source, Point dest, long duration)
     {
@@ -54,9 +54,8 @@ public class LinePath extends TimedPath
     }
 
     /**
-     * Constructs a line path that moves a pathable from
-     * whatever its location is at init time to the dest point over
-     * the specified number of milliseconds.
+     * Constructs a line path that moves a pathable from whatever its location is at init time to
+     * the dest point over the specified number of milliseconds.
      */
     public LinePath (Point dest, long duration)
     {
@@ -128,13 +127,12 @@ public class LinePath extends TimedPath
     }
 
     /**
-     * Computes the position of an entity along the path defined by the
-     * supplied start and end points assuming that it must finish the path
-     * in the specified duration (in millis) and has been traveling the
-     * path for the specified number of elapsed milliseconds.
+     * Computes the position of an entity along the path defined by the supplied start and end
+     * points assuming that it must finish the path in the specified duration (in millis) and has
+     * been traveling the path for the specified number of elapsed milliseconds.
      */
-    public static void computePosition (Point start, Point end, long elapsed,
-                                        long duration, Point pos)
+    public static void computePosition (
+        Point start, Point end, long elapsed, long duration, Point pos)
     {
         float pct = (float)elapsed / duration;
         int travx = (int)((end.x - start.x) * pct);
@@ -145,7 +143,6 @@ public class LinePath extends TimedPath
     /** Our source and destination points. */
     protected Point _source, _dest;
 
-    /** A temporary point used when computing our position along the
-     * path. */
+    /** A temporary point used when computing our position along the path. */
     protected Point _tpos = new Point();
 }
