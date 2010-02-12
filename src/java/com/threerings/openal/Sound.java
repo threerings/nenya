@@ -21,6 +21,8 @@
 
 package com.threerings.openal;
 
+import org.lwjgl.openal.AL10;
+
 /**
  * Represents an instance of a sound clip which can be positioned in 3D space, gain and pitch
  * adjusted and played or looped.
@@ -267,6 +269,8 @@ public class Sound
     {
         if (_source != null) {
             _source.pause();
+        } else {
+            _stateDesired = AL10.AL_PAUSED;
         }
     }
 
@@ -278,6 +282,8 @@ public class Sound
     {
         if (_source != null) {
             _source.stop();
+        } else {
+            _stateDesired = AL10.AL_STOPPED;
         }
     }
 
@@ -308,15 +314,25 @@ public class Sound
         // if we're not ready to go...
         if (!_buffer.isPlayable()) {
             if (allowDefer) {
+                // save the desired state, which may be overridden by calls to play/pause/stop
+                _stateDesired = AL10.AL_PLAYING;
+                _loopDesired = loop;
+
                 // resolve the buffer and instruct it to play once it is resolved
                 _buffer.resolve(new ClipBuffer.Observer() {
                     public void clipLoaded (ClipBuffer buffer) {
-                        play(false, loop, obs);
+                        if (_stateDesired == AL10.AL_STOPPED) {
+                            return;
+                        }
+                        play(false, _loopDesired, obs);
+                        if (_stateDesired == AL10.AL_PAUSED) {
+                            pause();
+                        }
                     }
                     public void clipFailed (ClipBuffer buffer) {
                         // well, let's pretend like the sound started so that the observer isn't
                         // left hanging
-                        if (obs != null) {
+                        if (obs != null && _stateDesired != AL10.AL_STOPPED) {
                             obs.soundStarted(Sound.this);
                         }
                     }
@@ -398,6 +414,12 @@ public class Sound
 
     /** The source via which we are playing our sound currently. */
     protected Source _source;
+
+    /** The desired state of the sound (stopped, playing, paused) after resolution. */
+    protected int _stateDesired;
+
+    /** Whether or not looping is desired after resolution. */
+    protected boolean _loopDesired;
 
     /** The position of the sound. */
     protected float _px, _py, _pz;
