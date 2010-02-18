@@ -97,6 +97,22 @@ public class AnimationSequencer extends Animation
     }
 
     /**
+     * Convenience wrapper to add an animation to run at the same time as the previous one.
+     */
+    public void addAnimation (Animation anim)
+    {
+        addAnimation(anim, 0, null);
+    }
+
+    /**
+     * Convenience wrapper to add an animation to run after the previous one.
+     */
+    public void appendAnimation (Animation anim)
+    {
+        addAnimation(anim, -1, null);
+    }
+
+    /**
      * Clears out the animations being managed by this sequencer.
      */
     public void clear ()
