@@ -37,24 +37,22 @@ import com.threerings.media.util.TimeFunction;
 public class ScaleAnimation extends Animation
 {
     /**
-     * Creates a scale animation with the supplied image.  If the image's
-     * size would ever be 0 or less, it is not drawn.
+     * Creates a scale animation with the supplied image. If the image's size would ever be 0 or
+     * less, it is not drawn.
      *
      * @param image The image to paint.
      *
-     * @param center The screen coordinates of the pixel upon which the
-     * image's center should always be rendered.
+     * @param center The screen coordinates of the pixel upon which the image's center should
+     * always be rendered.
      *
-     * @param startScale The amount to scale the image when it is rendered
-     * at time 0.
+     * @param startScale The amount to scale the image when it is rendered at time 0.
      *
-     * @param endScale The amount to scale the image at the final frame
-     * of animation.
+     * @param endScale The amount to scale the image at the final frame of animation.
      *
      * @param duration The time in milliseconds the anim takes to complete.
      */
-    public ScaleAnimation (Mirage image, Point center,
-                           float startScale, float endScale, int duration)
+    public ScaleAnimation (
+        Mirage image, Point center, float startScale, float endScale, int duration)
     {
         super(getBounds(Math.max(startScale, endScale), center, image));
 
@@ -68,22 +66,19 @@ public class ScaleAnimation extends Animation
 
         // Hack the LinearTimeFunction to use fixed point rationals
         //
-        // FIXME: This class doesn't seem to be saving me a lot of
-        // work, since I have to repackage the outputs into floats
-        // anyway.  Find some way to make the LinearTimeFunction do
-        // more of this work for us, or write a new class that does.
-        // Maybe IntLinearTimeFunction and FloatLinearTimeFunction
-        // classes would be useful.
+        // FIXME: This class doesn't seem to be saving me a lot of work, since I have to repackage
+        // the outputs into floats anyway. Find some way to make the LinearTimeFunction do more of
+        // this work for us, or write a new class that does. Maybe IntLinearTimeFunction and
+        // FloatLinearTimeFunction classes would be useful.
         _scaleFunc = new LinearTimeFunction(0, 10000, duration);
     }
 
     /**
-     * Java wants the first call in a constructor to be super()
-     * if it exists at all, so we have to trick it with this function.
+     * Java wants the first call in a constructor to be super() if it exists at all, so we have to
+     * trick it with this function.
      *
-     * Oh, and this function computes how big the bounding box needs
-     * to be to bound the inputted image scaled to the inputted size
-     * centered around the inputted center poitn.
+     * Oh, and this function computes how big the bounding box needs to be to bound the inputted
+     * image scaled to the inputted size centered around the inputted center poitn.
      */
     public static Rectangle getBounds (float scale, Point center, Mirage image)
     {
@@ -107,8 +102,8 @@ public class ScaleAnimation extends Animation
     }
 
     /**
-     * Computes the upper left corner where the image should be drawn,
-     * given the center and dimensions to which the image should be scaled.
+     * Computes the upper left corner where the image should be drawn, given the center and
+     * dimensions to which the image should be scaled.
      */
     public static Point getCorner (Point center, Point size)
     {
@@ -124,8 +119,7 @@ public class ScaleAnimation extends Animation
                       ((       weight) *   _endScale);
 
         // Update the animation if the scaling changes
-        if (_scale != scale)
-        {
+        if (_scale != scale) {
             _scale = scale;
             invalidate();
         }

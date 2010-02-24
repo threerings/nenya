@@ -64,7 +64,7 @@ public class AnimationSequencer extends Animation
      * immediately when this "animation" is ready to fired.
      * @param delta the number of milliseconds following the <em>start</em> of the previous
      * animation in the queue that this animation should be started; 0 if it should be started
-     * simultaneously with its predecessor int the queue; -1 if it should be started when its
+     * simultaneously with its predecessor in the queue; -1 if it should be started when its
      * predecessor has completed.
      * @param completionAction a runnable to be executed when this animation completes.
      */
