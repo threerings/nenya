@@ -62,7 +62,6 @@ public class ScaleAnimation extends Animation
         _center = new Point(center);
         _startScale = startScale;
         _endScale = endScale;
-        _duration = duration;
 
         // Hack the LinearTimeFunction to use fixed point rationals
         //
@@ -174,10 +173,6 @@ public class ScaleAnimation extends Animation
 
     /** The center pixel to render the image around. */
     protected Point _center;
-
-    /** The amount of time the animation should last. */
-    //XXX Is this needed?
-    protected long _duration;
 
     /** The amount to scale the image at the start of the animation. */
     protected float _startScale;
