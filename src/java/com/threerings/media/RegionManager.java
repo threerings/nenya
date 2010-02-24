@@ -28,8 +28,6 @@ import java.awt.Rectangle;
 
 import com.google.common.collect.Lists;
 
-import com.samskivert.util.StringUtil;
-
 import static com.threerings.media.Log.log;
 
 /**
@@ -68,8 +66,7 @@ public class RegionManager
     {
         // make sure we're on an AWT thread
         if (!EventQueue.isDispatchThread()) {
-            log.warning("Oi! Region dirtied on non-AWT thread [rect=" + rect + "].",
-                        new Exception());
+            log.warning("Oi! Region dirtied on non-AWT thread", "rect", rect, new Exception());
         }
 
         // sanity check
@@ -81,8 +78,7 @@ public class RegionManager
         // more sanity checking
         long x = rect.x, y = rect.y;
         if ((Math.abs(x) > Integer.MAX_VALUE/2) || (Math.abs(y) > Integer.MAX_VALUE/2)) {
-            log.warning("Requested to dirty questionable region " +
-                        "[rect=" + StringUtil.toString(rect) + "].");
+            log.warning("Requested to dirty questionable region", "rect", rect);
             return; // Let's not do it!
         }
 
@@ -96,8 +92,8 @@ public class RegionManager
     protected final boolean isValidSize (int width, int height)
     {
         if (width < 0 || height < 0) {
-            log.warning("Attempt to add invalid dirty region?! " +
-                        "[size=" + width + "x" + height + "].", new Exception());
+            log.warning("Attempt to add invalid dirty region?!",
+                        "size", (width + "x" + height), new Exception());
             return false;
 
         } else if (width == 0 || height == 0) {
@@ -130,8 +126,8 @@ public class RegionManager
 
     /**
      * Merges all outstanding dirty regions into a single list of rectangles and returns that to
-     * the caller. Interally, the list of accumulated dirty regions is cleared out and prepared for
-     * the next frame.
+     * the caller. Internally, the list of accumulated dirty regions is cleared out and prepared
+     * for the next frame.
      */
     public Rectangle[] getDirtyRegions ()
     {
