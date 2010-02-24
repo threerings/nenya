@@ -25,10 +25,38 @@ import java.awt.AlphaComposite;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 
+import com.threerings.media.image.Mirage;
+import com.threerings.media.util.MultiFrameImage;
 import com.threerings.media.util.Path;
 
 public class FadableImageSprite extends OrientableImageSprite
 {
+    /**
+     * Creates a new fadable image sprite.
+     */
+    public FadableImageSprite ()
+    {}
+
+    /**
+     * Creates a new fadable image sprite.
+     *
+     * @param image the image to render
+     */
+    public FadableImageSprite (Mirage image)
+    {
+        super(image);
+    }
+
+    /**
+     * Creates a new fadable image sprite.
+     *
+     * @param frames the frames to render
+     */
+    public FadableImageSprite (MultiFrameImage frames)
+    {
+        super(frames);
+    }
+
     /**
      * Fades this sprite in over the specified duration after waiting for the specified delay.
      */
