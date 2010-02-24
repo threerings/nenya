@@ -77,7 +77,7 @@ public class ScaleAnimation extends Animation
      * trick it with this function.
      *
      * Oh, and this function computes how big the bounding box needs to be to bound the inputted
-     * image scaled to the inputted size centered around the inputted center poitn.
+     * image scaled to the inputted size centered around the inputted center point.
      */
     public static Rectangle getBounds (float scale, Point center, Mirage image)
     {
