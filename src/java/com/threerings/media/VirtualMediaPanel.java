@@ -287,6 +287,8 @@ public class VirtualMediaPanel extends MediaPanel
             // booch everything
             _vbounds.x = _nx; _vbounds.y = _ny;
 
+            addObscurerDirtyRegions(false);
+
             // let derived classes react if they so desire
             viewLocationDidChange(dx, dy);
         }

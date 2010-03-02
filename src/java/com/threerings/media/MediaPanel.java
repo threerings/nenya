@@ -82,7 +82,7 @@ public class MediaPanel extends JComponent
         /**
          * Returns the region obscured by the obscurer, in screen coords.
          */
-        public Rectangle getObscured ();
+        public Rectangle getObscured (boolean changedOnly);
     }
 
     /**
@@ -342,7 +342,7 @@ public class MediaPanel extends JComponent
             _tickPaintPending = false;
         }
 
-        addObscurerDirtyRegions();
+        addObscurerDirtyRegions(true);
 
         // if we have no invalid rects, there's no need to repaint
         if (!_metamgr.getRegionManager().haveDirtyRegions()) {
@@ -386,15 +386,17 @@ public class MediaPanel extends JComponent
     /**
      * Add dirty regions for all our obscurers.
      */
-    protected void addObscurerDirtyRegions ()
+    protected void addObscurerDirtyRegions (boolean changedOnly)
     {
         if (_obscurerList != null) {
             for (Obscurer obscurer : _obscurerList) {
-
-                Rectangle obscured = obscurer.getObscured();
-                Point pt = new Point(obscured.x, obscured.y);
-                SwingUtilities.convertPointFromScreen(pt, this);
-                addObscurerDirtyRegion(new Rectangle(pt.x, pt.y, obscured.width, obscured.height));
+                Rectangle obscured = obscurer.getObscured(changedOnly);
+                if (obscured != null) {
+                    Point pt = new Point(obscured.x, obscured.y);
+                    SwingUtilities.convertPointFromScreen(pt, this);
+                    addObscurerDirtyRegion(
+                        new Rectangle(pt.x, pt.y, obscured.width, obscured.height));
+                }
             }
         }
     }
