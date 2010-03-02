@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -1532,7 +1533,8 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected RethinkOp _rethinkOp;
 
     /** Contains our scene blocks. See {@link #getBlock} for details. */
-    protected HashIntMap<SceneBlock> _blocks = new HashIntMap<SceneBlock>();
+    protected ConcurrentHashMap<Integer, SceneBlock> _blocks =
+        new ConcurrentHashMap<Integer, SceneBlock>();
 
     /** A count of blocks in the process of being resolved. */
     protected int _pendingBlocks;

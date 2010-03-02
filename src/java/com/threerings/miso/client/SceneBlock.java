@@ -33,7 +33,6 @@ import java.awt.Rectangle;
 import com.google.common.collect.Lists;
 
 import com.samskivert.util.ArrayUtil;
-import com.samskivert.util.IntMap;
 import com.samskivert.util.StringUtil;
 
 import com.threerings.media.tile.NoSuchTileSetException;
@@ -513,7 +512,7 @@ public class SceneBlock
      * Links this block to its neighbors; informs neighboring blocks of
      * object coverage.
      */
-    protected void update (IntMap<SceneBlock> blocks)
+    protected void update (Map<Integer, SceneBlock> blocks)
     {
         boolean recover = false;
 
@@ -557,7 +556,7 @@ public class SceneBlock
     /**
      * Sets the footprint of this object tile
      */
-    protected void setCovered (IntMap<SceneBlock> blocks, SceneObject scobj)
+    protected void setCovered (Map<Integer, SceneBlock> blocks, SceneObject scobj)
     {
         int endx = scobj.info.x - scobj.tile.getBaseWidth() + 1;
         int endy = scobj.info.y - scobj.tile.getBaseHeight() + 1;
