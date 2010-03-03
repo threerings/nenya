@@ -56,7 +56,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import com.samskivert.util.HashIntMap;
 import com.samskivert.util.StringUtil;
 
 import com.samskivert.swing.Controller;
