@@ -603,9 +603,9 @@ public abstract class FrameManager
 
             // if this overlay does not intersect the component we just rendered, we don't need to
             // repaint it
-            _tbounds.setBounds(0, 0, comp.getWidth(), comp.getHeight());
-            getRoot(comp, _tbounds);
-            if (!_tbounds.intersects(bounds)) {
+            Rectangle compBounds = new Rectangle(0, 0, comp.getWidth(), comp.getHeight());
+            getRoot(comp, compBounds);
+            if (!compBounds.intersects(bounds)) {
                 continue;
             }
 
@@ -617,13 +617,13 @@ public abstract class FrameManager
             }
 
             // translate into the components coordinate system and render
-            g.translate(_tbounds.x, _tbounds.y);
+            g.translate(compBounds.x, compBounds.y);
             try {
                 comp.paint(g);
             } catch (Exception e) {
                 log.warning("Component choked while rendering.", e);
             }
-            g.translate(-_tbounds.x, -_tbounds.y);
+            g.translate(-compBounds.x, -compBounds.y);
         }
     }
 
