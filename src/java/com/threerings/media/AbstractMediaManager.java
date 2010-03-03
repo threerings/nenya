@@ -114,7 +114,7 @@ public abstract class AbstractMediaManager
                 }
 
             } catch (Exception e) {
-                log.warning("Failed to render media [media=" + media + "].", e);
+                log.warning("Failed to render media", "media", media, e);
             }
         }
     }
