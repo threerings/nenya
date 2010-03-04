@@ -35,8 +35,9 @@ public interface FrameSequencer
      *
      * @param source the multie-frame image that is providing the
      * animation frames.
+     * @return initial frame index
      */
-    public void init (MultiFrameImage source);
+    public int init (MultiFrameImage source);
 
     /**
      * Called every display frame, the frame sequencer should return the
@@ -76,10 +77,12 @@ public interface FrameSequencer
         }
 
         // documentation inherited from interface
-        public void init (MultiFrameImage source)
+        public int init (MultiFrameImage source)
         {
             _frameCount = source.getFrameCount();
             _startStamp = 0l;
+
+            return 0;
         }
 
         // documentation inherited from interface

@@ -118,7 +118,7 @@ public interface AnimationFrameSequencer extends FrameSequencer
         }
 
         // documentation inherited from interface
-        public void init (MultiFrameImage source)
+        public int init (MultiFrameImage source)
         {
             int framecount = source.getFrameCount();
             // let's make sure our frames are valid
@@ -135,6 +135,8 @@ public interface AnimationFrameSequencer extends FrameSequencer
                 _lastStamp = 0L;
                 _curIdx = 0;
             }
+
+            return _sequence[_curIdx];
         }
 
         // documentation inherited from interface
