@@ -24,6 +24,7 @@ package com.threerings.media.tools;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,8 +51,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -66,6 +67,7 @@ import com.samskivert.swing.util.SwingUtil;
 import com.threerings.media.image.ColorPository;
 import com.threerings.media.image.Colorization;
 import com.threerings.media.image.ImageUtil;
+import com.threerings.media.image.ColorPository.ClassRecord;
 import com.threerings.media.image.ColorPository.ColorRecord;
 import com.threerings.media.image.tools.xml.ColorPositoryParser;
 
@@ -103,7 +105,6 @@ public class RecolorImage extends JPanel
         file.add(reload, HGroupLayout.FIXED);
         add(file, VGroupLayout.FIXED);
 
-        // Colorization file
         JPanel colFile = new JPanel(new HGroupLayout(HGroupLayout.STRETCH));
         colFile.add(new JLabel("Colorize file:"), HGroupLayout.FIXED);
         colFile.add(_colFilePath = new JTextField());
@@ -114,22 +115,47 @@ public class RecolorImage extends JPanel
         colFile.add(browse, HGroupLayout.FIXED);
         add(colFile, VGroupLayout.FIXED);
 
-        JPanel colMode = new JPanel(new HGroupLayout(HGroupLayout.STRETCH));
-        colMode.add(_mode = new JToggleButton("All Colorizations"));
-        colMode.add(_classList = new JComboBox());
+        _tabs = new JTabbedPane();
+        _tabs.addChangeListener(new ChangeListener() {
+            public void stateChanged (ChangeEvent event) {
+                convert();
+            }
+        });
+        add(_tabs, VGroupLayout.FIXED);
+
+        // Colorization file
+        JPanel byFile = new JPanel(new VGroupLayout(VGroupLayout.STRETCH));
+        _tabs.addTab("Using Color Class", byFile);
+
+        byFile.add(_classList = new JComboBox());
+        byFile.add(_labelColors = new JCheckBox("Label Colorizations"), VGroupLayout.FIXED);
         ActionListener al = new ActionListener() {
             public void actionPerformed (ActionEvent ae) {
                 convert();
             }
         };
-        _mode.addActionListener(al);
         _classList.addActionListener(al);
 
-        add(colMode, VGroupLayout.FIXED);
+        // Specific colors
+        JPanel multiColor = new JPanel(new GridLayout(4, 2));
+        _tabs.addTab("Multi-Color", multiColor);
+        multiColor.add(_classList1 = new JComboBox());
+        multiColor.add(_colorList1 = new JComboBox());
+        multiColor.add(_classList2 = new JComboBox());
+        multiColor.add(_colorList2 = new JComboBox());
+        multiColor.add(_classList3 = new JComboBox());
+        multiColor.add(_colorList3 = new JComboBox());
+        multiColor.add(_classList4 = new JComboBox());
+        multiColor.add(_colorList4 = new JComboBox());
 
-        add(_labelColors = new JCheckBox("Label Colorizations"), VGroupLayout.FIXED);
+        _colorList1.addActionListener(al);
+        _colorList2.addActionListener(al);
+        _colorList3.addActionListener(al);
+        _colorList4.addActionListener(al);
+
         _labelColors.addActionListener(al);
-
+        JPanel specRecolor = new JPanel(new VGroupLayout(VGroupLayout.STRETCH));
+        _tabs.addTab("Manual Recolor", specRecolor);
         JPanel controls = new JPanel(new HGroupLayout(HGroupLayout.STRETCH));
         controls.add(new JLabel("Source color:"), HGroupLayout.FIXED);
         controls.add(_source = new JTextField("FF0000"));
@@ -143,7 +169,7 @@ public class RecolorImage extends JPanel
         update.setActionCommand(UPDATE_TARGET_COLOR);
         update.addActionListener(this);
         controls.add(update, HGroupLayout.FIXED);
-        add(controls, VGroupLayout.FIXED);
+        specRecolor.add(controls, VGroupLayout.FIXED);
 
         HGroupLayout hlay = new HGroupLayout(HGroupLayout.STRETCH);
         JPanel dists = new JPanel(hlay);
@@ -151,7 +177,7 @@ public class RecolorImage extends JPanel
         dists.add(_hueD = new SliderAndLabel(0.0f, 1.0f, 0.05f));
         dists.add(_saturationD = new SliderAndLabel(0.0f, 1.0f, 0.8f));
         dists.add(_valueD = new SliderAndLabel(0.0f, 1.0f, 0.6f));
-        add(dists, VGroupLayout.FIXED);
+        specRecolor.add(dists, VGroupLayout.FIXED);
 
         hlay = new HGroupLayout(HGroupLayout.STRETCH);
         JPanel offsets = new JPanel(hlay);
@@ -159,7 +185,7 @@ public class RecolorImage extends JPanel
         offsets.add(_hueO = new SliderAndLabel(-1.0f, 1.0f, 0.1f));
         offsets.add(_saturationO = new SliderAndLabel(-1.0f, 1.0f, 0.0f));
         offsets.add(_valueO = new SliderAndLabel(-1.0f, 1.0f, 0.0f));
-        add(offsets, VGroupLayout.FIXED);
+        specRecolor.add(offsets, VGroupLayout.FIXED);
 
         add(_status = new JTextField(), VGroupLayout.FIXED);
         _status.setEditable(false);
@@ -202,14 +228,35 @@ public class RecolorImage extends JPanel
         // obtain the target color and offset
         try {
             BufferedImage image;
-            if (_mode.isSelected()) {
+            if (_tabs.getSelectedIndex() == 0) {
                 // All recolorings from file.
                 image = getAllRecolors(_labelColors.isSelected());
                 if (image == null) {
                     return;
                 }
+            } else if (_tabs.getSelectedIndex() == 1) {
+                ArrayList<Colorization> zations = Lists.newArrayList();
+                if (_classList1.getSelectedItem() != NONE) {
+                    zations.add(_colRepo.getColorization((String)_classList1.getSelectedItem(),
+                        (String)_colorList1.getSelectedItem()));
+                }
+                if (_classList2.getSelectedItem() != NONE) {
+                    zations.add(_colRepo.getColorization((String)_classList2.getSelectedItem(),
+                        (String)_colorList2.getSelectedItem()));
+                }
+                if (_classList3.getSelectedItem() != NONE) {
+                    zations.add(_colRepo.getColorization((String)_classList3.getSelectedItem(),
+                        (String)_colorList3.getSelectedItem()));
+                }
+                if (_classList4.getSelectedItem() != NONE) {
+                    zations.add(_colRepo.getColorization((String)_classList4.getSelectedItem(),
+                        (String)_colorList4.getSelectedItem()));
+                }
+
+                image = ImageUtil.recolorImage(_image,
+                    zations.toArray(new Colorization[zations.size()]));
             } else {
-                // Normal recoloring
+                // Manual recoloring
                 int color = Integer.parseInt(_source.getText(), 16);
 
                 float hueD = _hueD.getValue();
@@ -327,6 +374,17 @@ public class RecolorImage extends JPanel
         }
     }
 
+    public void setupColors (JComboBox box, String className)
+    {
+        box.removeAllItems();
+        if (className != null && className != NONE) {
+            ClassRecord classRec = _colRepo.getClassRecord(className);
+            for (ColorRecord color : classRec.colors.values()) {
+                box.addItem(color.name);
+            }
+        }
+    }
+
     /**
      * Loads up the colorization classes from the specified file.
      */
@@ -341,6 +399,30 @@ public class RecolorImage extends JPanel
             }
 
             _classList.removeAllItems();
+            _classList1.removeAllItems();
+            _classList1.addActionListener(new ActionListener() {
+                public void actionPerformed (ActionEvent event) {
+                    setupColors(_colorList1, (String)_classList1.getSelectedItem());
+                }
+            });
+            _classList2.removeAllItems();
+            _classList2.addActionListener(new ActionListener() {
+                public void actionPerformed (ActionEvent event) {
+                    setupColors(_colorList2, (String)_classList2.getSelectedItem());
+                }
+            });
+            _classList3.removeAllItems();
+            _classList3.addActionListener(new ActionListener() {
+                public void actionPerformed (ActionEvent event) {
+                    setupColors(_colorList3, (String)_classList3.getSelectedItem());
+                }
+            });
+            _classList4.removeAllItems();
+            _classList4.addActionListener(new ActionListener() {
+                public void actionPerformed (ActionEvent event) {
+                    setupColors(_colorList4, (String)_classList4.getSelectedItem());
+                }
+            });
             Iterator<ColorPository.ClassRecord> iter = _colRepo.enumerateClasses();
             ArrayList<String> names = Lists.newArrayList();
             while (iter.hasNext()) {
@@ -348,12 +430,25 @@ public class RecolorImage extends JPanel
                 names.add(str);
             }
 
+            _classList1.addItem(NONE);
+            _classList2.addItem(NONE);
+            _classList3.addItem(NONE);
+            _classList4.addItem(NONE);
+
             Collections.sort(names);
             for (String name : names) {
                 _classList.addItem(name);
+                _classList1.addItem(name);
+                _classList2.addItem(name);
+                _classList3.addItem(name);
+                _classList4.addItem(name);
             }
 
             _classList.setSelectedIndex(0);
+            _classList1.setSelectedIndex(0);
+            _classList2.setSelectedIndex(0);
+            _classList3.setSelectedIndex(0);
+            _classList4.setSelectedIndex(0);
             _colFilePath.setText(path.getPath());
 
             CONFIG.setValue(LAST_COLORIZATION_KEY, path.getAbsolutePath());
@@ -472,8 +567,17 @@ public class RecolorImage extends JPanel
     protected JTextField _status;
 
     protected JComboBox _classList;
-    protected JToggleButton _mode;
+    protected JComboBox _classList1;
+    protected JComboBox _classList2;
+    protected JComboBox _classList3;
+    protected JComboBox _classList4;
+    protected JComboBox _colorList1;
+    protected JComboBox _colorList2;
+    protected JComboBox _colorList3;
+    protected JComboBox _colorList4;
     protected JCheckBox _labelColors;
+
+    protected JTabbedPane _tabs;
 
     protected ColorPository _colRepo;
 
@@ -491,6 +595,8 @@ public class RecolorImage extends JPanel
     /** Where we can stash our preferences. */
     protected static final PrefsConfig CONFIG =
         new PrefsConfig("rsrc/config/threerings/recolorimage");
+
+    protected static final String NONE = "<none>";
 
     /** Keys for our preferences. */
     protected static final String LAST_IMAGE_KEY = "last_image";
