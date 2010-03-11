@@ -233,7 +233,10 @@ public class SparseMisoSceneModel extends MisoSceneModel
                 section.objectTileIds = objectTileIds.clone();
                 section.objectXs = objectXs.clone();
                 section.objectYs = objectYs.clone();
-                section.objectInfo = objectInfo.clone();
+                section.objectInfo = new ObjectInfo[objectInfo.length];
+                for (int ii = 0; ii < objectInfo.length; ii++) {
+                    section.objectInfo[ii] = objectInfo[ii].clone();
+                }
                 return section;
             } catch (CloneNotSupportedException cnse) {
                 throw new AssertionError(cnse);

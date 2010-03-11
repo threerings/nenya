@@ -196,7 +196,10 @@ public class SimpleMisoSceneModel extends MisoSceneModel
         model.objectTileIds = objectTileIds.clone();
         model.objectXs = objectXs.clone();
         model.objectYs = objectYs.clone();
-        model.objectInfo = objectInfo.clone();
+        model.objectInfo = new ObjectInfo[objectInfo.length];
+        for (int ii = 0; ii < objectInfo.length; ii++) {
+            model.objectInfo[ii] = objectInfo[ii].clone();
+        }
         return model;
     }
 
