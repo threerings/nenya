@@ -397,7 +397,7 @@ public class ColorPository implements Serializable
      */
     public ColorRecord getColorRecord (int classId, int colorId)
     {
-        ClassRecord record = _classes.get(classId);
+        ClassRecord record = getClassRecord(classId);
         if (record == null) {
             // if they request color class zero, we assume they're just
             // decoding a blank colorprint, otherwise we complain
@@ -431,6 +431,14 @@ public class ColorPository implements Serializable
         }
 
         return record.colors.get(colorId);
+    }
+
+    /**
+     * Looks up the requested color class record.
+     */
+    public ClassRecord getClassRecord (int classId)
+    {
+        return _classes.get(classId);
     }
 
     /**
