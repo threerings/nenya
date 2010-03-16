@@ -948,16 +948,6 @@ public class ModelDef
         return true;
     }
 
-    /** Converts a boxed Integer list to an unboxed int array. */
-    protected static int[] toArray (ArrayList<Integer> list)
-    {
-        int[] array = new int[list.size()];
-        for (int ii = 0, nn = list.size(); ii < nn; ii++) {
-            array[ii] = list.get(ii);
-        }
-        return array;
-    }
-
     /** Converts a boxed Float list to an unboxed float array. */
     protected static float[] toArray (ArrayList<Float> list)
     {
