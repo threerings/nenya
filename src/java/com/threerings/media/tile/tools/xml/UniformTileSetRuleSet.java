@@ -58,9 +58,9 @@ public class UniformTileSetRuleSet extends TileSetRuleSet
         super.addRuleInstances(digester);
 
         digester.addCallMethod(_path + "/width", "setWidth", 0,
-            new Class[] { java.lang.Integer.TYPE });
+            new Class<?>[] { java.lang.Integer.TYPE });
         digester.addCallMethod(_path + "/height", "setHeight", 0,
-            new Class[] { java.lang.Integer.TYPE });
+            new Class<?>[] { java.lang.Integer.TYPE });
     }
 
     @Override
