@@ -78,7 +78,7 @@ public class RegionManager
         // more sanity checking
         long x = rect.x, y = rect.y;
         if ((Math.abs(x) > Integer.MAX_VALUE/2) || (Math.abs(y) > Integer.MAX_VALUE/2)) {
-            log.warning("Requested to dirty questionable region", "rect", rect);
+            log.warning("Requested to dirty questionable region", "rect", rect, new Exception());
             return; // Let's not do it!
         }
 
