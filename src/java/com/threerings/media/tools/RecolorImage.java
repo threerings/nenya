@@ -48,6 +48,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -55,6 +56,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 import com.google.common.collect.Lists;
 
@@ -193,10 +195,14 @@ public class RecolorImage extends JPanel
         hlay = new HGroupLayout();
         hlay.setJustification(HGroupLayout.CENTER);
         JPanel buttons = new JPanel(hlay);
-        JButton convert = new JButton("Convert");
-        convert.setActionCommand(CONVERT);
-        convert.addActionListener(this);
-        buttons.add(convert);
+        JButton button = new JButton("Convert");
+        button.setActionCommand(CONVERT);
+        button.addActionListener(this);
+        buttons.add(button);
+        button = new JButton("Save Snapshot");
+        button.setActionCommand(SAVE_COLORIZED_IMAGE);
+        button.addActionListener(this);
+        buttons.add(button);
         add(buttons, VGroupLayout.FIXED);
 
         // listen for mouse clicks
@@ -357,6 +363,28 @@ public class RecolorImage extends JPanel
             int result = _colChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 setColorizeFile(_colChooser.getSelectedFile());
+            }
+        } else if (cmd.equals(SAVE_COLORIZED_IMAGE)) {
+            JFileChooser chooser = new JFileChooser(_chooser.getSelectedFile());
+            chooser.setFileFilter(new FileFilter() {
+                @Override public boolean accept (File f) {
+                    return (f.isDirectory() || f.getName().endsWith(".png"));
+                }
+                @Override public String getDescription () {
+                    return "PNG Files";
+                }
+            });
+            int result = chooser.showSaveDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                try {
+                    ImageIO.write((BufferedImage)((ImageIcon)_newImage.getIcon()).getImage(),
+                        "png", chooser.getSelectedFile());
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this,
+                        "Error while saving image: " + e.getMessage(),
+                        "Error Saving Image",
+                         JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
@@ -589,6 +617,7 @@ public class RecolorImage extends JPanel
     protected static final String BROWSE_FOR_IMAGE_FILE = "browse_image";
     protected static final String RELOAD_IMAGE = "reload_image";
     protected static final String BROWSE_FOR_COLORIZATION_FILE = "browse_colorize";
+    protected static final String SAVE_COLORIZED_IMAGE = "save_colorized";
     protected static final String UPDATE_TARGET_COLOR = "update_target";
     protected static final String CONVERT = "convert";
 
