@@ -61,6 +61,7 @@ import javax.swing.filechooser.FileFilter;
 import com.google.common.collect.Lists;
 
 import com.samskivert.util.PrefsConfig;
+import com.samskivert.util.QuickSort;
 
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.VGroupLayout;
@@ -407,8 +408,16 @@ public class RecolorImage extends JPanel
         box.removeAllItems();
         if (className != null && className != NONE) {
             ClassRecord classRec = _colRepo.getClassRecord(className);
+
+            ArrayList<String> colorNames = Lists.newArrayList();
             for (ColorRecord color : classRec.colors.values()) {
-                box.addItem(color.name);
+                colorNames.add(color.name);
+            }
+
+            QuickSort.sort(colorNames);
+
+            for (String colorName : colorNames) {
+                box.addItem(colorName);
             }
         }
     }
