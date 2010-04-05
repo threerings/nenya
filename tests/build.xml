@@ -5,12 +5,12 @@
   <property name="junit.fork"     value="true"/>
 
   <!-- things you probably don't want to change -->
-  <property name="test.dir"   value="."/>
+  <property name="test.dir"   value="${basedir}"/>
   <property name="src.dir"    value="src/java"/>
   <property name="deploy.dir" value="dist"/>
 
-  <property name="cbundle.dir" value="rsrc/bundles/components"/>
-  <property name="tbundle.dir" value="rsrc/bundles/tiles"/>
+  <property name="cbundle.dir" value="${basedir}/rsrc/bundles/components"/>
+  <property name="tbundle.dir" value="${basedir}/rsrc/bundles/tiles"/>
 
   <!-- import some targets to check dependency availability -->
   <import file="../etc/depends-incl.xml"/>
@@ -143,12 +143,11 @@
       classname="com.threerings.miso.tile.tools.CompileFringeConfigurationTask"/>
     <conffringe
      tilesetmap="${tbundle.dir}/tilesets.map"
-     fringedef="rsrc/config/miso/tile/fringeconf.xml"
-     target="rsrc/config/miso/tile/fringeconf.dat"/>
+     fringedef="${basedir}/rsrc/config/miso/tile/fringeconf.xml"
+     target="${basedir}/rsrc/config/miso/tile/fringeconf.dat"/>
   </target>
 
-  <!-- run the tests -->
-  <target name="test" depends="compile,cbundles,tsbundles" description="Run the tests.">
+  <target name="tests" depends="compile,cbundles,tsbundles" description="Runs the tests.">
     <junit printsummary="no" haltonfailure="yes" fork="${junit.fork}">
       <classpath refid="classpath"/>
       <sysproperty key="test_dir" value="${test.dir}"/>

@@ -177,16 +177,19 @@
     </java>
   </target>
 
-  <!-- builds the various tests -->
-  <target name="tests">
-    <ant dir="tests" target="compile"/>
+  <target name="tcompile" description="Builds (but does not run) the tests.">
+    <ant dir="tests" target="compile" inheritAll="false"/>
+  </target>
+
+  <target name="tests" description="Builds and runs the tests.">
+    <ant dir="tests" target="tests" inheritAll="false"/>
   </target>
 
   <!-- a target for rebuilding everything -->
-  <target name="all" depends="clean,prepare,compile,ninstall,javadoc,tests,dist"/>
+  <target name="all" depends="clean,prepare,compile,ninstall,tests,javadoc,dist"/>
 
   <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,compile,procstream,ninstall,aslib,tests">
+  <target name="dist" depends="prepare,compile,tcompile,procstream,ninstall,aslib">
     <!-- build our various jar files -->
     <jar destfile="${deploy.dir}/${lib.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
