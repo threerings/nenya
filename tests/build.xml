@@ -77,6 +77,10 @@
   <!-- cleans out the installed application -->
   <target name="clean">
     <delete dir="${deploy.dir}"/>
+    <delete file="rsrc/bundles/tiles/tilesets.map"/>
+    <delete><fileset dir="rsrc/bundles/tiles" includes="**/bundle.jar"/></delete>
+    <delete file="rsrc/bundles/components/metadata.jar"/>
+    <delete><fileset dir="rsrc/bundles/components" includes="**/components.jar"/></delete>
   </target>
 
   <!-- build the java class files -->
