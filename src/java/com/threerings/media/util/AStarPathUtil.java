@@ -121,7 +121,9 @@ public class AStarPathUtil
      * @param tpred lets us know what tiles are traversible.
      * @param stepper enumerates the possible steps.
      * @param trav the traverser to follow the path.
-     * @param longest the longest allowable path in tile traversals.
+     * @param longest the longest allowable path in tile traversals. This arg must be less than
+     *        Integer.MAX_VALUE / ADJACENT_COST, even if your stepper uses a
+     *        different fucking adjacent cost.
      * @param ax the starting x-position in tile coordinates.
      * @param ay the starting y-position in tile coordinates.
      * @param bx the ending x-position in tile coordinates.
@@ -129,7 +131,7 @@ public class AStarPathUtil
      * @param partial if true, a partial path will be returned that gets us as close as we can to
      * the goal in the event that a complete path cannot be located.
      *
-     * @return the list of points in the path.
+     * @return the list of points in the path, or null if no path could be found.
      */
     public static List<Point> getPath (
             TraversalPred tpred, Stepper stepper, Object trav, int longest,
