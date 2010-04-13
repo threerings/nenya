@@ -73,6 +73,16 @@ public class AStarPathUtil
      */
     public static class Stepper
     {
+        public Stepper ()
+        {
+            this(true);
+        }
+
+        public Stepper (boolean considerDiagonals)
+        {
+            _considerDiagonals = considerDiagonals;
+        }
+
         public void init (Info info, Node n)
         {
             _info = info;
@@ -86,14 +96,16 @@ public class AStarPathUtil
          */
         public void considerSteps (int x, int y)
         {
-            considerStep(x - 1, y - 1, DIAGONAL_COST);
             considerStep(x, y - 1, ADJACENT_COST);
-            considerStep(x + 1, y - 1, DIAGONAL_COST);
+            considerStep(x, y + 1, ADJACENT_COST);
             considerStep(x - 1, y, ADJACENT_COST);
             considerStep(x + 1, y, ADJACENT_COST);
-            considerStep(x - 1, y + 1, DIAGONAL_COST);
-            considerStep(x, y + 1, ADJACENT_COST);
-            considerStep(x + 1, y + 1, DIAGONAL_COST);
+            if (_considerDiagonals) {
+                considerStep(x - 1, y - 1, DIAGONAL_COST);
+                considerStep(x + 1, y - 1, DIAGONAL_COST);
+                considerStep(x - 1, y + 1, DIAGONAL_COST);
+                considerStep(x + 1, y + 1, DIAGONAL_COST);
+            }
         }
 
         protected void considerStep (int x, int y, int cost)
@@ -101,6 +113,7 @@ public class AStarPathUtil
             AStarPathUtil.considerStep(_info, _node, x, y, cost);
         }
 
+        protected boolean _considerDiagonals;
         protected Info _info;
         protected Node _node;
     }
