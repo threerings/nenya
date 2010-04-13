@@ -122,8 +122,7 @@ public class AStarPathUtil
     public static final int ADJACENT_COST = 10;
 
     /** The cost to move diagonally. */
-    public static final int DIAGONAL_COST = (int)Math.sqrt(
-        (ADJACENT_COST * ADJACENT_COST) * 2);
+    public static final int DIAGONAL_COST = (int)Math.sqrt((ADJACENT_COST * ADJACENT_COST) * 2);
 
     /**
      * Return a list of <code>Point</code> objects representing a path from coordinates
@@ -147,8 +146,8 @@ public class AStarPathUtil
      * @return the list of points in the path, or null if no path could be found.
      */
     public static List<Point> getPath (
-            TraversalPred tpred, Stepper stepper, Object trav, int longest,
-            int ax, int ay, int bx, int by, boolean partial)
+        TraversalPred tpred, Stepper stepper, Object trav, int longest,
+        int ax, int ay, int bx, int by, boolean partial)
     {
         Info info = new Info(tpred, trav, longest, bx, by);
 
@@ -199,8 +198,8 @@ public class AStarPathUtil
             return getNodePath(bestpath);
         }
 
-            // no path found
-            return null;
+        // no path found
+        return null;
     }
 
     /**
@@ -208,11 +207,10 @@ public class AStarPathUtil
      * eight cardinal directions.
      */
     public static List<Point> getPath (
-            TraversalPred tpred, Object trav, int longest,
-            int ax, int ay, int bx, int by, boolean partial)
+        TraversalPred tpred, Object trav, int longest,
+        int ax, int ay, int bx, int by, boolean partial)
     {
-        return getPath(
-            tpred, new Stepper(), trav, longest, ax, ay, bx, by, partial);
+        return getPath(tpred, new Stepper(), trav, longest, ax, ay, bx, by, partial);
     }
 
     /**
@@ -242,19 +240,18 @@ public class AStarPathUtil
         // calculate the new cost for this node
         int newg = n.g + cost;
 
-            // make sure the cost is reasonable
-            if (newg > info.maxcost) {
-    //            Log.info("Rejected costly step.");
-                return;
-            }
+        // make sure the cost is reasonable
+        if (newg > info.maxcost) {
+//            Log.info("Rejected costly step.");
+            return;
+        }
 
         // retrieve the node corresponding to this location
         Node np = info.getNode(x, y);
 
         // skip if it's already in the open or closed list or if its
         // actual cost is less than the just-calculated cost
-        if ((info.open.contains(np) || info.closed.contains(np)) &&
-            np.g <= newg) {
+        if ((info.open.contains(np) || info.closed.contains(np)) && np.g <= newg) {
             return;
         }
 
@@ -340,8 +337,7 @@ public class AStarPathUtil
         /** The maximum cost of any path that we'll consider. */
         public int maxcost;
 
-        public Info (TraversalPred tpred, Object trav,
-                     int longest, int destx, int desty)
+        public Info (TraversalPred tpred, Object trav, int longest, int destx, int desty)
         {
             // save off references
             this.tpred = tpred;
@@ -365,14 +361,11 @@ public class AStarPathUtil
         {
             // not traversable if the destination itself fails test
             if (tpred instanceof ExtendedTraversalPred) {
-                if (!((ExtendedTraversalPred)tpred).canTraverse(
-                        trav, sx, sy, dx, dy)) {
+                if (!((ExtendedTraversalPred)tpred).canTraverse(trav, sx, sy, dx, dy)) {
                     return false;
                 }
-            } else {
-                if (!isTraversable(dx, dy)) {
-                    return false;
-                }
+            } else if (!isTraversable(dx, dy)) {
+                return false;
             }
 
             // if the step is diagonal, make sure the corners don't impede our progress
