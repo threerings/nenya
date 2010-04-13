@@ -409,7 +409,7 @@ public class AStarPathUtil
      * A class that represents a single traversable node in the tile array
      * along with its current A*-specific search information.
      */
-    protected static class Node implements Comparable<Node>
+    public static class Node implements Comparable<Node>
     {
         /** The node coordinates. */
         public int x, y;
