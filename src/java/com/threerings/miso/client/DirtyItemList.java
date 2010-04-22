@@ -119,6 +119,10 @@ public class DirtyItemList
             // sort the items according to the depth of the rear-most tile
             _ditems.addAll(_items);
             _ditems.sort(REAR_DEPTH_COMP);
+            if (DEBUG_SORT) {
+                log.info("Sorted by rear-depth " +
+                         "[items=" + toString(_ditems) + "].");
+            }
 
             // now insertion sort the items from back to front into the
             // render-sorted array
@@ -689,7 +693,22 @@ public class DirtyItemList
      * order. */
     protected static final Comparator<DirtyItem> REAR_DEPTH_COMP = new Comparator<DirtyItem>() {
         public int compare (DirtyItem o1, DirtyItem o2) {
-            return (o1.getRearDepth() - o2.getRearDepth());
+            int depthDiff = (o1.getRearDepth() - o2.getRearDepth());
+            if (depthDiff != 0) {
+                return depthDiff;
+            } else {
+                // If there's a priority difference, break our tie on that.
+                if (o1.obj instanceof SceneObject && o2.obj instanceof SceneObject) {
+                    int priDiff = ((SceneObject)o1.obj).getPriority() -
+                        ((SceneObject)o2.obj).getPriority();
+                    if (priDiff != 0) {
+                        return priDiff;
+                    }
+                }
+
+                // Couldn't break the tie, fallback to the original result.
+                return depthDiff;
+            }
         }
     };
 }
