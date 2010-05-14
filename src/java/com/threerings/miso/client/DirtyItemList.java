@@ -37,22 +37,19 @@ import com.threerings.media.tile.ObjectTile;
 import static com.threerings.media.Log.log;
 
 /**
- * The dirty item list keeps track of dirty sprites and object tiles
- * in a scene.
+ * The dirty item list keeps track of dirty sprites and object tiles in a scene.
  */
 public class DirtyItemList
 {
     /**
-     * Creates a dirt item list that will handle dirty items for the
-     * specified view.
+     * Creates a dirt item list that will handle dirty items for the specified view.
      */
     public DirtyItemList ()
     {
     }
 
     /**
-     * Appends the dirty sprite at the given coordinates to the dirty item
-     * list.
+     * Appends the dirty sprite at the given coordinates to the dirty item list.
      *
      * @param sprite the dirty sprite itself.
      * @param tx the sprite's x tile position.
@@ -66,8 +63,7 @@ public class DirtyItemList
     }
 
     /**
-     * Appends the dirty object tile at the given coordinates to the dirty
-     * item list.
+     * Appends the dirty object tile at the given coordinates to the dirty item list.
      *
      * @param scobj the scene object that is dirty.
      */
@@ -87,8 +83,8 @@ public class DirtyItemList
     }
 
     /**
-     * Returns an array of the {@link DirtyItem} objects in the list
-     * sorted in proper rendering order.
+     * Returns an array of the {@link DirtyItem} objects in the list sorted in proper rendering
+     * order.
      */
     public void sort ()
     {
@@ -121,8 +117,7 @@ public class DirtyItemList
                 log.info("Sorted by rear-depth", "items", toString(_ditems));
             }
 
-            // now insertion sort the items from back to front into the
-            // render-sorted array
+            // now insertion sort the items from back to front into the render-sorted array
             _items.clear();
           POS_LOOP:
             for (int ii = 0; ii < size; ii++) {
@@ -136,8 +131,7 @@ public class DirtyItemList
                         continue POS_LOOP;
                     }
                 }
-                // we don't render in front of anyone, so we go at the
-                // front of the list
+                // we don't render in front of anyone, so we go at the front of the list
                 _items.add(0, item);
             }
 
@@ -160,9 +154,8 @@ public class DirtyItemList
     }
 
     /**
-     * Paints all the dirty items in this list using the supplied graphics
-     * context. The items are removed from the dirty list after being
-     * painted and the dirty list ends up empty.
+     * Paints all the dirty items in this list using the supplied graphics context. The items are
+     * removed from the dirty list after being painted and the dirty list ends up empty.
      */
     public void paintAndClear (Graphics2D gfx)
     {
@@ -197,8 +190,8 @@ public class DirtyItemList
     }
 
     /**
-     * Obtains a new dirty item instance, reusing an old one if possible
-     * or creating a new one otherwise.
+     * Obtains a new dirty item instance, reusing an old one if possible or creating a new one
+     * otherwise.
      */
     protected DirtyItem getDirtyItem ()
     {
@@ -210,9 +203,8 @@ public class DirtyItemList
     }
 
     /**
-     * Returns an abbreviated string representation of the given dirty
-     * item describing only its origin coordinates and render priority.
-     * Intended for debugging purposes.
+     * Returns an abbreviated string representation of the given dirty item describing only its
+     * origin coordinates and render priority. Intended for debugging purposes.
      */
     protected static String toString (DirtyItem a)
     {
@@ -222,8 +214,8 @@ public class DirtyItemList
     }
 
     /**
-     * Returns an abbreviated string representation of the two given dirty
-     * items. See {@link #toString(DirtyItem)}.
+     * Returns an abbreviated string representation of the two given dirty items. See
+     * {@link #toString(DirtyItem)}.
      */
     protected static String toString (DirtyItem a, DirtyItem b)
     {
@@ -234,8 +226,8 @@ public class DirtyItemList
     }
 
     /**
-     * Returns an abbreviated string representation of the given dirty
-     * items. See {@link #toString(DirtyItem)}.
+     * Returns an abbreviated string representation of the given dirty items. See
+     * {@link #toString(DirtyItem)}.
      */
     protected static String toString (SortableArrayList<DirtyItem> items)
     {
@@ -259,9 +251,9 @@ public class DirtyItemList
     }
 
     /**
-     * A class to hold the items inserted in the dirty list along with
-     * all of the information necessary to render their dirty regions
-     * to the target graphics context when the time comes to do so.
+     * A class to hold the items inserted in the dirty list along with all of the information
+     * necessary to render their dirty regions to the target graphics context when the time comes
+     * to do so.
      */
     public class DirtyItem
     {
@@ -280,15 +272,13 @@ public class DirtyItemList
         /**
          * Initializes a dirty item.
          */
-        public void init (Object obj, int x, int y)
-        {
+        public void init (Object obj, int x, int y) {
             this.obj = obj;
             this.ox = x;
             this.oy = y;
 
-            // calculate the item's leftmost and rightmost tiles; note
-            // that normal (Non-MultiTile) sprites occupy only a single tile, so leftmost and
-            // rightmost tiles are equivalent
+            // calculate the item's leftmost and rightmost tiles; note that normal (Non-MultiTile)
+            // sprites occupy only a single tile, so leftmost and rightmost tiles are equivalent
             lx = rx = ox;
             ly = ry = oy;
             if (obj instanceof SceneObject) {
@@ -303,12 +293,10 @@ public class DirtyItemList
         }
 
         /**
-         * Paints the dirty item to the given graphics context.  Only
-         * the portion of the item that falls within the given dirty
-         * rectangle is actually drawn.
+         * Paints the dirty item to the given graphics context. Only the portion of the item that
+         * falls within the given dirty rectangle is actually drawn.
          */
-        public void paint (Graphics2D gfx)
-        {
+        public void paint (Graphics2D gfx) {
             if (obj instanceof Sprite) {
                 ((Sprite)obj).paint(gfx);
             } else {
@@ -319,18 +307,15 @@ public class DirtyItemList
         /**
          * Returns the "depth" of our rear-most tile.
          */
-        public int getRearDepth ()
-        {
+        public int getRearDepth () {
             return ry + lx;
         }
 
         /**
-         * Returns the render priority for this dirty item. It will be
-         * zero unless this is a display object which may have a custom
-         * render priority.
+         * Returns the render priority for this dirty item. It will be zero unless this is a
+         * display object which may have a custom render priority.
          */
-        public int getRenderPriority ()
-        {
+        public int getRenderPriority () {
             if (obj instanceof SceneObject) {
                 return ((SceneObject)obj).getPriority();
             } else {
@@ -339,18 +324,15 @@ public class DirtyItemList
         }
 
         /**
-         * Releases all references held by this dirty item so that it
-         * doesn't inadvertently hold on to any objects while waiting to
-         * be reused.
+         * Releases all references held by this dirty item so that it doesn't inadvertently hold
+         * on to any objects while waiting to be reused.
          */
-        public void clear ()
-        {
+        public void clear () {
             obj = null;
         }
 
         @Override
-        public boolean equals (Object other)
-        {
+        public boolean equals (Object other) {
             // we're never equal to something that's not our kind
             if (!(other instanceof DirtyItem)) {
                 return false;
@@ -362,14 +344,12 @@ public class DirtyItemList
         }
 
         @Override
-        public int hashCode ()
-        {
+        public int hashCode () {
             return obj.hashCode();
         }
 
         @Override
-        public String toString ()
-        {
+        public String toString () {
             StringBuilder buf = new StringBuilder();
             buf.append("[obj=").append(obj);
             buf.append(", ox=").append(ox);
@@ -383,24 +363,21 @@ public class DirtyItemList
     }
 
     /**
-     * A comparator class for use in sorting dirty items in ascending
-     * origin x- or y-axis coordinate order.
+     * A comparator class for use in sorting dirty items in ascending origin x- or y-axis
+     * coordinate order.
      */
     protected static class OriginComparator implements Comparator<DirtyItem>
     {
         /**
-         * Constructs an origin comparator that sorts dirty items in
-         * ascending order based on their origin coordinate on the given
-         * axis.
-        */
-        public OriginComparator (int axis)
-        {
+         * Constructs an origin comparator that sorts dirty items in ascending order based on
+         * their origin coordinate on the given axis.
+         */
+        public OriginComparator (int axis) {
             _axis = axis;
         }
 
         // documentation inherited
-        public int compare (DirtyItem da, DirtyItem db)
-        {
+        public int compare (DirtyItem da, DirtyItem db) {
             // if they don't overlap, sort them normally
             if (_axis == X_AXIS) {
                 if (da.ox != db.ox) {
@@ -422,16 +399,14 @@ public class DirtyItemList
     }
 
     /**
-     * A comparator class for use in sorting the dirty sprites and
-     * objects in a scene in ascending x- and y-coordinate order
-     * suitable for rendering in the isometric view with proper visual
+     * A comparator class for use in sorting the dirty sprites and objects in a scene in ascending
+     * x- and y-coordinate order suitable for rendering in the isometric view with proper visual
      * results.
      */
     protected class RenderComparator implements Comparator<DirtyItem>
     {
         // documentation inherited
-        public int compare (DirtyItem da, DirtyItem db)
-        {
+        public int compare (DirtyItem da, DirtyItem db) {
             // if the two objects are scene objects and they overlap, we
             // compare them solely based on their human assigned priority
             if ((da.obj instanceof SceneObject) &&
@@ -479,11 +454,10 @@ public class DirtyItemList
         }
 
         /**
-         * Returns whether two dirty items have a partitioning object
-         * between them on the given axis.
+         * Returns whether two dirty items have a partitioning object between them on the given
+         * axis.
          */
-        protected int comparePartitioned (int axis, DirtyItem da, DirtyItem db)
-        {
+        protected int comparePartitioned (int axis, DirtyItem da, DirtyItem db) {
             // prepare for the partitioning check
             SortableArrayList<DirtyItem> sitems;
             Comparator<DirtyItem> comp;
@@ -529,8 +503,7 @@ public class DirtyItemList
                 break;
             }
 
-            // get the bounding item indices and the number of
-            // potentially-partitioning dirty items
+            // get the bounding item indices and the number of potentially-partitioning dirty items
             int aidx = sitems.binarySearch(da, comp);
             int bidx = sitems.binarySearch(db, comp);
             int size = bidx - aidx - 1;
@@ -576,11 +549,9 @@ public class DirtyItemList
         }
 
         /**
-         * Compares the two dirty items assuming there are no partitioning
-         * objects between them.
+         * Compares the two dirty items assuming there are no partitioning objects between them.
          */
-        protected int compareNonPartitioned (DirtyItem da, DirtyItem db)
-        {
+        protected int compareNonPartitioned (DirtyItem da, DirtyItem db) {
             if (da.ox == db.ox &&
                 da.oy == db.oy) {
                 if (da.equals(db)) {
@@ -674,16 +645,13 @@ public class DirtyItemList
     protected static final int X_AXIS = 0;
     protected static final int Y_AXIS = 1;
 
-    /** The comparator used to sort dirty items in ascending origin
-     * x-coordinate order. */
+    /** The comparator used to sort dirty items in ascending origin x-coordinate order. */
     protected static final Comparator<DirtyItem> ORIGIN_X_COMP = new OriginComparator(X_AXIS);
 
-    /** The comparator used to sort dirty items in ascending origin
-     * y-coordinate order. */
+    /** The comparator used to sort dirty items in ascending origin y-coordinate order. */
     protected static final Comparator<DirtyItem> ORIGIN_Y_COMP = new OriginComparator(Y_AXIS);
 
-    /** The comparator used to sort dirty items in ascending "rear-depth"
-     * order. */
+    /** The comparator used to sort dirty items in ascending "rear-depth" order. */
     protected static final Comparator<DirtyItem> REAR_DEPTH_COMP = new Comparator<DirtyItem>() {
         public int compare (DirtyItem o1, DirtyItem o2) {
             int depthDiff = (o1.getRearDepth() - o2.getRearDepth());

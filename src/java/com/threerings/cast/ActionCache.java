@@ -27,16 +27,13 @@ package com.threerings.cast;
 public interface ActionCache
 {
     /**
-     * Fetches from the cache a composited set of images for a particular
-     * character for a particular action.
+     * Fetches from the cache a composited set of images for a particular character for a
+     * particular action.
      */
-    public ActionFrames getActionFrames (
-        CharacterDescriptor descrip, String action);
+    public ActionFrames getActionFrames (CharacterDescriptor descrip, String action);
 
     /**
-     * Requests that the specified set of action frames for the specified
-     * character be cached.
+     * Requests that the specified set of action frames for the specified character be cached.
      */
-    public void cacheActionFrames (
-        CharacterDescriptor descrip, String action, ActionFrames frames);
+    public void cacheActionFrames (CharacterDescriptor descrip, String action, ActionFrames frames);
 }

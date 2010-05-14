@@ -35,8 +35,8 @@ public class TransformedMirage
     implements Mirage
 {
     /**
-     * Constructor for backwards compatability that automatically repositions the
-     * transformed mirage so its new upper-left corner is still at the origin.
+     * Constructor for backwards compatibility that automatically repositions the transformed
+     * mirage so its new upper-left corner is still at the origin.
      */
     public TransformedMirage (Mirage base, AffineTransform transform)
     {
@@ -119,8 +119,7 @@ public class TransformedMirage
     }
 
     /**
-     * Compute the bounds of the base Mirage after it has been
-     * transformed.
+     * Compute the bounds of the base Mirage after it has been transformed.
      */
     protected void computeTransformedBounds ()
     {

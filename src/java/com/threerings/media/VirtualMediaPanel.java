@@ -43,27 +43,24 @@ import com.threerings.media.util.Pathable;
 import static com.threerings.media.Log.log;
 
 /**
- * Extends the base media panel with the notion of a virtual coordinate
- * system. All entities in the virtual media panel have virtual
- * coordinates and the virtual media panel displays a window into that
- * virtual view. The panel can be made to scroll by adjusting the view
- * offset slightly at the start of each tick and it will efficiently copy
- * the unmodified view data and generate repaint requests for the exposed
- * regions.
+ * Extends the base media panel with the notion of a virtual coordinate system. All entities in
+ * the virtual media panel have virtual coordinates and the virtual media panel displays a window
+ * into that virtual view. The panel can be made to scroll by adjusting the view offset slightly
+ * at the start of each tick and it will efficiently copy the unmodified view data and generate
+ * repaint requests for the exposed regions.
  */
 public class VirtualMediaPanel extends MediaPanel
 {
-    /** The code for the pathable following mode wherein we keep the view
-     * centered on the pathable's location. */
+    /** The code for the pathable following mode wherein we keep the view centered on the
+     * pathable's location. */
     public static final byte CENTER_ON_PATHABLE = 0;
 
-    /** The code for the pathable following mode wherein we ensure that
-     * the marked pathable is always kept within the visible bounds of the
-     * view. */
+    /** The code for the pathable following mode wherein we ensure that the marked pathable is
+     * always kept within the visible bounds of the view. */
     public static final byte ENCLOSE_PATHABLE = 1;
 
-    /** The code for the pathable following mode wherein we set the upper-left
-     * corner of the view to the coordinates of the pathable. */
+    /** The code for the pathable following mode wherein we set the upper-left corner of the view
+     * to the coordinates of the pathable. */
     public static final byte TRACK_PATHABLE = 2;
 
     /**
@@ -122,9 +119,10 @@ public class VirtualMediaPanel extends MediaPanel
     {
         _trackers.remove(tracker);
     }
+
     /**
-     * Instructs the view to follow the supplied pathable; ensuring that
-     * the view's coordinates are adjusted according to the follow mode.
+     * Instructs the view to follow the supplied pathable; ensuring that the view's coordinates
+     * are adjusted according to the follow mode.
      *
      * @param pable the pathable to follow.
      * @param followMode the strategy for keeping the pathable in view.
@@ -137,8 +135,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * Clears out the pathable that was being enclosed or followed due to
-     * a previous call to {@link #setFollowsPathable}.
+     * Clears out the pathable that was being enclosed or followed due to a previous call to
+     * {@link #setFollowsPathable}.
      */
     public void clearPathable ()
     {
@@ -147,9 +145,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * We overload this to translate mouse events into the proper
-     * coordinates before they are dispatched to any of the mouse
-     * listeners.
+     * We overload this to translate mouse events into the proper coordinates before they are
+     * dispatched to any of the mouse listeners.
      */
     @Override
     protected void processMouseEvent (MouseEvent event)
@@ -159,9 +156,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * We overload this to translate mouse events into the proper
-     * coordinates before they are dispatched to any of the mouse
-     * listeners.
+     * We overload this to translate mouse events into the proper coordinates before they are
+     * dispatched to any of the mouse listeners.
      */
     @Override
     protected void processMouseMotionEvent (MouseEvent event)
@@ -171,9 +167,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * We overload this to translate mouse events into the proper
-     * coordinates before they are dispatched to any of the mouse
-     * listeners.
+     * We overload this to translate mouse events into the proper coordinates before they are
+     * dispatched to any of the mouse listeners.
      */
     @Override
     protected void processMouseWheelEvent (MouseWheelEvent event)
@@ -223,9 +218,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * Determines the absolute screen coordinates at which this panel is
-     * located and stores them for reference later when rendering.  This
-     * is necessary in order to work around the Windows
+     * Determines the absolute screen coordinates at which this panel is located and stores them
+     * for reference later when rendering. This is necessary in order to work around the Windows
      * <code>copyArea()</code> bug.
      */
     protected void findRootBounds ()
@@ -245,8 +239,7 @@ public class VirtualMediaPanel extends MediaPanel
     {
         int width = getWidth(), height = getHeight();
 
-        // adjusts our view location to track any pathable we might be
-        // tracking
+        // adjusts our view location to track any pathable we might be tracking
         trackPathable();
 
         // if we have a new target location, we'll need to generate dirty
@@ -282,9 +275,8 @@ public class VirtualMediaPanel extends MediaPanel
             }
 
 
-            // now go ahead and update our location so that changes in
-            // between here and the call to paint() for this tick don't
-            // booch everything
+            // now go ahead and update our location so that changes in between here and the call
+            // to paint() for this tick don't booch everything
             _vbounds.x = _nx; _vbounds.y = _ny;
 
             addObscurerDirtyRegions(false);
@@ -295,9 +287,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * Called during our tick when we have adjusted the view location. The
-     * {@link #_vbounds} will already have been updated to reflect our new
-     * view coordinates.
+     * Called during our tick when we have adjusted the view location. The {@link #_vbounds} will
+     * already have been updated to reflect our new view coordinates.
      *
      * @param dx the delta scrolled in the x direction (in pixels).
      * @param dy the delta scrolled in the y direction (in pixels).
@@ -314,9 +305,8 @@ public class VirtualMediaPanel extends MediaPanel
     }
 
     /**
-     * Implements the standard pathable tracking support. Derived classes
-     * may wish to override this if they desire custom tracking
-     * functionality.
+     * Implements the standard pathable tracking support. Derived classes may wish to override
+     * this if they desire custom tracking functionality.
      */
     protected void trackPathable ()
     {
@@ -375,14 +365,13 @@ public class VirtualMediaPanel extends MediaPanel
             int cx = (_dx > 0) ? _dx : 0;
             int cy = (_dy > 0) ? _dy : 0;
 
-            // set the clip to the bounds of the component (we can't
-            // assume the clip is anything sensible upon entry to paint()
-            // because the frame manager expects us to set our own clip)
+            // set the clip to the bounds of the component (we can't assume the clip is anything
+            // sensible upon entry to paint() because the frame manager expects us to set our own
+            // clip)
             gfx.setClip(0, 0, width, height);
 
-            // on windows, attempting to call copyArea() on a translated
-            // graphics context results in boochness; so we have to
-            // untranslate the graphics context, do our copyArea() and
+            // on windows, attempting to call copyArea() on a translated graphics context results
+            // in boochness; so we have to untranslate the graphics context, do our copyArea() and
             // then translate it back
             if (RunAnywhere.isWindows()) {
                 gfx.translate(-_abounds.x, -_abounds.y);
@@ -396,8 +385,8 @@ public class VirtualMediaPanel extends MediaPanel
                              width - Math.abs(_dx),
                              height - Math.abs(_dy), -_dx, -_dy);
                 } catch (Exception e) {
-                    // HACK when it throws an exception trying to do the
-                    // copy area, just repaint everything
+                    // HACK when it throws an exception trying to do the copy area, just repaint
+                    // everything
                     dirty = new Rectangle[] { new Rectangle(_vbounds) };
                 }
             } else {
