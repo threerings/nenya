@@ -95,7 +95,7 @@ public class DirtyItemList
         int size = size();
 
         if (DEBUG_SORT) {
-            log.info("Sorting dirty item list [size=" + size + "].");
+            log.info("Sorting dirty item list", "size", size);
         }
 
         // if we've only got one item, we need to do no sorting
@@ -104,24 +104,21 @@ public class DirtyItemList
             _xitems.addAll(_items);
             _xitems.sort(ORIGIN_X_COMP);
             if (DEBUG_SORT) {
-                log.info("Sorted by x-origin " +
-                         "[items=" + toString(_xitems) + "].");
+                log.info("Sorted by x-origin", "items", toString(_xitems));
             }
 
             // get items sorted by increasing origin y-coordinate
             _yitems.addAll(_items);
             _yitems.sort(ORIGIN_Y_COMP);
             if (DEBUG_SORT) {
-                log.info("Sorted by y-origin " +
-                         "[items=" + toString(_yitems) + "].");
+                log.info("Sorted by y-origin", "items", toString(_yitems));
             }
 
             // sort the items according to the depth of the rear-most tile
             _ditems.addAll(_items);
             _ditems.sort(REAR_DEPTH_COMP);
             if (DEBUG_SORT) {
-                log.info("Sorted by rear-depth " +
-                         "[items=" + toString(_ditems) + "].");
+                log.info("Sorted by rear-depth", "items", toString(_ditems));
             }
 
             // now insertion sort the items from back to front into the
@@ -151,12 +148,12 @@ public class DirtyItemList
         }
 
         if (DEBUG_SORT) {
-            log.info("Sorted for render [items=" + toString(_items) + "].");
+            log.info("Sorted for render", "items", toString(_items));
             for (int ii = 0, ll = _items.size()-1; ii < ll; ii++) {
                 DirtyItem a = _items.get(ii);
                 DirtyItem b = _items.get(ii+1);
                 if (_rcomp.compare(a, b) > 0) {
-                    log.warning("Invalid ordering [a=" + a + ", b=" + b + "].");
+                    log.warning("Invalid ordering", "a", a, "b", b);
                 }
             }
         }
@@ -445,8 +442,7 @@ public class DirtyItemList
                     int result = soa.getPriority() - sob.getPriority();
                     if (DEBUG_COMPARE) {
                         String items = DirtyItemList.toString(da, db);
-                        log.info("compare: overlapping [result=" + result +
-                                 ", items=" + items + "].");
+                        log.info("compare: overlapping", "result", result, "items", items);
                     }
                     return result;
                 }
@@ -457,8 +453,7 @@ public class DirtyItemList
             if (result != 0) {
                 if (DEBUG_COMPARE) {
                     String items = DirtyItemList.toString(da, db);
-                    log.info("compare: Y-partitioned " +
-                             "[result=" + result + ", items=" + items + "].");
+                    log.info("compare: Y-partitioned", "result", result, "items", items);
                 }
                 return result;
             }
@@ -468,8 +463,7 @@ public class DirtyItemList
             if (result != 0) {
                 if (DEBUG_COMPARE) {
                     String items = DirtyItemList.toString(da, db);
-                    log.info("compare: X-partitioned " +
-                             "[result=" + result + ", items=" + items + "].");
+                    log.info("compare: X-partitioned", "result", result, "items", items);
                 }
                 return result;
             }
@@ -478,8 +472,7 @@ public class DirtyItemList
             result = compareNonPartitioned(da, db);
             if (DEBUG_COMPARE) {
                 String items = DirtyItemList.toString(da, db);
-                log.info("compare: non-partitioned " +
-                         "[result=" + result + ", items=" + items + "].");
+                log.info("compare: non-partitioned", "result", result, "items", items);
             }
 
             return result;

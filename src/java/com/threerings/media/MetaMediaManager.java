@@ -113,7 +113,7 @@ public class MetaMediaManager
     {
         // sanity check
         if ((paused && (_pauseTime != 0)) || (!paused && (_pauseTime == 0))) {
-            log.warning("Requested to pause when paused or vice-versa [paused=" + paused + "].");
+            log.warning("Requested to pause when paused or vice-versa", "paused", paused);
             return;
         }
 
