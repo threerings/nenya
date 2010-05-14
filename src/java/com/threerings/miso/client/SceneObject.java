@@ -112,19 +112,27 @@ public class SceneObject
      */
     public void paint (Graphics2D gfx)
     {
-        if (_hideObjects.getValue()) {
-            return;
-        }
-
         // if we're rendering footprints, paint that
         boolean footpaint = _fprintDebug.getValue();
         if (footpaint) {
             gfx.setColor(Color.black);
             gfx.draw(_footprint);
+
+            if (_hideObjects.getValue()) {
+                // We're in footprints but no objects mode, so let's also fill it in so we can
+                // see things better/tell if we have overlapping ones
+                Composite ocomp = gfx.getComposite();
+                gfx.setComposite(ALPHA_WARN);
+                gfx.fill(_footprint);
+                gfx.setComposite(ocomp);
+            }
         }
 
-        // if we have a warning, render an alpha'd red rectangle over our
-        // bounds
+        if (_hideObjects.getValue()) {
+            return;
+        }
+
+        // if we have a warning, render an alpha'd red rectangle over our bounds
         if (_warning) {
             Composite ocomp = gfx.getComposite();
             gfx.setComposite(ALPHA_WARN);
