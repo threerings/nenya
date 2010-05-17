@@ -76,14 +76,7 @@ public class AutoFringer
         @Override
         public int hashCode ()
         {
-            int result = 33; // can't use Arrays.hashCode(long) as it's 1.5 only
-            for (long key : _fringeId) {
-                result = result * 37 + (int)(key ^ (key >>> 32));
-            }
-            if (_passable) {
-                result++;
-            }
-            return result;
+            return Arrays.hashCode(_fringeId);
         }
 
         /** The fringe keys of the tiles that went into this tile in the order they were drawn. */
