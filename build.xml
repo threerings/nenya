@@ -44,6 +44,18 @@
     </copy>
   </target>
 
+  <!-- makes sure our tools are compiled and defines the ant tasks -->
+  <target name="preptools" depends="prepare">
+    <javac srcdir="src/java" destdir="${classes.dir}" includeAntRuntime="false"
+           debug="on" optimize="{$build.optimize}" deprecation="on" source="1.5" target="1.5">
+      <classpath refid="classpath"/>
+      <compilerarg value="-Xlint"/>
+      <compilerarg value="-Xlint:-serial"/>
+      <include name="com/threerings/presents/tools/**"/>
+    </javac>
+    <taskdef resource="com/threerings/presents/tools.properties" classpathref="classpath"/>
+  </target>
+
   <!-- cleans out the intermediate build files -->
   <target name="clean" depends="common-clean">
     <delete dir="${deploy.dir}/classes"/>
@@ -276,6 +288,13 @@
       output="summary.ps">
       <classpath refid="base.classpath"/>
     </viztool>
+  </target>
+
+  <!-- generates ActionScript versions of our Streamable classes -->
+  <target name="genascript" depends="preptools">
+    <genascript header="lib/SOURCE_HEADER" asroot="src/as">
+      <fileset dir="src/java" includes="**/data/*.java"/>
+    </genascript>
   </target>
 
   <!-- creates a tarball and zipfile for source distribution -->
