@@ -33,7 +33,7 @@ import com.samskivert.util.StringUtil;
 
 import com.threerings.io.SimpleStreamableObject;
 
-import com.threerings.util.StreamableHashIntMap;
+import com.threerings.util.StreamableHashMap;
 
 import com.threerings.media.util.MathUtil;
 
@@ -459,7 +459,7 @@ public class SparseMisoSceneModel extends MisoSceneModel
     public SparseMisoSceneModel clone ()
     {
         SparseMisoSceneModel model = (SparseMisoSceneModel)super.clone();
-        model._sections = new StreamableHashIntMap<Section>();
+        model._sections = StreamableHashMap.newMap();
         for (Iterator<Section> iter = getSections(); iter.hasNext(); ) {
             Section sect = iter.next();
             model.setSection(sect.clone());
@@ -468,5 +468,5 @@ public class SparseMisoSceneModel extends MisoSceneModel
     }
 
     /** Contains our sections in row major order. */
-    protected StreamableHashIntMap<Section> _sections = new StreamableHashIntMap<Section>();
+    protected StreamableHashMap<Integer, Section> _sections = StreamableHashMap.newMap();
 }
