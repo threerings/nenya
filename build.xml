@@ -47,7 +47,7 @@
   <!-- makes sure our tools are compiled and defines the ant tasks -->
   <target name="preptools" depends="prepare">
     <javac srcdir="src/java" destdir="${classes.dir}" includeAntRuntime="false"
-           debug="on" optimize="{$build.optimize}" deprecation="on" source="1.5" target="1.5">
+           debug="on" optimize="${build.optimize}" deprecation="on" source="1.5" target="1.5">
       <classpath refid="classpath"/>
       <compilerarg value="-Xlint"/>
       <compilerarg value="-Xlint:-serial"/>
@@ -77,7 +77,7 @@
   <!-- build the java class files -->
   <target name="compile" depends="check-available,prepare">
     <javac srcdir="src/java" destdir="${classes.dir}" includeAntRuntime="false"
-           debug="on" optimize="{$build.optimize}" deprecation="on" source="1.5" target="1.5">
+           debug="on" optimize="${build.optimize}" deprecation="on" source="1.5" target="1.5">
       <classpath refid="classpath"/>
       <exclude name="com/threerings/jme/**" unless="build.jme"/>
       <exclude name="com/threerings/openal/**" unless="build.openal"/>
