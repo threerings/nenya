@@ -165,9 +165,9 @@ public class Colorization
         if (fhsv == null) {
             fhsv = new int[hsv.length];
         }
-        for (int i = 0; i < hsv.length; i++) {
+        for (int ii = 0; ii < hsv.length; ii++) {
             // fhsv[i] = (int)(hsv[i]*Integer.MAX_VALUE);
-            fhsv[i] = (int)(hsv[i]*Short.MAX_VALUE);
+            fhsv[ii] = (int)(hsv[ii]*Short.MAX_VALUE);
         }
         return fhsv;
     }

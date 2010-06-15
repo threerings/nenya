@@ -115,7 +115,7 @@ public class TileSetBundle extends HashIntMap<TileSet>
     {
         int count = in.readInt();
 
-        for (int i = 0; i < count; i++) {
+        for (int ii = 0; ii < count; ii++) {
             int tileSetId = in.readInt();
             TileSet set = (TileSet)in.readObject();
             put(tileSetId, set);

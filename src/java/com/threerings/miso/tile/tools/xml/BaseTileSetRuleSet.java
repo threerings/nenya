@@ -52,8 +52,8 @@ public class BaseTileSetRuleSet extends SwissArmyTileSetRuleSet
                 public void parseAndSet (String bodyText, Object target) {
                     int[] values = StringUtil.parseIntArray(bodyText);
                     boolean[] passable = new boolean[values.length];
-                    for (int i = 0; i < values.length; i++) {
-                        passable[i] = (values[i] != 0);
+                    for (int ii = 0; ii < values.length; ii++) {
+                        passable[ii] = (values[ii] != 0);
                     }
                     BaseTileSet starget = (BaseTileSet)target;
                     starget.setPassability(passable);

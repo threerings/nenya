@@ -133,8 +133,8 @@ public class ImageUtil
         // convert the colors to HSV
         float[] hsv = new float[3];
         int[] fhsv = new int[3];
-        for (int i = 0; i < size; i++) {
-            int value = rgbs[i];
+        for (int ii = 0; ii < size; ii++) {
+            int value = rgbs[ii];
 
             // don't fiddle with alpha pixels
             if ((value & 0xFF000000) == 0) {
@@ -154,7 +154,7 @@ public class ImageUtil
                 Colorization cz = zations[z];
                 if (cz != null && cz.matches(hsv, fhsv)) {
                     // massage the HSV bands and update the RGBs array
-                    rgbs[i] = cz.recolorColor(hsv);
+                    rgbs[ii] = cz.recolorColor(hsv);
                     break;
                 }
             }

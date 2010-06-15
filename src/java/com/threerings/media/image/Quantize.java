@@ -296,13 +296,13 @@ public class Quantize {
 
     static {
         SQUARES = new int[MAX_RGB + MAX_RGB + 1];
-        for (int i= -MAX_RGB; i <= MAX_RGB; i++) {
-            SQUARES[i + MAX_RGB] = i * i;
+        for (int ii = -MAX_RGB; ii <= MAX_RGB; ii++) {
+            SQUARES[ii + MAX_RGB] = ii * ii;
         }
 
         SHIFT = new int[MAX_TREE_DEPTH + 1];
-        for (int i = 0; i < MAX_TREE_DEPTH + 1; ++i) {
-            SHIFT[i] = 1 << (15 - i);
+        for (int ii = 0; ii < MAX_TREE_DEPTH + 1; ++ii) {
+            SHIFT[ii] = 1 << (15 - ii);
         }
     }
 
@@ -344,11 +344,11 @@ public class Quantize {
             this.pixels = pixels;
             this.max_colors = max_colors;
 
-            int i = max_colors;
+            int ii = max_colors;
             // tree_depth = log max_colors
             //                 4
-            for (depth = 1; i != 0; depth++) {
-                i /= 4;
+            for (depth = 1; ii != 0; depth++) {
+                ii /= 4;
             }
             if (depth > 1) {
                 --depth;

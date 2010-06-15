@@ -100,8 +100,8 @@ public class CharacterDescriptor
     public int hashCode ()
     {
         int code = 0, clength = _components.length;
-        for (int i = 0; i < clength; i++) {
-            code ^= _components[i];
+        for (int ii = 0; ii < clength; ii++) {
+            code ^= _components[ii];
         }
         return code;
     }

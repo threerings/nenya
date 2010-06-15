@@ -99,8 +99,8 @@ public class BuilderModel
     {
         int[] values = new int[_selected.size()];
         Iterator<Integer> iter = _selected.values().iterator();
-        for (int i = 0; iter.hasNext(); i++) {
-            values[i] = iter.next().intValue();
+        for (int ii = 0; iter.hasNext(); ii++) {
+            values[ii] = iter.next().intValue();
         }
         return values;
     }

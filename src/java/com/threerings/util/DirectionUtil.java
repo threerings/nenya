@@ -94,11 +94,11 @@ public class DirectionUtil implements DirectionCodes
     public static String toString (int[] directions)
     {
         StringBuilder buf = new StringBuilder("{");
-        for (int i = 0; i < directions.length; i++) {
-            if (i > 0) {
+        for (int ii = 0; ii < directions.length; ii++) {
+            if (ii > 0) {
                 buf.append(", ");
             }
-            buf.append(toShortString(directions[i]));
+            buf.append(toShortString(directions[ii]));
         }
         return buf.append("}").toString();
     }

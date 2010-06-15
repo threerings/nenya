@@ -156,8 +156,8 @@ public class XMLTileSetParser
         }
 
         // stick the tilesets from the list into the hashtable
-        for (int i = 0; i < setlist.size(); i++) {
-            TileSet set = setlist.get(i);
+        for (int ii = 0; ii < setlist.size(); ii++) {
+            TileSet set = setlist.get(ii);
             if (set.getName() == null) {
                 log.warning("Tileset did not receive name during " +
                             "parsing process [set=" + set + "].");

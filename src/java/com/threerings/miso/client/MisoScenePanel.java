@@ -590,8 +590,8 @@ public class MisoScenePanel extends VirtualMediaPanel
             // start with the sprites that contain the point
             _spritemgr.getHitSprites(_hitSprites, x, y);
             int hslen = _hitSprites.size();
-            for (int i = 0; i < hslen; i++) {
-                Sprite sprite = _hitSprites.get(i);
+            for (int ii = 0; ii < hslen; ii++) {
+                Sprite sprite = _hitSprites.get(ii);
                 appendDirtySprite(_hitList, sprite);
             }
 

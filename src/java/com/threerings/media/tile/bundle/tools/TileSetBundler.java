@@ -165,8 +165,8 @@ public class TileSetBundler
 
         // use the mappings we parsed to configure our actual digester
         int msize = mappings.size();
-        for (int i = 0; i < msize; i++) {
-            Mapping map = mappings.get(i);
+        for (int ii = 0; ii < msize; ii++) {
+            Mapping map = mappings.get(ii);
             try {
                 TileSetRuleSet ruleset = (TileSetRuleSet)Class.forName(map.ruleset).newInstance();
 
@@ -256,8 +256,8 @@ public class TileSetBundler
 
         // add all of the parsed tilesets to the tileset bundle
         try {
-            for (int i = 0; i < sets.size(); i++) {
-                TileSet set = sets.get(i);
+            for (int ii = 0; ii < sets.size(); ii++) {
+                TileSet set = sets.get(ii);
                 String name = set.getName();
 
                 // let's be robust

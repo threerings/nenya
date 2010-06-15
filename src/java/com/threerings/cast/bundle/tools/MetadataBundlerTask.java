@@ -209,9 +209,9 @@ public class MetadataBundlerTask extends Task
         Map<String, TileSet> setmap = Maps.newHashMap();
 
         // create the action map
-        for (int i = 0; i < setlist.size(); i++) {
-            TileSet set = (TileSet)setlist.get(i);
-            ActionSequence act = (ActionSequence)actlist.get(i);
+        for (int ii = 0; ii < setlist.size(); ii++) {
+            TileSet set = (TileSet)setlist.get(ii);
+            ActionSequence act = (ActionSequence)actlist.get(ii);
             // make sure nothing was missing in the action sequence
             // definition parsed from XML
             String errmsg = ActionRuleSet.validate(act);
@@ -244,8 +244,8 @@ public class MetadataBundlerTask extends Task
         Map<String, ComponentClass> clmap = Maps.newHashMap();
 
         // create the action map
-        for (int i = 0; i < setlist.size(); i++) {
-            ComponentClass cl = (ComponentClass)setlist.get(i);
+        for (int ii = 0; ii < setlist.size(); ii++) {
+            ComponentClass cl = (ComponentClass)setlist.get(ii);
             clmap.put(cl.name, cl);
         }
 

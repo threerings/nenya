@@ -275,8 +275,8 @@ public class ColorPository implements Serializable
         // create the array
         ColorRecord[] crecs = new ColorRecord[record.colors.size()];
         Iterator<ColorRecord> iter = record.colors.values().iterator();
-        for (int i = 0; iter.hasNext(); i++) {
-            crecs[i] = iter.next();
+        for (int ii = 0; iter.hasNext(); ii++) {
+            crecs[ii] = iter.next();
         }
         return crecs;
     }
@@ -295,8 +295,8 @@ public class ColorPository implements Serializable
 
         int[] cids = new int[record.colors.size()];
         Iterator<ColorRecord> crecs = record.colors.values().iterator();
-        for (int i = 0; crecs.hasNext(); i++) {
-            cids[i] = crecs.next().colorId;
+        for (int ii = 0; crecs.hasNext(); ii++) {
+            cids[ii] = crecs.next().colorId;
         }
         return cids;
     }

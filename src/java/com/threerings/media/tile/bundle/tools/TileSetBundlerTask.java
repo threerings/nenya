@@ -88,8 +88,8 @@ public class TileSetBundlerTask extends Task
                 new MapFileTileSetIDBroker(_mapfile);
 
             // deal with the filesets
-            for (int i = 0; i < _filesets.size(); i++) {
-                FileSet fs = _filesets.get(i);
+            for (int ii = 0; ii < _filesets.size(); ii++) {
+                FileSet fs = _filesets.get(ii);
                 DirectoryScanner ds = fs.getDirectoryScanner(getProject());
                 File fromDir = fs.getDir(getProject());
                 String[] srcFiles = ds.getIncludedFiles();

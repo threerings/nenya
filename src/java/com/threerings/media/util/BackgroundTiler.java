@@ -64,11 +64,11 @@ public class BackgroundTiler
         _tiles = new BufferedImage[9];
         int[] sy = { 0, _h3, _h3+_ch3 };
         int[] thei = { _h3, _ch3, _h3 };
-        for (int i = 0; i < 3; i++) {
-            _tiles[3*i] = src.getSubimage(0, sy[i], _w3, thei[i]);
-            _tiles[3*i+1] = src.getSubimage(_w3, sy[i], _cw3, thei[i]);
-            _tiles[3*i+2] =
-                src.getSubimage(width-_w3, sy[i], _w3, thei[i]);
+        for (int ii = 0; ii < 3; ii++) {
+            _tiles[3*ii] = src.getSubimage(0, sy[ii], _w3, thei[ii]);
+            _tiles[3*ii+1] = src.getSubimage(_w3, sy[ii], _cw3, thei[ii]);
+            _tiles[3*ii+2] =
+                src.getSubimage(width-_w3, sy[ii], _w3, thei[ii]);
         }
     }
 

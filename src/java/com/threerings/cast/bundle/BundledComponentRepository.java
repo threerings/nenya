@@ -196,8 +196,8 @@ public class BundledComponentRepository
         if (comps != null) {
             // scan the list for the named component
             int ccount = comps.size();
-            for (int i = 0; i < ccount; i++) {
-                CharacterComponent comp = comps.get(i);
+            for (int ii = 0; ii < ccount; ii++) {
+                CharacterComponent comp = comps.get(ii);
                 if (comp.name.equals(compName)) {
                     return comp;
                 }
