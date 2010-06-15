@@ -57,15 +57,13 @@ public class AutoFringer
 {
     public static class FringeTile extends BaseTile
     {
-        public FringeTile (long[] fringeId, boolean passable)
-        {
+        public FringeTile (long[] fringeId, boolean passable) {
             setPassable(passable);
             _fringeId = fringeId;
         }
 
         @Override
-        public boolean equals (Object obj)
-        {
+        public boolean equals (Object obj) {
             if (!(obj instanceof FringeTile)) {
                 return false;
             }
@@ -74,8 +72,7 @@ public class AutoFringer
         }
 
         @Override
-        public int hashCode ()
-        {
+        public int hashCode () {
             return Arrays.hashCode(_fringeId);
         }
 
