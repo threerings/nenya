@@ -49,17 +49,17 @@ public /*abstract*/ class MisoSceneModel extends SimpleStreamableObject
      * specified coordinates. <code>-1</code> will be returned if there is
      * no tile at the specified coordinate.
      */
-    public function getBaseTileId (arg1 :int, arg2 :int) :int
+    public function getBaseTileId (x :int, y :int) :int
     {
         throw new Error("abstract");
     }
 
-    public function setBaseTile (arg1 :int, arg2 :int, arg3 :int) :Boolean
+    public function setBaseTile (x :int, y :int, tileId :int) :Boolean
     {
         throw new Error("abstract");
     }
 
-    public function setDefaultBaseTileSet (arg1 :int) :void
+    public function setDefaultBaseTileSet (tileSetId :int) :void
     {
         // nothing doing
     }

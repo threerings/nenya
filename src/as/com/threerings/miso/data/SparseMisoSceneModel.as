@@ -29,6 +29,7 @@ import com.threerings.io.ObjectOutputStream;
 
 import com.threerings.util.ArrayIterator;
 import com.threerings.util.ClassUtil;
+import com.threerings.util.Integer;
 import com.threerings.util.Iterator;
 import com.threerings.util.Joiner;
 import com.threerings.util.MathUtil;
@@ -221,17 +222,17 @@ public class SparseMisoSceneModel extends MisoSceneModel
     /**
      * Returns the key for the specified section.
      */
-    protected function key (x :int, y :int) :int
+    protected function key (x :int, y :int) :Integer
     {
         var sx :int = MathUtil.floorDiv(x, swidth);
         var sy :int = MathUtil.floorDiv(y, sheight);
-        return (sx << 16) | (sy & 0xFFFF);
+        return Integer.valueOf((sx << 16) | (sy & 0xFFFF));
     }
 
     /** Returns the section for the specified tile coordinate. */
     protected function getSection (x :int, y :int, create :Boolean) :SparseMisoSceneModel_Section
     {
-        var key :int = key(x, y);
+        var key :Integer = key(x, y);
         var sect :SparseMisoSceneModel_Section = _sections.get(key);
         if (sect == null && create) {
             var sx :int = MathUtil.floorDiv(x, swidth)*swidth;

@@ -50,7 +50,7 @@ public class ObjectSet
 
         // otherwise insert it
         ipos = -(ipos+1);
-        _objs = _objs.splice(ipos, 0, info);
+        _objs.splice(ipos, 0, info);
         return true;
     }
 
