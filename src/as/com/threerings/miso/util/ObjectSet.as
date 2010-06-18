@@ -28,8 +28,6 @@ import com.threerings.util.Log;
  */
 public class ObjectSet
 {
-    public static const log :Log = Log.getLog(ObjectSet);
-
     /**
      * Inserts the supplied object into the set.
      *
@@ -156,5 +154,7 @@ public class ObjectSet
 
     /** Our sorted array of objects. */
     protected var _objs :Array = new Array();
+
+    private static const log :Log = Log.getLog(ObjectSet);
 }
 }

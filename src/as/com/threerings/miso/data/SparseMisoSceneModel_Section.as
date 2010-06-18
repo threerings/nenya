@@ -37,8 +37,6 @@ import com.threerings.util.StringUtil;
 public class SparseMisoSceneModel_Section extends SimpleStreamableObject
     implements Cloneable
 {
-    public static const log :Log = Log.getLog(SparseMisoSceneModel_Section);
-
     /** The tile coordinate of our upper leftmost tile. */
     public var x :int;
     public var y :int;
@@ -261,5 +259,7 @@ public class SparseMisoSceneModel_Section extends SimpleStreamableObject
         out.writeField(objectYs);
         out.writeField(objectInfo);
     }
+
+    private static const log :Log = Log.getLog(SparseMisoSceneModel_Section);
 }
 }
