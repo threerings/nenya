@@ -36,6 +36,6 @@
     <include name="aspirin.swc"/>
     <include name="naryalib*.swc"/>
     <include name="flexlib*.swc"/>
-    <include name="as3isolib.swc"/>
+    <include name="as3isolib-fp9.swc"/>
   </fileset>
 </project>
