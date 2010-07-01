@@ -132,6 +132,18 @@ public class TileSetBundler
     public TileSetBundler (File configFile)
         throws IOException
     {
+        this(configFile, false);
+    }
+
+    /**
+     * Constructs a tileset bundler with the specified bundler config
+     * file and whether to keep pngs as-is or if not, re-encode them.
+     */
+    public TileSetBundler (File configFile, boolean keepRawPngs)
+        throws IOException
+    {
+        _keepRawPngs = keepRawPngs;
+
         // we parse our configuration with a digester
         Digester digester = new Digester();
 
@@ -340,7 +352,7 @@ public class TileSetBundler
         File target, TileSetBundle bundle, ImageProvider improv, String imageBase, long newestMod)
         throws IOException
     {
-        return createBundleJar(target, bundle, improv, imageBase);
+        return createBundleJar(target, bundle, improv, imageBase, _keepRawPngs);
     }
 
     /**
@@ -353,7 +365,8 @@ public class TileSetBundler
      * ObjectTileSet tilesets.
      */
     public static boolean createBundleJar (
-        File target, TileSetBundle bundle, ImageProvider improv, String imageBase)
+        File target, TileSetBundle bundle, ImageProvider improv, String imageBase,
+        boolean keepRawPngs)
         throws IOException
     {
         // now we have to create the actual bundle file
@@ -383,7 +396,7 @@ public class TileSetBundler
                 }
 
                 // if this is an object tileset, trim it
-                if (set instanceof ObjectTileSet) {
+                if (!keepRawPngs && (set instanceof ObjectTileSet)) {
                     // set the tileset up with an image provider; we
                     // need to do this so that we can trim it!
                     set.setImageProvider(improv);
@@ -418,7 +431,7 @@ public class TileSetBundler
                     File ifile = new File(imageBase, imagePath);
                     try {
                         BufferedImage image = ImageIO.read(ifile);
-                        if (FastImageIO.canWrite(image)) {
+                        if (!keepRawPngs && FastImageIO.canWrite(image)) {
                             imagePath = adjustImagePath(imagePath);
                             jar.putNextEntry(new JarEntry(imagePath));
                             set.setImagePath(imagePath);
@@ -475,6 +488,7 @@ public class TileSetBundler
         int didx = imagePath.lastIndexOf(".");
         return ((didx == -1) ? imagePath :
                 imagePath.substring(0, didx)) + ".raw";
+
     }
 
     /** Used to parse our configuration. */
@@ -498,4 +512,7 @@ public class TileSetBundler
 
     /** The digester we use to parse bundle descriptions. */
     protected Digester _digester;
+
+    /** Whether we should keep pngs as-is rather than re-encoding. */
+    protected boolean _keepRawPngs;
 }

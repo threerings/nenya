@@ -67,6 +67,15 @@ public class TileSetBundlerTask extends Task
     }
 
     /**
+     * Note whether we are supposed to use the raw png files directly in the bundle or try to
+     *  re-encode them.
+     */
+    public void setKeepRawPngs (boolean keep)
+    {
+        _keepRawPngs = keep;
+    }
+
+    /**
      * Performs the actual work of the task.
      */
     @Override
@@ -137,7 +146,7 @@ public class TileSetBundlerTask extends Task
     protected TileSetBundler createBundler ()
         throws IOException
     {
-        return new TileSetBundler(_config);
+        return new TileSetBundler(_config, _keepRawPngs);
     }
 
     /**
@@ -161,4 +170,7 @@ public class TileSetBundlerTask extends Task
 
     /** A list of filesets that contain tileset bundle definitions. */
     protected ArrayList<FileSet> _filesets = Lists.newArrayList();
+
+    /** Whether we should keep raw pngs rather than reencoding them in the bundle. */
+    protected boolean _keepRawPngs;
 }
