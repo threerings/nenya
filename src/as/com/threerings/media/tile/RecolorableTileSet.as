@@ -1,3 +1,4 @@
+//
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2010 Three Rings Design, Inc., All Rights Reserved
 // http://www.threerings.net/code/nenya/
@@ -16,20 +17,14 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-package com.threerings.miso.util {
+package com.threerings.media.tile {
 
-import com.threerings.miso.tile.MisoTileManager;
-
-/**
- * Provides Miso code with access to the managers that it needs to do its
- * thing.  For now it is just a stub.
- */
-public interface MisoContext
+public interface RecolorableTileSet
 {
     /**
-     * Returns a reference to the tile manager. This reference is valid
-     * for the lifetime of the application.
+     * Returns the colorization classes that should be used to recolor
+     * objects in this tileset.
      */
-    function getTileManager () :MisoTileManager;
+    function getColorizations () :Array
 }
 }

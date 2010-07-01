@@ -1,3 +1,4 @@
+//
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2010 Three Rings Design, Inc., All Rights Reserved
 // http://www.threerings.net/code/nenya/
@@ -16,20 +17,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-package com.threerings.miso.util {
+package com.threerings.miso.tile {
 
-import com.threerings.miso.tile.MisoTileManager;
+import com.threerings.media.tile.TileManager;
 
 /**
- * Provides Miso code with access to the managers that it needs to do its
- * thing.  For now it is just a stub.
+ * Extends the basic tile manager and provides support for automatically generating fringes in
+ * between different types of base tiles in a scene.
  */
-public interface MisoContext
+public class MisoTileManager extends TileManager
 {
-    /**
-     * Returns a reference to the tile manager. This reference is valid
-     * for the lifetime of the application.
-     */
-    function getTileManager () :MisoTileManager;
+    // TODO: Fringing.
 }
 }
