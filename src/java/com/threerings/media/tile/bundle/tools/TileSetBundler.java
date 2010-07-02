@@ -361,12 +361,13 @@ public class TileSetBundler
      * @param target the tileset bundle file that will be created.
      * @param bundle contains the tilesets we'd like to save out to the bundle.
      * @param improv the image provider.
-     * @param imageBase the base directory for getting images for non
-     * ObjectTileSet tilesets.
+     * @param imageBase the base directory for getting images for non-ObjectTileSet tilesets.
+     * @param keepOriginalPngs bundle up the original PNGs as PNGs instead of converting to the
+     * FastImageIO raw format
      */
     public static boolean createBundleJar (
         File target, TileSetBundle bundle, ImageProvider improv, String imageBase,
-        boolean keepRawPngs)
+        boolean keepOriginalPngs)
         throws IOException
     {
         // now we have to create the actual bundle file
@@ -396,7 +397,7 @@ public class TileSetBundler
                 }
 
                 // if this is an object tileset, trim it
-                if (!keepRawPngs && (set instanceof ObjectTileSet)) {
+                if (!keepOriginalPngs && (set instanceof ObjectTileSet)) {
                     // set the tileset up with an image provider; we
                     // need to do this so that we can trim it!
                     set.setImageProvider(improv);
@@ -431,7 +432,7 @@ public class TileSetBundler
                     File ifile = new File(imageBase, imagePath);
                     try {
                         BufferedImage image = ImageIO.read(ifile);
-                        if (!keepRawPngs && FastImageIO.canWrite(image)) {
+                        if (!keepOriginalPngs && FastImageIO.canWrite(image)) {
                             imagePath = adjustImagePath(imagePath);
                             jar.putNextEntry(new JarEntry(imagePath));
                             set.setImagePath(imagePath);
