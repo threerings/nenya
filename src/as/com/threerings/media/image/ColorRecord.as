@@ -72,13 +72,14 @@ public class ColorRecord
     }
 
 
-    public static function fromXml (xml :XML) :ColorRecord
+    public static function fromXml (xml :XML, cclass :ClassRecord) :ColorRecord
     {
         var rec :ColorRecord = new ColorRecord();
         rec.colorId = xml.@colorId;
         rec.name = xml.@name;
         rec.offsets = toNumArray(xml.@offsets);
         rec.starter = xml.@starter;
+        rec.cclass = cclass;
 
         return rec;
     }
@@ -89,8 +90,8 @@ public class ColorRecord
             return null;
         }
 
-        return str.split(",").map(function(element :*, index :int, arr :Array) :int {
-            return Number(element);
+        return str.split(",").map(function(element :String, index :int, arr :Array) :Number {
+            return Number(StringUtil.trim(element));
         });
     }
 

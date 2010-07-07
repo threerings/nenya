@@ -55,7 +55,7 @@ public class Colorization
         // compute our HSV and fixed HSV
         _hsv = ColorUtil.RGBtoHSB(ColorUtil.getRed(rootColor), ColorUtil.getGreen(rootColor),
              ColorUtil.getBlue(rootColor));
-        _fhsv = toFixedHSV(_hsv, null);
+        _fhsv = toFixedHSV(_hsv);
     }
 
     /**
@@ -154,14 +154,12 @@ public class Colorization
      * @return the <code>fhsv</code> parameter if it was non-null or the
      * newly created target array.
      */
-    public static function toFixedHSV (hsv :Array, fhsv :Array) :Array
+    public static function toFixedHSV (hsv :Array) :Array
     {
-        if (fhsv == null) {
-            fhsv = new Array(hsv.length);
-        }
+        var fhsv :Array = new Array(hsv.length);
+
         for (var ii :int = 0; ii < hsv.length; ii++) {
-            // fhsv[i] = (int)(hsv[i]*Integer.MAX_VALUE);
-            fhsv[ii] = (int)(hsv[ii]*Short.MAX_VALUE);
+            fhsv[ii] = int(hsv[ii] * Short.MAX_VALUE);
         }
         return fhsv;
     }

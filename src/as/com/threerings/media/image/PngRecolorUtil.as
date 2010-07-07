@@ -78,23 +78,23 @@ public class PngRecolorUtil
     }
 
     public static function recolorPNG (pngBytes :ByteArray,
-        colors :Array/* of Colorization */) :void
+        colors :Array/* of Colorization */) :ByteArray
     {
-        if (colors.length == 0) {
-            return;
+        if (colors == null || colors.length == 0) {
+            return pngBytes;
         }
 
         // first, lets make sure we really have a PNG
         if (!isPng(pngBytes)) {
             log.warning("recolorPNG received invalid pngBytes", new Error());
-            return;
+            return pngBytes;
         }
 
         var chunks :Array = findChunks(pngBytes, [HEADER_CHUNK, PALETTE_CHUNK]);
         if (chunks.length != 2 || (chunks[0] as PngChunk).type != HEADER_CHUNK) {
             log.warning("recolorPNG received an unexected PNG format", "requiredChunksFound",
                 chunks.length, new Error());
-            return;
+            return pngBytes;
         }
         var header :PngChunk = chunks[0] as PngChunk;
         var palette :PngChunk = chunks[1] as PngChunk;
@@ -103,7 +103,7 @@ public class PngRecolorUtil
         if (colorType != INDEXED_COLOR_TYPE) {
             log.warning(
                 "Color Type in PNG header is not indexed-color", "type", colorType, new Error());
-            return;
+            return pngBytes;
         }
 
         initializeCRCTable();
@@ -118,12 +118,16 @@ public class PngRecolorUtil
             var green :uint = pngBytes.readUnsignedByte();
             var blue :uint = pngBytes.readUnsignedByte();
 
-            var hsb :Array = ColorUtil.RGBtoHSB(red, green, blue);
+            var hsv :Array = ColorUtil.RGBtoHSB(red, green, blue);
+            var fhsv :Array = Colorization.toFixedHSV(hsv);
             for each (var color :Colorization in colors) {
-                var newRgb :uint = color.recolorColor(hsb);
-                pngBytes[ii] = ColorUtil.getRed(newRgb);
-                pngBytes[ii + 1] = ColorUtil.getGreen(newRgb);
-                pngBytes[ii + 2] = ColorUtil.getBlue(newRgb);
+                if (color != null && color.matches(hsv, fhsv)) {
+                    var newRgb :uint = color.recolorColor(hsv);
+                    pngBytes[ii] = red = ColorUtil.getRed(newRgb);
+                    pngBytes[ii + 1] = green = ColorUtil.getGreen(newRgb);
+                    pngBytes[ii + 2] = blue = ColorUtil.getBlue(newRgb);
+                    break;
+                }
             }
 
             crc = F.foldl([red, green, blue], crc, crcCalc);
@@ -132,6 +136,8 @@ public class PngRecolorUtil
         // write out the CRC for the modified color table
         pngBytes.position = palette.idx + palette.length;
         pngBytes.writeUnsignedInt(crc);
+
+        return pngBytes;
     }
 
     protected static function initializeCRCTable () :void
@@ -171,8 +177,6 @@ public class PngRecolorUtil
     protected static const HEADER_CHUNK :String = "IHDR";
     protected static const COLOR_TYPE_IDX :int = 9;
     protected static const INDEXED_COLOR_TYPE :int = 3;
-
-    protected static const JAVA_SHORT_MAX :int = 0x7FFF;
 
     protected static var _crcTable :Array;
 }

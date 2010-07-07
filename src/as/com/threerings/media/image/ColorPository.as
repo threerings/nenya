@@ -22,6 +22,7 @@ package com.threerings.media.image {
 import com.threerings.util.Log;
 import com.threerings.util.Map;
 import com.threerings.util.Maps;
+import com.threerings.util.StringUtil;
 
 public class ColorPository
 {
@@ -121,11 +122,26 @@ public class ColorPository
     }
 
     /**
+     * Looks up a colorization by class and color Id.
+     */
+    public function getColorizationByNameAndId (className :String, colorId :int) :Colorization
+    {
+        var crec :ClassRecord = getClassRecordByName(className);
+        if (crec != null) {
+            var color :ColorRecord = crec.colors.get(colorId);
+            if (color != null) {
+                return color.getColorization();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Loads up a colorization class by name and logs a warning if it doesn't exist.
      */
     public function getClassRecordByName (className :String) :ClassRecord
     {
-        for each (var crec :ClassRecord in _classes) {
+        for each (var crec :ClassRecord in _classes.values()) {
             if (crec.name == className) {
                 return crec;
             }

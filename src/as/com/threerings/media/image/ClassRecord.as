@@ -138,13 +138,14 @@ public class ClassRecord
     public static function fromXml (xml :XML) :ClassRecord
     {
         var rec :ClassRecord = new ClassRecord();
+        rec.classId = xml.@classId;
         for each (var colorXml :XML in xml.color) {
-            rec.colors.put(colorXml.@colorId, ColorRecord.fromXml(colorXml));
+            rec.colors.put(int(colorXml.@colorId), ColorRecord.fromXml(colorXml, rec));
         }
 
         rec.name = xml.@name;
         var srcStr :String = xml.@source;
-        rec.source = parseInt(srcStr.substring(1, srcStr.length - 1), 16);
+        rec.source = parseInt(srcStr.substr(1, srcStr.length - 1), 16);
         rec.range = toNumArray(xml.@range);
         rec.defaultId = xml.@defaultId;
 
@@ -157,7 +158,7 @@ public class ClassRecord
             return null;
         }
 
-        return str.split(",").map(function(element :*, index :int, arr :Array) :int {
+        return str.split(",").map(function(element :*, index :int, arr :Array) :Number {
             return Number(element);
         });
     }

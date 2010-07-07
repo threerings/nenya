@@ -264,9 +264,12 @@ public class ObjectTileSet extends SwissArmyTileSet
         _yspots = toIntArray(xml.ySpots);
         _sorients = toIntArray(xml.sorients);
         var constraintStrArr :Array = toStrArray(xml.constraints);
-        _constraints = constraintStrArr.map(function(element :*, index :int, arr :Array) :Array {
-            return element.split("|");
-        });
+        if (constraintStrArr != null) {
+            _constraints =
+                constraintStrArr.map(function(element :*, index :int, arr :Array) :Array {
+                        return element.split("|");
+                });
+        }
     }
 
     /** The width (in tile units) of our object tiles. */

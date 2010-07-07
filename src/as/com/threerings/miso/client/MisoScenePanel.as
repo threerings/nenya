@@ -32,6 +32,7 @@ import flash.events.MouseEvent;
 
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
+import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
@@ -166,13 +167,23 @@ public class MisoScenePanel extends Sprite
 
             scene.addChild(
                 new ObjectTileIsoSprite(objInfo.x, objInfo.y, objTileId,
-                    objTileSet.getTile(TileUtil.getTileIndex(objTileId)), _metrics));
+                    objTileSet.getTile(TileUtil.getTileIndex(objTileId), getColorizer(objInfo)),
+                    _metrics));
         }
 
         time = getTimer();
         scene.render();
 
         _isoView.addScene(scene);
+    }
+
+    /**
+     * Derived classes can override this method and provide a colorizer that will be used to
+     * colorize the supplied scene object when rendering.
+     */
+    protected function getColorizer (oinfo :ObjectInfo) :Colorizer
+    {
+        return null;
     }
 
     protected var _model :MisoSceneModel;

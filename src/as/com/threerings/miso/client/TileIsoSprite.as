@@ -86,7 +86,7 @@ public class TileIsoSprite extends IsoDisplayObject
         image.x = -tile.getOriginX() + _metrics.tilewid *
             ((tile.getBaseWidth() - tile.getBaseHeight())/2);;
         image.y = -tile.getOriginY() + _metrics.tilehei *
-            (1 + (tile.getBaseWidth() + tile.getBaseHeight())/2);
+            ((tile.getBaseWidth() + tile.getBaseHeight())/2);
         sprite.sprites = [image];
         sprite.setSize(tile.getBaseWidth(), tile.getBaseHeight(), 1);
         addChild(sprite);

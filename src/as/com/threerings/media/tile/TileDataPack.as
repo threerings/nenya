@@ -34,6 +34,7 @@ import nochump.util.zip.ZipEntry;
 import nochump.util.zip.ZipError;
 import nochump.util.zip.ZipFile;
 
+import com.threerings.media.image.PngRecolorUtil;
 import com.threerings.util.DataPack;
 import com.threerings.util.MultiLoader;
 
@@ -85,23 +86,17 @@ public class TileDataPack extends DataPack
 
     public function getTileSetImage (path :String, zations :Array, callback :Function) :void
     {
-        // TODO - DO SOMETHING WITH ZATIONS
-        getDisplayObjects(path, callback);
+        MultiLoader.getContents(PngRecolorUtil.recolorPNG(getFile(path), zations), callback);
     }
 
     public function getTileImage (path :String, bounds :Rectangle, zations :Array,
         callback :Function) :void
     {
-        getTileSetImage(path, zations, function(result :DisplayObject) :void {
-            // TODO - DO SOMETHING TO SUB_REGION THIS
-            if (result is Bitmap) {
-                var data :BitmapData =
-                    new BitmapData(bounds.width, bounds.height, true, 0x00000000);
-                data.copyPixels(Bitmap(result).bitmapData, bounds, new Point(0, 0));
-                callback(new Bitmap(data));
-            } else {
-                callback(result);
-            }
+        getTileSetImage(path, zations, function(result :Bitmap) :void {
+            var data :BitmapData =
+                new BitmapData(bounds.width, bounds.height, true, 0x00000000);
+            data.copyPixels(Bitmap(result).bitmapData, bounds, new Point(0, 0));
+            callback(new Bitmap(data));
         });
     }
 }

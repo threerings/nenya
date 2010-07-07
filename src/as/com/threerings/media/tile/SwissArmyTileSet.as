@@ -177,24 +177,34 @@ public class SwissArmyTileSet extends TileSet
         _widths = toIntArray(xml.widths);
         _heights = toIntArray(xml.heights);
         var offsetPosArr :Array = toIntArray(xml.offsetPos);
-        _offsetPos = new Point(offsetPosArr[0], offsetPosArr[1]);
+        if (offsetPosArr != null) {
+            _offsetPos = new Point(offsetPosArr[0], offsetPosArr[1]);
+        } else {
+            _offsetPos = new Point(0, 0);
+        }
         var gapSizeArr :Array = toIntArray(xml.gapSize);
-        _gapSize = new Point(gapSizeArr[0], gapSizeArr[1]);
+        if (gapSizeArr != null) {
+            _gapSize = new Point(gapSizeArr[0], gapSizeArr[1]);
+        } else {
+            _gapSize = new Point(0, 0);
+        }
         computeTileCount();
     }
 
     protected static function toStrArray (str :String) :Array
     {
-        if (str == null) {
+        if (str == null || str.length == 0) {
             return null;
         }
 
-        return str.split(",");
+        return str.split(",").map(function(element :String, index :int, arr :Array) :String {
+                return StringUtil.trim(element);
+            });
     }
 
     protected static function toBoolArray (str :String) :Array
     {
-        if (str == null) {
+        if (str == null || str.length == 0) {
             return null;
         }
 
@@ -205,7 +215,7 @@ public class SwissArmyTileSet extends TileSet
 
     protected static function toIntArray (str :String) :Array
     {
-        if (str == null) {
+        if (str == null || str.length == 0) {
             return null;
         }
 
