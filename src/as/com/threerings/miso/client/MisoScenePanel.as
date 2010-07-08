@@ -38,7 +38,7 @@ import flash.events.MouseEvent;
 import mx.core.ClassFactory;
 
 import as3isolib.display.primitive.IsoBox;
-import as3isolib.display.renderers.SimpleSceneLayoutRenderer;
+// import as3isolib.display.renderers.SimpleSceneLayoutRenderer;
 import as3isolib.geom.Pt;
 import as3isolib.geom.IsoMath;
 import as3isolib.display.scene.IsoGrid;
@@ -150,7 +150,7 @@ public class MisoScenePanel extends Sprite
         for (var si :int = -2; si < 4; si++) {
             for (var sj :int = -1; sj < 3; sj++) {
                 var baseScene :IsoScene = new IsoScene();
-                baseScene.layoutRenderer = new ClassFactory(SimpleSceneLayoutRenderer);
+//                baseScene.layoutRenderer = new ClassFactory(SimpleSceneLayoutRenderer);
                 for (var ii :int = 10*si; ii < 10*si + 10; ii++) {
                     for (var jj :int = 10*sj; jj < 10*sj + 10; jj++) {
                         var tileId :int = _model.getBaseTileId(ii, jj);
