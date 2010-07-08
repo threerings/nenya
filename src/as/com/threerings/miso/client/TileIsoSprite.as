@@ -33,15 +33,18 @@ import com.threerings.util.Log;
 import com.threerings.miso.util.MisoSceneMetrics;
 
 public class TileIsoSprite extends IsoDisplayObject
+    implements PriorityIsoDisplayObject
 {
     private static var log :Log = Log.getLog(TileIsoSprite);
 
-    public function TileIsoSprite (x :int, y :int, tileId :int, tile :Tile,
+    public function TileIsoSprite (x :int, y :int, tileId :int, tile :Tile, priority :int,
         metrics :MisoSceneMetrics)
     {
         _tileId = tileId;
 
         _metrics = metrics;
+
+        _priority = priority;
 
         moveTo(x, y, 0);
 
@@ -93,7 +96,14 @@ public class TileIsoSprite extends IsoDisplayObject
         render();
     }
 
+    public function getPriority () :int
+    {
+        return _priority;
+    }
+
     protected var _tileId :int;
+
+    protected var _priority :int;
 
     protected var _metrics :MisoSceneMetrics;
 }

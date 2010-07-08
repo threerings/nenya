@@ -30,18 +30,7 @@ import flash.geom.Rectangle;
 
 import flash.events.MouseEvent;
 
-import com.threerings.crowd.client.PlaceView;
-import com.threerings.crowd.data.PlaceObject;
-import com.threerings.media.tile.Colorizer;
-import com.threerings.media.tile.NoSuchTileSetError;
-import com.threerings.media.tile.TileSet;
-import com.threerings.media.tile.TileUtil;
-import com.threerings.miso.client.MisoMetricsTransformation;
-import com.threerings.miso.data.MisoSceneModel;
-import com.threerings.miso.data.ObjectInfo;
-import com.threerings.miso.util.MisoContext;
-import com.threerings.miso.util.ObjectSet;
-import com.threerings.miso.util.MisoSceneMetrics;
+import mx.core.ClassFactory;
 
 import as3isolib.display.primitive.IsoBox;
 import as3isolib.geom.Pt;
@@ -50,9 +39,26 @@ import as3isolib.display.scene.IsoGrid;
 import as3isolib.display.scene.IsoScene;
 import as3isolib.display.IsoView;
 
+import com.threerings.crowd.client.PlaceView;
+import com.threerings.crowd.data.PlaceObject;
+import com.threerings.util.Log;
+import com.threerings.media.tile.Colorizer;
+import com.threerings.media.tile.NoSuchTileSetError;
+import com.threerings.media.tile.TileSet;
+import com.threerings.media.tile.TileUtil;
+import com.threerings.miso.client.MisoMetricsTransformation;
+import com.threerings.miso.client.PrioritizedSceneLayoutRenderer;
+import com.threerings.miso.data.MisoSceneModel;
+import com.threerings.miso.data.ObjectInfo;
+import com.threerings.miso.util.MisoContext;
+import com.threerings.miso.util.ObjectSet;
+import com.threerings.miso.util.MisoSceneMetrics;
+
 public class MisoScenePanel extends Sprite
     implements PlaceView
 {
+    private var log :Log = Log.getLog(MisoScenePanel);
+
     public function MisoScenePanel (ctx :MisoContext, metrics :MisoSceneMetrics)
     {
         _ctx = ctx;
@@ -97,7 +103,7 @@ public class MisoScenePanel extends Sprite
         _isoView.removeAllScenes();
 
         var scene :IsoScene = new IsoScene();
-
+        scene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
         var time :int = getTimer();
         var baseArr :Array = [];
 
@@ -130,7 +136,7 @@ public class MisoScenePanel extends Sprite
                         }
 
                         if (tileSet == null) {
-                            trace("TileManager returned null tilset: " +
+                            log.warning("TileManager returned null tilset: " +
                                 TileUtil.getTileSetId(tileId));
                             continue;
                         }
@@ -161,14 +167,15 @@ public class MisoScenePanel extends Sprite
             }
 
             if (objTileSet == null) {
-                trace("TileManager returned null TileSet: " + TileUtil.getTileSetId(objTileId));
+                log.warning("TileManager returned null TileSet: " +
+                    TileUtil.getTileSetId(objTileId));
                 continue;
             }
 
             scene.addChild(
                 new ObjectTileIsoSprite(objInfo.x, objInfo.y, objTileId,
                     objTileSet.getTile(TileUtil.getTileIndex(objTileId), getColorizer(objInfo)),
-                    _metrics));
+                    objInfo.priority, _metrics));
         }
 
         time = getTimer();

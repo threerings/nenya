@@ -19,24 +19,14 @@
 
 package com.threerings.miso.client {
 
-import com.threerings.media.tile.Tile;
-import com.threerings.miso.util.MisoSceneMetrics;
-
-public class BaseTileIsoSprite extends TileIsoSprite
+/**
+ * Any Iso object wishing to specify a render priority should do so by implementing this interface.
+ */
+public interface PriorityIsoDisplayObject
 {
-    public function BaseTileIsoSprite (x :int, y :int, tileId :int, tile :Tile,
-                                       metrics :MisoSceneMetrics)
-    {
-        super(x, y, tileId, tile, 0, metrics);
-    }
-
-    public override function layout (x :int, y :int, tile :Tile) :void
-    {
-        super.layout(x, y, tile);
-
-        setSize(1, 1, VERT_OFFSET);
-    }
-
-    protected static const VERT_OFFSET :Number = 0.01;
+    /**
+     * Returns the render priority for the display object.
+     */
+    function getPriority () :int;
 }
 }
