@@ -30,6 +30,7 @@ import com.threerings.io.ObjectInputStream;
 import com.threerings.miso.data.ObjectInfo;
 import com.threerings.util.ClassUtil;
 import com.threerings.util.Cloneable;
+import com.threerings.util.Set;
 import com.threerings.io.ObjectOutputStream;
 
 /**
@@ -97,5 +98,9 @@ public /*abstract*/ class MisoSceneModel extends SimpleStreamableObject
         throw new Error("abstract");
     }
 
+    public function getAllTilesets () :Set
+    {
+        throw new Error("abstract");
+    }
 }
 }

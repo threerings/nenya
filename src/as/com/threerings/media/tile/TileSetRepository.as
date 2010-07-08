@@ -19,6 +19,8 @@
 
 package com.threerings.media.tile {
 
+import com.threerings.util.Set;
+
 public interface TileSetRepository {
 
     /**
@@ -66,5 +68,11 @@ public interface TileSetRepository {
      * communicating with the underlying persistence mechanism.
      */
     function getTileSetByName (setName :String) :TileSet;
+
+    /**
+     * Ensures we are ready with quick-access to all the specified tilesets.
+     */
+    function ensureLoaded (tileSets :Set, completeCallback :Function,
+        progressCallback :Function) :void;
 }
 }

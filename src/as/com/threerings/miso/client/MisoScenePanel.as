@@ -21,6 +21,7 @@ package com.threerings.miso.client {
 
 import flash.utils.getTimer;
 
+import flash.display.DisplayObject;
 import flash.display.Sprite;
 
 import flash.events.Event;
@@ -28,11 +29,16 @@ import flash.events.Event;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
+import flash.text.TextField;
+import flash.text.TextFieldAutoSize;
+import flash.text.TextFormat;
+
 import flash.events.MouseEvent;
 
 import mx.core.ClassFactory;
 
 import as3isolib.display.primitive.IsoBox;
+import as3isolib.display.renderers.SimpleSceneLayoutRenderer;
 import as3isolib.geom.Pt;
 import as3isolib.geom.IsoMath;
 import as3isolib.display.scene.IsoGrid;
@@ -41,6 +47,7 @@ import as3isolib.display.IsoView;
 
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
+import com.threerings.util.DelayUtil;
 import com.threerings.util.Log;
 import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
@@ -73,7 +80,34 @@ public class MisoScenePanel extends Sprite
 
         _isoView.addEventListener(MouseEvent.CLICK, onClick);
 
-        addChild(_isoView);
+        addChild(_loading = createLoadingPanel());
+    }
+
+    /**
+     * Creates whatever we want to show while we're waiting to load our exciting scene tile data.
+     */
+    protected function createLoadingPanel () :DisplayObject
+    {
+        // By default we just stick up a basic label for this...
+        var loadingText :TextField = new TextField();
+        loadingText.textColor = 0xFFFFFF;
+        var loadingFmt :TextFormat = new TextFormat();
+        loadingFmt.size = 24;
+        loadingText.defaultTextFormat = loadingFmt;
+        loadingText.autoSize = TextFieldAutoSize.LEFT;
+
+        _loadingProgressFunc = function (progress :Number) :void {
+            loadingText.text = "Loading... " + int(progress*100) + "%";
+        };
+        _loadingProgressFunc(0.0);
+        return loadingText;
+    }
+
+    protected function loadingProgress (progress :Number) :void
+    {
+        if (_loadingProgressFunc != null) {
+            _loadingProgressFunc(progress);
+        }
     }
 
     public function onClick (event :MouseEvent) :void
@@ -86,7 +120,13 @@ public class MisoScenePanel extends Sprite
     public function setSceneModel (model :MisoSceneModel) :void
     {
         _model = model;
-        refreshScene();
+        _ctx.getTileManager().ensureLoaded(_model.getAllTilesets(), function() :void {
+                DelayUtil.delayFrame(function() :void {
+                    refreshScene();
+                    removeChild(_loading);
+                    addChild(_isoView);
+                });
+            }, loadingProgress);
     }
 
     public function willEnterPlace (plobj :PlaceObject) :void
@@ -110,6 +150,7 @@ public class MisoScenePanel extends Sprite
         for (var si :int = -2; si < 4; si++) {
             for (var sj :int = -1; sj < 3; sj++) {
                 var baseScene :IsoScene = new IsoScene();
+                baseScene.layoutRenderer = new ClassFactory(SimpleSceneLayoutRenderer);
                 for (var ii :int = 10*si; ii < 10*si + 10; ii++) {
                     for (var jj :int = 10*sj; jj < 10*sj + 10; jj++) {
                         var tileId :int = _model.getBaseTileId(ii, jj);
@@ -200,6 +241,12 @@ public class MisoScenePanel extends Sprite
     protected var _ctx :MisoContext;
 
     protected var _metrics :MisoSceneMetrics;
+
+    /** What we display while we're loading up our tilesets. */
+    protected var _loading :DisplayObject;
+
+    /** If we should do something when we hear about progress updates, this is it. */
+    protected var _loadingProgressFunc :Function;
 
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;

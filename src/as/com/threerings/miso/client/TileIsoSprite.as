@@ -32,7 +32,7 @@ import com.threerings.media.tile.TileUtil;
 import com.threerings.util.Log;
 import com.threerings.miso.util.MisoSceneMetrics;
 
-public class TileIsoSprite extends IsoDisplayObject
+public class TileIsoSprite extends IsoSprite
     implements PriorityIsoDisplayObject
 {
     private static var log :Log = Log.getLog(TileIsoSprite);
@@ -41,26 +41,20 @@ public class TileIsoSprite extends IsoDisplayObject
         metrics :MisoSceneMetrics)
     {
         _tileId = tileId;
-
         _metrics = metrics;
-
         _priority = priority;
-
-        moveTo(x, y, 0);
 
         layout(x, y, tile);
 
+        setSize(tile.getBaseWidth(), tile.getBaseHeight(), 1);
+
         if (tile.getImage() == null) {
-            var box :IsoBox = new IsoBox();
-            box.width = width;
-            box.height = height;
-            box.length = length;
-            box.fill = new SolidColorFill(0x808080, 0.5);
-            addChild(box);
+            tile.notifyOnLoad(function() :void {
+                gotTileImage(tile);
+            });
         } else {
-            addSprite(tile);
+            gotTileImage(tile);
         }
-        tile.notifyOnLoad(loaded);
     }
 
     public function layout (x :int, y :int, tile :Tile) :void
@@ -68,31 +62,15 @@ public class TileIsoSprite extends IsoDisplayObject
         moveTo(x, y, 0);
     }
 
-    /**
-     * Our tile was loaded, set ourselves up appropriately to use it.
-     */
-    public function loaded (tile :Tile) :void
+    protected function gotTileImage (tile :Tile) :void
     {
-        removeAllChildren();
-        addSprite(tile);
-    }
-
-    protected function addSprite (tile :Tile) :void
-    {
-        var sprite :IsoSprite = new IsoSprite();
         var image :DisplayObject = tile.getImage();
-        if (image == null) {
-            log.warning("TileIsoSprite tile image is null", "tileId", _tileId);
-            return;
-        }
         // as3isolib uses top instead of bottom.
         image.x = -tile.getOriginX() + _metrics.tilewid *
             ((tile.getBaseWidth() - tile.getBaseHeight())/2);;
         image.y = -tile.getOriginY() + _metrics.tilehei *
             ((tile.getBaseWidth() + tile.getBaseHeight())/2);
-        sprite.sprites = [image];
-        sprite.setSize(tile.getBaseWidth(), tile.getBaseHeight(), 1);
-        addChild(sprite);
+        sprites = [image];
         render();
     }
 

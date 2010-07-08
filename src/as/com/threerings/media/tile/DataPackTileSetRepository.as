@@ -38,6 +38,7 @@ import com.threerings.util.Integer;
 import com.threerings.util.Log;
 import com.threerings.util.Maps;
 import com.threerings.util.Map;
+import com.threerings.util.Set;
 import com.threerings.util.StringUtil;
 
 public class DataPackTileSetRepository
@@ -189,6 +190,38 @@ public class DataPackTileSetRepository
         } else {
             return name.substring(0, lastSlashIdx).toLowerCase();
         }
+    }
+
+    public function ensureLoaded (tileSets :Set, completeCallback :Function,
+        progressCallback :Function) :void
+    {
+        var completeCt :int = 0;
+
+        var size :int = tileSets.size();
+
+        // Handles the completion of a single tileset, which if it's our last may call the callback.
+        function completeOneSet () :void {
+            completeCt++;
+
+            progressCallback(completeCt / Number(size));
+
+            if (completeCt >= tileSets.size()) {
+                completeCallback();
+
+                // Ensure we stop making callbacks.
+                completeCallback = null;
+                progressCallback = null;
+            }
+        };
+
+        tileSets.forEach(function (setId :int) :void {
+                var thisSet :TileSet = getTileSet(setId);
+                if (thisSet.isLoaded()) {
+                    completeOneSet();
+                } else {
+                    thisSet.notifyOnLoad(completeOneSet);
+                }
+            });
     }
 
     /** Contains the tileset meta-data for all tilesets. */

@@ -20,6 +20,7 @@
 package com.threerings.media.tile {
 
 import com.threerings.util.Log;
+import com.threerings.util.Set;
 
 /**
  * The tile manager provides a simplified interface for retrieving and caching tiles. Tiles can be
@@ -130,6 +131,12 @@ public class TileManager
     {
         var set :TileSet = getTileSet(tileSetId);
         return set.getTile(tileIndex, rizer);
+    }
+
+    public function ensureLoaded (tileSets :Set, completeCallback :Function,
+        progressCallback :Function) :void
+    {
+        _setrep.ensureLoaded(tileSets, completeCallback, progressCallback);
     }
 
     /** The tile set repository. */

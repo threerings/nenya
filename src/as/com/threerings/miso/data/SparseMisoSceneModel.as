@@ -33,6 +33,8 @@ import com.threerings.util.Integer;
 import com.threerings.util.Iterator;
 import com.threerings.util.Joiner;
 import com.threerings.util.MathUtil;
+import com.threerings.util.Set;
+import com.threerings.util.Sets;
 import com.threerings.util.StreamableHashMap;
 import com.threerings.util.StringUtil;
 
@@ -191,6 +193,18 @@ public class SparseMisoSceneModel extends MisoSceneModel
     public function setSection (section :SparseMisoSceneModel_Section) :void
     {
         _sections.put(key(section.x, section.y), section);
+    }
+
+    override public function getAllTilesets () :Set
+    {
+        var tilesets :Set = Sets.newSetOf(int);
+        for each (var section :SparseMisoSceneModel_Section in _sections.values()) {
+            section.getAllTilesets(tilesets);
+        }
+
+        tilesets.add(getDefaultBaseTileSet());
+
+        return tilesets;
     }
 
     // from interface Streamable

@@ -27,11 +27,13 @@ import com.threerings.io.ObjectOutputStream;
 import com.threerings.io.ObjectInputStream;
 import com.threerings.io.SimpleStreamableObject;
 import com.threerings.io.TypedArray;
+import com.threerings.media.tile.TileUtil;
 import com.threerings.miso.util.ObjectSet;
 import com.threerings.util.ArrayUtil;
 import com.threerings.util.ClassUtil;
 import com.threerings.util.Cloneable;
 import com.threerings.util.Log;
+import com.threerings.util.Set;
 import com.threerings.util.StringUtil;
 
 public class SparseMisoSceneModel_Section extends SimpleStreamableObject
@@ -229,6 +231,26 @@ public class SparseMisoSceneModel_Section extends SimpleStreamableObject
         } else {
             return width + "x" + (baseTileIds.length / width) + "+" + x + ":" + y + ":" +
                 objectInfo.length;
+        }
+    }
+
+    /**
+     * Adds all tilesets we reference to the set.
+     */
+    public function getAllTilesets (tilesets :Set) :void
+    {
+        for each (var base :int in baseTileIds) {
+            var baseSetId :int = TileUtil.getTileSetId(base);
+            if (baseSetId != 0) {
+                tilesets.add(baseSetId);
+            }
+        }
+        for each (var obj :int in objectTileIds) {
+            tilesets.add(TileUtil.getTileSetId(obj));
+        }
+
+        for each (var objInfo :ObjectInfo in objectInfo) {
+            tilesets.add(TileUtil.getTileSetId(objInfo.tileId));
         }
     }
 
