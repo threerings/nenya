@@ -59,7 +59,7 @@ public class TileUtil
      */
     public static int getTileHash (int x, int y)
     {
-        long seed = ((x ^ y) ^ MULTIPLIER) & MASK;
+        long seed = (((x << 2) ^ y) ^ MULTIPLIER) & MASK;
         long hash = (seed * MULTIPLIER + ADDEND) & MASK;
         return (int) (hash >>> 30);
     }

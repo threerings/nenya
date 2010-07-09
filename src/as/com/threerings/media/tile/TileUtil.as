@@ -55,7 +55,7 @@ public class TileUtil
      */
     public static function getTileHash (x :int, y :int) :int
     {
-        var seed :int = ((x ^ y) ^ MULTIPLIER) & MASK;
+        var seed :int = (((x << 2) ^ y) ^ MULTIPLIER) & MASK;
         var hash :int = (seed * MULTIPLIER + ADDEND) & MASK;
         return hash >>> 10;
     }
