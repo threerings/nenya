@@ -48,6 +48,12 @@ import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
 import com.threerings.util.DelayUtil;
 import com.threerings.util.Log;
+import com.threerings.util.Map;
+import com.threerings.util.Maps;
+import com.threerings.util.MathUtil;
+import com.threerings.util.Set;
+import com.threerings.util.Sets;
+import com.threerings.util.StringUtil;
 import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
 import com.threerings.media.tile.TileSet;
@@ -114,6 +120,7 @@ public class MisoScenePanel extends Sprite
         var viewPt :Point = _isoView.globalToLocal(new Point(event.stageX, event.stageY));
         _isoView.centerOnPt(new Pt(viewPt.x - _isoView.width / 2 + _isoView.currentX,
             viewPt.y - _isoView.height / 2 + _isoView.currentY), false);
+        refreshBaseBlockScenes();
     }
 
     public function setSceneModel (model :MisoSceneModel) :void
@@ -136,21 +143,76 @@ public class MisoScenePanel extends Sprite
     {
     }
 
-    protected function refreshScene () :void
+    protected function getBaseBlocks () :Set
     {
-        // Clear it out...
-        _isoView.removeAllScenes();
+        var blocks :Set = Sets.newSetOf(int);
 
-        var scene :IsoScene = new IsoScene();
-        scene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
-        var time :int = getTimer();
-        var baseArr :Array = [];
+        var size :Point = _isoView.size;
+        var topLeft :Point = _isoView.localToIso(new Point(0, 0));
+        var topRight :Point = _isoView.localToIso(new Point(size.x, 0));
+        var btmLeft :Point = _isoView.localToIso(new Point(0, size.y));
+        var btmRight :Point = _isoView.localToIso(new Point(size.x, size.y));
 
-        for (var si :int = -2; si < 4; si++) {
-            for (var sj :int = -1; sj < 3; sj++) {
+        for (var yy :int = topRight.y - 1; yy <= btmLeft.y + 1; yy++) {
+            for (var xx :int = topLeft.x - 1; xx <= btmRight.x + 1; xx++) {
+
+                // Toss out any that aren't actually in our view.
+                var blkTop :Point = _isoView.isoToLocal(new Pt(xx, yy, 0));
+                var blkRight :Point = _isoView.isoToLocal(new Pt(xx + BLOCK_SIZE, yy, 0));
+                var blkLeft :Point = _isoView.isoToLocal(new Pt(xx, yy + BLOCK_SIZE, 0));
+                var blkBtm :Point =
+                    _isoView.isoToLocal(new Pt(xx + BLOCK_SIZE, yy + BLOCK_SIZE, 0));
+                if (blkTop.y < size.y &&
+                    blkBtm.y > 0 &&
+                    blkLeft.x < size.x &&
+                    blkRight.x > 0) {
+                    blocks.add(getBlockKey(xx, yy));
+                }
+            }
+        }
+
+        return blocks;
+    }
+
+    protected function getBlockKey (x :int, y :int) :int
+    {
+        return (MathUtil.floorDiv(x, BLOCK_SIZE) << 16 |
+            (MathUtil.floorDiv(y, BLOCK_SIZE) & 0xFFFF));
+    }
+
+    protected function getBlockX (key :int) :int
+    {
+        return (key >> 16) * BLOCK_SIZE;
+    }
+
+    protected function getBlockY (key :int) :int
+    {
+        // We really do mean to do this crazy shift left then back right thing to get our sign
+        //  back from before we encoded.
+        return (((key & 0xFFFF) * BLOCK_SIZE) << 16) >> 16;
+    }
+
+    protected function refreshBaseBlockScenes () :void
+    {
+        var blocks :Set = getBaseBlocks();
+
+        // Take out any scenes no longer in our valid blocks.
+        for each (var baseKey :int in _baseScenes.keys()) {
+            if (!blocks.contains(baseKey)) {
+                // It's not valid anymore, so toss it.
+                _isoView.removeScene(_baseScenes.remove(baseKey));
+            }
+        }
+
+        blocks.forEach(function(blockKey :int) :void {
+            if (!_baseScenes.containsKey(blockKey)) {
+                // Not already in there, let's create and add it.
+                var x :int = getBlockX(blockKey);
+                var y :int = getBlockY(blockKey);
+
                 var baseScene :IsoScene = new IsoScene();
-                for (var ii :int = 10*si; ii < 10*si + 10; ii++) {
-                    for (var jj :int = 10*sj; jj < 10*sj + 10; jj++) {
+                for (var ii :int = x; ii < x + BLOCK_SIZE; ii++) {
+                    for (var jj :int = y; jj < y + BLOCK_SIZE; jj++) {
                         var tileId :int = _model.getBaseTileId(ii, jj);
                         if (tileId <= 0) {
                             var defSet :TileSet;
@@ -186,14 +248,27 @@ public class MisoScenePanel extends Sprite
                     }
                 }
                 baseScene.render();
-                _isoView.addScene(baseScene);
+                _isoView.addSceneAt(baseScene, 0);
+                _baseScenes.put(blockKey, baseScene);
             }
-        }
+        });
+    }
+
+    protected function refreshScene () :void
+    {
+        // Clear it out...
+        _isoView.removeAllScenes();
+
+        var scene :IsoScene = new IsoScene();
+        scene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
+        var time :int = getTimer();
+
+        refreshBaseBlockScenes();
 
         var set :ObjectSet = new ObjectSet();
         _model.getObjects(new Rectangle(-100, -100, 200, 200), set);
         time = getTimer();
-        for (ii = 0; ii < set.size(); ii++) {
+        for (var ii :int = 0; ii < set.size(); ii++) {
             var objInfo :ObjectInfo = set.get(ii);
             var objTileId :int = objInfo.tileId;
             var objTileSet :TileSet;
@@ -246,7 +321,11 @@ public class MisoScenePanel extends Sprite
     /** If we should do something when we hear about progress updates, this is it. */
     protected var _loadingProgressFunc :Function;
 
+    protected var _baseScenes :Map = Maps.newMapOf(int);
+
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
+
+    protected const BLOCK_SIZE :int = 4;
 }
 }
