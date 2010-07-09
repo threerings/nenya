@@ -40,7 +40,6 @@ import mx.core.ClassFactory;
 import as3isolib.display.primitive.IsoBox;
 import as3isolib.geom.Pt;
 import as3isolib.geom.IsoMath;
-import as3isolib.display.scene.IsoGrid;
 import as3isolib.display.scene.IsoScene;
 import as3isolib.display.IsoView;
 
@@ -118,8 +117,17 @@ public class MisoScenePanel extends Sprite
     public function onClick (event :MouseEvent) :void
     {
         var viewPt :Point = _isoView.globalToLocal(new Point(event.stageX, event.stageY));
-        _isoView.centerOnPt(new Pt(viewPt.x - _isoView.width / 2 + _isoView.currentX,
-            viewPt.y - _isoView.height / 2 + _isoView.currentY), false);
+        moveBy(new Point(viewPt.x - _isoView.width / 2, viewPt.y - _isoView.height / 2));
+    }
+
+    public function moveBy (pt :Point) :void
+    {
+        if (_pendingMoveBy != null) {
+            log.info("Already performing a move...");
+            return;
+        }
+        _pendingMoveBy = pt;
+
         refreshBaseBlockScenes();
     }
 
@@ -148,25 +156,37 @@ public class MisoScenePanel extends Sprite
         var blocks :Set = Sets.newSetOf(int);
 
         var size :Point = _isoView.size;
-        var topLeft :Point = _isoView.localToIso(new Point(0, 0));
-        var topRight :Point = _isoView.localToIso(new Point(size.x, 0));
-        var btmLeft :Point = _isoView.localToIso(new Point(0, size.y));
-        var btmRight :Point = _isoView.localToIso(new Point(size.x, size.y));
+
+        var xMove :int = (_pendingMoveBy == null ? 0 : _pendingMoveBy.x);
+        var yMove :int = (_pendingMoveBy == null ? 0 : _pendingMoveBy.y);
+
+        var minX :int = xMove;
+        var maxX :int = size.x + xMove;
+        var minY :int = yMove;
+        var maxY :int = size.y + yMove;
+
+        var topLeft :Point = _isoView.localToIso(new Point(minX, minY));
+        var topRight :Point = _isoView.localToIso(new Point(maxX, minY));
+        var btmLeft :Point = _isoView.localToIso(new Point(minX, maxY));
+        var btmRight :Point = _isoView.localToIso(new Point(maxX, maxY));
 
         for (var yy :int = topRight.y - 1; yy <= btmLeft.y + 1; yy++) {
             for (var xx :int = topLeft.x - 1; xx <= btmRight.x + 1; xx++) {
 
                 // Toss out any that aren't actually in our view.
                 var blkTop :Point = _isoView.isoToLocal(new Pt(xx, yy, 0));
-                var blkRight :Point = _isoView.isoToLocal(new Pt(xx + BLOCK_SIZE, yy, 0));
-                var blkLeft :Point = _isoView.isoToLocal(new Pt(xx, yy + BLOCK_SIZE, 0));
+                var blkRight :Point =
+                    _isoView.isoToLocal(new Pt(xx + SceneBlock.BLOCK_SIZE, yy, 0));
+                var blkLeft :Point =
+                    _isoView.isoToLocal(new Pt(xx, yy + SceneBlock.BLOCK_SIZE, 0));
                 var blkBtm :Point =
-                    _isoView.isoToLocal(new Pt(xx + BLOCK_SIZE, yy + BLOCK_SIZE, 0));
-                if (blkTop.y < size.y &&
-                    blkBtm.y > 0 &&
-                    blkLeft.x < size.x &&
-                    blkRight.x > 0) {
-                    blocks.add(getBlockKey(xx, yy));
+                    _isoView.isoToLocal(new Pt(xx + SceneBlock.BLOCK_SIZE,
+                        yy + SceneBlock.BLOCK_SIZE, 0));
+                if (blkTop.y < maxY &&
+                    blkBtm.y > minY &&
+                    blkLeft.x < maxX &&
+                    blkRight.x > minX) {
+                    blocks.add(SceneBlock.getBlockKey(xx, yy));
                 }
             }
         }
@@ -174,84 +194,73 @@ public class MisoScenePanel extends Sprite
         return blocks;
     }
 
-    protected function getBlockKey (x :int, y :int) :int
-    {
-        return (MathUtil.floorDiv(x, BLOCK_SIZE) << 16 |
-            (MathUtil.floorDiv(y, BLOCK_SIZE) & 0xFFFF));
-    }
-
-    protected function getBlockX (key :int) :int
-    {
-        return (key >> 16) * BLOCK_SIZE;
-    }
-
-    protected function getBlockY (key :int) :int
-    {
-        // We really do mean to do this crazy shift left then back right thing to get our sign
-        //  back from before we encoded.
-        return (((key & 0xFFFF) * BLOCK_SIZE) << 16) >> 16;
-    }
-
     protected function refreshBaseBlockScenes () :void
     {
         var blocks :Set = getBaseBlocks();
 
-        // Take out any scenes no longer in our valid blocks.
-        for each (var baseKey :int in _baseScenes.keys()) {
-            if (!blocks.contains(baseKey)) {
-                // It's not valid anymore, so toss it.
-                _isoView.removeScene(_baseScenes.remove(baseKey));
-            }
-        }
+        // Keep this to use in our function...
+        var thisRef :MisoScenePanel = this;
+
+        var resolving :Boolean = false;
 
         blocks.forEach(function(blockKey :int) :void {
-            if (!_baseScenes.containsKey(blockKey)) {
-                // Not already in there, let's create and add it.
-                var x :int = getBlockX(blockKey);
-                var y :int = getBlockY(blockKey);
-
-                var baseScene :IsoScene = new IsoScene();
-                for (var ii :int = x; ii < x + BLOCK_SIZE; ii++) {
-                    for (var jj :int = y; jj < y + BLOCK_SIZE; jj++) {
-                        var tileId :int = _model.getBaseTileId(ii, jj);
-                        if (tileId <= 0) {
-                            var defSet :TileSet;
-                            try {
-                                var setId :int = _model.getDefaultBaseTileSet();
-                                defSet = _ctx.getTileManager().getTileSet(setId);
-                                tileId = TileUtil.getFQTileId(setId,
-                                    TileUtil.getTileHash(ii, jj) % defSet.getTileCount());
-                            } catch (err :NoSuchTileSetError) {
-                                // Someone else already complained...
-                                continue;
-                            }
-                        }
-
-                        var tileSet :TileSet;
-                        try {
-                            tileSet =
-                                _ctx.getTileManager().getTileSet(TileUtil.getTileSetId(tileId));
-                        } catch (err :NoSuchTileSetError) {
-                            // Someone else already complained...
-                            continue;
-                        }
-
-                        if (tileSet == null) {
-                            log.warning("TileManager returned null tilset: " +
-                                TileUtil.getTileSetId(tileId));
-                            continue;
-                        }
-
-                        baseScene.addChild(
-                            new BaseTileIsoSprite(ii, jj, tileId,
-                                tileSet.getTile(TileUtil.getTileIndex(tileId)), _metrics));
-                    }
-                }
-                baseScene.render();
-                _isoView.addSceneAt(baseScene, 0);
-                _baseScenes.put(blockKey, baseScene);
+            if (!_blocks.containsKey(blockKey)) {
+                var sceneBlock :SceneBlock =
+                    new SceneBlock(blockKey, _objScene, _isoView, _metrics);
+                _pendingBlocks.add(sceneBlock);
+                sceneBlock.resolve(_ctx, _model, thisRef, blockResolved);
+                resolving = true;
             }
         });
+
+        if (!resolving) {
+            resolutionComplete();
+        }
+    }
+
+    protected function blockResolved (resolved :SceneBlock) :void
+    {
+        if (!_pendingBlocks.contains(resolved)) {
+            log.info("Trying to resolve non-pending block???: " + resolved.getKey());
+        }
+        // Move that guy from pending to ready...
+        _readyBlocks.add(resolved);
+        _pendingBlocks.remove(resolved);
+
+        if (_pendingBlocks.size() == 0) {
+            resolutionComplete();
+        }
+    }
+
+    protected function resolutionComplete () :void
+    {
+        // First, we add in our new blocks...
+        for each (var newBlock :SceneBlock in _readyBlocks.toArray()) {
+            newBlock.render();
+            _blocks.put(newBlock.getKey(), newBlock);
+        }
+        _readyBlocks = Sets.newSetOf(SceneBlock);
+
+        // Force to end of list so it's on top...
+        _isoView.removeScene(_objScene);
+        _isoView.addScene(_objScene);
+
+        _objScene.render();
+
+        // Then we let the scene finally move if it's trying to...
+        if (_pendingMoveBy != null) {
+            _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
+                _pendingMoveBy.y+ _isoView.currentY), false);
+            _pendingMoveBy = null;
+        }
+
+        // Now, take out any old blocks no longer in our valid blocks.
+        var blocks :Set = getBaseBlocks();
+        for each (var baseKey :int in _blocks.keys()) {
+            if (!blocks.contains(baseKey)) {
+                _blocks.remove(baseKey).release();
+            }
+        }
     }
 
     protected function refreshScene () :void
@@ -259,50 +268,19 @@ public class MisoScenePanel extends Sprite
         // Clear it out...
         _isoView.removeAllScenes();
 
-        var scene :IsoScene = new IsoScene();
-        scene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
-        var time :int = getTimer();
+        _objScene = new IsoScene();
+        _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
 
         refreshBaseBlockScenes();
 
-        var set :ObjectSet = new ObjectSet();
-        _model.getObjects(new Rectangle(-100, -100, 200, 200), set);
-        time = getTimer();
-        for (var ii :int = 0; ii < set.size(); ii++) {
-            var objInfo :ObjectInfo = set.get(ii);
-            var objTileId :int = objInfo.tileId;
-            var objTileSet :TileSet;
-            try {
-                objTileSet =
-                    _ctx.getTileManager().getTileSet(TileUtil.getTileSetId(objTileId));
-            } catch (err :NoSuchTileSetError) {
-                // Someone else already complained...
-                continue;
-            }
-
-            if (objTileSet == null) {
-                log.warning("TileManager returned null TileSet: " +
-                    TileUtil.getTileSetId(objTileId));
-                continue;
-            }
-
-            scene.addChild(
-                new ObjectTileIsoSprite(objInfo.x, objInfo.y, objTileId,
-                    objTileSet.getTile(TileUtil.getTileIndex(objTileId), getColorizer(objInfo)),
-                    objInfo.priority, _metrics));
-        }
-
-        time = getTimer();
-        scene.render();
-
-        _isoView.addScene(scene);
+        _isoView.addScene(_objScene);
     }
 
     /**
      * Derived classes can override this method and provide a colorizer that will be used to
      * colorize the supplied scene object when rendering.
      */
-    protected function getColorizer (oinfo :ObjectInfo) :Colorizer
+    public function getColorizer (oinfo :ObjectInfo) :Colorizer
     {
         return null;
     }
@@ -321,11 +299,17 @@ public class MisoScenePanel extends Sprite
     /** If we should do something when we hear about progress updates, this is it. */
     protected var _loadingProgressFunc :Function;
 
-    protected var _baseScenes :Map = Maps.newMapOf(int);
+    protected var _objScene :IsoScene;
+
+    protected var _blocks :Map = Maps.newMapOf(int);
+
+    protected var _pendingMoveBy :Point;
+
+    protected var _pendingBlocks :Set = Sets.newSetOf(SceneBlock);
+    protected var _readyBlocks :Set = Sets.newSetOf(SceneBlock);
 
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
+}
+}
 
-    protected const BLOCK_SIZE :int = 4;
-}
-}
