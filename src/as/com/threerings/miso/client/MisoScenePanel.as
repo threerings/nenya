@@ -163,7 +163,7 @@ public class MisoScenePanel extends Sprite
         var minX :int = xMove;
         var maxX :int = size.x + xMove;
         var minY :int = yMove;
-        var maxY :int = size.y + yMove;
+        var maxY :int = BOTTOM_BUFFER + size.y + yMove;
 
         var topLeft :Point = _isoView.localToIso(new Point(minX, minY));
         var topRight :Point = _isoView.localToIso(new Point(maxX, minY));
@@ -250,7 +250,7 @@ public class MisoScenePanel extends Sprite
         // Then we let the scene finally move if it's trying to...
         if (_pendingMoveBy != null) {
             _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
-                _pendingMoveBy.y+ _isoView.currentY), false);
+                _pendingMoveBy.y + _isoView.currentY), false);
             _pendingMoveBy = null;
         }
 
@@ -310,6 +310,8 @@ public class MisoScenePanel extends Sprite
 
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
+
+    protected const BOTTOM_BUFFER :int = 250;
 }
 }
 
