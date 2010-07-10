@@ -45,9 +45,7 @@ public class Tile
     {
         if (_image is Bitmap) {
             // TODO - handle this more consistently...
-            var data :BitmapData = new BitmapData(_image.width, _image.height, true, 0x00000000);
-            data.draw(_image);
-            return new Bitmap(data);
+            return new Bitmap(Bitmap(_image).bitmapData);
         } else {
             return _image;
         }
