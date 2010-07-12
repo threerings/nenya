@@ -38,7 +38,7 @@ public class Colorization
     public Color rootColor;
 
     /** The range around the root color that will be colorized (in
-     * delta-hue, delta-saturation, delta-value. */
+     * delta-hue, delta-saturation, delta-value. Note that this is inclusive. */
     public float[] range;
 
     /** The adjustments to make to hue, saturation and value. */
@@ -104,14 +104,14 @@ public class Colorization
     {
         // check to see that this color is sufficiently "close" to the
         // root color based on the supplied distance parameters
-        if (distance(fhsv[0], _fhsv[0], Short.MAX_VALUE) >=
+        if (distance(fhsv[0], _fhsv[0], Short.MAX_VALUE) >
             range[0] * Short.MAX_VALUE) {
             return false;
         }
 
         // saturation and value don't wrap around like hue
-        if (Math.abs(_hsv[1] - hsv[1]) >= range[1] ||
-            Math.abs(_hsv[2] - hsv[2]) >= range[2]) {
+        if (Math.abs(_hsv[1] - hsv[1]) > range[1] ||
+            Math.abs(_hsv[2] - hsv[2]) > range[2]) {
             return false;
         }
 
