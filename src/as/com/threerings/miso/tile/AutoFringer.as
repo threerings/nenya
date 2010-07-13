@@ -182,48 +182,79 @@ public class AutoFringer
 
         // There's no fringe with the same identifier, so we need to create the tile.
         var img :Bitmap = null;
-        for each (fringer in fringers) {
-            indexes = getFringeIndexes(fringer.bits);
-            tsr  = _fringeConf.getFringe(fringer.baseset, hashValue);
-            for each (index in indexes) {
-                try {
-                    img = getTileImage(img, tsr, fringer.baseset, index, hashValue, masks);
-                } catch (nstse :NoSuchTileSetError) {
-                    log.warning("Autofringer couldn't find a needed tileset", nstse);
-                }
-            }
-        }
-        frTile.setImage(img);
+        getTileImageHelper1(img, hashValue, masks, fringers, 0, function (result :Bitmap) {
+                frTile.setImage(result);
+            });
         fringes.put(frTile, new WeakReference(frTile));
         return frTile;
+    }
+
+    protected function getTileImageHelper1 (img :Bitmap, hashValue :int, masks :Map,
+        fringers :Array, fringerIdx :int, callback :Function)
+    {
+        var fringer :FringerRec = fringers[fringerIdx];
+        var indexes :Array = getFringeIndexes(fringer.bits);
+        var tsr :FringeTileSetRecord = _fringeConf.getFringe(fringer.baseset, hashValue);
+        getTileImageHelper0(img, tsr, fringer.baseset, hashValue, masks, indexes, 0,
+            function (result :Bitmap) :void {
+                if (fringerIdx == fringers.size() - 1) {
+                    callback(result);
+                } else {
+                    getTileImageHelper1(img, hashValue, masks, fringers, fringerIdx + 1, callback);
+                }
+            });
+    }
+
+    protected function getTileImageHelper0 (img :Bitmap, tsr :FringeTileSetRecord,
+        baseset :int, hashValue :int, masks :Map, indexes :Array,
+        indexIdx :int, callback :Function) :void
+    {
+        try {
+            getTileImage(img, tsr, baseset, indexes[indexIdx], hashValue, masks,
+                function (result :Bitmap) :void {
+                    if (indexIdx == indexes.size() - 1) {
+                        callback(result);
+                    } else {
+                        getTileImageHelper0(img, tsr, baseset, hashValue, masks, indexes,
+                            indexIdx + 1, callback);
+                    }
+                });
+        } catch (nstse :NoSuchTileSetError) {
+            log.warning("Autofringer couldn't find a needed tileset", nstse);
+            callback(null);
+        }
     }
 
     /**
      * Retrieve or compose an image for the specified fringe.
      */
     protected function getTileImage (img :Bitmap, tsr :FringeTileSetRecord ,
-        baseset :int, index :int, hashValue :int, masks :Map) :Bitmap
+        baseset :int, index :int, hashValue :int, masks :Map, callback :Function) :void
     {
         var fringeset :int = tsr.fringe_tsid;
         var fset :TileSet = _tMgr.getTileSet(fringeset);
         if (!tsr.mask) {
             // oh good, this is easy
             var stamp :Tile = fset.getTile(index);
-            return stampTileImage(stamp, img, stamp.getWidth(), stamp.getHeight());
+            callback(stampTileImage(stamp, img, stamp.getWidth(), stamp.getHeight()));
+            return;
         }
 
         // otherwise, it's a mask..
         var maskkey :int = (baseset << 20) + (fringeset << 8) + index;
         var mask :Bitmap = masks.get(maskkey);
         if (mask == null) {
-            // TODO - callbacks
-            var fsrc :Bitmap = Bitmap(_tMgr.getTileSet(fringeset).getTileImage(index, null, null));
-            var bsrc :Bitmap = Bitmap(_tMgr.getTileSet(baseset).getTileImage(0, null, null));
-            mask = composeMaskedImage(fsrc, bsrc);
-            masks.put(maskkey, mask);
-        }
+            _tMgr.getTileSet(fringeset).getTileImage(index, null, function (fsrc :Bitmap) :void {
+                _tMgr.getTileSet(baseset).getTileImage(0, null, function (bsrc :Bitmap) :void {
+                    mask = composeMaskedImage(fsrc, bsrc);
+                    masks.put(maskkey, mask);
+                    callback(stampTileImage(mask, img, mask.width, mask.height));
+                });
+            });
 
-        return stampTileImage(mask, img, mask.width, mask.height);
+        } else {
+            callback(stampTileImage(mask, img, mask.width, mask.height));
+        }
     }
 
 
