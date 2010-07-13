@@ -57,7 +57,6 @@ import com.samskivert.io.StreamUtil;
 import com.samskivert.net.PathUtil;
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.ResultListener;
-import com.samskivert.util.StringUtil;
 import com.samskivert.util.WeakObserverList;
 
 import static com.threerings.resource.Log.log;
@@ -392,7 +391,7 @@ public class ResourceManager
             return null;
         }
         if (!"/".equals(File.separator)) {
-            path = StringUtil.replace(path, "/", File.separator);
+            path = path.replace("/", File.separator);
         }
         return new File(_rdir, path);
     }
