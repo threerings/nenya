@@ -73,6 +73,7 @@ public class SceneBlock
         var y :int = getBlockY(_key);
 
         _baseScene = new IsoScene();
+        _baseScene.layoutEnabled = false;
         for (var ii :int = x; ii < x + BLOCK_SIZE; ii++) {
             for (var jj :int = y; jj < y + BLOCK_SIZE; jj++) {
                 var tileId :int = model.getBaseTileId(ii, jj);

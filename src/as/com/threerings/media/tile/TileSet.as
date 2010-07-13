@@ -166,7 +166,7 @@ public /* abstract */ class TileSet
         // if it's not in the active set, it's not in memory; so load it
         if (tile == null) {
             tile = createTile();
-            tile.key = new Tile_Key(this, tileIndex, zations);
+            tile.key = key;
             initTile(tile, tileIndex, zations);
             _atiles.put(tile.key, tile);
         }

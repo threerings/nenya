@@ -272,8 +272,6 @@ public class MisoScenePanel extends Sprite
         _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
 
         refreshBaseBlockScenes();
-
-        _isoView.addScene(_objScene);
     }
 
     /**
