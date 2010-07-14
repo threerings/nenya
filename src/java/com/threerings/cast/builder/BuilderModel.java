@@ -27,10 +27,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import com.samskivert.util.CollectionUtil;
 
 import com.threerings.cast.ComponentClass;
 import com.threerings.cast.ComponentRepository;
@@ -121,7 +120,7 @@ public class BuilderModel
     protected void gatherComponentInfo (ComponentRepository crepo)
     {
         // get the list of all component classes
-        CollectionUtil.addAll(_classes, crepo.enumerateComponentClasses());
+        Iterators.addAll(_classes, crepo.enumerateComponentClasses());
 
         for (int ii = 0; ii < _classes.size(); ii++) {
             // get the list of components available for this class

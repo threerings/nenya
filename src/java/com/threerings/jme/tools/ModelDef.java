@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -48,7 +49,6 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.util.geom.BufferUtils;
 
-import com.samskivert.util.ObjectUtil;
 import com.samskivert.util.PropertiesUtil;
 import com.samskivert.util.StringUtil;
 import com.samskivert.util.Tuple;
@@ -185,7 +185,7 @@ public class ModelDef
             }
             TriMeshDef omesh = (TriMeshDef)other;
             return solid == omesh.solid && transparent == omesh.transparent &&
-                ObjectUtil.equals(texture, omesh.texture) &&
+                Objects.equal(texture, omesh.texture) &&
                 PropertiesUtil.getSubProperties(props, name).equals(
                     PropertiesUtil.getSubProperties(props, omesh.name));
         }

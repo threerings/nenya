@@ -35,6 +35,7 @@ import java.util.HashSet;
 
 import org.lwjgl.opengl.ARBShaderObjects;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -45,7 +46,6 @@ import com.jme.util.ShaderUniform;
 import com.jme.util.geom.BufferUtils;
 
 import com.samskivert.util.ArrayUtil;
-import com.samskivert.util.ObjectUtil;
 
 import com.threerings.resource.ResourceManager;
 
@@ -241,7 +241,7 @@ public class ShaderCache
         public boolean equals (Object obj)
         {
             ShaderKey okey = (ShaderKey)obj;
-            return ObjectUtil.equals(vert, okey.vert) && ObjectUtil.equals(frag, okey.frag) &&
+            return Objects.equal(vert, okey.vert) && Objects.equal(frag, okey.frag) &&
                 defs.equals(okey.defs);
         }
 

@@ -69,6 +69,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
 import com.jme.bounding.BoundingBox;
@@ -99,7 +100,6 @@ import com.jmex.effects.particles.ParticleGeometry;
 
 import com.samskivert.swing.GroupLayout;
 import com.samskivert.swing.Spacer;
-import com.samskivert.util.ObjectUtil;
 import com.samskivert.util.PrefsConfig;
 import com.samskivert.util.StringUtil;
 
@@ -657,7 +657,7 @@ public class ModelViewer extends JmeCanvasApp
             public void setSelected (ButtonModel model, boolean b) {
                 super.setSelected(model, b);
                 String variant = model.getActionCommand();
-                if (b && !ObjectUtil.equals(variant, _variant)) {
+                if (b && !Objects.equal(variant, _variant)) {
                     setVariant(model.getActionCommand());
                 }
             }

@@ -24,9 +24,9 @@ package com.threerings.cast.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
-import com.samskivert.util.CollectionUtil;
 import com.samskivert.util.RandomUtil;
 
 import com.threerings.cast.CharacterDescriptor;
@@ -79,8 +79,7 @@ public class CastUtil
 
             // get the components available for this class
             ArrayList<Integer> choices = Lists.newArrayList();
-            Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
-            CollectionUtil.addAll(choices, iter);
+            Iterators.addAll(choices, crepo.enumerateComponentIds(cclass));
 
             // choose a random component
             if (choices.size() > 0) {
