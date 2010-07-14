@@ -426,8 +426,7 @@ public class AutoFringer
         NORTHWEST | WEST | SOUTHWEST | SOUTH | SOUTHEAST | EAST | NORTHEAST,
 
         // all the directions!
-        NORTH | NORTHEAST | EAST | SOUTHEAST |
-                SOUTH | SOUTHWEST | WEST | NORTHWEST
+        NORTH | NORTHEAST | EAST | SOUTHEAST | SOUTH | SOUTHWEST | WEST | NORTHWEST
     };
 
     // A reverse map of the above array, for quickly looking up which tile
