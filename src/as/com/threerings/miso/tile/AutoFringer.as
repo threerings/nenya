@@ -182,7 +182,7 @@ public class AutoFringer
 
         // There's no fringe with the same identifier, so we need to create the tile.
         var img :Bitmap = null;
-        getTileImageHelper1(img, hashValue, masks, fringers, 0, function (result :Bitmap) {
+        getTileImageHelper1(img, hashValue, masks, fringers, 0, function (result :Bitmap) :void {
                 frTile.setImage(result);
             });
         fringes.put(frTile, new WeakReference(frTile));
@@ -190,7 +190,7 @@ public class AutoFringer
     }
 
     protected function getTileImageHelper1 (img :Bitmap, hashValue :int, masks :Map,
-        fringers :Array, fringerIdx :int, callback :Function)
+        fringers :Array, fringerIdx :int, callback :Function) :void
     {
         var fringer :FringerRec = fringers[fringerIdx];
         var indexes :Array = getFringeIndexes(fringer.bits);
@@ -399,8 +399,7 @@ public class AutoFringer
         NORTHWEST | WEST | SOUTHWEST | SOUTH | SOUTHEAST | EAST | NORTHEAST,
 
         // all the directions!
-        NORTH | NORTHEAST | EAST | SOUTHEAST |
-                SOUTH | SOUTHWEST | WEST | NORTHWEST
+        NORTH | NORTHEAST | EAST | SOUTHEAST | SOUTH | SOUTHWEST | WEST | NORTHWEST
     ];
 
     // A reverse map of the above array, for quickly looking up which tile
