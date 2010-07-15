@@ -206,12 +206,16 @@ public class MisoScenePanel extends Sprite
 
     protected function refreshBaseBlockScenes () :void
     {
+        _resStartTime = getTimer();
+
         var blocks :Set = getBaseBlocks();
 
         // Keep this to use in our function...
         var thisRef :MisoScenePanel = this;
 
-        var resolving :Boolean = false;
+
+        // Postpone calling complete til they're all queued up.
+        _skipComplete = true;
 
         blocks.forEach(function(blockKey :int) :void {
             if (!_blocks.containsKey(blockKey)) {
@@ -219,11 +223,13 @@ public class MisoScenePanel extends Sprite
                     new SceneBlock(blockKey, _objScene, _isoView, _metrics);
                 _pendingBlocks.add(sceneBlock);
                 sceneBlock.resolve(_ctx, _model, thisRef, blockResolved);
-                resolving = true;
             }
         });
 
-        if (!resolving) {
+        _skipComplete = false;
+
+        
+        if (_pendingBlocks.size() == 0) {
             resolutionComplete();
         }
     }
@@ -236,8 +242,7 @@ public class MisoScenePanel extends Sprite
         // Move that guy from pending to ready...
         _readyBlocks.add(resolved);
         _pendingBlocks.remove(resolved);
-
-        if (_pendingBlocks.size() == 0) {
+        if (_pendingBlocks.size() == 0 && !_skipComplete) {
             resolutionComplete();
         }
     }
@@ -257,22 +262,22 @@ public class MisoScenePanel extends Sprite
 
         _objScene.render();
 
-        DelayUtil.delayFrame(function() :void {
-            // Then we let the scene finally move if it's trying to...
-            if (_pendingMoveBy != null) {
-                _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
-                    _pendingMoveBy.y + _isoView.currentY), false);
-                _pendingMoveBy = null;
-            }
+        // Then we let the scene finally move if it's trying to...
+        if (_pendingMoveBy != null) {
+            _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
+                _pendingMoveBy.y + _isoView.currentY), false);
+            _pendingMoveBy = null;
+        }
 
-            // Now, take out any old blocks no longer in our valid blocks.
-            var blocks :Set = getBaseBlocks();
-            for each (var baseKey :int in _blocks.keys()) {
-                if (!blocks.contains(baseKey)) {
-                    _blocks.remove(baseKey).release();
-                }
+        // Now, take out any old blocks no longer in our valid blocks.
+        var blocks :Set = getBaseBlocks();
+        for each (var baseKey :int in _blocks.keys()) {
+            if (!blocks.contains(baseKey)) {
+                _blocks.remove(baseKey).release();
             }
-        });
+        }
+
+        trace("Scene Block Resolution took: " + (getTimer() - _resStartTime) + "ms");
     }
 
     protected function refreshScene () :void
@@ -320,6 +325,10 @@ public class MisoScenePanel extends Sprite
 
     protected var _masks :Map = Maps.newMapOf(int);
     protected var _fringes :Map = new WeakValueMap(Maps.newMapOf(FringeTile));
+
+    protected var _resStartTime :int;
+
+    protected var _skipComplete :Boolean
 
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
