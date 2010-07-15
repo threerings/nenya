@@ -93,11 +93,16 @@ public class TileDataPack extends DataPack
 
         if (_cache.containsKey(key)) {
             callback(_cache.get(key));
+        } else if (_pending.containsKey(key)) {
+            _pending.get(key).push(callback);
         } else {
+            _pending.put(key, [callback]);
             MultiLoader.getContents(PngRecolorUtil.recolorPNG(getFile(path), zations),
                 function(result :Bitmap) :void {
                     _cache.put(key, result);
-                    callback(result);
+                    for each (var func :Function in _pending.remove(key)) {
+                        func(result);
+                    }
                 });
         }
     }
@@ -115,5 +120,8 @@ public class TileDataPack extends DataPack
 
     /** Cache of images loaded from this data pack. */
     protected var _cache :Map = Maps.newMapOf(String);
+
+    /** Any images we're in the process of resolving, map their key to a list of listeners*/
+    protected var _pending :Map = Maps.newMapOf(String);
 }
 }
