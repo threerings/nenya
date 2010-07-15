@@ -257,20 +257,22 @@ public class MisoScenePanel extends Sprite
 
         _objScene.render();
 
-        // Then we let the scene finally move if it's trying to...
-        if (_pendingMoveBy != null) {
-            _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
-                _pendingMoveBy.y + _isoView.currentY), false);
-            _pendingMoveBy = null;
-        }
-
-        // Now, take out any old blocks no longer in our valid blocks.
-        var blocks :Set = getBaseBlocks();
-        for each (var baseKey :int in _blocks.keys()) {
-            if (!blocks.contains(baseKey)) {
-                _blocks.remove(baseKey).release();
+        DelayUtil.delayFrame(function() :void {
+            // Then we let the scene finally move if it's trying to...
+            if (_pendingMoveBy != null) {
+                _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
+                    _pendingMoveBy.y + _isoView.currentY), false);
+                _pendingMoveBy = null;
             }
-        }
+
+            // Now, take out any old blocks no longer in our valid blocks.
+            var blocks :Set = getBaseBlocks();
+            for each (var baseKey :int in _blocks.keys()) {
+                if (!blocks.contains(baseKey)) {
+                    _blocks.remove(baseKey).release();
+                }
+            }
+        });
     }
 
     protected function refreshScene () :void
