@@ -23,9 +23,8 @@ public class NoSuchTileSetError extends Error
 {
     public function NoSuchTileSetError (tileSet :*)
     {
-        (tileSet is int) ?
-            super("No tile set with id '" + int(tileSet) + "'") :
-            super("No tile set named'" + String(tileSet) + "'");
+        super((tileSet is int) ? ("No tile set with id '" + int(tileSet) + "'") :
+            ("No tile set named'" + String(tileSet) + "'"));
     }
 }
 }

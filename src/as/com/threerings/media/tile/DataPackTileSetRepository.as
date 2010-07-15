@@ -87,6 +87,18 @@ public class DataPackTileSetRepository
                 loadTileSetsFromPack(bundleName.substr(0, bundleName.length - 11));
             }
         }
+
+        // Notify them all and clear our list.
+        for each (var func :Function in _notifyOnLoad) {
+            func();
+        }
+        _notifyOnLoad = [];
+    }
+
+
+    public function notifyOnLoad (func :Function) :void
+    {
+        _notifyOnLoad.push(func);
     }
 
     public function enumerateTileSetIds () :Array
@@ -244,5 +256,8 @@ public class DataPackTileSetRepository
 
     /** The map of packs we've already loaded up and resolved. */
     protected var _packs :Map = Maps.newMapOf(String);
+
+    /** Everyone who cares when we're loaded. */
+    protected var _notifyOnLoad :Array = [];
 }
 }

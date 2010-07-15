@@ -105,7 +105,7 @@ public class SceneBlock
                     continue;
                 }
 
-                createBaseSprite(tileSet, ii, jj, tileId);
+                createBaseSprite(tileSet, ii, jj, tileId, panel);
             }
         }
 
@@ -161,19 +161,31 @@ public class SceneBlock
         }
     }
 
-    protected function createBaseSprite (tileSet :TileSet, x :int, y :int, tileId :int) :void
+    protected function createBaseSprite (tileSet :TileSet, x :int, y :int, tileId :int,
+        panel :MisoScenePanel) :void
     {
+        var fringeTile :Tile = panel.computeFringeTile(x, y);
+
         var tile :Tile = tileSet.getTile(TileUtil.getTileIndex(tileId));
 
-        if (tile.getImage() != null) {
-            _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics));
+        var maybeLoaded :Function = function (loaded :Tile) :void {
+            if (tile.getImage() != null && (fringeTile == null || fringeTile.getImage() != null)) {
+                _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics,
+                    fringeTile));
+                noteTileLoaded();
+            }
+        };
+
+        if (tile.getImage() != null && (fringeTile == null || fringeTile.getImage() != null)) {
+            _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics, fringeTile));
         } else {
             noteTileToLoad();
-
-            tile.notifyOnLoad(function (tile :Tile) :void {
-                _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics));
-                noteTileLoaded();
-            });
+            if (tile.getImage() == null) {
+                tile.notifyOnLoad(maybeLoaded);
+            }
+            if (fringeTile != null && fringeTile.getImage() == null) {
+                fringeTile.notifyOnLoad(maybeLoaded);
+            }
         }
     }
 

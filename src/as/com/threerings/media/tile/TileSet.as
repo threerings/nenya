@@ -19,6 +19,7 @@
 
 package com.threerings.media.tile {
 
+import flash.display.Bitmap;
 import flash.display.DisplayObject;
 import flash.geom.Rectangle;
 
@@ -196,13 +197,13 @@ public /* abstract */ class TileSet
         if (checkTileIndex(tileIndex)) {
             if (_improv == null) {
                 log.warning("Aiya! Tile set missing image provider [path=" + _imagePath + "].");
-                callback(ImageUtil.createErrorImage(bounds.width, bounds.height));
+                callback(new Bitmap(ImageUtil.createErrorBitmap()));
 
             } else {
                 _improv.getTileImage(_imagePath, bounds, zations,
                     function(result :DisplayObject) :void {
                         if (result == null) {
-                            result = ImageUtil.createErrorImage(bounds.width, bounds.height);
+                            result = new Bitmap(ImageUtil.createErrorBitmap());
                         }
                         callback(result);
                     });

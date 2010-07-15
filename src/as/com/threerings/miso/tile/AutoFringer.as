@@ -37,6 +37,9 @@ import com.threerings.util.Integer;
 import com.threerings.util.Log;
 import com.threerings.util.Maps;
 import com.threerings.util.Map;
+import com.threerings.util.Sets;
+import com.threerings.util.Set;
+import com.threerings.util.StringUtil;
 import com.threerings.util.WeakReference;
 import com.threerings.miso.data.MisoSceneModel;
 
@@ -73,13 +76,34 @@ public class AutoFringer
     }
 
     /**
+     * Returns all the tilesets that fringe on the specified tilesets.
+     */
+    public function getFringeSets (tilesets :Set) :Set
+    {
+        var fringeSets :Set = Sets.newSetOf(int);
+
+        tilesets.forEach(function(o :int) :void {
+            var fringes :Array = _fringeConf.getFringeSets(o);
+            if (fringes != null) {
+                for each (var fringe :int in fringes) {
+                    fringeSets.add(fringe);
+                }
+            }
+        });
+
+        return fringeSets;
+    }
+
+    /**
      * Compute and return the fringe tile to be inserted at the specified location.
      */
     public function getFringeTile (scene :MisoSceneModel, col :int, row :int, fringes :Map,
         masks :Map) :BaseTile
     {
         // get the tileset id of the base tile we are considering
-        var underset :int = adjustTileSetId(scene.getBaseTileId(col, row) >> 16);
+        var utid :int = scene.getBaseTileId(col, row);
+        var underset :int = adjustTileSetId((utid <= 0) ?
+            scene.getDefaultBaseTileSet() : (utid >> 16));
 
         // start with a clean temporary fringer map
         _fringers.clear();
@@ -135,13 +159,7 @@ public class AutoFringer
         }
 
         // otherwise compose a FringeTile from the specified fringes
-        var frecs :Array = new Array(numfringers);
-        for (var ii :int = 0, pp :int = 0; ii < 16; ii++) {
-            var rec :FringerRec = FringerRec(_fringers.get(ii));
-            if (rec != null) {
-                frecs[pp++] = rec;
-            }
-        }
+        var frecs :Array = _fringers.values();
 
         return composeFringeTile(frecs, fringes, TileUtil.getTileHash(col, row), passable, masks);
     }
@@ -197,10 +215,11 @@ public class AutoFringer
         var tsr :FringeTileSetRecord = _fringeConf.getFringe(fringer.baseset, hashValue);
         getTileImageHelper0(img, tsr, fringer.baseset, hashValue, masks, indexes, 0,
             function (result :Bitmap) :void {
-                if (fringerIdx == fringers.size() - 1) {
+                if (fringerIdx == fringers.length - 1) {
                     callback(result);
                 } else {
-                    getTileImageHelper1(img, hashValue, masks, fringers, fringerIdx + 1, callback);
+                    getTileImageHelper1(result, hashValue, masks, fringers, fringerIdx + 1,
+                        callback);
                 }
             });
     }
@@ -212,10 +231,10 @@ public class AutoFringer
         try {
             getTileImage(img, tsr, baseset, indexes[indexIdx], hashValue, masks,
                 function (result :Bitmap) :void {
-                    if (indexIdx == indexes.size() - 1) {
+                    if (indexIdx == indexes.length - 1) {
                         callback(result);
                     } else {
-                        getTileImageHelper0(img, tsr, baseset, hashValue, masks, indexes,
+                        getTileImageHelper0(result, tsr, baseset, hashValue, masks, indexes,
                             indexIdx + 1, callback);
                     }
                 });
@@ -231,12 +250,19 @@ public class AutoFringer
     protected function getTileImage (img :Bitmap, tsr :FringeTileSetRecord ,
         baseset :int, index :int, hashValue :int, masks :Map, callback :Function) :void
     {
+
         var fringeset :int = tsr.fringe_tsid;
         var fset :TileSet = _tMgr.getTileSet(fringeset);
         if (!tsr.mask) {
             // oh good, this is easy
             var stamp :Tile = fset.getTile(index);
-            callback(stampTileImage(stamp, img, stamp.getWidth(), stamp.getHeight()));
+            if (stamp.getImage() != null) {
+                callback(stampTileImage(stamp, img, stamp.getWidth(), stamp.getHeight()));
+            } else {
+                stamp.notifyOnLoad(function(tile :Tile) :void {
+                    callback(stampTileImage(stamp, img, stamp.getWidth(), stamp.getHeight()));
+                });
+            }
             return;
         }
 
@@ -325,7 +351,7 @@ public class AutoFringer
             } else if (weebits != 0) {
                 index = BITS_TO_INDEX[weebits];
                 if (index != -1) {
-                    indexes.add(index);
+                    indexes.push(index);
                 }
                 weebits = 0;
             }
@@ -333,7 +359,7 @@ public class AutoFringer
         if (weebits != 0) {
             index = BITS_TO_INDEX[weebits];
             if (index != -1) {
-                indexes.add(index);
+                indexes.push(index);
             }
         }
 

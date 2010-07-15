@@ -20,6 +20,7 @@
 package com.threerings.miso.tile {
 
 import com.threerings.media.tile.TileManager;
+import com.threerings.util.Set;
 
 /**
  * Extends the basic tile manager and provides support for automatically generating fringes in
@@ -27,6 +28,28 @@ import com.threerings.media.tile.TileManager;
  */
 public class MisoTileManager extends TileManager
 {
-    // TODO: Fringing.
+    public function setFringer (fringer :AutoFringer) :void
+    {
+        _fringer = fringer;
+    }
+
+    public function getFringer () :AutoFringer
+    {
+        return _fringer;
+    }
+
+    override public function ensureLoaded (tileSets :Set, completeCallback :Function,
+        progressCallback :Function) :void
+    {
+        // Get those we'll use to fringe with us, too.
+        var fringeSets :Set = _fringer.getFringeSets(tileSets);
+        fringeSets.forEach(function (tsetId :int) :void {
+            tileSets.add(tsetId);
+        });
+
+        super.ensureLoaded(tileSets, completeCallback, progressCallback);
+    }
+
+    protected var _fringer :AutoFringer;
 }
 }

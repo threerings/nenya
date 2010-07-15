@@ -38,11 +38,12 @@ public class TileIsoSprite extends IsoSprite
     private static var log :Log = Log.getLog(TileIsoSprite);
 
     public function TileIsoSprite (x :int, y :int, tileId :int, tile :Tile, priority :int,
-        metrics :MisoSceneMetrics)
+        metrics :MisoSceneMetrics, fringe :Tile = null)
     {
         _tileId = tileId;
         _metrics = metrics;
         _priority = priority;
+        _fringe = fringe;
 
         layout(x, y, tile);
 
@@ -67,10 +68,22 @@ public class TileIsoSprite extends IsoSprite
         var image :DisplayObject = tile.getImage();
         // as3isolib uses top instead of bottom.
         image.x = -tile.getOriginX() + _metrics.tilewid *
-            ((tile.getBaseWidth() - tile.getBaseHeight())/2);;
+            ((tile.getBaseWidth() - tile.getBaseHeight())/2);
         image.y = -tile.getOriginY() + _metrics.tilehei *
             ((tile.getBaseWidth() + tile.getBaseHeight())/2);
-        sprites = [image];
+
+        if (_fringe == null) {
+            sprites = [image];
+        } else {
+            var fringeImg :DisplayObject = _fringe.getImage();
+            // as3isolib uses top instead of bottom.
+            fringeImg.x = -_fringe.getOriginX() + _metrics.tilewid *
+                ((_fringe.getBaseWidth() - _fringe.getBaseHeight())/2);
+            fringeImg.y = -_fringe.getOriginY() + _metrics.tilehei *
+                ((_fringe.getBaseWidth() + _fringe.getBaseHeight())/2);
+
+            sprites = [image, fringeImg];
+        }
         render();
     }
 
@@ -82,6 +95,8 @@ public class TileIsoSprite extends IsoSprite
     protected var _tileId :int;
 
     protected var _priority :int;
+
+    protected var _fringe :Tile;
 
     protected var _metrics :MisoSceneMetrics;
 }

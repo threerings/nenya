@@ -53,13 +53,18 @@ public class FringeConfiguration
      */
     public function fringesOn (first :int, second :int) :int
     {
+        // Short-circuit if we're fringing on ourselves.
+        if (first == second) {
+            return -1;
+        }
+
         var f1 :FringeRecord = _frecs.get(first);
 
         // we better have a fringe record for the first
         if (null != f1) {
 
             // it had better have some tilesets defined
-            if (f1.tilesets.size() > 0) {
+            if (f1.tilesets.length > 0) {
 
                 var f2 :FringeRecord = _frecs.get(second);
 
@@ -81,7 +86,23 @@ public class FringeConfiguration
     public function getFringe (baseset :int, hashValue :int) :FringeTileSetRecord
     {
         var f :FringeRecord = _frecs.get(baseset);
-        return f.tilesets.get(hashValue % f.tilesets.size());
+        return f.tilesets[hashValue % f.tilesets.length];
+    }
+
+    /**
+     * Returns all the tilesets used to fringe with this baseset.
+     */
+    public function getFringeSets (baseset :int) :Array
+    {
+        var f :FringeRecord = _frecs.get(baseset);
+        if (f == null) {
+            return [];
+        } else {
+            return f.tilesets.map(
+                function (element :FringeTileSetRecord, index:int, arr:Array) :int {
+                    return element.fringe_tsid;
+                });
+        }
     }
 
     /** The mapping from base tileset id to fringerecord. */

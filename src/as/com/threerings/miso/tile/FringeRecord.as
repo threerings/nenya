@@ -31,7 +31,7 @@ public class FringeRecord
     public var priority :int;
 
     /** A list of the possible tilesets that can be used for fringing. */
-    public var tilesets :Array;
+    public var tilesets :Array = [];
 
     public static function fromXml (xml :XML, idMap :TileSetIdMap) :FringeRecord
     {

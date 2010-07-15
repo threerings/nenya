@@ -28,6 +28,7 @@ import com.threerings.util.DataPack;
 import com.threerings.util.maps.DictionaryMap;
 import com.threerings.media.tile.BaseTileSet;
 import com.threerings.media.tile.ObjectTileSet;
+import com.threerings.media.tile.SwissArmyTileSet;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileSetIdMap;
 
@@ -48,6 +49,10 @@ public class TileSetBundle extends DictionaryMap
         for each (var baseXml :XML in xml.base.tileset) {
             var baseId :int = idMap.getTileSetId(baseXml.@name);
             bundle.put(baseId, BaseTileSet.fromXml(baseXml));
+        }
+        for each (var fringeXml :XML in xml.fringe.tileset) {
+            var fringeId :int = idMap.getTileSetId(fringeXml.@name);
+            bundle.put(fringeId, SwissArmyTileSet.fromXml(fringeXml));
         }
         return bundle;
     }

@@ -53,6 +53,8 @@ import com.threerings.util.MathUtil;
 import com.threerings.util.Set;
 import com.threerings.util.Sets;
 import com.threerings.util.StringUtil;
+import com.threerings.util.maps.WeakValueMap;
+import com.threerings.media.tile.BaseTile;
 import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
 import com.threerings.media.tile.TileSet;
@@ -61,6 +63,7 @@ import com.threerings.miso.client.MisoMetricsTransformation;
 import com.threerings.miso.client.PrioritizedSceneLayoutRenderer;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.data.ObjectInfo;
+import com.threerings.miso.tile.FringeTile;
 import com.threerings.miso.util.MisoContext;
 import com.threerings.miso.util.ObjectSet;
 import com.threerings.miso.util.MisoSceneMetrics;
@@ -149,6 +152,13 @@ public class MisoScenePanel extends Sprite
 
     public function didLeavePlace (plobj :PlaceObject) :void
     {
+    }
+
+    /** Computes the fringe tile for the specified coordinate. */
+    public function computeFringeTile (tx :int, ty :int) :BaseTile
+    {
+        return _ctx.getTileManager().getFringer().getFringeTile(_model, tx, ty, _fringes,
+            _masks);
     }
 
     protected function getBaseBlocks () :Set
@@ -305,6 +315,9 @@ public class MisoScenePanel extends Sprite
 
     protected var _pendingBlocks :Set = Sets.newSetOf(SceneBlock);
     protected var _readyBlocks :Set = Sets.newSetOf(SceneBlock);
+
+    protected var _masks :Map = Maps.newMapOf(int);
+    protected var _fringes :Map = new WeakValueMap(Maps.newMapOf(FringeTile));
 
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;

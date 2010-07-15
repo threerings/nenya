@@ -20,6 +20,7 @@
 package com.threerings.miso.tile {
 
 import com.threerings.media.tile.TileSetIdMap;
+import com.threerings.util.XmlUtil;
 
 public class FringeTileSetRecord
 {
@@ -33,7 +34,7 @@ public class FringeTileSetRecord
     {
         var rec :FringeTileSetRecord = new FringeTileSetRecord();
         rec.fringe_tsid = idMap.getTileSetId(xml.@name);
-        rec.mask = xml.@mask;
+        rec.mask = XmlUtil.getBooleanAttr(xml, "mask", false);
         return rec;
     }
 

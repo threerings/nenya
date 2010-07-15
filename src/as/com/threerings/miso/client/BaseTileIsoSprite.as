@@ -19,15 +19,17 @@
 
 package com.threerings.miso.client {
 
+import flash.display.DisplayObject;
+
 import com.threerings.media.tile.Tile;
 import com.threerings.miso.util.MisoSceneMetrics;
 
 public class BaseTileIsoSprite extends TileIsoSprite
 {
     public function BaseTileIsoSprite (x :int, y :int, tileId :int, tile :Tile,
-                                       metrics :MisoSceneMetrics)
+                                       metrics :MisoSceneMetrics, fringe :Tile)
     {
-        super(x, y, tileId, tile, 0, metrics);
+        super(x, y, tileId, tile, 0, metrics, fringe);
     }
 
     public override function layout (x :int, y :int, tile :Tile) :void
