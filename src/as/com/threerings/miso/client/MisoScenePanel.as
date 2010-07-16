@@ -161,7 +161,7 @@ public class MisoScenePanel extends Sprite
             _masks);
     }
 
-    protected function getBaseBlocks () :Set
+    protected function getBaseBlocks (buffer :Boolean) :Set
     {
         var blocks :Set = Sets.newSetOf(int);
 
@@ -170,10 +170,10 @@ public class MisoScenePanel extends Sprite
         var xMove :int = (_pendingMoveBy == null ? 0 : _pendingMoveBy.x);
         var yMove :int = (_pendingMoveBy == null ? 0 : _pendingMoveBy.y);
 
-        var minX :int = xMove;
-        var maxX :int = size.x + xMove;
-        var minY :int = yMove;
-        var maxY :int = BOTTOM_BUFFER + size.y + yMove;
+        var minX :int = xMove - (buffer ? size.x/2 : 0);
+        var maxX :int = size.x + xMove + (buffer ? size.x/2 : 0);
+        var minY :int = yMove - (buffer ? size.x/2 : 0);
+        var maxY :int = BOTTOM_BUFFER + size.y + yMove + (buffer ? size.x/2 : 0);
 
         var topLeft :Point = _isoView.localToIso(new Point(minX, minY));
         var topRight :Point = _isoView.localToIso(new Point(maxX, minY));
@@ -213,20 +213,26 @@ public class MisoScenePanel extends Sprite
     {
         _resStartTime = getTimer();
 
-        var blocks :Set = getBaseBlocks();
+        // Clear em til we're done resolving.
+        _pendingPrefetchBlocks = [];
+
+        var blocks :Set = getBaseBlocks(false);
 
         // Keep this to use in our function...
         var thisRef :MisoScenePanel = this;
-
 
         // Postpone calling complete til they're all queued up.
         _skipComplete = true;
 
         blocks.forEach(function(blockKey :int) :void {
             if (!_blocks.containsKey(blockKey)) {
-                var sceneBlock :SceneBlock = createSceneBlock(blockKey);
-                _pendingBlocks.add(sceneBlock);
-                sceneBlock.resolve(_ctx, _model, thisRef, blockResolved);
+                if (_prefetchedBlocks.containsKey(blockKey)) {
+                    _readyBlocks.add(_prefetchedBlocks.remove(blockKey));
+                } else {
+                    var sceneBlock :SceneBlock = createSceneBlock(blockKey);
+                    _pendingBlocks.add(sceneBlock);
+                    sceneBlock.resolve(_ctx, _model, thisRef, blockResolved);
+                }
             }
         });
 
@@ -274,14 +280,49 @@ public class MisoScenePanel extends Sprite
         }
 
         // Now, take out any old blocks no longer in our valid blocks.
-        var blocks :Set = getBaseBlocks();
+        var blocks :Set = getBaseBlocks(true);
         for each (var baseKey :int in _blocks.keys()) {
             if (!blocks.contains(baseKey)) {
                 _blocks.remove(baseKey).release();
             }
         }
+        // And any prefetch blocks that are bogus can go away too.
+        for each (var preKey :int in _prefetchedBlocks.keys()) {
+            if (!blocks.contains(preKey)) {
+                _prefetchedBlocks.remove(preKey);
+            }
+        }
 
         trace("Scene Block Resolution took: " + (getTimer() - _resStartTime) + "ms");
+
+        // Let's setup some prefetching...
+        blocks.forEach(function(blockKey :int) :void {
+            if (!_blocks.containsKey(blockKey)) {
+                var sceneBlock :SceneBlock = createSceneBlock(blockKey);
+                _pendingPrefetchBlocks.push(sceneBlock);
+            }
+        });
+
+        maybePrefetchABlock();
+    }
+
+    protected function maybePrefetchABlock () :void
+    {
+        if (_pendingPrefetchBlocks.length != 0) {
+            _pendingPrefetchBlocks.shift().resolve(_ctx, _model, this, prefetchBlockResolved);
+        }
+    }
+
+    protected function prefetchBlockResolved (resolved :SceneBlock) :void
+    {
+        _prefetchedBlocks.put(resolved.getKey(), resolved);
+
+        // If we haven't moved on to resolve a new region, let's try another block.
+        if (_pendingBlocks.size() == 0) {
+            DelayUtil.delayFrame(function() :void {
+                maybePrefetchABlock();
+            });
+        }
     }
 
     protected function refreshScene () :void
@@ -320,18 +361,31 @@ public class MisoScenePanel extends Sprite
 
     protected var _objScene :IsoScene;
 
+    /** All of the active blocks that are part of the scene. */
     protected var _blocks :Map = Maps.newMapOf(int);
 
+    /** If we're resolving in preparation for moving, this is how much we'll move by when ready. */
     protected var _pendingMoveBy :Point;
 
+    /** Required blocks we're working on resolving. */
     protected var _pendingBlocks :Set = Sets.newSetOf(SceneBlock);
+
+    /** Blocks that are resolved and ready for adding to the scene. */
     protected var _readyBlocks :Set = Sets.newSetOf(SceneBlock);
+
+    /** The queue of blocks we'd like to prefetch when we have a chance. */
+    protected var _pendingPrefetchBlocks :Array = [];
+
+    /** The blocks already prefetched and ready to go if we need them. */
+    protected var _prefetchedBlocks :Map = Maps.newMapOf(int);
 
     protected var _masks :Map = Maps.newMapOf(int);
     protected var _fringes :Map = new WeakValueMap(Maps.newMapOf(FringeTile));
 
+    /** What time did we start the current scene resolution. */
     protected var _resStartTime :int;
 
+    /** If any block happens to resolve should we currently skip calling completion. */
     protected var _skipComplete :Boolean
 
     protected const DEF_WIDTH :int = 985;
