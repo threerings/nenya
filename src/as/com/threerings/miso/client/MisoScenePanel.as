@@ -333,7 +333,7 @@ public class MisoScenePanel extends Sprite
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
 
-    protected const BOTTOM_BUFFER :int = 250;
+    protected const BOTTOM_BUFFER :int = 300;
 }
 }
 
