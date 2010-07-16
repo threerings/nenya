@@ -204,6 +204,11 @@ public class MisoScenePanel extends Sprite
         return blocks;
     }
 
+    protected function createSceneBlock (blockKey :int) :SceneBlock
+    {
+        return new SceneBlock(blockKey, _objScene, _isoView, _metrics);
+    }
+
     protected function refreshBaseBlockScenes () :void
     {
         _resStartTime = getTimer();
@@ -219,8 +224,7 @@ public class MisoScenePanel extends Sprite
 
         blocks.forEach(function(blockKey :int) :void {
             if (!_blocks.containsKey(blockKey)) {
-                var sceneBlock :SceneBlock =
-                    new SceneBlock(blockKey, _objScene, _isoView, _metrics);
+                var sceneBlock :SceneBlock = createSceneBlock(blockKey);
                 _pendingBlocks.add(sceneBlock);
                 sceneBlock.resolve(_ctx, _model, thisRef, blockResolved);
             }
@@ -228,7 +232,7 @@ public class MisoScenePanel extends Sprite
 
         _skipComplete = false;
 
-        
+
         if (_pendingBlocks.size() == 0) {
             resolutionComplete();
         }

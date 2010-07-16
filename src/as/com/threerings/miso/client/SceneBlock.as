@@ -142,7 +142,7 @@ public class SceneBlock
      */
     public function render () :void
     {
-        _isoView.addScene(_baseScene);
+        _isoView.addSceneAt(_baseScene, 0);
         _baseScene.render();
         for each (var sprite :ObjectTileIsoSprite in _objSprites) {
             _objScene.addChild(sprite);
