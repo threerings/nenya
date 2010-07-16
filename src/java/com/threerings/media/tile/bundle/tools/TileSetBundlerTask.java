@@ -76,6 +76,15 @@ public class TileSetBundlerTask extends Task
     }
 
     /**
+     * Note whether we are supposed to leave the jar uncompressed rather than the normal process
+     *  of zipping it at maximum compression.
+     */
+    public void setUncompressed (boolean uncompressed)
+    {
+        _uncompressed = uncompressed;
+    }
+
+    /**
      * Performs the actual work of the task.
      */
     @Override
@@ -146,7 +155,7 @@ public class TileSetBundlerTask extends Task
     protected TileSetBundler createBundler ()
         throws IOException
     {
-        return new TileSetBundler(_config, _keepRawPngs);
+        return new TileSetBundler(_config, _keepRawPngs, _uncompressed);
     }
 
     /**
@@ -173,4 +182,7 @@ public class TileSetBundlerTask extends Task
 
     /** Whether we should keep raw pngs rather than reencoding them in the bundle. */
     protected boolean _keepRawPngs;
+
+    /** Whether we should keep the bundle jars uncompressed rather than zipped. */
+    protected boolean _uncompressed;
 }

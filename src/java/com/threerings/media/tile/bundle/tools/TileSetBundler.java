@@ -132,17 +132,18 @@ public class TileSetBundler
     public TileSetBundler (File configFile)
         throws IOException
     {
-        this(configFile, false);
+        this(configFile, false, false);
     }
 
     /**
      * Constructs a tileset bundler with the specified bundler config
      * file and whether to keep pngs as-is or if not, re-encode them.
      */
-    public TileSetBundler (File configFile, boolean keepRawPngs)
+    public TileSetBundler (File configFile, boolean keepRawPngs, boolean uncompressed)
         throws IOException
     {
         _keepRawPngs = keepRawPngs;
+        _uncompressed = uncompressed;
 
         // we parse our configuration with a digester
         Digester digester = new Digester();
@@ -352,7 +353,7 @@ public class TileSetBundler
         File target, TileSetBundle bundle, ImageProvider improv, String imageBase, long newestMod)
         throws IOException
     {
-        return createBundleJar(target, bundle, improv, imageBase, _keepRawPngs);
+        return createBundleJar(target, bundle, improv, imageBase, _keepRawPngs, _uncompressed);
     }
 
     /**
@@ -367,14 +368,14 @@ public class TileSetBundler
      */
     public static boolean createBundleJar (
         File target, TileSetBundle bundle, ImageProvider improv, String imageBase,
-        boolean keepOriginalPngs)
+        boolean keepOriginalPngs, boolean uncompressed)
         throws IOException
     {
         // now we have to create the actual bundle file
         FileOutputStream fout = new FileOutputStream(target);
         Manifest manifest = new Manifest();
         JarOutputStream jar = new JarOutputStream(fout, manifest);
-        jar.setLevel(Deflater.BEST_COMPRESSION);
+        jar.setLevel(uncompressed ? Deflater.NO_COMPRESSION : Deflater.BEST_COMPRESSION);
 
         try {
             // write all of the image files to the bundle, converting the
@@ -516,4 +517,7 @@ public class TileSetBundler
 
     /** Whether we should keep pngs as-is rather than re-encoding. */
     protected boolean _keepRawPngs;
+
+    /** Normally we compress the jar, but if we want to leave them uncompressed, we set this. */
+    protected boolean _uncompressed;
 }
