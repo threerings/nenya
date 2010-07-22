@@ -71,11 +71,11 @@ public class StatsDisplay extends Node
         _stats.setLength(0);
         _stats.append("FPS: ").append((int)timer.getFrameRate());
         _stats.append(" - ").append(renderer.getStatistics(_temp));
-        _text.print(_stats);
+        _text.print(_stats.toString());
     }
 
     protected Text _text;
-    protected StringBuffer _stats = new StringBuffer();
+    protected StringBuilder _stats = new StringBuilder();
     protected StringBuffer _temp = new StringBuffer();
 
     protected static final String DEFAULT_JME_FONT =

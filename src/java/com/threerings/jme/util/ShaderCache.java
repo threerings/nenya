@@ -186,7 +186,7 @@ public class ShaderCache
         // fetch the shader source
         String source = _sources.get(shader);
         if (source == null) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             try {
                 BufferedReader reader = new BufferedReader(
                     new InputStreamReader(_rsrcmgr.getResource(shader)));
@@ -202,7 +202,7 @@ public class ShaderCache
         }
 
         // prepend the definitions (the version directive comes before anything else)
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("#version 110\n");
         for (String def : defs) {
             buf.append("#define ").append(def).append('\n');

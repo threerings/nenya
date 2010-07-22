@@ -235,7 +235,7 @@ public abstract class ShaderConfig
     protected void getDerivedDefinitions (ArrayList<String> ddefs)
     {
         // add the def that sets the front color based on the light types
-        StringBuffer buf = new StringBuffer("SET_FRONT_COLOR ");
+        StringBuilder buf = new StringBuilder("SET_FRONT_COLOR ");
         if (_lights != null) {
             // start with the "scene color," which combines scene ambient, emissivity, etc.
             buf.append("vec3 frontColor = gl_FrontLightModelProduct.sceneColor.rgb; ");
@@ -254,7 +254,7 @@ public abstract class ShaderConfig
         ddefs.add(buf.toString());
 
         // add the def that sets the texture coordinates based on the env map modes
-        buf = new StringBuffer("SET_TEX_COORDS");
+        buf = new StringBuilder("SET_TEX_COORDS");
         if (_textures != null) {
             for (int ii = 0; ii < _textures.length; ii++) {
                 TextureConfig texture = _textures[ii];
@@ -272,7 +272,7 @@ public abstract class ShaderConfig
         ddefs.add(buf.toString());
 
         // add the definition that sets the fog alpha based on the density function
-        buf = new StringBuffer("SET_FOG_ALPHA");
+        buf = new StringBuilder("SET_FOG_ALPHA");
         if (_fogDensityFunc == FogState.DF_EXP) {
             buf.append(" fogAlpha = exp(gl_Fog.density * eyeVertex.z);");
         }
