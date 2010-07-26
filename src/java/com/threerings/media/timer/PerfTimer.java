@@ -25,7 +25,11 @@ import sun.misc.Perf;
 
 /**
  * A timer that uses the performance clock exposed by Sun in JDK 1.4.2.
+ * @deprecated Use {@link NanoTimer} instead.
  */
+@Deprecated
+// warning: sun.misc.Perf is Sun proprietary API and may be removed in a future release
+@SuppressWarnings("all")
 public class PerfTimer extends CalibratingTimer
 {
     public PerfTimer ()
