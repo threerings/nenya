@@ -209,6 +209,12 @@ public class SceneBlock
         }
     }
 
+    public function canTraverse (traverser :Object, tx :int, ty :int) :Boolean
+    {
+        // TODO Path
+        return true;
+    }
+
     protected function noteTileToLoad () :void
     {
         _pendingCt++;

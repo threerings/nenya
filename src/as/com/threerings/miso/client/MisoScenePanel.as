@@ -87,6 +87,9 @@ public class MisoScenePanel extends Sprite
 
         _isoView.addEventListener(MouseEvent.CLICK, onClick);
 
+        _objScene = new IsoScene();
+        _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
+
         addChild(_loading = createLoadingPanel());
     }
 
@@ -119,12 +122,26 @@ public class MisoScenePanel extends Sprite
 
     public function onClick (event :MouseEvent) :void
     {
+        // TODO - handle _hobject
+        handleMousePressed(null, event);
+    }
+
+    public function handleMousePressed (hobject :Object, event :MouseEvent) :Boolean
+    {
         var viewPt :Point = _isoView.globalToLocal(new Point(event.stageX, event.stageY));
         moveBy(new Point(viewPt.x - _isoView.width / 2, viewPt.y - _isoView.height / 2));
+        return true;
     }
 
     public function moveBy (pt :Point) :void
     {
+        // No scene model yet, just do it...
+        if (_model == null) {
+            _isoView.centerOnPt(new Pt(pt.x + _isoView.currentX,
+                pt.y + _isoView.currentY), false);
+            return;
+        }
+
         if (_pendingMoveBy != null) {
             log.info("Already performing a move...");
             return;
@@ -330,9 +347,6 @@ public class MisoScenePanel extends Sprite
         // Clear it out...
         _isoView.removeAllScenes();
 
-        _objScene = new IsoScene();
-        _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
-
         refreshBaseBlockScenes();
     }
 
@@ -342,6 +356,37 @@ public class MisoScenePanel extends Sprite
      */
     public function getColorizer (oinfo :ObjectInfo) :Colorizer
     {
+        return null;
+    }
+
+    // documentation inherited
+    public function canTraverse (traverser :Object, tx :int, ty :int) :Boolean
+    {
+        var block :SceneBlock = _blocks.get(SceneBlock.getBlockKey(tx, ty));
+        return (block == null) ? canTraverseUnresolved(traverser, tx, ty) :
+            block.canTraverse(traverser, tx, ty);
+    }
+
+    /**
+     * Derived classes can control whether or not we consider unresolved tiles to be traversable
+     * or not.
+     */
+    protected function canTraverseUnresolved (traverser :Object, tx :int, ty :int) :Boolean
+    {
+        return false;
+    }
+
+    /**
+     * Computes a path for the specified sprite to the specified tile coordinates.
+     *
+     * @param loose if true, an approximate path will be returned if a complete path cannot be
+     * located. This path will navigate the sprite "legally" as far as possible and then walk the
+     * sprite in a straight line to its final destination. This is generally only useful if the
+     * the path goes "off screen".
+     */
+    public function getPath (sprite :Sprite, x :int, y :int, loose :Boolean) :Object // TODO Path
+    {
+        // TODO Path
         return null;
     }
 
