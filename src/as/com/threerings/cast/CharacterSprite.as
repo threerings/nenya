@@ -211,6 +211,9 @@ public class CharacterSprite extends Sprite
             log.warning("Failed to obtain action frames [sprite=" + this +
                         ", descrip=" + _descrip + ", action=" + _action + "].", e);
         }
+
+        x = -actseq.origin.x;
+        y = -actseq.origin.y;
     }
 
     protected function updateMainSprite () :void
