@@ -133,6 +133,24 @@ public class ComponentBundlerTask extends Task
     }
 
     /**
+     * Note whether we are supposed to use the raw png files directly in the bundle or try to
+     *  re-encode them.
+     */
+    public void setKeepRawPngs (boolean keep)
+    {
+        _keepRawPngs = keep;
+    }
+
+    /**
+     * Note whether we are supposed to leave the jar uncompressed rather than the normal process
+     *  of zipping it at maximum compression.
+     */
+    public void setUncompressed (boolean uncompressed)
+    {
+        _uncompressed = uncompressed;
+    }
+
+    /**
      * Performs the actual work of the task.
      */
     @Override
@@ -268,29 +286,47 @@ public class ComponentBundlerTask extends Task
 
         fout = nextEntry(fout, ipath);
 
-        // create a trimmed tileset based on the source action tileset and
-        // stuff the new trimmed image into the jar file at the same time
         aset.setImagePath(cfile.getPath());
 
-        TrimmedTileSet tset;
-        try {
-            tset = trim(aset, fout);
-            tset.setImagePath(ipath);
-        } catch (Throwable t) {
-            System.err.println(
-                "Failure trimming tileset " +
-                "[class=" + info[0] + ", name=" + info[1] +
-                ", action=" + info[2] +
-                ", srcimg=" + aset.getImagePath() + "].");
-            t.printStackTrace(System.err);
+        TileSet tset;
+        if (_keepRawPngs) {
+            // We've elected to keep the pngs as they are and just stuff them into the jar.
+            try {
+                tset = aset;
+                BufferedImage image = aset.getRawTileSetImage();
+                ImageIO.write(image, "png", fout);
+            } catch (Throwable t) {
+                System.err.println(
+                    "Failure storing tileset in jar" +
+                    "[class=" + info[0] + ", name=" + info[1] +
+                    ", action=" + info[2] +
+                    ", srcimg=" + aset.getImagePath() + "].");
+                t.printStackTrace(System.err);
 
-            String errmsg = "Failure trimming tileset.";
-            throw new BuildException(errmsg, t);
+                String errmsg = "Failure trimming tileset.";
+                throw new BuildException(errmsg, t);
+            }
+        } else {
+            // create a trimmed tileset based on the source action tileset and
+            // stuff the new trimmed image into the jar file at the same time
+            try {
+                tset = trim(aset, fout);
+                tset.setImagePath(ipath);
+            } catch (Throwable t) {
+                System.err.println(
+                    "Failure trimming tileset " +
+                    "[class=" + info[0] + ", name=" + info[1] +
+                    ", action=" + info[2] +
+                    ", srcimg=" + aset.getImagePath() + "].");
+                t.printStackTrace(System.err);
+
+                String errmsg = "Failure trimming tileset.";
+                throw new BuildException(errmsg, t);
+            }
         }
-
         // then write our trimmed tileset bundle data
         String tpath = composePath(info, BundleUtil.TILESET_EXTENSION);
-        if (!skipEntry(tpath, newest)) {
+        if (!skipEntry(tpath, newest) && !_keepRawPngs) {
             fout = nextEntry(fout, tpath);
 
             ObjectOutputStream oout = new ObjectOutputStream(fout);
@@ -456,7 +492,7 @@ public class ComponentBundlerTask extends Task
         throws IOException
     {
         JarOutputStream jout = new JarOutputStream(new FileOutputStream(target));
-        jout.setLevel(Deflater.BEST_COMPRESSION);
+        jout.setLevel(_uncompressed ? Deflater.NO_COMPRESSION : Deflater.BEST_COMPRESSION);
         return jout;
     }
 
@@ -670,6 +706,12 @@ public class ComponentBundlerTask extends Task
 
     /** A list of filesets that contain tile images. */
     protected ArrayList<FileSet> _filesets = Lists.newArrayList();
+
+    /** Whether we should keep raw pngs rather than reencoding them in the bundle. */
+    protected boolean _keepRawPngs;
+
+    /** Whether we should keep the bundle jars uncompressed rather than zipped. */
+    protected boolean _uncompressed;
 
     /** Used to separate keys and values in the map file. */
     protected static final String SEP_STR = " := ";
