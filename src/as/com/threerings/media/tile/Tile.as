@@ -97,7 +97,11 @@ public class Tile
 
     public function notifyOnLoad (func :Function) :void
     {
-        _notifyOnLoad.push(func);
+        if (_image != null) {
+            func(this);
+        } else {
+            _notifyOnLoad.push(func);
+        }
     }
 
     /**
