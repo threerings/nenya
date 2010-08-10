@@ -109,9 +109,9 @@ public class ComponentClass
     {
         // because we expect there to be relatively few priority overrides, we simply search
         // linearly through the list for the closest match
-        var ocount :int = (_overrides != null) ? _overrides.size() : 0;
+        var ocount :int = (_overrides != null) ? _overrides.length : 0;
         for (var ii :int = 0; ii < ocount; ii++) {
-            var over :PriorityOverride = _overrides.get(ii);
+            var over :PriorityOverride = _overrides[ii];
             // based on the way the overrides are sorted, the first match
             // is the most specific and the one we want
             if (over.matches(action, component, orientation)) {

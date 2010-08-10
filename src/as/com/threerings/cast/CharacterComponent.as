@@ -53,6 +53,17 @@ public class CharacterComponent
         _frameProvider = fprov;
     }
 
+    public function setFrameProvider (frameProvider :FrameProvider) :void
+    {
+        _frameProvider = frameProvider;
+
+        // Notify them all and clear our list.
+        for each (var func :Function in _notifyOnLoad) {
+            func(this);
+        }
+        _notifyOnLoad = [];
+    }
+
     /**
      * Returns the render priority appropriate for this component at the specified action and
      * orientation.
@@ -71,7 +82,7 @@ public class CharacterComponent
      */
     public function getFrames (action :String, type :String) :ActionFrames
     {
-        return _frameProvider.getFrames(this, action, type);
+        return isLoaded() ? _frameProvider.getFrames(this, action, type) : null;
     }
 
     /**
@@ -104,10 +115,29 @@ public class CharacterComponent
 
     public function toString () :String
     {
-        return StringUtil.toString(this);
+        return StringUtil.simpleToString(this);
     }
+
+    public function isLoaded () :Boolean
+    {
+        return _frameProvider != null;
+    }
+
+    public function notifyOnLoad (func :Function) :void
+    {
+        if (isLoaded()) {
+            func(this);
+        } else {
+            _notifyOnLoad.push(func);
+        }
+    }
+
+
 
     /** The entity from which we obtain our animation frames. */
     protected var _frameProvider :FrameProvider;
+
+    /** Everyone who cares when we're loaded. */
+    protected var _notifyOnLoad :Array = [];
 }
 }

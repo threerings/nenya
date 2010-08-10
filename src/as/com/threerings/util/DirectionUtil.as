@@ -74,7 +74,7 @@ public class DirectionUtil extends DirectionCodes
     public static function fromShortString (dirstr :String) :int
     {
         for (var ii :int = 0; ii < FINE_DIRECTION_COUNT; ii++) {
-            if (SHORT_DIR_STRINGS[ii].equals(dirstr)) {
+            if (SHORT_DIR_STRINGS[ii] == dirstr) {
                 return ii;
             }
         }

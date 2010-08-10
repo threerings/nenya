@@ -38,7 +38,7 @@ public interface ActionFrames
      * Returns the multi-frame image that comprises the frames for the
      * specified orientation.
      */
-    function getFrames (orient :int) :DisplayObject;
+    function getFrames (orient :int, callback :Function) :void;
 
     /**
      * Returns the x offset from the upper left of the image to the
