@@ -193,6 +193,22 @@ public class ObjectTileSet extends SwissArmyTileSet
         return _zations;
     }
 
+    /**
+     * Returns the base width for the specified object index.
+     */
+    public int getBaseWidth (int tileIdx)
+    {
+        return _owidths[tileIdx];
+    }
+
+    /**
+     * Returns the base height for the specified object index.
+     */
+    public int getBaseHeight (int tileIdx)
+    {
+        return _oheights[tileIdx];
+    }
+
     @Override
     protected void toString (StringBuilder buf)
     {
