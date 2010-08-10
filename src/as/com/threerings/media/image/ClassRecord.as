@@ -83,7 +83,7 @@ public class ClassRecord
         }
 
         // Look for name matches among all colors
-        for each (var color :ColorRecord in colors) {
+        for each (var color :ColorRecord in colors.values()) {
                 if (StringUtil.compareIgnoreCase(color.name, name) == 0) {
                 return color.colorId;
             }
