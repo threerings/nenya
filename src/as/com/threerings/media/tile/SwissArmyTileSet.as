@@ -24,6 +24,7 @@ package com.threerings.media.tile {
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
+import com.threerings.util.ArrayUtil;
 import com.threerings.util.StringUtil;
 
 /**
@@ -209,7 +210,7 @@ public class SwissArmyTileSet extends TileSet
         }
 
         return str.split(",").map(function(element :*, index :int, arr :Array) :Boolean {
-            return Boolean(element);
+                return Boolean(StringUtil.trim(element));
         });
     }
 
@@ -220,8 +221,25 @@ public class SwissArmyTileSet extends TileSet
         }
 
         return str.split(",").map(function(element :*, index :int, arr :Array) :int {
-            return int(element);
+            return int(StringUtil.trim(element));
         });
+    }
+
+    override public function populateClone (clone :TileSet) :void
+    {
+        super.populateClone(clone);
+        var saClone :SwissArmyTileSet = SwissArmyTileSet(clone);
+        saClone._tileCounts = _tileCounts == null ? null : ArrayUtil.copyOf(_tileCounts);
+        saClone._numTiles = _numTiles;
+        saClone._widths = _widths == null ? null : ArrayUtil.copyOf(_widths);
+        saClone._heights = _heights == null ? null : ArrayUtil.copyOf(_heights);
+        saClone._offsetPos = _offsetPos;
+        saClone._gapSize = _gapSize;
+    }
+
+    override public function createClone () :TileSet
+    {
+        return new SwissArmyTileSet();
     }
 
     /** The number of tiles in each row. */

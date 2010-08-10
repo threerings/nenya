@@ -28,6 +28,7 @@ import com.threerings.io.ObjectInputStream;
 import com.threerings.io.ObjectOutputStream;
 import com.threerings.io.Streamable;
 import com.threerings.media.image.Colorization;
+import com.threerings.util.Cloneable;
 import com.threerings.util.Hashable;
 import com.threerings.util.Log;
 import com.threerings.util.StringUtil;
@@ -36,7 +37,7 @@ import com.threerings.util.maps.HashMap;
 import com.threerings.util.maps.WeakValueMap;
 
 public /* abstract */ class TileSet
-    implements Streamable, Hashable
+    implements Streamable, Hashable, Cloneable
 {
     private static var log :Log = Log.getLog(TileSet);
 
@@ -337,6 +338,33 @@ public /* abstract */ class TileSet
     {
         _name = xml.@name;
         _imagePath = xml.imagePath;
+    }
+
+    public function clone () :Object
+    {
+        var newSet :TileSet = createClone();
+        populateClone(newSet);
+        return newSet;
+    }
+
+    public function populateClone (clone :TileSet) :void
+    {
+        clone._isLoaded = _isLoaded;
+        clone._imagePath = _imagePath;
+        clone._name = _name;
+        clone._improv = _improv;
+    }
+
+    public function createClone () :TileSet
+    {
+        return new TileSet();
+    }
+
+    public function cloneWithZations (zations :Array) :TileSet
+    {
+        var newSet :TileSet = TileSet(clone());
+        newSet._zations = zations;
+        return newSet;
     }
 
     /** Whether all the media for this tileset is loaded and ready. */

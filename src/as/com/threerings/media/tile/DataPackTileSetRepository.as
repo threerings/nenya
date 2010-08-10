@@ -25,9 +25,6 @@ import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
 import flash.events.Event;
-import flash.events.ErrorEvent;
-import flash.events.SecurityErrorEvent;
-import flash.events.IOErrorEvent;
 import flash.utils.ByteArray;
 
 import com.threerings.io.ObjectInputStream;

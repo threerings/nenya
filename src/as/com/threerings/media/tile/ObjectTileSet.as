@@ -189,7 +189,7 @@ public class ObjectTileSet extends SwissArmyTileSet
         return _ozations;
     }
 
-    protected override function toStringBuf (buf :String) :String
+    override protected function toStringBuf (buf :String) :String
     {
         buf = super.toStringBuf(buf);
         buf = buf.concat(", owidths=", StringUtil.toString(_owidths));
@@ -205,7 +205,7 @@ public class ObjectTileSet extends SwissArmyTileSet
         return buf;
     }
 
-    protected override function getTileColorizations (tileIndex :int, rizer :Colorizer) :Array
+    override protected function getTileColorizations (tileIndex :int, rizer :Colorizer) :Array
     {
         var zations :Array = null;
         if (rizer != null && _ozations != null) {
@@ -217,12 +217,12 @@ public class ObjectTileSet extends SwissArmyTileSet
         return zations;
     }
 
-    protected override function createTile () :Tile
+    override protected function createTile () :Tile
     {
         return new ObjectTile();
     }
 
-    protected override function initTile (tile :Tile, tileIndex :int, zations :Array) :void
+    override protected function initTile (tile :Tile, tileIndex :int, zations :Array) :void
     {
         super.initTile(tile, tileIndex, zations);
 
@@ -251,7 +251,7 @@ public class ObjectTileSet extends SwissArmyTileSet
         return set;
     }
 
-    protected override function populateFromXml (xml :XML) :void
+    override protected function populateFromXml (xml :XML) :void
     {
         super.populateFromXml(xml);
         _owidths = toIntArray(xml.objectWidths);
@@ -270,6 +270,27 @@ public class ObjectTileSet extends SwissArmyTileSet
                         return element.split("|");
                 });
         }
+    }
+
+    override public function populateClone (clone :TileSet) :void
+    {
+        super.populateClone(clone);
+        var oClone :ObjectTileSet = ObjectTileSet(clone);
+        oClone._owidths = _owidths == null ? null : ArrayUtil.copyOf(_owidths);
+        oClone._oheights = _oheights == null ? null : ArrayUtil.copyOf(_oheights);
+        oClone._xorigins = _xorigins == null ? null : ArrayUtil.copyOf(_xorigins);
+        oClone._yorigins = _yorigins == null ? null : ArrayUtil.copyOf(_yorigins);
+        oClone._priorities = _priorities == null ? null : ArrayUtil.copyOf(_priorities);
+        oClone._ozations = _ozations == null ? null : ArrayUtil.copyOf(_ozations);
+        oClone._xspots = _xspots == null ? null : ArrayUtil.copyOf(_xspots);
+        oClone._yspots = _yspots == null ? null : ArrayUtil.copyOf(_yspots);
+        oClone._sorients = _sorients == null ? null : ArrayUtil.copyOf(_sorients);
+        oClone._constraints = _constraints == null ? null : ArrayUtil.copyOf(_constraints);
+    }
+
+    override public function createClone () :TileSet
+    {
+        return new ObjectTileSet();
     }
 
     /** The width (in tile units) of our object tiles. */

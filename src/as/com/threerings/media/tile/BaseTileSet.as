@@ -19,6 +19,7 @@
 
 package com.threerings.media.tile {
 
+import com.threerings.util.ArrayUtil;
 import com.threerings.util.StringUtil;
 
 public class BaseTileSet extends SwissArmyTileSet
@@ -40,18 +41,18 @@ public class BaseTileSet extends SwissArmyTileSet
         return _passable;
     }
 
-    protected override function createTile () :Tile
+    override protected function createTile () :Tile
     {
         return new BaseTile();
     }
 
-    protected override function initTile (tile :Tile, tileIndex :int, zations :Array) :void
+    override protected function initTile (tile :Tile, tileIndex :int, zations :Array) :void
     {
         super.initTile(tile, tileIndex, zations);
         (BaseTile(tile)).setPassable(_passable[tileIndex]);
     }
 
-    protected override function toStringBuf (buf :String) :String
+    override protected function toStringBuf (buf :String) :String
     {
         buf = super.toStringBuf(buf);
         buf = buf.concat(", passable=", StringUtil.toString(_passable));
@@ -65,10 +66,22 @@ public class BaseTileSet extends SwissArmyTileSet
         return set;
     }
 
-    protected override function populateFromXml (xml :XML) :void
+    override protected function populateFromXml (xml :XML) :void
     {
         super.populateFromXml(xml);
         _passable = toBoolArray(xml.passable);
+    }
+
+    override public function populateClone (clone :TileSet) :void
+    {
+        super.populateClone(clone);
+        var bClone :BaseTileSet = BaseTileSet(clone);
+        bClone._passable = _passable == null ? null : ArrayUtil.copyOf(_passable);
+    }
+
+    override public function createClone () :TileSet
+    {
+        return new BaseTileSet();
     }
 
     /** Whether each tile is passable. */
