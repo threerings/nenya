@@ -21,10 +21,29 @@ public class MisoMetricsTransformation implements IAxonometricTransformation
         var zx :int = int(Math.floor(screenPt.x / _metrics.tilewid));
         var zy :int = int(Math.floor(screenPt.y / _metrics.tilehei));
 
+        // these are the screen coordinates of the tile's top
+        var ox :int = (zx * _metrics.tilewid);
+        var oy :int = (zy * _metrics.tilehei);
+
         // these are the tile coordinates
         tpos.x = zy + zx;
         tpos.y = zy - zx;
         tpos.z = 0;
+
+        // these are the tile coordinates
+        tpos.x = zy + zx; tpos.y = zy - zx;
+
+        // now determine which of the four tiles our point occupies
+        var dx :int = screenPt.x - ox;
+        var dy :int = screenPt.y - oy;
+
+        if (Math.round(_metrics.slopeY * dx + _metrics.tilehei) <= dy) {
+            tpos.x += 1;
+        }
+
+        if (Math.round(_metrics.slopeX * dx) > dy) {
+            tpos.y -= 1;
+        }
 
         return tpos;
     }
