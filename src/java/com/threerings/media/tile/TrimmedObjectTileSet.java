@@ -43,7 +43,7 @@ import com.threerings.media.tile.util.TileSetTrimmer;
  * memory efficient).
  */
 public class TrimmedObjectTileSet extends TileSet
-    implements RecolorableTileSet
+    implements RecolorableTileSet, BaseSizableTileSet
 {
     @Override
     public int getTileCount ()

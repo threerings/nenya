@@ -33,7 +33,7 @@ import com.threerings.media.image.Colorization;
  * @see ObjectTile
  */
 public class ObjectTileSet extends SwissArmyTileSet
-    implements RecolorableTileSet
+    implements RecolorableTileSet, BaseSizableTileSet
 {
     /** A constraint prefix indicating that the object must have empty space in
      * the suffixed direction (N, E, S, or W). */
@@ -193,16 +193,16 @@ public class ObjectTileSet extends SwissArmyTileSet
         return _zations;
     }
 
-    /**
-     * Returns the base width for the specified object index.
+    /* (non-Javadoc)
+     * @see com.threerings.media.tile.BaseSizableTileSet#getBaseWidth(int)
      */
     public int getBaseWidth (int tileIdx)
     {
         return _owidths[tileIdx];
     }
 
-    /**
-     * Returns the base height for the specified object index.
+    /* (non-Javadoc)
+     * @see com.threerings.media.tile.BaseSizableTileSet#getBaseHeight(int)
      */
     public int getBaseHeight (int tileIdx)
     {
