@@ -24,9 +24,11 @@ import flash.display.Sprite;
 
 import flash.events.Event;
 
+import com.threerings.miso.client.Tickable;
 import com.threerings.util.StringUtil;
 
 public class MultiFrameBitmap extends Sprite
+    implements Tickable
 {
     public function MultiFrameBitmap (frames :Array, fps :Number)
     {
@@ -35,16 +37,15 @@ public class MultiFrameBitmap extends Sprite
         _frameRate = fps / 1000.0;
         addChild(_bitmap);
         setFrame(0);
-        addEventListener(Event.ENTER_FRAME, enterFrame);
     }
 
-    public function enterFrame (event :Event) :void
+    public function tick (tickStamp :int) :void
     {
         if (_start == 0) {
-            _start = (new Date().time);
+            _start = tickStamp;
         }
 
-        var elapsedTime :int = (new Date().time - _start);
+        var elapsedTime :int = (tickStamp - _start);
         var frameIndex :int = Math.floor(elapsedTime * _frameRate);
         var totalFrames :int = _frames.length;
         if (frameIndex >= totalFrames) {

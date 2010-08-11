@@ -26,6 +26,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import com.threerings.display.DisplayUtil;
+import com.threerings.miso.client.Tickable;
 import com.threerings.util.DirectionCodes;
 import com.threerings.util.Log;
 
@@ -34,6 +35,7 @@ import com.threerings.util.Log;
  * about in a scene.
  */
 public class CharacterSprite extends Sprite
+    implements Tickable
 {
     private static var log :Log = Log.getLog(CharacterSprite);
 
@@ -60,6 +62,13 @@ public class CharacterSprite extends Sprite
         halt();
 
         updateActionFrames();
+    }
+
+    public function tick (tickStamp :int) :void
+    {
+        if (_framesBitmap != null) {
+            _framesBitmap.tick(tickStamp);
+        }
     }
 
     /**
@@ -221,9 +230,11 @@ public class CharacterSprite extends Sprite
         DisplayUtil.removeAllChildren(_mainSprite);
         if (_aframes != null) {
             _aframes.getFrames(_orient, function(frames :MultiFrameBitmap) :void {
+                _framesBitmap = frames;
                 _mainSprite.addChild(frames);
             });
         } else {
+            _framesBitmap = null;
             updateWithUnloadedSprite();
         }
     }
@@ -276,6 +287,9 @@ public class CharacterSprite extends Sprite
     /** The animation frames for the active action sequence in each
      * orientation. */
     protected var _aframes :ActionFrames;
+
+    /** The currently active set of bitmaps for this character. */
+    protected var _framesBitmap :MultiFrameBitmap;
 
     /** The offset from the upper-left of the total sprite bounds to the
      * upper-left of the image within those bounds. */
