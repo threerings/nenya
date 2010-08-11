@@ -16,26 +16,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-package com.threerings.miso.util {
-
-import com.threerings.miso.client.Ticker;
-import com.threerings.miso.tile.MisoTileManager;
-
-/**
- * Provides Miso code with access to the managers that it needs to do its
- * thing.  For now it is just a stub.
- */
-public interface MisoContext
+package com.threerings.miso.client {
+    
+public interface Tickable
 {
-    /**
-     * Returns a reference to the tile manager. This reference is valid
-     * for the lifetime of the application.
-     */
-    function getTileManager () :MisoTileManager;
-
-    /**
-     * Returns a reference to the ticker, which gives regular heartbeat "ticks" every frame.
-     */
-    function getTicker () :Ticker;
+    function tick (tickStamp :int) :void;
 }
 }
