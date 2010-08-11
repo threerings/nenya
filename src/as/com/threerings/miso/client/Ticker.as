@@ -17,8 +17,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 package com.threerings.miso.client {
-    
-import flash.utils.getTimer;
 
 import flash.events.TimerEvent;
 import flash.utils.Timer;
@@ -31,6 +29,7 @@ public class Ticker
     public function start () :void
     {
         _t.addEventListener(TimerEvent.TIMER, handleTimer);
+        _start = new Date().time;
         _t.start();
     }
 
@@ -43,7 +42,7 @@ public class Ticker
 
     public function handleTimer (event :TimerEvent) :void
     {
-        tick(getTimer());
+        tick(int(new Date().time - _start));
     }
 
     protected function tick (tickStamp :int) :void
@@ -63,9 +62,13 @@ public class Ticker
         _tickables.remove(tickable);
     }
 
+    /** Everyone who wants to hear about our ticks. */
     protected var _tickables :Array = [];
 
     /** A timer that will fire every "frame". */
     protected var _t :Timer = new Timer(1);
+    
+    /** What time our ticker started running - tickStamps will be relative to this time. */
+    protected var _start :Number;
 }
 }
