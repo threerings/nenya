@@ -16,7 +16,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-package com.threerings.miso.client {
+package com.threerings.media {
 
 import flash.events.TimerEvent;
 import flash.utils.Timer;
@@ -37,7 +37,7 @@ public class Ticker
     {
         _t.removeEventListener(TimerEvent.TIMER, handleTimer);
         _t.stop();
-        
+
     }
 
     public function handleTimer (event :TimerEvent) :void
@@ -67,7 +67,7 @@ public class Ticker
 
     /** A timer that will fire every "frame". */
     protected var _t :Timer = new Timer(1);
-    
+
     /** What time our ticker started running - tickStamps will be relative to this time. */
     protected var _start :Number;
 }

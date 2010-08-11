@@ -24,7 +24,7 @@ import flash.display.Sprite;
 
 import flash.events.Event;
 
-import com.threerings.miso.client.Tickable;
+import com.threerings.media.Tickable;
 import com.threerings.util.StringUtil;
 
 public class MultiFrameBitmap extends Sprite

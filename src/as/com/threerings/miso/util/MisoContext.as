@@ -18,7 +18,7 @@
 
 package com.threerings.miso.util {
 
-import com.threerings.miso.client.Ticker;
+import com.threerings.media.Ticker;
 import com.threerings.miso.tile.MisoTileManager;
 
 /**

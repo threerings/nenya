@@ -26,7 +26,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import com.threerings.display.DisplayUtil;
-import com.threerings.miso.client.Tickable;
+import com.threerings.media.Tickable;
 import com.threerings.util.DirectionCodes;
 import com.threerings.util.Log;
 
