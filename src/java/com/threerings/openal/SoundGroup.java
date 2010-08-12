@@ -36,6 +36,25 @@ import static com.threerings.openal.Log.log;
 public class SoundGroup
 {
     /**
+     * Sets the base gain for this group, or -1 to inherit from the manager (the default).
+     */
+    public void setBaseGain (float gain)
+    {
+        if (_baseGain != gain) {
+            _baseGain = gain;
+            baseGainChanged();
+        }
+    }
+
+    /**
+     * Returns the base gain for this group, or -1 if inherited from the manager.
+     */
+    public float getBaseGain ()
+    {
+        return _baseGain;
+    }
+
+    /**
      * Queues up the specified sound clip for pre-loading into the cache.
      */
     public void preloadClip (String path)
@@ -140,15 +159,15 @@ public class SoundGroup
     /**
      * Used to pass the base gain through to sound effects.
      */
-    protected float getBaseGain ()
+    protected float getInheritedBaseGain ()
     {
-        return _manager.getBaseGain();
+        return (_baseGain < 0f) ? _manager.getBaseGain() : _baseGain;
     }
 
     /**
      * Called by the manager when the base gain has changed.
      */
-    protected void baseGainChanged (float gain)
+    protected void baseGainChanged ()
     {
         // notify any sound currently holding a source
         for (int ii = 0, nn = _sources.size(); ii < nn; ii++) {
@@ -170,4 +189,7 @@ public class SoundGroup
     protected ClipProvider _provider;
 
     protected ArrayList<PooledSource> _sources = Lists.newArrayList();
+
+    /** The base gain, or -1 to inherit from the manager. */
+    protected float _baseGain = -1f;
 }

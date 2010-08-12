@@ -120,9 +120,12 @@ public class SoundManager
         }
         _baseGain = gain;
 
-        // alert the groups
+        // alert the groups that inherite the gain
         for (int ii = 0, nn = _groups.size(); ii < nn; ii++) {
-            _groups.get(ii).baseGainChanged(gain);
+            SoundGroup group = _groups.get(ii);
+            if (group.getBaseGain() < 0f) {
+                group.baseGainChanged();
+            }
         }
     }
 

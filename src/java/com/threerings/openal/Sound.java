@@ -393,7 +393,7 @@ public class Sound
     protected void updateSourceGain ()
     {
         if (_source != null) {
-            _source.setGain(_gain * _group.getBaseGain());
+            _source.setGain(_gain * _group.getInheritedBaseGain());
         }
     }
 
