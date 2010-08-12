@@ -89,10 +89,8 @@ public class Sound
      */
     public void setGain (float gain)
     {
-        if (_source != null) {
-            _source.setGain(gain * _group.getBaseGain());
-        }
         _gain = gain;
+        updateSourceGain();
     }
 
     /**
@@ -366,7 +364,7 @@ public class Sound
             // configure the source with our ephemera
             _source.setPosition(_px, _py, _pz);
             _source.setVelocity(_vx, _vy, _vz);
-            _source.setGain(_gain * _group.getBaseGain());
+            updateSourceGain();
             _source.setSourceRelative(_sourceRelative);
             _source.setMinGain(_minGain);
             _source.setMaxGain(_maxGain);
@@ -387,6 +385,16 @@ public class Sound
         _source.play();
 
         return true;
+    }
+
+    /**
+     * Updates the source gain according to our configured gain and the base gain.
+     */
+    protected void updateSourceGain ()
+    {
+        if (_source != null) {
+            _source.setGain(_gain * _group.getBaseGain());
+        }
     }
 
     /**

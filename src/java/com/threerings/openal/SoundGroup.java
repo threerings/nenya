@@ -69,6 +69,9 @@ public class SoundGroup
             pooled.source.delete();
         }
         _sources.clear();
+
+        // remove from the manager
+        _manager.removeGroup(this);
     }
 
     /**
@@ -90,6 +93,9 @@ public class SoundGroup
     {
         _manager = manager;
         _provider = provider;
+
+        // register with the manager
+        _manager.addGroup(this);
 
         // if we were unable to initialize the sound system at all, just
         // stop here and we'll behave as if we have no available sources
@@ -137,6 +143,20 @@ public class SoundGroup
     protected float getBaseGain ()
     {
         return _manager.getBaseGain();
+    }
+
+    /**
+     * Called by the manager when the base gain has changed.
+     */
+    protected void baseGainChanged (float gain)
+    {
+        // notify any sound currently holding a source
+        for (int ii = 0, nn = _sources.size(); ii < nn; ii++) {
+            Sound holder = _sources.get(ii).holder;
+            if (holder != null) {
+                holder.updateSourceGain();
+            }
+        }
     }
 
     /** Used to track which sources are in use. */

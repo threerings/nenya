@@ -23,6 +23,7 @@ package com.threerings.openal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import java.nio.IntBuffer;
 
@@ -114,7 +115,15 @@ public class SoundManager
      */
     public void setBaseGain (float gain)
     {
+        if (_baseGain == gain) {
+            return;
+        }
         _baseGain = gain;
+
+        // alert the groups
+        for (int ii = 0, nn = _groups.size(); ii < nn; ii++) {
+            _groups.get(ii).baseGainChanged(gain);
+        }
     }
 
     /**
@@ -317,6 +326,23 @@ public class SoundManager
     }
 
     /**
+     * Adds a group to the list maintained by the manager.  Called by groups when they are created.
+     */
+    protected void addGroup (SoundGroup group)
+    {
+        _groups.add(group);
+    }
+
+    /**
+     * Removes a group from the list maintained by the manager.  Called by groups when they are
+     * disposed.
+     */
+    protected void removeGroup (SoundGroup group)
+    {
+        _groups.remove(group);
+    }
+
+    /**
      * Called when a source has been finalized.
      */
     protected synchronized void sourceFinalized (int id)
@@ -405,6 +431,9 @@ public class SoundManager
 
     /** The list of active streams. */
     protected ArrayList<Stream> _streams = Lists.newArrayList();
+
+    /** The list of active groups. */
+    protected List<SoundGroup> _groups = Lists.newArrayList();
 
     /** The list of sources to be deleted. */
     protected int[] _finalizedSources;
