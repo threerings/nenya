@@ -85,12 +85,12 @@ public class Sound
     }
 
     /**
-     * Sets the gain of the sound.
+     * Sets the gain of the sound (which will be multiplied by the base gain).
      */
     public void setGain (float gain)
     {
         if (_source != null) {
-            _source.setGain(gain);
+            _source.setGain(gain * _group.getBaseGain());
         }
         _gain = gain;
     }

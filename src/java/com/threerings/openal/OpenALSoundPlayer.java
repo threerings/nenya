@@ -240,11 +240,9 @@ public class OpenALSoundPlayer extends SoundPlayer
     @Override
     protected Frob loop (String pkgPath, String key, float pan)
     {
-        final float volume = getClipVolume();
         final SoundGrabber loader = new SoundGrabber(pkgPath, key) {
             @Override
             protected void soundLoaded () {
-                sound.setGain(volume);
                 sound.loop(true);
             }};
         getSoundQueue().postRunnable(loader);
@@ -274,7 +272,7 @@ public class OpenALSoundPlayer extends SoundPlayer
     @Override
     public void play (String pkgPath, String key, float pan)
     {
-        play(pkgPath, key, pan, getClipVolume());
+        play(pkgPath, key, pan, 1f);
     }
 
     public void play (String pkgPath, String key, float pan, final float gain)
