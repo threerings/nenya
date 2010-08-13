@@ -54,6 +54,7 @@ import com.threerings.util.Set;
 import com.threerings.util.Sets;
 import com.threerings.util.StringUtil;
 import com.threerings.util.maps.WeakValueMap;
+import com.threerings.media.Tickable;
 import com.threerings.media.tile.BaseTile;
 import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
@@ -63,6 +64,7 @@ import com.threerings.media.util.AStarPathSearch;
 import com.threerings.media.util.AStarPathSearch_Stepper;
 import com.threerings.media.util.LineSegmentPath;
 import com.threerings.media.util.Path;
+import com.threerings.media.util.Pathable;
 import com.threerings.media.util.TraversalPred;
 import com.threerings.miso.client.MisoMetricsTransformation;
 import com.threerings.miso.client.PrioritizedSceneLayoutRenderer;
@@ -74,7 +76,7 @@ import com.threerings.miso.util.ObjectSet;
 import com.threerings.miso.util.MisoSceneMetrics;
 
 public class MisoScenePanel extends Sprite
-    implements PlaceView, TraversalPred
+    implements PlaceView, TraversalPred, Tickable
 {
     private var log :Log = Log.getLog(MisoScenePanel);
 
@@ -89,6 +91,9 @@ public class MisoScenePanel extends Sprite
 
         _isoView = new IsoView();
         _isoView.setSize(DEF_WIDTH, DEF_HEIGHT);
+
+        _centerer = new Centerer(_isoView);
+
         _vbounds = new Rectangle(0, 0,
             _isoView.size.x, _isoView.size.y);
 
@@ -98,6 +103,30 @@ public class MisoScenePanel extends Sprite
         _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
 
         addChild(_loading = createLoadingPanel());
+
+        addEventListener(Event.ADDED_TO_STAGE, addedToStage);
+        addEventListener(Event.REMOVED_FROM_STAGE, removedFromStage);
+    }
+
+    /**
+     * Handles Event.ADDED_TO_STAGE.
+     */
+    protected function addedToStage (event :Event) :void
+    {
+        _ctx.getTicker().registerTickable(this);
+    }
+
+    /**
+     * Handles Event.REMOVED_FROM_STAGE.
+     */
+    protected function removedFromStage (event :Event) :void
+    {
+        _ctx.getTicker().removeTickable(this);
+    }
+
+    public function tick (tickStamp :int) :void
+    {
+        _centerer.tick(tickStamp);
     }
 
     /**
@@ -136,16 +165,15 @@ public class MisoScenePanel extends Sprite
     public function handleMousePressed (hobject :Object, event :MouseEvent) :Boolean
     {
         var viewPt :Point = _isoView.globalToLocal(new Point(event.stageX, event.stageY));
-        moveBy(new Point(viewPt.x - _isoView.width / 2, viewPt.y - _isoView.height / 2));
+        moveBy(new Point(viewPt.x - _isoView.width / 2, viewPt.y - _isoView.height / 2), false);
         return true;
     }
 
-    public function moveBy (pt :Point) :void
+    public function moveBy (pt :Point, immediate :Boolean) :void
     {
         // No scene model yet, just do it...
         if (_model == null) {
-            _isoView.centerOnPt(new Pt(pt.x + _isoView.currentX,
-                pt.y + _isoView.currentY), false);
+            _centerer.moveTo(pt.x + _isoView.currentX, pt.y + _isoView.currentY, immediate);
             return;
         }
 
@@ -299,8 +327,8 @@ public class MisoScenePanel extends Sprite
 
         // Then we let the scene finally move if it's trying to...
         if (_pendingMoveBy != null) {
-            _isoView.centerOnPt(new Pt(_pendingMoveBy.x + _isoView.currentX,
-                _pendingMoveBy.y + _isoView.currentY), false);
+            _centerer.moveTo(_pendingMoveBy.x + _isoView.currentX,
+                _pendingMoveBy.y + _isoView.currentY, false);
             _pendingMoveBy = null;
         }
 
@@ -476,6 +504,8 @@ public class MisoScenePanel extends Sprite
 
     protected var _covered :Set = Sets.newSetOf(String);
 
+    protected var _centerer :Centerer;
+
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
 
@@ -483,3 +513,107 @@ public class MisoScenePanel extends Sprite
 }
 }
 
+import as3isolib.display.IsoView;
+import as3isolib.geom.Pt;
+
+import com.threerings.media.util.LineSegmentPath;
+import com.threerings.media.util.Path;
+import com.threerings.media.util.Pathable;
+import com.threerings.media.Tickable;
+
+import com.threerings.util.DirectionCodes;
+
+
+class Centerer
+    implements Pathable, Tickable
+{
+    public function Centerer (isoView :IsoView)
+    {
+        _isoView = isoView;
+    }
+
+    public function moveTo (x :int, y:int, immediate :Boolean) :void
+    {
+        if (immediate) {
+            cancelMove();
+            setLocation(x, y);
+        } else {
+            var path :LineSegmentPath =
+                LineSegmentPath.createWithInts(_isoView.currentX, _isoView.currentY, x, y);
+            path.setVelocity(SCROLL_VELOCITY);
+            move(path);
+        }
+    }
+
+    public function move (path :Path) :void
+    {
+        // if there's a previous path, let it know that it's going away
+        cancelMove();
+
+        // save off this path
+        _path = path;
+
+        // we'll initialize it on our next tick thanks to a zero path stamp
+        _pathStamp = 0;
+    }
+
+    public function cancelMove () :void
+    {
+        if (_path != null) {
+            var oldpath :Path = _path;
+            _path = null;
+            oldpath.wasRemoved(this);
+        }
+    }
+
+    public function tick (tickStamp :int) :void
+    {
+        if (_path != null) {
+            if (_pathStamp == 0) {
+                _pathStamp = tickStamp
+                _path.init(this, _pathStamp);
+            }
+            _path.tick(this, tickStamp);
+        }
+    }
+
+    public function getX () :Number
+    {
+        return _isoView.currentX;
+    }
+
+    public function getY () :Number
+    {
+        return _isoView.currentY;
+    }
+
+    public function setLocation (x :Number, y :Number) :void
+    {
+        _isoView.centerOnPt(new Pt(x, y), false);
+    }
+
+    public function setOrientation (orient :int) :void
+    {
+    }
+
+    public function getOrientation () :int
+    {
+        return DirectionCodes.NONE;
+    }
+
+    public function pathBeginning () :void
+    {
+    }
+
+    public function pathCompleted (timestamp :int) :void
+    {
+        _path = null;
+    }
+
+    protected var _isoView :IsoView;
+    protected var _path :Path;
+    protected var _pathStamp :int;
+
+    /** Our scroll path velocity. */
+    protected static const SCROLL_VELOCITY :Number = 0.4;
+}
