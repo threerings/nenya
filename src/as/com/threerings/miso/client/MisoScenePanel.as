@@ -411,7 +411,9 @@ public class MisoScenePanel extends Sprite
             int(Math.round(sprite.y)), x, y, loose);
 
         // Replace the starting point with the Number values rather than the rounded version...
-        points[0] = new Point(sprite.x, sprite.y);
+        if (points != null) {
+            points[0] = new Point(sprite.x, sprite.y);
+        }
 
         var duration :int = getTimer() - start;
 
