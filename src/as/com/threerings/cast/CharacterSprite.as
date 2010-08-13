@@ -157,6 +157,7 @@ public class CharacterSprite extends Sprite
 
     public function setOrientation (orient :int) :void
     {
+        var oorient :int = _orient;
         _orient = orient;
         if (orient < 0 || orient >= DirectionCodes.FINE_DIRECTION_COUNT) {
             log.info("Refusing to set invalid orientation [sprite=" + this +
@@ -164,10 +165,14 @@ public class CharacterSprite extends Sprite
             return;
         }
 
-        var oorient :int = _orient;
         if (_orient != oorient) {
             updateMainSprite();
         }
+    }
+
+    public function getOrientation () :int
+    {
+        return _orient;
     }
 
     public function cancelMove () :void
@@ -181,7 +186,7 @@ public class CharacterSprite extends Sprite
         setActionSequence(getFollowingPathAction());
     }
 
-    public function pathCompleted () :void
+    public function pathCompleted (timestamp :int) :void
     {
         halt();
     }
@@ -231,6 +236,7 @@ public class CharacterSprite extends Sprite
         if (_aframes != null) {
             _aframes.getFrames(_orient, function(frames :MultiFrameBitmap) :void {
                 _framesBitmap = frames;
+                DisplayUtil.removeAllChildren(_mainSprite);
                 _mainSprite.addChild(frames);
             });
         } else {

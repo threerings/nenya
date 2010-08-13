@@ -8,7 +8,10 @@ import as3isolib.display.IsoView;
 
 import com.threerings.util.Log;
 import com.threerings.util.MathUtil;
+import com.threerings.util.Set;
+import com.threerings.util.StringUtil;
 
+import com.threerings.media.tile.BaseTile;
 import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
 import com.threerings.media.tile.Tile;
@@ -25,7 +28,7 @@ import com.threerings.miso.util.ObjectSet;
 
 public class SceneBlock
 {
-    private var log :Log = Log.getLog(MisoScenePanel);
+    private var log :Log = Log.getLog(SceneBlock);
 
     public static const BLOCK_SIZE :int = 4;
 
@@ -149,6 +152,17 @@ public class SceneBlock
         }
     }
 
+    public function addToCovered (covered :Set) :void
+    {
+        for each (var sprite :ObjectTileIsoSprite in _objSprites) {
+            for (var xx :int = sprite.x; xx < sprite.x + sprite.width; xx++) {
+                for (var yy :int = sprite.y; yy < sprite.y + sprite.length; yy++) {
+                    covered.add(StringUtil.toCoordsString(xx, yy));
+                }
+            }
+        }
+    }
+
     /**
      * Removes our tiles' sprites from the scenes.
      */
@@ -164,22 +178,29 @@ public class SceneBlock
     protected function createBaseSprite (tileSet :TileSet, x :int, y :int, tileId :int,
         panel :MisoScenePanel) :void
     {
-        var fringeTile :Tile = panel.computeFringeTile(x, y);
+        var fringeTile :BaseTile = panel.computeFringeTile(x, y);
 
-        var tile :Tile = tileSet.getTile(TileUtil.getTileIndex(tileId));
+        var tile :BaseTile = BaseTile(tileSet.getTile(TileUtil.getTileIndex(tileId)));
 
-        var maybeLoaded :Function = function (loaded :Tile) :void {
-            if (tile.getImage() != null && (fringeTile == null || fringeTile.getImage() != null)) {
-                _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics,
-                    fringeTile));
-                noteTileLoaded();
-            }
-        };
+        var bx :int = getBlockX(_key);
+        var by :int = getBlockY(_key);
+        _passable[(y - by) * BLOCK_SIZE + (x - bx)] =
+            tile.isPassable() && (fringeTile == null || fringeTile.isPassable());
 
         if (tile.getImage() != null && (fringeTile == null || fringeTile.getImage() != null)) {
             _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics, fringeTile));
         } else {
             noteTileToLoad();
+
+            var maybeLoaded :Function = function (loaded :Tile) :void {
+                if (tile.getImage() != null &&
+                    (fringeTile == null || fringeTile.getImage() != null)) {
+                    _baseScene.addChild(new BaseTileIsoSprite(x, y, tileId, tile, _metrics,
+                        fringeTile));
+                    noteTileLoaded();
+                }
+            };
+
             if (tile.getImage() == null) {
                 tile.notifyOnLoad(maybeLoaded);
             }
@@ -209,10 +230,16 @@ public class SceneBlock
         }
     }
 
-    public function canTraverse (traverser :Object, tx :int, ty :int) :Boolean
+    /**
+     * Returns whether the base & fringe tiles are traversable here.
+     */
+    public function canTraverseBase (traverser :Object, tx :int, ty :int) :Boolean
     {
-        // TODO Path
-        return true;
+        // Only handles the base tiles since the objects cross multiple scene blocks...
+        var bx :int = getBlockX(_key);
+        var by :int = getBlockY(_key);
+
+        return _passable[(ty - by) * BLOCK_SIZE + (tx - bx)];
     }
 
     protected function noteTileToLoad () :void
@@ -233,6 +260,8 @@ public class SceneBlock
             _completeCallback = null;
         }
     }
+
+    protected var _passable :Array = new Array(BLOCK_SIZE * BLOCK_SIZE);
 
     protected var _baseScene :IsoScene;
     protected var _objSprites :Array;

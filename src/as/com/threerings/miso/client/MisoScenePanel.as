@@ -37,7 +37,7 @@ import flash.events.MouseEvent;
 
 import mx.core.ClassFactory;
 
-import as3isolib.display.primitive.IsoBox;
+import as3isolib.core.IsoDisplayObject;
 import as3isolib.geom.Pt;
 import as3isolib.geom.IsoMath;
 import as3isolib.display.scene.IsoScene;
@@ -59,6 +59,11 @@ import com.threerings.media.tile.Colorizer;
 import com.threerings.media.tile.NoSuchTileSetError;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileUtil;
+import com.threerings.media.util.AStarPathSearch;
+import com.threerings.media.util.AStarPathSearch_Stepper;
+import com.threerings.media.util.LineSegmentPath;
+import com.threerings.media.util.Path;
+import com.threerings.media.util.TraversalPred;
 import com.threerings.miso.client.MisoMetricsTransformation;
 import com.threerings.miso.client.PrioritizedSceneLayoutRenderer;
 import com.threerings.miso.data.MisoSceneModel;
@@ -69,7 +74,7 @@ import com.threerings.miso.util.ObjectSet;
 import com.threerings.miso.util.MisoSceneMetrics;
 
 public class MisoScenePanel extends Sprite
-    implements PlaceView
+    implements PlaceView, TraversalPred
 {
     private var log :Log = Log.getLog(MisoScenePanel);
 
@@ -84,6 +89,8 @@ public class MisoScenePanel extends Sprite
 
         _isoView = new IsoView();
         _isoView.setSize(DEF_WIDTH, DEF_HEIGHT);
+        _vbounds = new Rectangle(0, 0,
+            _isoView.size.x, _isoView.size.y);
 
         _isoView.addEventListener(MouseEvent.CLICK, onClick);
 
@@ -279,6 +286,7 @@ public class MisoScenePanel extends Sprite
         // First, we add in our new blocks...
         for each (var newBlock :SceneBlock in _readyBlocks.toArray()) {
             newBlock.render();
+            newBlock.addToCovered(_covered);
             _blocks.put(newBlock.getKey(), newBlock);
         }
         _readyBlocks = Sets.newSetOf(SceneBlock);
@@ -310,7 +318,7 @@ public class MisoScenePanel extends Sprite
             }
         }
 
-        trace("Scene Block Resolution took: " + (getTimer() - _resStartTime) + "ms");
+        log.info("Scene Block Resolution took: " + (getTimer() - _resStartTime) + "ms");
 
         // Let's setup some prefetching...
         blocks.forEach(function(blockKey :int) :void {
@@ -363,8 +371,10 @@ public class MisoScenePanel extends Sprite
     public function canTraverse (traverser :Object, tx :int, ty :int) :Boolean
     {
         var block :SceneBlock = _blocks.get(SceneBlock.getBlockKey(tx, ty));
-        return (block == null) ? canTraverseUnresolved(traverser, tx, ty) :
-            block.canTraverse(traverser, tx, ty);
+        var baseTraversable :Boolean = (block == null) ? canTraverseUnresolved(traverser, tx, ty) :
+            block.canTraverseBase(traverser, tx, ty);
+
+        return baseTraversable && !_covered.contains(StringUtil.toCoordsString(tx, ty));
     }
 
     /**
@@ -384,10 +394,37 @@ public class MisoScenePanel extends Sprite
      * sprite in a straight line to its final destination. This is generally only useful if the
      * the path goes "off screen".
      */
-    public function getPath (sprite :Sprite, x :int, y :int, loose :Boolean) :Object // TODO Path
+    public function getPath (sprite :IsoDisplayObject, x :int, y :int, loose :Boolean) :Path
     {
-        // TODO Path
-        return null;
+        // sanity check
+        if (sprite == null) {
+            throw new Error("Can't get path for null sprite [x=" + x + ", y=" + y + ".");
+        }
+
+        // compute our longest path from the screen size
+        var longestPath :int = 3 * (width / _metrics.tilewid);
+
+        // get a reasonable tile path through the scene
+        var start :int = getTimer();
+        var search :AStarPathSearch = new AStarPathSearch(this, new AStarPathSearch_Stepper());
+        var points :Array = search.getPath(sprite, longestPath, int(Math.round(sprite.x)),
+            int(Math.round(sprite.y)), x, y, loose);
+
+        // Replace the starting point with the Number values rather than the rounded version...
+        points[0] = new Point(sprite.x, sprite.y);
+
+        var duration :int = getTimer() - start;
+
+        // sanity check the number of nodes searched so that we can keep an eye out for bogosity
+        if (duration > 500) {
+            log.warning("Considered a lot of nodes for path from " +
+                StringUtil.toCoordsString(sprite.x, sprite.y) + " to " +
+                StringUtil.toCoordsString(x, y) +
+                " [duration=" + duration + "].");
+        }
+
+        // construct a path object to guide the sprite on its merry way
+        return (points == null) ? null : LineSegmentPath.createWithList(points);
     }
 
     protected var _model :MisoSceneModel;
@@ -432,6 +469,10 @@ public class MisoScenePanel extends Sprite
 
     /** If any block happens to resolve should we currently skip calling completion. */
     protected var _skipComplete :Boolean
+
+    protected var _vbounds :Rectangle;
+
+    protected var _covered :Set = Sets.newSetOf(String);
 
     protected const DEF_WIDTH :int = 985;
     protected const DEF_HEIGHT :int = 560;
