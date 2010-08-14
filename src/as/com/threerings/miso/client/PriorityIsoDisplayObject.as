@@ -28,5 +28,10 @@ public interface PriorityIsoDisplayObject
      * Returns the render priority for the display object.
      */
     function getPriority () :int;
+
+    /**
+     * Returns whether the location on the object should register a hit if clicked.
+     */
+    function hitTest (stageX :int, stageY :int) :Boolean;
 }
 }

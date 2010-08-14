@@ -19,7 +19,10 @@
 
 package com.threerings.miso.client {
 
+import flash.display.Bitmap;
 import flash.display.DisplayObject;
+
+import flash.geom.Point;
 
 import as3isolib.core.IsoDisplayObject;
 import as3isolib.display.IsoSprite;
@@ -90,6 +93,30 @@ public class TileIsoSprite extends IsoSprite
     public function getPriority () :int
     {
         return _priority;
+    }
+
+    public function hitTest (stageX :int, stageY :int) :Boolean
+    {
+        if (sprites == null || sprites.length == 0) {
+            return false;
+        }
+
+        if (sprites[0] is Bitmap) {
+            if (!sprites[0].hitTestPoint(stageX, stageY, true)) {
+                // Doesn't even hit the bounds...
+                return false;
+            }
+            // Check the actual pixels...
+            var pt :Point = sprites[0].globalToLocal(new Point(stageX, stageY));
+            return Bitmap(sprites[0]).bitmapData.hitTest(new Point(0, 0), 0, pt);
+        } else {
+            return sprites[0].hitTestPoint(stageX, stageY, true);
+        }
+    }
+
+    public function toString () :String
+    {
+        return x + ", " + y + ": " + _tileId;
     }
 
     protected var _tileId :int;

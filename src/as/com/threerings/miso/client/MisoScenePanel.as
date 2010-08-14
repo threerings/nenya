@@ -37,6 +37,8 @@ import flash.events.MouseEvent;
 
 import mx.core.ClassFactory;
 
+import as3isolib.display.IsoSprite;
+import as3isolib.display.primitive.IsoBox;
 import as3isolib.core.IsoDisplayObject;
 import as3isolib.geom.Pt;
 import as3isolib.geom.IsoMath;
@@ -45,6 +47,7 @@ import as3isolib.display.IsoView;
 
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
+import com.threerings.util.ClassUtil;
 import com.threerings.util.DelayUtil;
 import com.threerings.util.Log;
 import com.threerings.util.Map;
@@ -98,9 +101,10 @@ public class MisoScenePanel extends Sprite
             _isoView.size.x, _isoView.size.y);
 
         _isoView.addEventListener(MouseEvent.CLICK, onClick);
+        _isoView.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoved);
+        _isoView.addEventListener(MouseEvent.ROLL_OUT, mouseExited);
 
-        _objScene = new IsoScene();
-        _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
+        addObjectScenes();
 
         addChild(_loading = createLoadingPanel());
 
@@ -158,8 +162,98 @@ public class MisoScenePanel extends Sprite
 
     public function onClick (event :MouseEvent) :void
     {
-        // TODO - handle _hobject
-        handleMousePressed(null, event);
+        handleMousePressed(_hobject, event);
+    }
+
+    public function mouseMoved (event :MouseEvent) :void
+    {
+        var viewPt :Point = _isoView.globalToLocal(new Point(event.stageX, event.stageY));
+
+        var x :int = event.stageX;
+        var y :int = event.stageY;
+
+        // give derived classes a chance to start with a hover object
+        var hobject :Object = computeOverHover(x, y);
+
+        // if they came up with nothing, compute the list of objects over
+        // which the mouse is hovering
+        if (hobject == null) {
+            var hits :Array =
+                _objScene.displayListChildren.filter(
+                    function(val :Object, idx :int, arr :Array) :Boolean {
+                        if (val is PriorityIsoDisplayObject) {
+                            return PriorityIsoDisplayObject(val).hitTest(x, y);
+                        } else {
+                            return false;
+                        }
+                    });
+
+            hits.sort(function (v1 :PriorityIsoDisplayObject, v2 :PriorityIsoDisplayObject) :int {
+                    // We want reverse order, highest prio first...
+                    return v2.getPriority() - v1.getPriority();
+                });
+
+            if (hits.length > 0) {
+                hobject = hits[0];
+            }
+        }
+
+        // if the user isn't hovering over a sprite or object with an
+        // action, allow derived classes to provide some other hover
+        if (hobject == null) {
+            hobject = computeUnderHover(x, y);
+        }
+
+        changeHoverObject(hobject);
+    }
+
+    /**
+     * Gives derived classes a chance to compute a hover object that takes precedence over sprites
+     * and actionable objects. If this method returns non-null, no sprite or object hover
+     * calculations will be performed and the object returned will become the new hover object.
+     */
+    protected function computeOverHover (mx :int, my :int) :Object
+    {
+        return null;
+    }
+
+    /**
+     * Gives derived classes a chance to compute a hover object that is used if the mouse is not
+     * hovering over a sprite or actionable object. If this method is called, it means that there
+     * are no sprites or objects under the mouse. Thus if it returns non-null, the object returned
+     * will become the new hover object.
+     */
+    protected function computeUnderHover (mx :int, my :int) :Object
+    {
+        return null;
+    }
+
+    /**
+     * Change the hover object to the new object.
+     */
+    protected function changeHoverObject (newHover :Object) :void
+    {
+        if (newHover == _hobject) {
+            return;
+        }
+        var oldHover :Object = _hobject;
+        _hobject = newHover;
+        hoverObjectChanged(oldHover, newHover);
+    }
+
+    /**
+     * A place for subclasses to react to the hover object changing.
+     * One of the supplied arguments may be null.
+     */
+    protected function hoverObjectChanged (oldHover :Object, newHover :Object) :void
+    {
+        // Nothing by default.
+    }
+
+    public function mouseExited (event :MouseEvent) :void
+    {
+        // clear the highlight tracking data
+        changeHoverObject(null);
     }
 
     public function handleMousePressed (hobject :Object, event :MouseEvent) :Boolean
@@ -309,6 +403,19 @@ public class MisoScenePanel extends Sprite
         }
     }
 
+    protected function renderObjectScenes () :void
+    {
+        _objScene.render();
+    }
+
+    protected function addObjectScenes () :void
+    {
+        _objScene = new IsoScene();
+        _objScene.layoutRenderer = new ClassFactory(PrioritizedSceneLayoutRenderer);
+
+        _isoView.addScene(_objScene);
+    }
+
     protected function resolutionComplete () :void
     {
         // First, we add in our new blocks...
@@ -319,11 +426,7 @@ public class MisoScenePanel extends Sprite
         }
         _readyBlocks = Sets.newSetOf(SceneBlock);
 
-        // Force to end of list so it's on top...
-        _isoView.removeScene(_objScene);
-        _isoView.addScene(_objScene);
-
-        _objScene.render();
+        renderObjectScenes();
 
         // Then we let the scene finally move if it's trying to...
         if (_pendingMoveBy != null) {
@@ -499,6 +602,9 @@ public class MisoScenePanel extends Sprite
 
     /** If any block happens to resolve should we currently skip calling completion. */
     protected var _skipComplete :Boolean
+
+    /** Info on the object that the mouse is currently hovering over. */
+    protected var _hobject :Object;
 
     protected var _vbounds :Rectangle;
 
