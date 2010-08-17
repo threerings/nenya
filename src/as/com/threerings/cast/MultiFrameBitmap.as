@@ -80,14 +80,13 @@ public class MultiFrameBitmap extends Sprite
         if (_curFrameIndex == -1) {
             return false;
         } else {
-            var frame :Bitmap = getFrame(_curFrameIndex);
-            if (frame.hitTestPoint(stageX, stageY, true)) {
+            if (_bitmap.hitTestPoint(stageX, stageY, true)) {
                 // Doesn't even hit the bounds...
                 return false;
             }
             // Check the actual pixels...
-            var pt :Point = frame.globalToLocal(new Point(stageX, stageY));
-            return frame.bitmapData.hitTest(new Point(0, 0), 0, pt);
+            var pt :Point = _bitmap.globalToLocal(new Point(stageX, stageY));
+            return _bitmap.bitmapData.hitTest(new Point(0, 0), 0, pt);
         }
     }
 
