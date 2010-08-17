@@ -274,6 +274,11 @@ public class CharacterSprite extends Sprite
         }
     }
 
+    public function hitTest (stageX :int, stageY :int) :Boolean
+    {
+        return _framesBitmap == null ? false : _framesBitmap.hitTest(stageX, stageY);
+    }
+
     /** The action to use when at rest. */
     protected var _restingAction :String = StandardActions.STANDING;
 
@@ -296,13 +301,6 @@ public class CharacterSprite extends Sprite
 
     /** The currently active set of bitmaps for this character. */
     protected var _framesBitmap :MultiFrameBitmap;
-
-    /** The offset from the upper-left of the total sprite bounds to the
-     * upper-left of the image within those bounds. */
-    protected var _ioff :Point = new Point();
-
-    /** The bounds of the current sprite image. */
-    protected var _ibounds :Rectangle = new Rectangle();
 
     /** The orientation of this sprite. */
     protected var _orient :int = DirectionCodes.NONE;

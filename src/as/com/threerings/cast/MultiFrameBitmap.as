@@ -22,6 +22,8 @@ package com.threerings.cast {
 import flash.display.Bitmap;
 import flash.display.Sprite;
 
+import flash.geom.Point;
+
 import flash.events.Event;
 
 import com.threerings.media.Tickable;
@@ -71,6 +73,22 @@ public class MultiFrameBitmap extends Sprite
     public function getFrameCount () :int
     {
         return _frames.length;
+    }
+
+    public function hitTest (stageX :int, stageY :int) :Boolean
+    {
+        if (_curFrameIndex == -1) {
+            return false;
+        } else {
+            var frame :Bitmap = getFrame(_curFrameIndex);
+            if (frame.hitTestPoint(stageX, stageY, true)) {
+                // Doesn't even hit the bounds...
+                return false;
+            }
+            // Check the actual pixels...
+            var pt :Point = frame.globalToLocal(new Point(stageX, stageY));
+            return frame.bitmapData.hitTest(new Point(0, 0), 0, pt);
+        }
     }
 
     protected var _frames :Array;
