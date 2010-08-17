@@ -88,12 +88,12 @@ public class CompositedActionFrames
                 createFrames(orient, function(disp :MultiFrameBitmap) :void {
                     _frameCache.put(key, disp);
                     for each (var func :Function in listeners) {
-                        func(disp);
+                        func(disp.clone());
                     }
                 });
             }
         } else {
-            callback(disp);
+            callback(disp.clone());
         }
     }
 

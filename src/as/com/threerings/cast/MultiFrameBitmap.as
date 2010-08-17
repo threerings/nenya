@@ -36,6 +36,7 @@ public class MultiFrameBitmap extends Sprite
     {
         _frames = frames;
         _bitmap = new Bitmap();
+        _fps = fps;
         _frameRate = fps / 1000.0;
         addChild(_bitmap);
         setFrame(0);
@@ -90,6 +91,11 @@ public class MultiFrameBitmap extends Sprite
         }
     }
 
+    public function clone () :MultiFrameBitmap
+    {
+        return new MultiFrameBitmap(_frames, _fps);
+    }
+
     protected var _frames :Array;
 
     protected var _bitmap :Bitmap;
@@ -97,6 +103,8 @@ public class MultiFrameBitmap extends Sprite
     protected var _start :int;
 
     protected var _frameRate :Number;
+
+    protected var _fps :Number;
 
     protected var _curFrameIndex :int = -1;
 }
