@@ -49,12 +49,7 @@ public class MultiFrameBitmap extends Sprite
         }
 
         var elapsedTime :int = (tickStamp - _start);
-        var frameIndex :int = Math.floor(elapsedTime * _frameRate);
-        var totalFrames :int = _frames.length;
-        if (frameIndex >= totalFrames) {
-            frameIndex = frameIndex % totalFrames;
-        }
-
+        var frameIndex :int = Math.floor(elapsedTime * _frameRate) % _frames.length;
         setFrame(frameIndex);
     }
 
