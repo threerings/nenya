@@ -111,7 +111,7 @@ public class PrioritizedSceneLayoutRenderer
             }
         }
 
-        trace("dependency scan time", getTimer() - startTime, "ms");
+        //trace("dependency scan time", getTimer() - startTime, "ms");
 
         // Set the childrens' depth, using dependency ordering
         for each (var obj:IsoDisplayObject in children) {
@@ -124,7 +124,7 @@ public class PrioritizedSceneLayoutRenderer
         _visited = null;
         _dependencies = null;
 
-        trace("scene layout render time", getTimer() - startTime, "ms (manual sort)");
+        //trace("scene layout render time", getTimer() - startTime, "ms (manual sort)");
     }
 
     /**
