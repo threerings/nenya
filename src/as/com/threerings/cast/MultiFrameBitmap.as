@@ -76,7 +76,7 @@ public class MultiFrameBitmap extends Sprite
         if (_curFrameIndex == -1) {
             return false;
         } else {
-            if (_bitmap.hitTestPoint(stageX, stageY, true)) {
+            if (!_bitmap.hitTestPoint(stageX, stageY, true)) {
                 // Doesn't even hit the bounds...
                 return false;
             }
