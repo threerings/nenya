@@ -595,10 +595,11 @@ public class DirtyItemList
             // it would break something...
             if ((da.obj instanceof MultiTileSprite || db.obj instanceof MultiTileSprite) &&
                 (da.lx <= db.rx && da.rx >= db.lx && da.ry <= db.ly && da.ly >= db.ry)) {
-                Sprite as = (Sprite)da.obj, bs = (Sprite)db.obj;
+                int aRender = (da.obj instanceof Sprite) ? ((Sprite)da.obj).getRenderOrder() : 0;
+                int bRender = (db.obj instanceof Sprite) ? ((Sprite)db.obj).getRenderOrder() : 0;
                 // we're comparing two sprites co-existing on the same
                 // tile, first check their render order
-                int rocomp = as.getRenderOrder() - bs.getRenderOrder();
+                int rocomp = aRender - bRender;
                 if (rocomp != 0) {
                     return rocomp;
                 }
