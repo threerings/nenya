@@ -201,7 +201,7 @@ public class ColorPository
     {
         var pos :ColorPository = new ColorPository();
         for each (var classXml :XML in xml.elements("class")) {
-            pos._classes.put(classXml.@classId, ClassRecord.fromXml(classXml));
+            pos._classes.put(int(classXml.@classId), ClassRecord.fromXml(classXml));
         }
 
         return pos;
