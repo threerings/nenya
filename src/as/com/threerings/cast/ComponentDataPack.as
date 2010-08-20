@@ -103,7 +103,8 @@ public class ComponentDataPack extends TileDataPack
                     aset = TileSet(actseq.tileset.clone());
                     aset.setImagePath(cpath);
                 } else if (_zip.getEntry(dpath)) {
-                    aset = TileSet(TileSet(_actions.get(ActionSequence.DEFAULT_SEQUENCE)).clone());
+                    actseq = _actions.get(ActionSequence.DEFAULT_SEQUENCE);
+                    aset = TileSet(actseq.tileset.clone());
                     aset.setImagePath(dpath);
                     _setcache.put(dpath, aset);
                 }
