@@ -86,6 +86,11 @@ public class CharacterManager
         return _crepo.getComponent(compId);
     }
 
+    public function getComponentByName (cclass :String, cname :String) :CharacterComponent
+    {
+        return _crepo.getComponentByName(cclass, cname);
+    }
+
     public function getActionFrames (descrip :CharacterDescriptor, action :String) :ActionFrames
     {
         if (!isLoaded(descrip)) {
