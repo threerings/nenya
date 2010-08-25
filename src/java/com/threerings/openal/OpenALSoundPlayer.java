@@ -251,6 +251,10 @@ public class OpenALSoundPlayer extends SoundPlayer
     public Frob loop (SoundType type, String pkgPath, String key, final float gain,
         final float[] pos)
     {
+        if (type != null && !shouldPlay(type)) {
+            return null;
+        }
+
         final SoundGrabber loader = new SoundGrabber(pkgPath, key) {
             @Override
             protected void soundLoaded () {
