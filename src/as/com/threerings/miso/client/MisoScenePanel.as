@@ -148,6 +148,9 @@ public class MisoScenePanel extends Sprite
 
         _loadingProgressFunc = function (progress :Number) :void {
             loadingText.text = "Loading... " + int(progress*100) + "%";
+            loadingText.x = (_isoView.size.x - loadingText.width)/2;
+            loadingText.y = (_isoView.size.y - loadingText.height)/2;
+
         };
         _loadingProgressFunc(0.0);
         return loadingText;
