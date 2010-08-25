@@ -251,7 +251,7 @@ public class OpenALSoundPlayer extends SoundPlayer
     public Frob loop (SoundType type, String pkgPath, String key, final float gain,
         final float[] pos)
     {
-        if (type != null && !shouldPlay(type)) {
+        if (!shouldPlay(type)) {
             return null;
         }
 
@@ -302,7 +302,7 @@ public class OpenALSoundPlayer extends SoundPlayer
     public boolean play (SoundType type, String pkgPath, String key, final float gain,
         final float[] pos)
     {
-        if (type != null && !shouldPlay(type)) {
+        if (!shouldPlay(type)) {
             return false;
         }
 
