@@ -21,6 +21,8 @@ package com.threerings.media {
 import flash.events.TimerEvent;
 import flash.utils.Timer;
 
+import com.threerings.util.ArrayUtil;
+
 /**
  * Registers objects that wish to be sent a tick() call once per frame.
  */
@@ -59,7 +61,7 @@ public class Ticker
 
     public function removeTickable (tickable :Tickable) :void
     {
-        _tickables.remove(tickable);
+        ArrayUtil.removeFirst(_tickables, tickable);
     }
 
     /** Everyone who wants to hear about our ticks. */
