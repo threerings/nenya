@@ -234,10 +234,14 @@ public class CharacterSprite extends Sprite
     {
         DisplayUtil.removeAllChildren(_mainSprite);
         if (_aframes != null) {
+            var curFrames :ActionFrames = _aframes;
             _aframes.getFrames(_orient, function(frames :MultiFrameBitmap) :void {
-                _framesBitmap = frames;
-                DisplayUtil.removeAllChildren(_mainSprite);
-                _mainSprite.addChild(frames);
+                // Ensure our action hasn't been swapped out on us since we started loading.
+                if (_aframes == curFrames) {
+                    _framesBitmap = frames;
+                    DisplayUtil.removeAllChildren(_mainSprite);
+                    _mainSprite.addChild(frames);
+                }
             });
         } else {
             _framesBitmap = null;
