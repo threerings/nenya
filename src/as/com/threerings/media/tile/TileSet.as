@@ -67,6 +67,8 @@ public /* abstract */ class TileSet
             }
         }
         _pending = [];
+
+        loaded();
     }
 
     /**

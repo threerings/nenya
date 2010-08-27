@@ -144,7 +144,6 @@ public class DataPackTileSetRepository
 
         var completeListener :Function = function () :void {
             tileSet.setImageProvider(_packs.get(packName));
-            tileSet.loaded();
         };
 
         var listeners :Array = _packListeners.get(packName);
