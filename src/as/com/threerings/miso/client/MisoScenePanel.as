@@ -287,8 +287,8 @@ public class MisoScenePanel extends Sprite
     {
         _model = model;
         _ctx.getTileManager().ensureLoaded(_model.getAllTilesets(), function() :void {
+                refreshScene();
                 DelayUtil.delayFrame(function() :void {
-                    refreshScene();
                     removeChild(_loading);
                     addChild(_isoView);
                 });
