@@ -25,6 +25,7 @@ package com.threerings.media.image;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 
 import java.io.File;
 import java.io.IOException;
@@ -134,6 +135,12 @@ public class ColorPository implements Serializable
         /** Returns a random starting id from the entries in this class. */
         public ColorRecord randomStartingColor ()
         {
+            return randomStartingColor(RandomUtil.rand);
+        }
+
+        /** Returns a random starting id from the entries in this class. */
+        public ColorRecord randomStartingColor (Random rand)
+        {
             // figure out our starter ids if we haven't already
             if (_starters == null) {
                 ArrayList<ColorRecord> list = Lists.newArrayList();
@@ -153,7 +160,7 @@ public class ColorPository implements Serializable
             }
 
             // return a random entry from the array
-            return _starters[RandomUtil.getInt(_starters.length)];
+            return _starters[RandomUtil.getInt(_starters.length, rand)];
         }
 
         /**
@@ -316,9 +323,16 @@ public class ColorPository implements Serializable
      */
     public ColorRecord getRandomStartingColor (String className)
     {
-        // make sure the class exists
+        return getRandomStartingColor(className, RandomUtil.rand);
+    }
+    /**
+     * Returns a random starting color from the specified color class.
+     */
+    public ColorRecord getRandomStartingColor (String className, Random rand)
+    {
+        //  make sure the class exists
         ClassRecord record = getClassRecord(className);
-        return (record == null) ? null : record.randomStartingColor();
+        return (record == null) ? null : record.randomStartingColor(rand);
     }
 
     /**
