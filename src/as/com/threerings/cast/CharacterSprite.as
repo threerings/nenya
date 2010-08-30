@@ -234,6 +234,7 @@ public class CharacterSprite extends Sprite
     {
         DisplayUtil.removeAllChildren(_mainSprite);
         if (_aframes != null) {
+            updateWithUnloadedSprite();
             var curFrames :ActionFrames = _aframes;
             _aframes.getFrames(_orient, function(frames :MultiFrameBitmap) :void {
                 // Ensure our action hasn't been swapped out on us since we started loading.
