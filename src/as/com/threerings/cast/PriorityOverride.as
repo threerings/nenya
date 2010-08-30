@@ -19,6 +19,7 @@
 
 package com.threerings.cast {
 
+import com.threerings.util.ClassUtil;
 import com.threerings.util.Comparable;
 import com.threerings.util.DirectionUtil;
 import com.threerings.util.Hashable;
@@ -26,6 +27,7 @@ import com.threerings.util.Equalable;
 import com.threerings.util.Set;
 import com.threerings.util.Sets;
 import com.threerings.util.StringUtil;
+import com.threerings.util.XmlUtil;
 
 /** Used to effect custom render orders for particular actions, orientations, etc. */
 public class PriorityOverride
@@ -35,10 +37,10 @@ public class PriorityOverride
     public var renderPriority :int;
 
     /** The action, if any, for which this override is appropriate. */
-    public var action :String;
+    public var action :String = null;
 
     /** The component, if any, for which this override is appropriate. */
-    public var component :String;
+    public var component :String = null;
 
     /** The orientations, if any, for which this override is appropriate. */
     public var orients :Set;
@@ -46,12 +48,20 @@ public class PriorityOverride
     public static function fromXml (xml :XML) :PriorityOverride
     {
         var override :PriorityOverride = new PriorityOverride;
-        override.renderPriority = xml.@renderPriority;
-        override.action = xml.@action;
-        override.component = xml.@component;
-        override.orients = Sets.newSetOf(int);
-        for each (var orient :int in toOrientArray(xml.@orients)) {
-            override.orients.add(orient);
+        override.renderPriority = XmlUtil.getIntAttr(xml, "renderPriority");
+        if (XmlUtil.hasAttribute(xml, "action")) {
+            override.action = XmlUtil.getStringAttr(xml, "action");
+        }
+
+        if (XmlUtil.hasAttribute(xml, "component")) {
+            override.component = XmlUtil.getStringAttr(xml, "component");
+        }
+
+        if (XmlUtil.hasAttribute(xml, "orients")) {
+            override.orients = Sets.newSetOf(int);
+            for each (var orient :int in toOrientArray(XmlUtil.getStringAttr(xml, "orients"))) {
+                override.orients.add(orient);
+            }
         }
         return override;
     }
@@ -73,7 +83,7 @@ public class PriorityOverride
      */
     public function matches (action :String, component :String, orient :int) :Boolean
     {
-        return (((orients == null) || orients.contains(orient)) &&
+        return (((this.orients == null) || orients.contains(orient)) &&
                 ((this.component == null) || this.component == component) &&
                 ((this.action == null) || this.action == action));
     }
@@ -81,7 +91,6 @@ public class PriorityOverride
     // documentation inherited from interface
     public function compareTo (po :Object) :int
     {
-
         // overrides with both an action and an orientation should come first in the list
         var pri :int = priority();
         var opri :int = PriorityOverride(po).priority();
@@ -105,7 +114,7 @@ public class PriorityOverride
         var otherOverride :PriorityOverride = PriorityOverride(other);
 
         return otherOverride.renderPriority == renderPriority && otherOverride.action == action &&
-            otherOverride.component == component;        
+            otherOverride.component == component;
     }
 
     protected function priority () :int
