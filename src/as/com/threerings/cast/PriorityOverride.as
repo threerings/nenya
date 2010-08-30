@@ -49,19 +49,13 @@ public class PriorityOverride
     {
         var override :PriorityOverride = new PriorityOverride;
         override.renderPriority = XmlUtil.getIntAttr(xml, "renderPriority");
-        if (XmlUtil.hasAttribute(xml, "action")) {
-            override.action = XmlUtil.getStringAttr(xml, "action");
-        }
-
-        if (XmlUtil.hasAttribute(xml, "component")) {
-            override.component = XmlUtil.getStringAttr(xml, "component");
-        }
-
-        if (XmlUtil.hasAttribute(xml, "orients")) {
-            override.orients = Sets.newSetOf(int);
-            for each (var orient :int in toOrientArray(XmlUtil.getStringAttr(xml, "orients"))) {
-                override.orients.add(orient);
-            }
+        override.action = XmlUtil.getStringAttr(xml, "action", null);
+        override.component = XmlUtil.getStringAttr(xml, "component", null);
+        
+        override.orients = Sets.newSetOf(int);
+        for each (var orient :int in toOrientArray(
+            XmlUtil.getStringAttr(xml, "orients", null))) {
+            override.orients.add(orient);
         }
         return override;
     }
