@@ -210,7 +210,7 @@ public class SwissArmyTileSet extends TileSet
         }
 
         return str.split(",").map(function(element :*, index :int, arr :Array) :Boolean {
-                return Boolean(StringUtil.trim(element));
+                return (StringUtil.trim(element) == "1");
         });
     }
 
