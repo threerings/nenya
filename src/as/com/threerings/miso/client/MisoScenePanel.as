@@ -323,8 +323,8 @@ public class MisoScenePanel extends Sprite
 
         var minX :int = xMove - (buffer ? size.x/2 : 0);
         var maxX :int = size.x + xMove + (buffer ? size.x/2 : 0);
-        var minY :int = yMove - (buffer ? size.x/2 : 0);
-        var maxY :int = BOTTOM_BUFFER + size.y + yMove + (buffer ? size.x/2 : 0);
+        var minY :int = yMove - (buffer ? size.y/2 : 0);
+        var maxY :int = BOTTOM_BUFFER + size.y + yMove + (buffer ? size.y/2 : 0);
 
         var topLeft :Point = _isoView.localToIso(new Point(minX, minY));
         var topRight :Point = _isoView.localToIso(new Point(maxX, minY));
