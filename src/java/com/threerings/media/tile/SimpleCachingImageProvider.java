@@ -32,6 +32,7 @@ import com.samskivert.util.LRUHashMap;
 
 import com.threerings.media.image.BufferedMirage;
 import com.threerings.media.image.Colorization;
+import com.threerings.media.image.ImageUtil;
 import com.threerings.media.image.Mirage;
 
 import static com.threerings.media.Log.log;
@@ -54,7 +55,12 @@ public abstract class SimpleCachingImageProvider implements ImageProvider
                 log.warning("Failed to load image [path=" + path + ", ioe=" + ioe + "].");
             }
         }
-        return image;
+
+        if (zations == null || image == null) {
+            return image;
+        } else {
+            return ImageUtil.recolorImage(image, zations);
+        }
     }
 
     // documentation inherited from interface
