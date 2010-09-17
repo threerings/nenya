@@ -2,7 +2,7 @@ The Nenya library
 -----------------
 
 The Nenya library provides various facilities for making networked multiplayer
-games. It's various packages include:
+games. Its various packages include:
 
   * geom, util - basic tools for doing data structure manipulation and some
     geometry math
