@@ -48,8 +48,7 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns an abbreviated string representation of the supplied
-     * direction code.
+     * Returns an abbreviated string representation of the supplied direction code.
      */
     public static String toShortString (int direction)
     {
@@ -58,9 +57,8 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns the direction code that corresponds to the supplied string
-     * or {@link #NONE} if the string does not correspond to a known
-     * direction code.
+     * Returns the direction code that corresponds to the supplied string or {@link #NONE} if the
+     * string does not correspond to a known direction code.
      */
     public static int fromString (String dirstr)
     {
@@ -73,9 +71,8 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns the direction code that corresponds to the supplied short
-     * string or {@link #NONE} if the string does not correspond to a
-     * known direction code.
+     * Returns the direction code that corresponds to the supplied short string or {@link #NONE}
+     * if the string does not correspond to a known direction code.
      */
     public static int fromShortString (String dirstr)
     {
@@ -88,8 +85,8 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns a string representation of an array of direction codes. The
-     * directions are represented by the abbreviated names.
+     * Returns a string representation of an array of direction codes. The directions are
+     * represented by the abbreviated names.
      */
     public static String toString (int[] directions)
     {
@@ -104,8 +101,8 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Rotates the requested <em>fine</em> direction constant clockwise by
-     * the requested number of ticks.
+     * Rotates the requested <em>fine</em> direction constant clockwise by the requested number of
+     * ticks.
      */
     public static int rotateCW (int direction, int ticks)
     {
@@ -116,8 +113,8 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Rotates the requested <em>fine</em> direction constant
-     * counter-clockwise by the requested number of ticks.
+     * Rotates the requested <em>fine</em> direction constant counter-clockwise by the requested
+     * number of ticks.
      */
     public static int rotateCCW (int direction, int ticks)
     {
@@ -144,8 +141,8 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Get the direction closest to the specified direction, out of
-     * the directions in the possible list (preferring a clockwise match).
+     * Get the direction closest to the specified direction, out of the directions in the possible
+     * list (preferring a clockwise match).
      */
     public static int getClosest (int direction, int[] possible)
     {
@@ -153,11 +150,10 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Get the direction closest to the specified direction, out of
-     * the directions in the possible list.
+     * Get the direction closest to the specified direction, out of the directions in the possible
+     * list.
      *
-     * @param preferCW whether to prefer a clockwise match or a
-     * counter-clockwise match.
+     * @param preferCW whether to prefer a clockwise match or a counter-clockwise match.
      */
     public static int getClosest (int direction, int[] possible,
             boolean preferCW)
@@ -182,12 +178,10 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the eight compass directions that point
-     * <code>b</code> lies in from point <code>a</code> as one of the
-     * {@link DirectionCodes} direction constants. <em>Note:</em> that the
-     * coordinates supplied are assumed to be logical (screen) rather than
-     * cartesian coordinates and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the eight compass directions that point <code>b</code> lies in from point
+     * <code>a</code> as one of the {@link DirectionCodes} direction constants. <em>Note:</em>
+     * that the coordinates supplied are assumed to be logical (screen) rather than cartesian
+     * coordinates and <code>NORTH</code> is considered to point toward the top of the screen.
      */
     public static int getDirection (Point a, Point b)
     {
@@ -195,12 +189,10 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the eight compass directions that point
-     * <code>b</code> lies in from point <code>a</code> as one of the
-     * {@link DirectionCodes} direction constants. <em>Note:</em> that the
-     * coordinates supplied are assumed to be logical (screen) rather than
-     * cartesian coordinates and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the eight compass directions that point <code>b</code> lies in from point
+     * <code>a</code> as one of the {@link DirectionCodes} direction constants. <em>Note:</em>
+     * that the coordinates supplied are assumed to be logical (screen) rather than cartesian
+     * coordinates and <code>NORTH</code> is considered to point toward the top of the screen.
      */
     public static int getDirection (int ax, int ay, int bx, int by)
     {
@@ -208,12 +200,10 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the eight compass directions that point
-     * <code>b</code> lies in from point <code>a</code> as one of the
-     * {@link DirectionCodes} direction constants. <em>Note:</em> that the
-     * coordinates supplied are assumed to be logical (screen) rather than
-     * cartesian coordinates and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the eight compass directions that point <code>b</code> lies in from point
+     * <code>a</code> as one of the {@link DirectionCodes} direction constants. <em>Note:</em>
+     * that the coordinates supplied are assumed to be logical (screen) rather than cartesian
+     * coordinates and <code>NORTH</code> is considered to point toward the top of the screen.
      */
     public static int getDirection (double ax, double ay, double bx, double by)
     {
@@ -221,12 +211,10 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the eight compass directions is associated with
-     * the specified angle theta. <em>Note:</em> that the angle supplied
-     * is assumed to increase clockwise around the origin (which screen
-     * angles do) rather than counter-clockwise around the origin (which
-     * cartesian angles do) and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the eight compass directions is associated with the specified angle theta.
+     * <em>Note:</em> that the angle supplied is assumed to increase clockwise around the origin
+     * (which screen angles do) rather than counter-clockwise around the origin (which cartesian
+     * angles do) and <code>NORTH</code> is considered to point toward the top of the screen.
      */
     public static int getDirection (double theta)
     {
@@ -235,12 +223,11 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the sixteen compass directions that point
-     * <code>b</code> lies in from point <code>a</code> as one of the
-     * {@link DirectionCodes} direction constants. <em>Note:</em> that the
-     * coordinates supplied are assumed to be logical (screen) rather than
-     * cartesian coordinates and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the sixteen compass directions that point <code>b</code> lies in from
+     * point <code>a</code> as one of the {@link DirectionCodes} direction constants.
+     * <em>Note:</em> that the coordinates supplied are assumed to be logical (screen) rather than
+     * cartesian coordinates and <code>NORTH</code> is considered to point toward the top of the
+     * screen.
      */
     public static int getFineDirection (Point a, Point b)
     {
@@ -248,12 +235,11 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the sixteen compass directions that point
-     * <code>b</code> lies in from point <code>a</code> as one of the
-     * {@link DirectionCodes} direction constants. <em>Note:</em> that the
-     * coordinates supplied are assumed to be logical (screen) rather than
-     * cartesian coordinates and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the sixteen compass directions that point <code>b</code> lies in from
+     * point <code>a</code> as one of the {@link DirectionCodes} direction constants.
+     * <em>Note:</em> that the coordinates supplied are assumed to be logical (screen) rather than
+     * cartesian coordinates and <code>NORTH</code> is considered to point toward the top of the
+     * screen.
      */
     public static int getFineDirection (int ax, int ay, int bx, int by)
     {
@@ -261,12 +247,11 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Returns which of the sixteen compass directions is associated with
-     * the specified angle theta. <em>Note:</em> that the angle supplied
-     * is assumed to increase clockwise around the origin (which screen
-     * angles do) rather than counter-clockwise around the origin (which
-     * cartesian angles do) and <code>NORTH</code> is considered to point
-     * toward the top of the screen.
+     * Returns which of the sixteen compass directions is associated with the specified angle
+     * theta. <em>Note:</em> that the angle supplied is assumed to increase clockwise around the
+     * origin (which screen angles do) rather than counter-clockwise around the origin (which
+     * cartesian angles do) and <code>NORTH</code> is considered to point toward the top of the
+     * screen.
      */
     public static int getFineDirection (double theta)
     {
@@ -275,15 +260,13 @@ public class DirectionUtil implements DirectionCodes
     }
 
     /**
-     * Move the specified point in the specified screen direction,
-     * adjusting by the specified adjustments. Fine directions are
-     * not supported.
+     * Move the specified point in the specified screen direction, adjusting by the specified
+     * adjustments. Fine directions are not supported.
      */
     public static void moveDirection (Point p, int direction, int dx, int dy)
     {
         if (direction >= DIRECTION_COUNT) {
-            throw new IllegalArgumentException(
-                "Fine coordinates not supported.");
+            throw new IllegalArgumentException("Fine coordinates not supported.");
         }
 
         switch (direction) {

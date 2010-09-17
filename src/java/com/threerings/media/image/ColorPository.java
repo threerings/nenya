@@ -190,8 +190,8 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Used to store information on a particular color. These are public
-     * to simplify the XML parsing process, so pay them no mind.
+     * Used to store information on a particular color. These are public to simplify the XML
+     * parsing process, so pay them no mind.
      */
     public static class ColorRecord implements Serializable
     {
@@ -208,15 +208,14 @@ public class ColorPository implements Serializable
          * source color to recolor to this color. */
         public float[] offsets;
 
-        /** Tags this color as a legal starting color or not. This is a
-         * shameful copout, placing application-specific functionality
-         * into a general purpose library class. */
+        /** Tags this color as a legal starting color or not. This is a shameful copout, placing
+         * application-specific functionality into a general purpose library class. */
         public boolean starter;
 
         /**
-         * Returns a value that is the composite of our class id and color
-         * id which can be used to identify a colorization record. This
-         * value will always be a positive integer that fits into 16 bits.
+         * Returns a value that is the composite of our class id and color id which can be used
+         * to identify a colorization record. This value will always be a positive integer that
+         * fits into 16 bits.
          */
         public int getColorPrint ()
         {
@@ -224,8 +223,7 @@ public class ColorPository implements Serializable
         }
 
         /**
-         * Returns the data in this record configured as a colorization
-         * instance.
+         * Returns the data in this record configured as a colorization instance.
          */
         public Colorization getColorization ()
         {
@@ -234,16 +232,14 @@ public class ColorPository implements Serializable
 //                                            cclass.range, offsets);
 //             }
 //             return _zation;
-            return new Colorization(getColorPrint(), cclass.source,
-                                    cclass.range, offsets);
+            return new Colorization(getColorPrint(), cclass.source, cclass.range, offsets);
         }
 
         @Override
         public String toString ()
         {
             return "[id=" + colorId + ", name=" + name +
-                ", offsets=" + StringUtil.toString(offsets) +
-                ", starter=" + starter + "]";
+                ", offsets=" + StringUtil.toString(offsets) + ", starter=" + starter + "]";
         }
 
         /** Our data represented as a colorization. */

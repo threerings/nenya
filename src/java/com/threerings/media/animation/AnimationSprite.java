@@ -79,7 +79,8 @@ public class AnimationSprite extends Sprite
     }
 
     @Override
-    public void paint (Graphics2D gfx) {
+    public void paint (Graphics2D gfx)
+    {
         // Nothing to paint for ourselves.
 
         _anim.paint(gfx);

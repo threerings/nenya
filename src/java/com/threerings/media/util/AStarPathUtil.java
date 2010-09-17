@@ -73,18 +73,15 @@ public class AStarPathUtil
      */
     public static class Stepper
     {
-        public Stepper ()
-        {
+        public Stepper () {
             this(true);
         }
 
-        public Stepper (boolean considerDiagonals)
-        {
+        public Stepper (boolean considerDiagonals) {
             _considerDiagonals = considerDiagonals;
         }
 
-        public void init (Info info, Node n)
-        {
+        public void init (Info info, Node n) {
             _info = info;
             _node = n;
         }
@@ -94,8 +91,7 @@ public class AStarPathUtil
          * coordinates. No checking must be done as to whether the step is legal, that will be
          * handled later. Just enumerate all possible steps.
          */
-        public void considerSteps (int x, int y)
-        {
+        public void considerSteps (int x, int y) {
             considerStep(x, y - 1, ADJACENT_COST);
             considerStep(x, y + 1, ADJACENT_COST);
             considerStep(x - 1, y, ADJACENT_COST);
@@ -108,8 +104,7 @@ public class AStarPathUtil
             }
         }
 
-        protected void considerStep (int x, int y, int cost)
-        {
+        protected void considerStep (int x, int y, int cost) {
             AStarPathUtil.considerStep(_info, _node, x, y, cost);
         }
 
@@ -337,8 +332,7 @@ public class AStarPathUtil
         /** The maximum cost of any path that we'll consider. */
         public int maxcost;
 
-        public Info (TraversalPred tpred, Object trav, int longest, int destx, int desty)
-        {
+        public Info (TraversalPred tpred, Object trav, int longest, int destx, int desty) {
             // save off references
             this.tpred = tpred;
             this.trav = trav;
@@ -357,8 +351,7 @@ public class AStarPathUtil
          * Returns whether moving from the given source to destination coordinates is a valid
          * move.
          */
-        protected boolean isStepValid (int sx, int sy, int dx, int dy)
-        {
+        protected boolean isStepValid (int sx, int sy, int dx, int dy) {
             // not traversable if the destination itself fails test
             if (tpred instanceof ExtendedTraversalPred) {
                 if (!((ExtendedTraversalPred)tpred).canTraverse(trav, sx, sy, dx, dy)) {
@@ -380,16 +373,14 @@ public class AStarPathUtil
         /**
          * Returns whether the given coordinate is valid and traversable.
          */
-        protected boolean isTraversable (int x, int y)
-        {
+        protected boolean isTraversable (int x, int y) {
             return tpred.canTraverse(trav, x, y);
         }
 
         /**
          * Get or create the node for the specified point.
          */
-        public Node getNode (int x, int y)
-        {
+        public Node getNode (int x, int y) {
             // note: this _could_ break for unusual values of x and y.
             // perhaps use a IntTuple as a key? Bleah.
             int key = (x << 16) | (y & 0xffff);
@@ -429,15 +420,13 @@ public class AStarPathUtil
         /** The node's monotonically-increasing unique identifier. */
         public int id;
 
-        public Node (int x, int y)
-        {
+        public Node (int x, int y) {
             this.x = x;
             this.y = y;
             id = _nextid++;
         }
 
-        public int compareTo (Node o)
-        {
+        public int compareTo (Node o) {
             int bf = o.f;
 
             // since the set contract is fulfilled using the equality results returned here, and
