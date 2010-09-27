@@ -275,6 +275,11 @@ public class BundledComponentRepository
         }
     }
 
+    protected TileSetFrameImage createTileSetFrameImage (TileSet aset, ActionSequence actseq)
+    {
+        return new TileSetFrameImage(aset, actseq);
+    }
+
     /**
      * Instances of these provide images to our component action tilesets and frames to our
      * components.
@@ -365,7 +370,7 @@ public class BundledComponentRepository
 
                 aset.setImageProvider(this);
                 _setcache.put(cpath, aset);
-                return new TileSetFrameImage(aset, actseq);
+                return createTileSetFrameImage(aset, actseq);
 
             } catch (Exception e) {
                 log.warning("Error loading tset for action '" + imgpath + "' " + component + ".", e);
@@ -473,7 +478,7 @@ public class BundledComponentRepository
                 }
 
                 public void paintFrame (Graphics2D g, int index, int x, int y) {
-                    _set.getTile(getTileIndex(orient, index)).paint(g, x + _dx, y + _dy);
+                    paintTile(g, orient, index, x, y);
                 }
 
                 public boolean hitTest (int index, int x, int y) {
@@ -484,6 +489,11 @@ public class BundledComponentRepository
                     TileSetFrameImage.this.getTrimmedBounds(orient, index, bounds);
                 }
             };
+        }
+
+        protected void paintTile(Graphics2D g, int orient, int index, int x, int y)
+        {
+            _set.getTile(getTileIndex(orient, index)).paint(g, x + _dx, y + _dy);
         }
 
         public void getTrimmedBounds (int orient, int index, Rectangle bounds) {
