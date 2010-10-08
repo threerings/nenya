@@ -308,6 +308,16 @@ public class ColorPository implements Serializable
      * Returns true if the specified color is legal for use at character creation time. false is
      * always returned for non-existent colors or classes.
      */
+    public boolean isLegalStartColor (int colorPrint)
+    {
+        ColorRecord color = getColorRecord(colorPrint >> 8, colorPrint & 0xFF);
+        return (color == null) ? false : color.starter;
+    }
+
+    /**
+     * Returns true if the specified color is legal for use at character creation time. false is
+     * always returned for non-existent colors or classes.
+     */
     public boolean isLegalStartColor (int classId, int colorId)
     {
         ColorRecord color = getColorRecord(classId, colorId);
