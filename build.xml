@@ -46,14 +46,8 @@
 
   <!-- makes sure our tools are compiled and defines the ant tasks -->
   <target name="preptools" depends="prepare">
-    <javac srcdir="src/java" destdir="${classes.dir}" includeAntRuntime="false"
-           debug="on" optimize="${build.optimize}" deprecation="on" source="1.5" target="1.5">
-      <classpath refid="classpath"/>
-      <compilerarg value="-Xlint"/>
-      <compilerarg value="-Xlint:-serial"/>
-      <include name="com/threerings/presents/tools/**"/>
-    </javac>
-    <taskdef resource="com/threerings/presents/tools.properties" classpathref="classpath"/>
+    <taskdef resource="com/threerings/presents/tools.properties"
+             classpath="${libs.dir}/narya-tool-sfull.jar"/>
   </target>
 
   <!-- cleans out the intermediate build files -->
@@ -95,7 +89,7 @@
   <!-- adds readField and writeField methods to Stremable classes -->
   <target name="procstream" depends="prepare">
     <taskdef resource="com/threerings/presents/tools.properties"
-             classpath="${deploy.dir}/lib/narya-tools.jar"/>
+             classpath="${libs.dir}/narya-tools-full.jar"/>
     <instream outdir="${classes.dir}">
       <path refid="classpath"/>
       <fileset dir="${classes.dir}" includes="**/data/*.class"/>
