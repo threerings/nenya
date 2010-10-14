@@ -135,7 +135,7 @@ public class JabberClient
         _locdir = new LocationDirector(_ctx);
         _occdir = new OccupantDirector(_ctx);
         _msgmgr = new MessageManager(MESSAGE_MANAGER_PREFIX);
-        _chatdir = new ChatDirector(_ctx, _msgmgr, null);
+        _chatdir = new ChatDirector(_ctx, null);
     }
 
     /**
@@ -175,6 +175,10 @@ public class JabberClient
 
         public ChatDirector getChatDirector () {
             return _chatdir;
+        }
+
+        public MessageManager getMessageManager () {
+            return _msgmgr;
         }
 
         public void setPlaceView (PlaceView view) {
