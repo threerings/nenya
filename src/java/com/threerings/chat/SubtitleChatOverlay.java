@@ -727,10 +727,14 @@ public class SubtitleChatOverlay extends ChatOverlay
 
         } else if (message instanceof UserMessage) {
             int type = _logic.decodeType(localtype);
-            // factor in the mode
             if (type != 0) {
+                // factor in the mode
                 type = _logic.adjustTypeByMode(((UserMessage) message).mode, type);
+                if (type != 0) {
+                    return type;
+                }
             }
+
             // if we're showing from history, include specialized chat messages
             if (history) {
                 return ChatLogic.SPECIALIZED;
