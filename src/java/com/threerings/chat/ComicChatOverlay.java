@@ -65,9 +65,10 @@ public class ComicChatOverlay extends SubtitleChatOverlay
      *
      * @param subtitleHeight the amount of vertical space to use for subtitles.
      */
-    public ComicChatOverlay (CrowdContext ctx, JScrollBar historyBar, int subtitleHeight)
+    public ComicChatOverlay (CrowdContext ctx, ChatLogic logic, JScrollBar historyBar,
+                             int subtitleHeight)
     {
-        super(ctx, historyBar, subtitleHeight);
+        super(ctx, logic, historyBar, subtitleHeight);
     }
 
     @Override
@@ -177,7 +178,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
      */
     protected boolean isPlaceOrientedType (int type)
     {
-        return (placeOf(type)) == PLACE;
+        return (ChatLogic.placeOf(type)) == ChatLogic.PLACE;
     }
 
     @Override
@@ -186,16 +187,16 @@ public class ComicChatOverlay extends SubtitleChatOverlay
         // we might need to modify the textual part with translations,
         // but we can't do that to the message object, since other chatdisplays also get it.
         String text = message.message;
-        switch (placeOf(type)) {
-        case INFO:
-        case ATTENTION:
+        switch (ChatLogic.placeOf(type)) {
+        case ChatLogic.INFO:
+        case ChatLogic.ATTENTION:
             if (createBubble(layoutGfx, type, message.timestamp, text, null, null)) {
                 return; // EXIT;
             }
             // if the bubble didn't fit (unlikely), make it a subtitle
             break;
 
-        case PLACE: {
+        case ChatLogic.PLACE: {
             UserMessage msg = (UserMessage) message;
             Point speakerloc = _provider.getSpeaker(msg.speaker);
             if (speakerloc == null) {
@@ -205,7 +206,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
             }
 
             // emotes won't actually have tails, but we do want them to appear near the pirate
-            if (modeOf(type) == EMOTE) {
+            if (ChatLogic.modeOf(type) == ChatLogic.EMOTE) {
                 text = xlate(
                     MessageBundle.tcompose("m.emote_format", msg.getSpeakerDisplayName())) +
                     " " + text;
@@ -227,7 +228,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
             if (leftover.length() > 0 && !isHistoryMode()) {
                 String ltext = MessageBundle.tcompose("m.continue_format", msg.speaker);
                 ltext = xlate(ltext) + " \"" + leftover + "\"";
-                addSubtitle(createSubtitle(layoutGfx, CONTINUATION,
+                addSubtitle(createSubtitle(layoutGfx, ChatLogic.CONTINUATION,
                     message.timestamp, null, 0, ltext, true));
             }
             return; // EXIT
@@ -272,7 +273,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
     protected boolean createBubble (
         Graphics2D gfx, int type, long timestamp, String text, Name speaker, Point speakerloc)
     {
-        Label label = layoutText(gfx, getFont(type), text);
+        Label label = layoutText(gfx, _logic.getFont(type), text);
         label.setAlignment(Label.CENTER);
         gfx.dispose();
 
@@ -341,24 +342,17 @@ public class ComicChatOverlay extends SubtitleChatOverlay
             full = area;
         }
 
-        Color color;
-        switch (type) {
-        case INFO: color = INFO_COLOR; break;
-        case ATTENTION: color =  ATTENTION_COLOR; break;
-        default: color = Color.BLACK; break;
-        }
-
         // finally, add the bubble
         long lifetime = getChatExpire(timestamp, label.getText())-timestamp;
         BubbleGlyph newbub = new BubbleGlyph(
-            this, type, lifetime, full, label,
-            adjustLabel(type, r.getLocation()), shape, speaker, color);
+            this, type, lifetime, full, label, adjustLabel(type, r.getLocation()), shape,
+            speaker, _logic.getOutlineColor(type));
         newbub.setDim(_dimmed);
         _bubbles.add(newbub);
         _target.addAnimation(newbub);
 
-        // and we need to dirty all the bubbles because they'll all
-        // be painted in slightly different colors
+        // and we need to dirty all the bubbles because they'll all be painted in slightly
+        // different colors
         int numbubs = _bubbles.size();
         for (int ii=0; ii < numbubs; ii++) {
             _bubbles.get(ii).setAgeLevel(numbubs - ii - 1);
@@ -375,10 +369,10 @@ public class ComicChatOverlay extends SubtitleChatOverlay
      */
     protected Rectangle getBubbleSize (int type, Dimension d)
     {
-        switch (modeOf(type)) {
-        case SHOUT:
-        case THINK:
-        case EMOTE:
+        switch (ChatLogic.modeOf(type)) {
+        case ChatLogic.SHOUT:
+        case ChatLogic.THINK:
+        case ChatLogic.EMOTE:
             // extra room for these two monsters
             return new Rectangle(d.width + (PAD * 4), d.height + (PAD * 4));
 
@@ -392,10 +386,10 @@ public class ComicChatOverlay extends SubtitleChatOverlay
      */
     protected Point adjustLabel (int type, Point labelpos)
     {
-        switch (modeOf(type)) {
-        case SHOUT:
-        case EMOTE:
-        case THINK:
+        switch (ChatLogic.modeOf(type)) {
+        case ChatLogic.SHOUT:
+        case ChatLogic.EMOTE:
+        case ChatLogic.THINK:
             labelpos.translate(PAD * 2, PAD * 2);
             break;
 
@@ -422,15 +416,15 @@ public class ComicChatOverlay extends SubtitleChatOverlay
 
         // otherwise we have different areas for different types
         Rectangle vbounds = _target.getViewBounds();
-        switch (placeOf(type)) {
-        case INFO:
-        case ATTENTION:
+        switch (ChatLogic.placeOf(type)) {
+        case ChatLogic.INFO:
+        case ChatLogic.ATTENTION:
             // upper left
             r.setLocation(vbounds.x + BUBBLE_SPACING,
                           vbounds.y + BUBBLE_SPACING);
             return;
 
-        case PLACE:
+        case ChatLogic.PLACE:
             log.warning("Got to a place where I shouldn't get!");
             break; // fall through
         }
@@ -475,21 +469,21 @@ public class ComicChatOverlay extends SubtitleChatOverlay
      */
     protected Shape getBubbleShape (int type, Rectangle r)
     {
-        switch (placeOf(type)) {
-        case INFO:
-        case ATTENTION:
+        switch (ChatLogic.placeOf(type)) {
+        case ChatLogic.INFO:
+        case ChatLogic.ATTENTION:
             // boring rectangle wrapped in an Area for translation
             return new Area(r);
         }
 
-        switch (modeOf(type)) {
-        case SPEAK:
+        switch (ChatLogic.modeOf(type)) {
+        case ChatLogic.SPEAK:
             // a rounded rectangle balloon, put in an Area so that it's
             // translatable
             return new Area(new RoundRectangle2D.Float(
                 r.x, r.y, r.width, r.height, PAD * 4, PAD * 4));
 
-        case SHOUT: {
+        case ChatLogic.SHOUT: {
             // spikey balloon
             Polygon left = new Polygon(), right = new Polygon();
             Polygon top = new Polygon(), bot = new Polygon();
@@ -577,7 +571,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
             return a;
         }
 
-        case EMOTE: {
+        case ChatLogic.EMOTE: {
             // a box that curves inward on all sides
             Area a = new Area(r);
             a.subtract(new Area(new Ellipse2D.Float(r.x, r.y - PAD, r.width, PAD * 2)));
@@ -587,7 +581,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
             return a;
         }
 
-        case THINK: {
+        case ChatLogic.THINK: {
             // cloudy balloon!
             int x = r.x + PAD;
             int y = r.y + PAD;
@@ -624,7 +618,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
         }
 
         // fall back to subtitle shape
-        return getSubtitleShape(type, r, r);
+        return _logic.getSubtitleShape(type, r, r);
     }
 
     /**
@@ -633,7 +627,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
     protected Shape getTail (int type, Rectangle r, Point speaker)
     {
         // emotes don't actually have tails
-        if (modeOf(type) == EMOTE) {
+        if (ChatLogic.modeOf(type) == ChatLogic.EMOTE) {
             return new Area(); // empty shape
         }
 
@@ -647,7 +641,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
         float dist = (float) Math.sqrt(xx * xx + yy * yy);
         float perc = (dist - SPEAKER_DISTANCE) / dist;
 
-        if (modeOf(type) == THINK) {
+        if (ChatLogic.modeOf(type) == ChatLogic.THINK) {
             int steps = Math.max((int) (dist / SPEAKER_DISTANCE), 2);
             float step = perc / steps;
             Area a = new Area();
@@ -737,7 +731,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
      */
     protected Label layoutText (Graphics2D gfx, Font font, String text)
     {
-        Label label = createLabel(text);
+        Label label = _logic.createLabel(text);
         label.setFont(font);
 
         // layout in one line
@@ -807,10 +801,9 @@ public class ComicChatOverlay extends SubtitleChatOverlay
     }
 
     @Override
-    protected int getDisplayDurationIndex ()
+    protected int getDisplayDurationOffset ()
     {
-        // normalize the duration returned by super. Annoying.
-        return super.getDisplayDurationIndex() - 1;
+        return 0; // we don't do any funny hackery, unlike our super class
     }
 
     /**
@@ -841,7 +834,7 @@ public class ComicChatOverlay extends SubtitleChatOverlay
         @Override
         public void viewDidScroll (int dx, int dy) {
             // only system info and attention messages remain fixed, all others scroll
-            if ((_type == INFO) || (_type == ATTENTION)) {
+            if ((_type == ChatLogic.INFO) || (_type == ChatLogic.ATTENTION)) {
                 translate(dx, dy);
             }
         }

@@ -64,14 +64,6 @@ public abstract class ChatOverlay
     }
 
     /**
-     * Construct a chat overlay.
-     */
-    public ChatOverlay (CrowdContext ctx)
-    {
-        _ctx = ctx;
-    }
-
-    /**
      * Causes the chat overlay to make itself visible or invisible.
      */
     public void setVisible (boolean visible)
@@ -153,6 +145,15 @@ public abstract class ChatOverlay
     }
 
     /**
+     * Construct a chat overlay.
+     */
+    protected ChatOverlay (CrowdContext ctx, ChatLogic logic)
+    {
+        _ctx = ctx;
+        _logic = logic;
+    }
+
+    /**
      * Returns true if this chat overlay is showing and should therefore update its display
      * accordingly.
      */
@@ -166,7 +167,7 @@ public abstract class ChatOverlay
      */
     protected String xlate (String message)
     {
-        return xlate(getDefaultMessageBundle(), message);
+        return xlate(_logic.getDefaultMessageBundle(), message);
     }
 
     /**
@@ -186,16 +187,11 @@ public abstract class ChatOverlay
         return message;
     }
 
-    /**
-     * Returns the message bundle used to translate default messages.
-     */
-    protected String getDefaultMessageBundle ()
-    {
-        return null;
-    }
-
     /** The light of our life. */
     protected CrowdContext _ctx;
+
+    /** Contains all of our customizations. */
+    protected ChatLogic _logic;
 
     /** The component in which we are being displayed. */
     protected VirtualMediaPanel _target;

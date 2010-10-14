@@ -26,7 +26,6 @@ import java.util.List;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -67,36 +66,34 @@ import static com.threerings.NenyaLog.log;
 public class SubtitleChatOverlay extends ChatOverlay
     implements ChangeListener, HistoryList.Observer
 {
-    /** The default chat decay parameter. See {@link #getDisplayDurationIndex}. */
-    public static final int DEFAULT_CHAT_DECAY = 1;
-
     /**
      * Construct a subtitle chat overlay.
      *
      * @param subtitleHeight the height of the subtitle area.
      */
-    public SubtitleChatOverlay (CrowdContext ctx, JScrollBar bar, int subtitleHeight)
+    public SubtitleChatOverlay (CrowdContext ctx, ChatLogic logic, JScrollBar bar,
+                                int subtitleHeight)
     {
-        this(ctx, bar, subtitleHeight, false, 8, 8);
+        this(ctx, logic, bar, subtitleHeight, false, 8, 8);
     }
 
     /**
      * Construct a comic chat overlay using all the available space for subtitling.
      */
-    public SubtitleChatOverlay (CrowdContext ctx, JScrollBar bar)
+    public SubtitleChatOverlay (CrowdContext ctx, ChatLogic logic, JScrollBar bar)
     {
-        this(ctx, bar, false);
+        this(ctx, logic, bar, false);
     }
 
-    public SubtitleChatOverlay (CrowdContext ctx, JScrollBar bar, boolean full)
+    public SubtitleChatOverlay (CrowdContext ctx, ChatLogic logic, JScrollBar bar, boolean full)
     {
-        this(ctx, bar, 0, true, full ? 8 : 3, full ? 8 : 4);
+        this(ctx, logic, bar, 0, true, full ? 8 : 3, full ? 8 : 4);
     }
 
-    public SubtitleChatOverlay (CrowdContext ctx, JScrollBar bar, boolean full,
+    public SubtitleChatOverlay (CrowdContext ctx, ChatLogic logic, JScrollBar bar, boolean full,
                                 boolean overrideHistory)
     {
-        this(ctx, bar, full);
+        this(ctx, logic, bar, full);
         _overrideHistory = overrideHistory;
     }
 
@@ -191,8 +188,7 @@ public class SubtitleChatOverlay extends ChatOverlay
 
         Rectangle vbounds = _target.getViewBounds();
         if ((vbounds.height < 1) || (vbounds.width < 1)) {
-            // fuck that!
-            return;
+            return; // fuck that!
         }
 
         clearGlyphs(_subtitles); // we'll re-populate from the history
@@ -278,10 +274,10 @@ public class SubtitleChatOverlay extends ChatOverlay
     /**
      * Shared chained constructor.
      */
-    protected SubtitleChatOverlay (CrowdContext ctx, JScrollBar bar, int height,
+    protected SubtitleChatOverlay (CrowdContext ctx, ChatLogic logic, JScrollBar bar, int height,
                                    boolean fill, int xspace, int yspace)
     {
-        super(ctx);
+        super(ctx, logic);
 
         _scrollbar = bar;
         _subtitleHeight = height;
@@ -532,7 +528,7 @@ public class SubtitleChatOverlay extends ChatOverlay
     protected int getHistorySubtitleSpacing (int index)
     {
         ChatMessage message = _history.get(index);
-        return getSubtitleSpacing(getType(message, true));
+        return _logic.getSubtitleSpacing(getType(message, true));
     }
 
     protected boolean isLaidOut ()
@@ -573,8 +569,7 @@ public class SubtitleChatOverlay extends ChatOverlay
     {
         // get the non-history message type...
         int type = getType(message, false);
-
-        if (type != IGNORECHAT) {
+        if (type != ChatLogic.IGNORECHAT) {
             // display it now
             displayMessage(message, type, gfx);
         }
@@ -583,15 +578,13 @@ public class SubtitleChatOverlay extends ChatOverlay
     /**
      * Display the message after we've decided which type it is.
      */
-    protected void displayMessage (
-        ChatMessage message, int type, Graphics2D layoutGfx)
+    protected void displayMessage (ChatMessage message, int type, Graphics2D layoutGfx)
     {
         // if we're in history mode, this will show up in the history and we'll rebuild our
         // subtitle list if and when history goes away
         if (isHistoryMode()) {
             return;
         }
-
         addSubtitle(createSubtitle(message, type, layoutGfx, true));
     }
 
@@ -602,7 +595,7 @@ public class SubtitleChatOverlay extends ChatOverlay
     {
         // scroll up the old subtitles
         Rectangle r = rec.getBounds();
-        scrollUpSubtitles(-r.height - getSubtitleSpacing(rec.getType()));
+        scrollUpSubtitles(-r.height - _logic.getSubtitleSpacing(rec.getType()));
 
         // put this one in place
         Rectangle vbounds = _target.getViewBounds();
@@ -624,7 +617,7 @@ public class SubtitleChatOverlay extends ChatOverlay
         // we might need to modify the textual part with translations, but we can't do that to the
         // message object, since other chatdisplays also get it.
         String text = message.message;
-        Tuple<String, Boolean> finfo = decodeFormat(type, message.getFormat());
+        Tuple<String, Boolean> finfo = _logic.decodeFormat(type, message.getFormat());
         String format = finfo.left;
         boolean quotes = finfo.right;
 
@@ -642,25 +635,6 @@ public class SubtitleChatOverlay extends ChatOverlay
     }
 
     /**
-     * Determines the format string and whether to use quotes based on the chat type.
-     */
-    protected Tuple<String, Boolean> decodeFormat (int type, String format)
-    {
-        boolean quotes = true;
-        switch (placeOf(type)) {
-        // derived classes may wish to change the format here based on the place
-        case PLACE:
-            switch (modeOf(type)) {
-            case EMOTE:
-                quotes = false;
-                break;
-            }
-            break;
-        }
-        return Tuple.newTuple(format, quotes);
-    }
-
-    /**
      * Create a subtitle- a line of text that goes on the bottom.
      */
     protected ChatGlyph createSubtitle (Graphics2D gfx, int type, long timestamp, Icon icon,
@@ -672,8 +646,8 @@ public class SubtitleChatOverlay extends ChatOverlay
         }
 
         Rectangle vbounds = _target.getViewBounds();
-        Label label = createLabel(text);
-        label.setFont(getFont(type));
+        Label label = _logic.createLabel(text);
+        label.setFont(_logic.getFont(type));
         int paddedIconWidth = (icon == null) ? 0 : is.width + ICON_PADDING;
         label.setTargetWidth(
             vbounds.width - indent - paddedIconWidth -
@@ -697,9 +671,9 @@ public class SubtitleChatOverlay extends ChatOverlay
         if (expires) {
             lifetime = getChatExpire(timestamp, label.getText()) - timestamp;
         }
-        Shape shape = getSubtitleShape(type, lr, r);
+        Shape shape = _logic.getSubtitleShape(type, lr, r);
         return new ChatGlyph(this, type, lifetime, r.union(shape.getBounds()), shape, icon,
-                             iconpos, label, labelpos, getOutlineColor(type));
+                             iconpos, label, labelpos, _logic.getOutlineColor(type));
     }
 
     /**
@@ -707,7 +681,7 @@ public class SubtitleChatOverlay extends ChatOverlay
      */
     protected long getChatExpire (long timestamp, String text)
     {
-        long[] durations = DISPLAY_DURATION_PARAMS[getDisplayDurationIndex()];
+        long[] durations = _logic.getDisplayDurations(getDisplayDurationOffset());
         // start the computation from the maximum of the timestamp or our last expire time
         long start = Math.max(timestamp, _lastExpire);
         // set the next expire to a time proportional to the text length
@@ -716,6 +690,17 @@ public class SubtitleChatOverlay extends ChatOverlay
         _lastExpire = Math.min(timestamp + durations[2], _lastExpire);
         // and be sure to pop up the returned time so that it is above the min
         return Math.max(timestamp + durations[1], _lastExpire);
+    }
+
+    /**
+     * A hack to allow subtitle chat to display longer and comic chat to display for a normal
+     * duration.
+     */
+    protected int getDisplayDurationOffset ()
+    {
+        // the subtitle view adds one to bump up to the next longer display duration because we
+        // want subtitles to stick around longer
+        return 1;
     }
 
     /**
@@ -735,74 +720,40 @@ public class SubtitleChatOverlay extends ChatOverlay
 
         if (message instanceof TellFeedbackMessage) {
             if (((TellFeedbackMessage)message).isFailure()) {
-                return FEEDBACK;
+                return ChatLogic.FEEDBACK;
             }
-            return (history || isApprovedLocalType(localtype)) ? TELLFEEDBACK : IGNORECHAT;
+            return (history || isApprovedLocalType(localtype)) ?
+                ChatLogic.TELLFEEDBACK : ChatLogic.IGNORECHAT;
 
         } else if (message instanceof UserMessage) {
-            int type = decodeType(localtype);
+            int type = _logic.decodeType(localtype);
             // factor in the mode
             if (type != 0) {
-                type = adjustTypeByMode(((UserMessage) message).mode, type);
+                type = _logic.adjustTypeByMode(((UserMessage) message).mode, type);
             }
             // if we're showing from history, include specialized chat messages
             if (history) {
-                return SPECIALIZED;
+                return ChatLogic.SPECIALIZED;
             }
 
         } else if (message instanceof SystemMessage) {
             if (history || isApprovedLocalType(localtype)) {
                 switch (((SystemMessage) message).attentionLevel) {
                 case SystemMessage.INFO:
-                    return INFO;
+                    return ChatLogic.INFO;
                 case SystemMessage.FEEDBACK:
-                    return FEEDBACK;
+                    return ChatLogic.FEEDBACK;
                 case SystemMessage.ATTENTION:
-                    return ATTENTION;
+                    return ChatLogic.ATTENTION;
                 default:
                     log.warning("Unknown attention level for system message", "msg", message);
                 }
             }
-            return IGNORECHAT;
+            return ChatLogic.IGNORECHAT;
         }
 
         log.warning("Skipping received message of unknown type", "msg", message);
-        return IGNORECHAT;
-    }
-
-    /**
-     * Decoes the main chat type given the supplied localtype provided by the chat system.
-     */
-    protected int decodeType (String localtype)
-    {
-        if (ChatCodes.USER_CHAT_TYPE.equals(localtype)) {
-            return TELL;
-        } else if (ChatCodes.PLACE_CHAT_TYPE.equals(localtype)) {
-            return PLACE;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * Adjust the chat type based on the mode of the chat message.
-     */
-    protected int adjustTypeByMode (int mode, int type)
-    {
-        switch (mode) {
-        case ChatCodes.DEFAULT_MODE:
-            return type | SPEAK;
-        case ChatCodes.EMOTE_MODE:
-            return type | EMOTE;
-        case ChatCodes.THINK_MODE:
-            return type | THINK;
-        case ChatCodes.SHOUT_MODE:
-            return type | SHOUT;
-        case ChatCodes.BROADCAST_MODE:
-            return BROADCAST; // broadcast always looks like broadcast
-        default:
-            return type;
-        }
+        return ChatLogic.IGNORECHAT;
     }
 
     /**
@@ -811,19 +762,6 @@ public class SubtitleChatOverlay extends ChatOverlay
     protected boolean isApprovedLocalType (String localtype)
     {
         return true; // we show everything, the ComicChat is a little more picky
-    }
-
-    /**
-     * Get the spacing, in pixels, between the latest subtitle of the specified type and the
-     * previous subtitle.
-     */
-    protected int getSubtitleSpacing (int type)
-    {
-        switch (placeOf(type)) {
-        // derived classes may wish to adjust subtitle spacing here based on chat type
-        default:
-            return 1;
-        }
     }
 
     /**
@@ -842,209 +780,6 @@ public class SubtitleChatOverlay extends ChatOverlay
                 _target.abortAnimation(sub);
             }
         }
-    }
-
-    /**
-     * Get the font to use for the given bubble type.
-     */
-    protected Font getFont (int type)
-    {
-        return DEFAULT_FONT;
-    }
-
-    /**
-     * Creates a label for the specified text. Derived classes may wish to use specialized labels.
-     */
-    protected Label createLabel (String text)
-    {
-        return new Label(text);
-    }
-
-    /**
-     * Get the appropriate shape for the specified type of chat.
-     *
-     * @param r the rectangle bounding the chat label.
-     * @param b the rectangle bounding the chat label and icon.
-     */
-    protected Shape getSubtitleShape (int type, Rectangle r, Rectangle b)
-    {
-        int placeType = placeOf(type);
-        switch (placeType) {
-        case SPECIALIZED:
-        case PLACE:
-            return getPlaceSubtitleShape(type, r);
-
-        case TELL: {
-            // lightning box!
-            int halfy = r.y + r.height/2;
-            Polygon p = new Polygon();
-            p.addPoint(r.x - PAD - 2, r.y);
-            p.addPoint(r.x - PAD / 2 - 2, halfy);
-            p.addPoint(r.x - PAD, halfy);
-            p.addPoint(r.x - PAD / 2, r.y + r.height);
-            p.addPoint(r.x + r.width + PAD + 2, r.y + r.height);
-            p.addPoint(r.x + r.width + PAD / 2 + 2, halfy);
-            p.addPoint(r.x + r.width + PAD, halfy);
-            p.addPoint(r.x + r.width + PAD / 2, r.y);
-            return p;
-        }
-
-        case TELLFEEDBACK: {
-            // reverse-lightning box!
-            int halfy = r.y + r.height/2;
-            Polygon p = new Polygon();
-            p.addPoint(r.x - PAD - 2, r.y + r.height);
-            p.addPoint(r.x - PAD / 2 - 2, halfy);
-            p.addPoint(r.x - PAD, halfy);
-            p.addPoint(r.x - PAD / 2, r.y);
-            p.addPoint(r.x + r.width + PAD + 2, r.y);
-            p.addPoint(r.x + r.width + PAD / 2 + 2, halfy);
-            p.addPoint(r.x + r.width + PAD, halfy);
-            p.addPoint(r.x + r.width + PAD / 2, r.y + r.height);
-            return p;
-        }
-
-        case FEEDBACK: {
-            // slanted box subtitle
-            Polygon p = new Polygon();
-            p.addPoint(r.x - PAD / 2, r.y);
-            p.addPoint(r.x + r.width + PAD, r.y);
-            p.addPoint(r.x + r.width + PAD / 2, r.y + r.height);
-            p.addPoint(r.x - PAD, r.y + r.height);
-            return p;
-        }
-
-        case BROADCAST:
-        case CONTINUATION:
-        case INFO:
-        case ATTENTION:
-        default: {
-            Rectangle grown = new Rectangle(r);
-            grown.grow(PAD, 0);
-            return new Area(grown);
-        }
-        }
-    }
-
-    /**
-     * Computes the chat glyph outline color from the chat message type.
-     */
-    protected Color getOutlineColor (int type)
-    {
-        switch (type) {
-        case BROADCAST:
-            return BROADCAST_COLOR;
-        case TELL:
-            return TELL_COLOR;
-        case TELLFEEDBACK:
-            return TELLFEEDBACK_COLOR;
-        case INFO:
-            return INFO_COLOR;
-        case FEEDBACK:
-            return FEEDBACK_COLOR;
-        case ATTENTION:
-            return ATTENTION_COLOR;
-        default:
-            return Color.black;
-        }
-    }
-
-    /**
-     * A helper function for {@link #getSubtitleShape}.
-     */
-    protected Shape getPlaceSubtitleShape (int type, Rectangle r)
-    {
-        switch (modeOf(type)) {
-        default:
-        case SPEAK: {
-            // rounded rectangle subtitle
-            Area a = new Area(r);
-            a.add(new Area(new Ellipse2D.Float(r.x - PAD, r.y, PAD * 2, r.height)));
-            a.add(new Area(new Ellipse2D.Float(r.x + r.width - PAD, r.y, PAD * 2, r.height)));
-            return a;
-        }
-
-        case THINK: {
-            r.grow(PAD / 2, 0);
-            Area a = new Area(r);
-            int dia = 8;
-            int num = (int) Math.ceil(r.height / ((float) dia));
-            int leftside = r.x - dia/2;
-            int rightside = r.x + r.width - dia/2 - 1;
-
-            int maxh = r.height - dia;
-            for (int ii=0; ii < num; ii++) {
-                int ypos = r.y + Math.min((r.height * ii) / num, maxh);
-                a.add(new Area(new Ellipse2D.Float(leftside, ypos, dia, dia)));
-                a.add(new Area(new Ellipse2D.Float(rightside, ypos, dia, dia)));
-            }
-            return a;
-        }
-
-        case SHOUT: {
-            r.grow(PAD / 2, 0);
-            Area a = new Area(r);
-            Polygon left = new Polygon();
-            Polygon right = new Polygon();
-
-            int spikehei = 8;
-            int num = (int) Math.ceil(r.height / ((float) spikehei));
-            left.addPoint(r.x, r.y);
-            left.addPoint(r.x - PAD, r.y + spikehei / 2);
-            left.addPoint(r.x, r.y + spikehei);
-            right.addPoint(r.x + r.width , r.y);
-            right.addPoint(r.x + r.width + PAD, r.y + spikehei / 2);
-            right.addPoint(r.x + r.width, r.y + spikehei);
-
-            int ypos = 0;
-            int maxpos = r.y + r.height - spikehei + 1;
-            for (int ii=0; ii < num; ii++) {
-                int newpos = Math.min((r.height * ii) / num, maxpos);
-                left.translate(0, newpos - ypos);
-                right.translate(0, newpos - ypos);
-                a.add(new Area(left));
-                a.add(new Area(right));
-                ypos = newpos;
-            }
-
-            return a;
-        }
-
-        case EMOTE: {
-            // a box that curves inward on the left and right
-            r.grow(PAD, 0);
-            Area a = new Area(r);
-            a.subtract(new Area(new Ellipse2D.Float(r.x - PAD / 2, r.y, PAD, r.height)));
-            a.subtract(new Area(new Ellipse2D.Float(r.x + r.width - PAD / 2, r.y, PAD, r.height)));
-            return a;
-        }
-        }
-    }
-
-    /**
-     * Extract the mode constant from the type value.
-     */
-    protected int modeOf (int type)
-    {
-        return type & 0xF;
-    }
-
-    /**
-     * Extract the place constant from the type value.
-     */
-    protected int placeOf (int type)
-    {
-        return type & ~0xF;
-    }
-
-    /**
-     * Get the current display duration parameters: an integer: 0 = fast, 1 = medium, 2 = long.
-     * See {@link #DISPLAY_DURATION_PARAMS}.
-     */
-    protected int getDisplayDurationIndex ()
-    {
-        // by default we add one, because it's assumed that we're in subtitle-only view
-        return DEFAULT_CHAT_DECAY + 1;
     }
 
     /** List of existing messages from our chat director. */
@@ -1096,82 +831,12 @@ public class SubtitleChatOverlay extends ChatOverlay
     /** A guess of how many history lines fit onscreen at a time. */
     protected int _historyExtent;
 
-    /** Our default chat font. */
-    protected static final Font DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 12);
-
     /** A guess as to the height of a subtitle (plus spacing). */
     protected static final int SUBTITLE_HEIGHT_GUESS = 16;
-
-    /** The padding in each direction around the text to the edges of a chat 'bubble'. */
-    protected static final int PAD = 10;
 
     /** The amount of space to insert between the icon and the text. */
     protected static final int ICON_PADDING = 4;
 
-    /**
-     * Times to display chat.
-     * { (time per character), (min time), (max time) }
-     *
-     * Groups 0/1/2 are short/medium/long for chat bubbles,
-     * and groups 1/2/3 are short/medium/long for subtitles.
-     */
-    protected static final long[][] DISPLAY_DURATION_PARAMS = {
-        { 125L, 10000L, 30000L },  // fastest durations
-        { 200L, 15000L, 40000L },  // medium (default) durations
-        { 275L, 20000L, 50000L },  // longest regular duration..
-        { 350L, 25000L, 60000L }   // grampatime!
-    };
-
-    /** Type mode code for default chat type (speaking). */
-    protected static final int SPEAK = 0;
-
-    /** Type mode code for shout chat type. */
-    protected static final int SHOUT = 1;
-
-    /** Type mode code for emote chat type. */
-    protected static final int EMOTE = 2;
-
-    /** Type mode code for think chat type. */
-    protected static final int THINK = 3;
-
-    /** Type place code for default place chat (cluster, scene). */
-    protected static final int PLACE = 1 << 4;
-
-    // 2 and 3 are skipped for legacy migration reasons
-
-    /** Type code for a chat type that was used in some special context,
-     * like in a negotiation. */
-    protected static final int SPECIALIZED = 4 << 4;
-
-    /** Our internal code for tell chat. */
-    protected static final int TELL = 5 << 4;
-
-    /** Our internal code for tell feedback chat. */
-    protected static final int TELLFEEDBACK = 6 << 4;
-
-    /** Our internal code for info system messges. */
-    protected static final int INFO = 7 << 4;
-
-    /** Our internal code for feedback system messages. */
-    protected static final int FEEDBACK = 8 << 4;
-
-    /** Our internal code for attention system messages. */
-    protected static final int ATTENTION = 9 << 4;
-
-    /** Our internal code for any type of chat that is continued in a subtitle. */
-    protected static final int CONTINUATION = 10 << 4;
-
-    /** Type place code for broadcast chat type. */
-    protected static final int BROADCAST = 11 << 4;
-
-    /** Our internal code for a chat type we will ignore. */
-    protected static final int IGNORECHAT = -1;
-
-    // used to color chat bubbles
-    protected static final Color BROADCAST_COLOR = new Color(0x990000);
-    protected static final Color FEEDBACK_COLOR = new Color(0x00AA00);
-    protected static final Color TELL_COLOR = new Color(0x0000AA);
-    protected static final Color TELLFEEDBACK_COLOR = new Color(0x00AAAA);
-    protected static final Color INFO_COLOR = new Color(0xAAAA00);
-    protected static final Color ATTENTION_COLOR = new Color(0xFF5000);
+    /** The padding in each direction around the text to the edges of a chat 'bubble'. */
+    protected static final int PAD = ChatLogic.PAD;
 }
