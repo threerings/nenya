@@ -1,3 +1,4 @@
+//
 // $Id$
 //
 // Nenya library - tools for developing networked games
