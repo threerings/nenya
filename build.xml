@@ -216,6 +216,9 @@
       <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/cast/**"/>
     </jar>
+    <jar destfile="${deploy.dir}/${lib.name}-chat.jar">
+      <fileset dir="${classes.dir}" includes="com/threerings/chat/**"/>
+    </jar>
     <jar destfile="${deploy.dir}/${lib.name}-jme.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/jme/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/jme/**"/>
