@@ -24,17 +24,11 @@ package com.threerings.chat;
 import java.util.Iterator;
 import java.util.List;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
-
 import javax.swing.BoundedRangeModel;
 import javax.swing.Icon;
 import javax.swing.JScrollBar;
@@ -51,7 +45,6 @@ import com.threerings.media.VirtualMediaPanel;
 import com.threerings.util.MessageBundle;
 
 import com.threerings.crowd.chat.client.HistoryList;
-import com.threerings.crowd.chat.data.ChatCodes;
 import com.threerings.crowd.chat.data.ChatMessage;
 import com.threerings.crowd.chat.data.SystemMessage;
 import com.threerings.crowd.chat.data.TellFeedbackMessage;
