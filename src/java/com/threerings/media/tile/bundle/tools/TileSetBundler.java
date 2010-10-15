@@ -281,7 +281,7 @@ public class TileSetBundler
                 }
 
                 // make sure this tileset's image file exists and check
-                // it's last modified date
+                // its last modified date
                 File tsfile = new File(bundleDesc.getParent(),
                                        set.getImagePath());
                 if (!tsfile.exists()) {

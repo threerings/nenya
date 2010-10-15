@@ -90,7 +90,7 @@ public class ActiveRepaintManager extends RepaintManager
 
             // if we find our validate root, we can stop looking; NOTE: JTextField incorrectly
             // claims to be a validate root thereby fucking up the program something serious; we
-            // jovially ignore it's claims here and restore order to the universe; see bug #403550
+            // jovially ignore its claims here and restore order to the universe; see bug #403550
             // for more fallout from Sun's fuckup
             if (!(c instanceof JTextField) && !(c instanceof JScrollPane) &&
                 ((JComponent)c).isValidateRoot()) {

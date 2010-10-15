@@ -244,7 +244,7 @@ public class SceneObject
     }
 
     /**
-     * Updates this object's origin tile coordinate. It's bounds and other
+     * Updates this object's origin tile coordinate. Its bounds and other
      * cached screen coordinate information are updated.
      */
     public void relocateObject (MisoSceneMetrics metrics, int tx, int ty)
