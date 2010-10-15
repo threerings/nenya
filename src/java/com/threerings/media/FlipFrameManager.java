@@ -31,8 +31,8 @@ import java.awt.image.BufferStrategy;
 import static com.threerings.media.Log.log;
 
 /**
- * A {@link FrameManager} extension that uses a flip-buffer (via {@link
- * BufferStrategy} to do its rendering.
+ * A {@link FrameManager} extension that uses a flip-buffer (via {@link BufferStrategy} to do its
+ * rendering.
  */
 public class FlipFrameManager extends FrameManager
 {
@@ -64,15 +64,13 @@ public class FlipFrameManager extends FrameManager
 
                 // dirty everything if we're not incrementally rendering
                 if (!incremental) {
-                    log.info("Doing non-incremental render; contents lost " +
-                             "[lost=" + _bufstrat.contentsLost() +
-                             ", rest=" + _bufstrat.contentsRestored() + "].");
+                    log.info("Doing non-incremental render; contents lost",
+                        "lost", _bufstrat.contentsLost(), "rest", _bufstrat.contentsRestored());
                     _root.getRootPane().revalidate();
                     _root.getRootPane().repaint();
                 }
 
-                // request to paint our participants and components and bail
-                // if they paint nothing
+                // request to paint our participants and components and bail if they paint nothing
                 if (!paint(gfx)) {
                     return;
                 }
@@ -80,8 +78,7 @@ public class FlipFrameManager extends FrameManager
                 // flip our buffer to visible
                 _bufstrat.show();
 
-                // if we loop through a second time, we'll need to rerender
-                // everything
+                // if we loop through a second time, we'll need to rerender everything
                 incremental = false;
 
             } finally {

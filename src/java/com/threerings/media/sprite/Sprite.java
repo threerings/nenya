@@ -411,16 +411,14 @@ public abstract class Sprite extends AbstractMedia
         protected long _when;
     }
 
-    /** The location of the sprite's origin in pixel coordinates. If the
-     * sprite positions itself via a hotspot that is not the upper left
-     * coordinate of the sprite's bounds, the offset to the hotspot should
-     * be maintained in {@link #_oxoff} and {@link #_oyoff}. */
+    /** The location of the sprite's origin in pixel coordinates. If the sprite positions itself
+     * via a hotspot that is not the upper left coordinate of the sprite's bounds, the offset to
+     * the hotspot should be maintained in {@link #_oxoff} and {@link #_oyoff}. */
     protected int _ox = Integer.MIN_VALUE, _oy = Integer.MIN_VALUE;
 
-    /** The offsets from our upper left coordinate to our origin (or hot
-     * spot). Derived classes will need to update these values if the
-     * sprite's origin is not coincident with the upper left coordinate of
-     * its bounds.  */
+    /** The offsets from our upper left coordinate to our origin (or hot spot). Derived classes
+     * will need to update these values if the sprite's origin is not coincident with the upper
+     * left coordinate of its bounds.  */
     protected int _oxoff, _oyoff;
 
     /** The orientation of this sprite. */

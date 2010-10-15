@@ -144,8 +144,7 @@ public class ObjectSet
     };
 
     /**
-     * Returns the index of the object or its insertion index if it is
-     * not in the set.
+     * Returns the index of the object or its insertion index if it is not in the set.
      */
     protected function indexOf (info :ObjectInfo) :int
     {

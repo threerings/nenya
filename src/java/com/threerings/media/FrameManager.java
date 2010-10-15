@@ -211,7 +211,7 @@ public abstract class FrameManager
 
     /**
      * Returns a millisecond granularity time stamp using the {@link MediaTimer} with which this
-     * frame manager was configured.  <em>Note:</em> this should only be called from the AWT
+     * frame manager was configured. <em>Note:</em> this should only be called from the AWT
      * thread.
      */
     public long getTimeStamp ()
@@ -220,8 +220,8 @@ public abstract class FrameManager
     }
 
     /**
-     * Returns the highest drift ratio our timer has seen. 1.0 means no drift (and is what we return
-     * if we're not using a CalibratingTimer)
+     * Returns the highest drift ratio our timer has seen. 1.0 means no drift (and is what we
+     * return if we're not using a CalibratingTimer)
      */
     public float getMaxTimerDriftRatio ()
     {
@@ -245,9 +245,9 @@ public abstract class FrameManager
     /**
      * Returns an overlay that can be used to render sprites and animations on top of the entire
      * frame. This is lazily created the first time this method is called and the overlay will
-     * remain a frame participant until {@link #clearMediaOverlay} is called. Be sure to coordinate
-     * access to the overlay in your application as there is only one overlay in existence at any
-     * time, and attempts to use an overlay after it has been cleared will fail.
+     * remain a frame participant until {@link #clearMediaOverlay} is called. Be sure to
+     * coordinate access to the overlay in your application as there is only one overlay in
+     * existence at any time, and attempts to use an overlay after it has been cleared will fail.
      */
     public MediaOverlay getMediaOverlay ()
     {
@@ -439,14 +439,14 @@ public abstract class FrameManager
                 if (HANG_DEBUG) {
                     long delay = (System.currentTimeMillis() - start);
                     if (delay > HANG_GAP) {
-                        log.info("Whoa nelly! Ticker took a long time " +
-                                 "[part=" + part + ", time=" + delay + "ms].");
+                        log.info("Whoa nelly! Ticker took a long time",
+                            "part", part, "time", delay + "ms");
                     }
                 }
 
             } catch (Throwable t) {
-                log.warning("Frame participant choked during tick " +
-                            "[part=" + StringUtil.safeToString(part) + "].", t);
+                log.warning("Frame participant choked during tick",
+                    "part", StringUtil.safeToString(part), t);
             }
         }
 
@@ -529,8 +529,8 @@ public abstract class FrameManager
             if (HANG_DEBUG) {
                 long delay = (System.currentTimeMillis() - start);
                 if (delay > HANG_GAP) {
-                    log.warning("Whoa nelly! Painter took a long time " +
-                                "[part=" + part + ", time=" + delay + "ms].");
+                    log.warning("Whoa nelly! Painter took a long time",
+                        "part", part, "time", delay + "ms");
                 }
             }
         }
@@ -630,16 +630,13 @@ public abstract class FrameManager
     /** Used to effect periodic calls to {@link FrameManager#tick}. */
     protected class Ticker extends Thread
     {
-        public Ticker ()
-        {
+        public Ticker () {
             super("FrameManagerTicker");
         }
 
         @Override
-        public void run ()
-        {
-            log.info("Frame manager ticker running " +
-                     "[sleepGran=" + _sleepGranularity.getValue() + "].");
+        public void run () {
+            log.info("Frame manager ticker running", "sleepGran", _sleepGranularity.getValue());
             while (_running) {
                 long start = 0L;
                 if (_perfDebug.getValue()) {
@@ -652,15 +649,15 @@ public abstract class FrameManager
                     getPerfMetrics()[0].record((int)(woke-start)/100);
                     int elapsed = (int)(woke-start);
                     if (elapsed > _sleepGranularity.getValue()*1500) {
-                        log.warning("Long tick [elapsed=" + elapsed + "us].");
+                        log.warning("Long tick", "elapsed", elapsed + "us");
                     }
                 }
 
                 // work around sketchy bug on WinXP that causes the clock to leap into the past
                 // from time to time
                 if (woke < _lastAttempt) {
-                    log.warning("Zoiks! We've leapt into the past, coping as best we can " +
-                                "[dt=" + (woke - _lastAttempt) + "].");
+                    log.warning("Zoiks! We've leapt into the past, coping as best we can",
+                        "dt", (woke - _lastAttempt));
                     _lastAttempt = woke;
                 }
 
@@ -674,13 +671,11 @@ public abstract class FrameManager
             }
         }
 
-        public void cancel ()
-        {
+        public void cancel () {
             _running = false;
         }
 
-        protected final synchronized boolean testAndSet ()
-        {
+        protected final synchronized boolean testAndSet () {
             _tries++;
             if (!_ticking) {
                 _ticking = true;
@@ -689,8 +684,7 @@ public abstract class FrameManager
             return false;
         }
 
-        protected final synchronized void clearTicking (long elapsed)
-        {
+        protected final synchronized void clearTicking (long elapsed) {
             if (++_ticks == 100) {
                 long time = (elapsed - _lastTick);
                 _fps[0] = _tries * 1000f / time;

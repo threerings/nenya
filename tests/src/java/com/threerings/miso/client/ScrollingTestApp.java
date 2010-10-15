@@ -67,47 +67,40 @@ public class ScrollingTestApp
         throws IOException
     {
         // get the graphics environment
-        GraphicsEnvironment env =
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
         // get the target graphics device
         GraphicsDevice gd = env.getDefaultScreenDevice();
-        log.info("Graphics device [dev=" + gd +
-                 ", mem=" + gd.getAvailableAcceleratedMemory() +
-                 ", displayChange=" + gd.isDisplayChangeSupported() +
-                 ", fullScreen=" + gd.isFullScreenSupported() + "].");
+        log.info("Graphics device", "dev", gd, "mem", gd.getAvailableAcceleratedMemory(),
+            "displayChange", gd.isDisplayChangeSupported(), "fullScreen", gd.isFullScreenSupported());
 
         // get the graphics configuration and display mode information
         GraphicsConfiguration gc = gd.getDefaultConfiguration();
         DisplayMode dm = gd.getDisplayMode();
-        log.info("Display mode [bits=" + dm.getBitDepth() +
-                 ", wid=" + dm.getWidth() + ", hei=" + dm.getHeight() +
-                 ", refresh=" + dm.getRefreshRate() + "].");
+        log.info("Display mode", "bits", dm.getBitDepth(), "wid", dm.getWidth(),
+            "hei", dm.getHeight(), "refresh", dm.getRefreshRate());
 
         // create the window
-	_frame = new ScrollingFrame(gc);
+        _frame = new ScrollingFrame(gc);
 
         // set up our frame manager
         _framemgr = FrameManager.newInstance(_frame);
 
         // we don't need to configure anything
         ResourceManager rmgr = new ResourceManager("rsrc");
-        rmgr.initBundles(
-            null, "config/resource/manager.properties", null);
+        rmgr.initBundles(null, "config/resource/manager.properties", null);
         ClientImageManager imgr = new ClientImageManager(rmgr, _frame);
-	_tilemgr = new MisoTileManager(rmgr, imgr);
-        _tilemgr.setTileSetRepository(
-            new BundledTileSetRepository(rmgr, imgr, "tilesets"));
+        _tilemgr = new MisoTileManager(rmgr, imgr);
+        _tilemgr.setTileSetRepository(new BundledTileSetRepository(rmgr, imgr, "tilesets"));
 
         // hack in some different MisoProperties
         MisoConfig.config = new Config("rsrc/config/miso/scrolling");
 
-	// create the context object
-	MisoContext ctx = new ContextImpl();
+        // create the context object
+        MisoContext ctx = new ContextImpl();
 
         // create the various managers
-        BundledComponentRepository crepo =
-            new BundledComponentRepository(rmgr, imgr, "components");
+        BundledComponentRepository crepo = new BundledComponentRepository(rmgr, imgr, "components");
         CharacterManager charmgr = new CharacterManager(imgr, crepo);
 
         // create our scene view panel
@@ -132,8 +125,7 @@ public class ScrollingTestApp
             }
 
         } catch (NoSuchComponentException nsce) {
-            log.warning("Can't locate ship component [class=" + scclass +
-                        ", name=" + scname + "].");
+            log.warning("Can't locate ship component", "class", scclass, "name", scname);
         }
 
         _ship.addSpriteObserver(new PathAdapter() {
@@ -157,8 +149,7 @@ public class ScrollingTestApp
         int x = _ship.getX(), y = _ship.getY();
         _ship.move(new LinePath(x, y, x, y + 1000, 3000l));
 
-        // size and position the window, entering full-screen exclusive
-        // mode if available
+        // size and position the window, entering full-screen exclusive mode if available
         if (gd.isFullScreenSupported()) {
             log.info("Entering full-screen exclusive mode.");
             gd.setFullScreenWindow(_frame);
@@ -179,18 +170,18 @@ public class ScrollingTestApp
     }
 
     /**
-     * The implementation of the MisoContext interface that provides
-     * handles to the manager objects that offer commonly used services.
+     * The implementation of the MisoContext interface that provides handles to the manager
+     * objects that offer commonly used services.
      */
     protected class ContextImpl implements MisoContext
     {
-	public MisoTileManager getTileManager () {
-	    return _tilemgr;
-	}
+        public MisoTileManager getTileManager () {
+            return _tilemgr;
+        }
 
-	public FrameManager getFrameManager () {
-	    return _framemgr;
-	}
+        public FrameManager getFrameManager () {
+            return _framemgr;
+        }
     }
 
     /**

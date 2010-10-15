@@ -108,12 +108,11 @@ public class ActiveRepaintManager extends RepaintManager
             return;
         }
 
-        // make sure that the component is actually in a window or applet
-        // that is showing
+        // make sure that the component is actually in a window or applet that is showing
         if (getRoot(vroot) == null) {
             if (DEBUG) {
-                log.info("Skipping rootless component [comp=" + toString(comp) +
-                         ", vroot=" + toString(vroot) + "].");
+                log.info("Skipping rootless component",
+                    "comp", toString(comp), "vroot", toString(vroot));
             }
             return;
         }
@@ -154,8 +153,7 @@ public class ActiveRepaintManager extends RepaintManager
 
         drect = new Rectangle(x, y, width, height);
         if (DEBUG) {
-            log.info("Dirtying component [comp=" + toString(comp) +
-                     ", drect=" + StringUtil.toString(drect) + "]");
+            log.info("Dirtying component", "comp", toString(comp), "drect", drect);
         }
 
         // if we made it this far, we can queue up a dirty region for this component to be
@@ -278,10 +276,9 @@ public class ActiveRepaintManager extends RepaintManager
                     drect.y = y;
 
                     if (DEBUG) {
-                        log.info("Found dirty parent [comp=" + toString(comp) +
-                                 ", drect=" + StringUtil.toString(drect) +
-                                 ", pcomp=" + toString(c) +
-                                 ", prect=" + StringUtil.toString(prect) + "].");
+                        log.info("Found dirty parent",
+                            "comp", toString(comp), "drect", StringUtil.toString(drect),
+                            "pcomp", toString(c), "prect", StringUtil.toString(prect));
                     }
                     prect.add(drect);
 
@@ -294,8 +291,7 @@ public class ActiveRepaintManager extends RepaintManager
                     continue PRUNE;
                 }
 
-                // translate the coordinates into this component's
-                // coordinate system
+                // translate the coordinates into this component's coordinate system
                 x += c.getX();
                 y += c.getY();
             }
@@ -364,9 +360,8 @@ public class ActiveRepaintManager extends RepaintManager
             // instance
             if (root == _root) {
                 if (DEBUG) {
-                    log.info("Repainting [comp=" + toString(comp) + StringUtil.toString(_cbounds) +
-                             ", ocomp=" + toString(ocomp) +
-                             ", drect=" + StringUtil.toString(drect) + "].");
+                    log.info("Repainting", "comp", toString(comp) + StringUtil.toString(_cbounds),
+                        "ocomp", toString(ocomp), "drect", StringUtil.toString(drect));
                 }
 
                 g.setClip(drect);
@@ -377,7 +372,7 @@ public class ActiveRepaintManager extends RepaintManager
                     ocomp.paint(g);
 
                 } catch (Exception e) {
-                    log.warning("Exception while painting component [comp=" + ocomp + "].", e);
+                    log.warning("Exception while painting component", "comp", ocomp, e);
                 }
                 g.translate(-_cbounds.x, -_cbounds.y);
 
@@ -387,9 +382,9 @@ public class ActiveRepaintManager extends RepaintManager
 
             } else if (root != null) {
                 if (DEBUG) {
-                    log.info("Repainting old-school [comp=" + toString(comp) +
-                             ", ocomp=" + toString(ocomp) + ", root=" + toString(root) +
-                             ", bounds=" + StringUtil.toString(_cbounds) + "].");
+                    log.info("Repainting old-school",
+                        "comp", toString(comp), "ocomp", toString(ocomp), "root", toString(root),
+                        "bounds", StringUtil.toString(_cbounds));
                     dumpHierarchy(comp);
                 }
 
@@ -445,10 +440,10 @@ public class ActiveRepaintManager extends RepaintManager
     protected Object[] _invalid;
 
     /** A mapping of invalid rectangles for each widget that is dirty. */
-    protected Map<JComponent,Rectangle> _dirty = Maps.newHashMap();
+    protected Map<JComponent, Rectangle> _dirty = Maps.newHashMap();
 
     /** A spare hashmap that we swap in while repainting dirty components in the old hashmap. */
-    protected Map<JComponent,Rectangle> _spare = Maps.newHashMap();
+    protected Map<JComponent, Rectangle> _spare = Maps.newHashMap();
 
     /** Used to compute dirty components' bounds. */
     protected Rectangle _cbounds = new Rectangle();

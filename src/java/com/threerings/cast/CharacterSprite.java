@@ -32,16 +32,14 @@ import com.threerings.media.sprite.ImageSprite;
 import static com.threerings.cast.Log.log;
 
 /**
- * A character sprite is a sprite that animates itself while walking
- * about in a scene.
+ * A character sprite is a sprite that animates itself while walking about in a scene.
  */
 public class CharacterSprite extends ImageSprite
     implements StandardActions
 {
     /**
-     * Initializes this character sprite with the specified character
-     * descriptor and character manager. It will obtain animation data
-     * from the supplied character manager.
+     * Initializes this character sprite with the specified character descriptor and character
+     * manager. It will obtain animation data from the supplied character manager.
      */
     public void init (CharacterDescriptor descrip, CharacterManager charmgr)
     {
@@ -60,9 +58,8 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Called after this sprite has been initialized with its character
-     * descriptor and character manager. Derived classes can do post-init
-     * business here.
+     * Called after this sprite has been initialized with its character descriptor and character
+     * manager. Derived classes can do post-init business here.
      */
     protected void didInit ()
     {
@@ -84,8 +81,8 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Specifies the action to use when the sprite is at rest. The default
-     * is <code>STANDING</code>.
+     * Specifies the action to use when the sprite is at rest. The default is
+     * <code>STANDING</code>.
      */
     public void setRestingAction (String action)
     {
@@ -93,9 +90,8 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Returns the action to be used when the sprite is at rest. Derived
-     * classes may wish to override this method and vary the action based
-     * on external parameters (or randomly).
+     * Returns the action to be used when the sprite is at rest. Derived classes may wish to
+     * override this method and vary the action based on external parameters (or randomly).
      */
     public String getRestingAction ()
     {
@@ -103,8 +99,8 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Specifies the action to use when the sprite is following a path.
-     * The default is <code>WALKING</code>.
+     * Specifies the action to use when the sprite is following a path. The default is
+     * <code>WALKING</code>.
      */
     public void setFollowingPathAction (String action)
     {
@@ -112,9 +108,8 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Returns the action to be used when the sprite is following a path.
-     * Derived classes may wish to override this method and vary the
-     * action based on external parameters (or randomly).
+     * Returns the action to be used when the sprite is following a path. Derived classes may wish
+     * to override this method and vary the action based on external parameters (or randomly).
      */
     public String getFollowingPathAction ()
     {
@@ -122,8 +117,8 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Sets the action sequence used when rendering the character, from
-     * the set of available sequences.
+     * Sets the action sequence used when rendering the character, from the set of available
+     * sequences.
      */
     public void setActionSequence (String action)
     {
@@ -145,8 +140,8 @@ public class CharacterSprite extends ImageSprite
     public void setOrientation (int orient)
     {
         if (orient < 0 || orient >= FINE_DIRECTION_COUNT) {
-            log.info("Refusing to set invalid orientation [sprite=" + this +
-                     ", orient=" + orient + "].", new Exception());
+            log.info("Refusing to set invalid orientation",
+                "sprite", this, "orient", orient, new Exception());
             return;
         }
 
@@ -172,8 +167,7 @@ public class CharacterSprite extends ImageSprite
         // tick caused them to become invalid
         compositeActionFrames();
         super.tick(tickStamp);
-        // composite our action frames if something during tick() caused
-        // them to become invalid
+        // composite our action frames if something during tick() caused them to become invalid
         compositeActionFrames();
     }
 
@@ -217,25 +211,22 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Called to paint any decorations that should appear behind the
-     * character sprite image.
+     * Called to paint any decorations that should appear behind the character sprite image.
      */
     protected void decorateBehind (Graphics2D gfx)
     {
     }
 
     /**
-     * Called to paint any decorations that should appear in front of the
-     * character sprite image.
+     * Called to paint any decorations that should appear in front of the character sprite image.
      */
     protected void decorateInFront (Graphics2D gfx)
     {
     }
 
     /**
-     * Rebuilds our action frames given our current character descriptor
-     * and action sequence. This is called when either of those two things
-     * changes.
+     * Rebuilds our action frames given our current character descriptor and action sequence. This
+     * is called when either of those two things changes.
      */
     protected void updateActionFrames ()
     {
@@ -258,12 +249,12 @@ public class CharacterSprite extends ImageSprite
             setFrameRate(actseq.framesPerSecond);
 
         } catch (NoSuchComponentException nsce) {
-            log.warning("Character sprite references non-existent " +
-                        "component [sprite=" + this + ", err=" + nsce + "].");
+            log.warning("Character sprite references non-existent component",
+                "sprite", this, "err", nsce);
 
         } catch (Exception e) {
-            log.warning("Failed to obtain action frames [sprite=" + this +
-                        ", descrip=" + _descrip + ", action=" + _action + "].", e);
+            log.warning("Failed to obtain action frames",
+                "sprite", this, "descrip", _descrip, "action", _action, e);
         }
     }
 
@@ -291,8 +282,7 @@ public class CharacterSprite extends ImageSprite
     protected boolean tickPath (long tickStamp)
     {
         boolean moved = super.tickPath(tickStamp);
-        // composite our action frames if our path caused them to become
-        // invalid
+        // composite our action frames if our path caused them to become invalid
         compositeActionFrames();
         return moved;
     }
@@ -341,22 +331,21 @@ public class CharacterSprite extends ImageSprite
     }
 
     /**
-     * Called by {@link #accomodateFrame} to give derived classes an
-     * opportunity to incorporate the bounds of any decorations that will
-     * be drawn along with this sprite. The {@link #_ibounds} rectangle
-     * will contain the bounds of the image that comprises the undecorated
-     * sprite. From that the position and size of decorations can be
-     * computed and unioned with the supplied bounds rectangle (most
-     * likely by using {@link SwingUtilities#computeUnion} which applies
-     * the union in place rather than creating a new rectangle).
+     * Called by {@link #accomodateFrame} to give derived classes an opportunity to incorporate
+     * the bounds of any decorations that will be drawn along with this sprite. The
+     * {@link #_ibounds} rectangle will contain the bounds of the image that comprises the
+     * undecorated sprite. From that the position and size of decorations can be computed and
+     * unioned with the supplied bounds rectangle (most likely by using
+     * {@link SwingUtilities#computeUnion} which applies the union in place rather than creating a
+     * new rectangle).
      */
     protected void unionDecorationBounds (Rectangle bounds)
     {
     }
 
     /**
-     * Updates the sprite animation frame to reflect the cessation of
-     * movement and disables any further animation.
+     * Updates the sprite animation frame to reflect the cessation of movement and disables any
+     * further animation.
      */
     protected void halt ()
     {
@@ -378,8 +367,7 @@ public class CharacterSprite extends ImageSprite
     /** The action to use when following a path. */
     protected String _followingPathAction = WALKING;
 
-    /** A reference to the descriptor for the character that we're
-     * visualizing. */
+    /** A reference to the descriptor for the character that we're visualizing. */
     protected CharacterDescriptor _descrip;
 
     /** A reference to the character manager that created us. */
@@ -388,12 +376,11 @@ public class CharacterSprite extends ImageSprite
     /** The action we are currently displaying. */
     protected String _action;
 
-    /** The animation frames for the active action sequence in each
-     * orientation. */
+    /** The animation frames for the active action sequence in each orientation. */
     protected ActionFrames _aframes;
 
-    /** The offset from the upper-left of the total sprite bounds to the
-     * upper-left of the image within those bounds. */
+    /** The offset from the upper-left of the total sprite bounds to the upper-left of the image
+     * within those bounds. */
     protected Point _ioff = new Point();
 
     /** The bounds of the current sprite image. */

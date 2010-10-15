@@ -146,8 +146,7 @@ public class ObjectSet
     }
 
     /**
-     * Returns the index of the object or its insertion index if it is
-     * not in the set.
+     * Returns the index of the object or its insertion index if it is not in the set.
      */
     protected final int indexOf (ObjectInfo info)
     {

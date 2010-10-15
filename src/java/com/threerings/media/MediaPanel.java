@@ -216,8 +216,7 @@ public class MediaPanel extends JComponent
     }
 
     /**
-     * Adds an animation to this panel. Animations are automatically
-     * removed when they finish.
+     * Adds an animation to this panel. Animations are automatically removed when they finish.
      */
     public void addAnimation (Animation anim)
     {
@@ -233,9 +232,8 @@ public class MediaPanel extends JComponent
     }
 
     /**
-     * Aborts a currently running animation and removes it from this
-     * panel. Animations are normally automatically removed when they
-     * finish.
+     * Aborts a currently running animation and removes it from this panel. Animations are
+     * normally automatically removed when they finish.
      */
     public void abortAnimation (Animation anim)
     {
@@ -566,8 +564,7 @@ public class MediaPanel extends JComponent
     protected class ActionSpriteHandler extends MouseInputAdapter
     {
         @Override
-        public void mousePressed (MouseEvent me)
-        {
+        public void mousePressed (MouseEvent me) {
             if (_activeSprite == null) {
                 // see if we can find one
                 Sprite s = getHit(me);
@@ -582,8 +579,7 @@ public class MediaPanel extends JComponent
         }
 
         @Override
-        public void mouseReleased (MouseEvent me)
-        {
+        public void mouseReleased (MouseEvent me) {
             if (_activeSprite instanceof ArmingSprite) {
                 ((ArmingSprite)_activeSprite).setArmed(false);
             }
@@ -615,8 +611,7 @@ public class MediaPanel extends JComponent
         }
 
         @Override
-        public void mouseDragged (MouseEvent me)
-        {
+        public void mouseDragged (MouseEvent me) {
             if (_activeSprite instanceof ArmingSprite) {
                 ((ArmingSprite) _activeSprite).setArmed(
                     _activeSprite.hitTest(me.getX(), me.getY()));
@@ -624,8 +619,7 @@ public class MediaPanel extends JComponent
         }
 
         @Override
-        public void mouseMoved (MouseEvent me)
-        {
+        public void mouseMoved (MouseEvent me) {
             Sprite s = getHit(me);
             if (_activeSprite == s) {
                 return;
@@ -642,8 +636,7 @@ public class MediaPanel extends JComponent
         /**
          * Utility method, get the highest non-disabled action/hover sprite.
          */
-        protected Sprite getHit (MouseEvent me)
-        {
+        protected Sprite getHit (MouseEvent me) {
             ArrayList<Sprite> list = Lists.newArrayList();
             getSpriteManager().getHitSprites(list, me.getX(), me.getY());
             for (int ii = 0, nn = list.size(); ii < nn; ii++) {

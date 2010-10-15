@@ -51,17 +51,16 @@ public interface Pathable
     public void setLocation (int x, int y);
 
     /**
-     * Will be called by a path when it moves the pathable in the
-     * specified direction. Pathables that wish to face in the direction
-     * they are moving can take advantage of this callback.
+     * Will be called by a path when it moves the pathable in the specified direction. Pathables
+     * that wish to face in the direction they are moving can take advantage of this callback.
      *
      * @see DirectionCodes
      */
     public void setOrientation (int orient);
 
     /**
-     * Should return the orientation of the pathable, or {@link
-     * DirectionCodes#NONE} if the pathable does not support orientation.
+     * Should return the orientation of the pathable, or {@link DirectionCodes#NONE} if the
+     * pathable does not support orientation.
      */
     public int getOrientation ();
 

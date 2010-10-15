@@ -345,8 +345,7 @@ public class VirtualMediaPanel extends MediaPanel
             break;
 
         default:
-            log.warning("Eh? Set to invalid pathable mode " +
-                        "[mode=" + _fmode + "].");
+            log.warning("Eh? Set to invalid pathable mode", "mode", _fmode);
             break;
         }
 

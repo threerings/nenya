@@ -43,7 +43,7 @@ public class ScrollingFrame extends ManagedJFrame
      */
     public ScrollingFrame (GraphicsConfiguration gc)
     {
-	super(gc);
+        super(gc);
 
         // set up the frame options
         setTitle("Scene scrolling test");
@@ -64,8 +64,8 @@ public class ScrollingFrame extends ManagedJFrame
         vgl = new VGroupLayout(VGroupLayout.NONE);
         vgl.setOffAxisPolicy(VGroupLayout.STRETCH);
         JPanel stuff = new JPanel(vgl);
-        for (int i = 0; i < 10; i++) {
-            stuff.add(new JButton("Button " + i));
+        for (int ii = 0; ii < 10; ii++) {
+            stuff.add(new JButton("Button " + ii));
         }
         getContentPane().add(new SafeScrollPane(stuff));
     }
@@ -82,7 +82,7 @@ public class ScrollingFrame extends ManagedJFrame
 
         // now add the new one
         _panel = panel;
-	getContentPane().add(_panel, 0);
+        getContentPane().add(_panel, 0);
     }
 
     protected Component _panel;

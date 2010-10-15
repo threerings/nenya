@@ -22,8 +22,7 @@
 package com.threerings.media.sprite.action;
 
 /**
- * An ActionSprite that wishes to be notified of events when it is armed
- * or not.
+ * An ActionSprite that wishes to be notified of events when it is armed or not.
  */
 public interface ArmingSprite extends ActionSprite
 {

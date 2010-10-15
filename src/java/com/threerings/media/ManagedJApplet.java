@@ -27,8 +27,7 @@ import java.awt.Window;
 import javax.swing.JApplet;
 
 /**
- * When using the {@link FrameManager} in an Applet, one must use this
- * top-level class.
+ * When using the {@link FrameManager} in an Applet, one must use this top-level class.
  */
 public class ManagedJApplet extends JApplet
     implements FrameManager.ManagedRoot

@@ -58,7 +58,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
                                  CharacterManager charmgr,
                                  ComponentRepository crepo)
     {
-	super(ctx, MisoConfig.getSceneMetrics());
+        super(ctx, MisoConfig.getSceneMetrics());
 
         // create the character descriptors
         _descUser = CastUtil.getRandomDescriptor("female", crepo);
@@ -71,7 +71,7 @@ public class ViewerSceneViewPanel extends MisoScenePanel
         // create the decoy sprites
         createDecoys(_spritemgr, charmgr);
 
-	PerformanceMonitor.register(this, "paint", 1000);
+        PerformanceMonitor.register(this, "paint", 1000);
     }
 
     @Override
@@ -137,8 +137,8 @@ public class ViewerSceneViewPanel extends MisoScenePanel
     @Override
     public void paint (Graphics g)
     {
-	super.paint(g);
-	PerformanceMonitor.tick(this, "paint");
+        super.paint(g);
+        PerformanceMonitor.tick(this, "paint");
     }
 
     // documentation inherited
@@ -177,14 +177,14 @@ public class ViewerSceneViewPanel extends MisoScenePanel
     {
         // get the path from here to there
         LineSegmentPath path = (LineSegmentPath)getPath(s, x, y, true);
-	if (path == null) {
-	    s.cancelMove();
-	    return false;
-	}
+        if (path == null) {
+            s.cancelMove();
+            return false;
+        }
 
         // start the sprite moving along the path
-	path.setVelocity(100f/1000f);
-	s.move(path);
+        path.setVelocity(100f/1000f);
+        s.move(path);
         return true;
     }
 

@@ -57,9 +57,9 @@ public class PathNode
     }
 
     /**
-     * This should be overridden by derived classes (which should be sure
-     * to call <code>super.toString()</code>) to append the derived class
-     * specific path node information to the string buffer.
+     * This should be overridden by derived classes (which should be sure to call
+     * <code>super.toString()</code>) to append the derived class specific path node information
+     * to the string buffer.
      */
     public void toString (StringBuilder buf)
     {

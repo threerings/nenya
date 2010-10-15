@@ -35,8 +35,7 @@ import com.threerings.media.MediaPanel;
 import com.threerings.media.sprite.Sprite;
 
 /**
- * A test app that is useful for visualizing paths during their
- * development.
+ * A test app that is useful for visualizing paths during their development.
  */
 public class PathViz extends MediaPanel
 {
@@ -87,8 +86,7 @@ public class PathViz extends MediaPanel
 
     protected static class HappySprite extends Sprite
     {
-        public HappySprite ()
-        {
+        public HappySprite () {
             _bounds.width = 32;
             _bounds.height = 32;
             _oxoff = 16;
@@ -96,16 +94,14 @@ public class PathViz extends MediaPanel
         }
 
         @Override
-        public void paint (Graphics2D gfx)
-        {
+        public void paint (Graphics2D gfx) {
             gfx.setColor(Color.blue);
             int hx = _bounds.x + _bounds.width/2;
             int hy = _bounds.y + _bounds.height/2;
             gfx.drawLine(hx, _bounds.y, hx, _bounds.y + _bounds.height-1);
             gfx.drawLine(_bounds.x, hy, _bounds.x+_bounds.width-1, hy);
             gfx.setColor(Color.black);
-            gfx.drawRect(_bounds.x, _bounds.y,
-                         _bounds.width-1, _bounds.height-1);
+            gfx.drawRect(_bounds.x, _bounds.y, _bounds.width-1, _bounds.height-1);
         }
     }
 

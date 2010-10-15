@@ -39,11 +39,10 @@ import com.threerings.util.DirectionUtil;
 import static com.threerings.media.Log.log;
 
 /**
- * The line segment path is used to cause a pathable to follow a path that
- * is made up of a sequence of line segments. There must be at least two
- * nodes in any worthwhile path. The direction of the first node in the
- * path is meaningless since the pathable begins at that node and will
- * therefore never be heading towards it.
+ * The line segment path is used to cause a pathable to follow a path that is made up of a
+ * sequence of line segments. There must be at least two nodes in any worthwhile path. The
+ * direction of the first node in the path is meaningless since the pathable begins at that node
+ * and will therefore never be heading towards it.
  */
 public class LineSegmentPath
     implements DirectionCodes, Path
@@ -56,11 +55,10 @@ public class LineSegmentPath
     }
 
     /**
-     * Constructs a line segment path that consists of a single segment
-     * connecting the point <code>(x1, y1)</code> with <code>(x2,
-     * y2)</code>.  The orientation for the first node is set arbitrarily
-     * and the second node is oriented based on the vector between the two
-     * nodes (in top-down coordinates).
+     * Constructs a line segment path that consists of a single segment connecting the point
+     * <code>(x1, y1)</code> with <code>(x2, y2)</code>. The orientation for the first node is set
+     * arbitrarily and the second node is oriented based on the vector between the two nodes (in
+     * top-down coordinates).
      */
     public LineSegmentPath (int x1, int y1, int x2, int y2)
     {
@@ -71,8 +69,7 @@ public class LineSegmentPath
     }
 
     /**
-     * Construct a line segment path between the two nodes with the
-     * specified direction.
+     * Construct a line segment path between the two nodes with the specified direction.
      */
     public LineSegmentPath (Point p1, Point p2, int dir)
     {
@@ -81,8 +78,8 @@ public class LineSegmentPath
     }
 
     /**
-     * Constructs a line segment path with the specified list of points.
-     * An arbitrary direction will be assigned to the starting node.
+     * Constructs a line segment path with the specified list of points. An arbitrary direction
+     * will be assigned to the starting node.
      */
     public LineSegmentPath (List<Point> points)
     {
@@ -90,8 +87,7 @@ public class LineSegmentPath
     }
 
     /**
-     * Returns the orientation the sprite will face at the end of the
-     * path.
+     * Returns the orientation the sprite will face at the end of the path.
      */
     public int getFinalOrientation ()
     {
@@ -99,8 +95,7 @@ public class LineSegmentPath
     }
 
     /**
-     * Add a node to the path with the specified destination point and
-     * facing direction.
+     * Add a node to the path with the specified destination point and facing direction.
      *
      * @param x the x-position.
      * @param y the y-position.
@@ -112,8 +107,7 @@ public class LineSegmentPath
     }
 
     /**
-     * Return the requested node index in the path, or null if no such
-     * index exists.
+     * Return the requested node index in the path, or null if no such index exists.
      *
      * @param idx the node index.
      *
@@ -133,12 +127,10 @@ public class LineSegmentPath
     }
 
     /**
-     * Sets the velocity of this pathable in pixels per millisecond. The
-     * velocity is measured as pixels traversed along the path that the
-     * pathable is traveling rather than in the x or y directions
-     * individually.  Note that the pathable velocity should not be
-     * changed while a path is being traversed; doing so may result in the
-     * pathable position changing unexpectedly.
+     * Sets the velocity of this pathable in pixels per millisecond. The velocity is measured as
+     * pixels traversed along the path that the pathable is traveling rather than in the x or y
+     * directions individually. Note that the pathable velocity should not be changed while a path
+     * is being traversed; doing so may result in the pathable position changing unexpectedly.
      *
      * @param velocity the pathable velocity in pixels per millisecond.
      */
@@ -148,12 +140,10 @@ public class LineSegmentPath
     }
 
     /**
-     * Computes the velocity at which the pathable will need to travel
-     * along this path such that it will arrive at the destination in
-     * approximately the specified number of milliseconds. Efforts are
-     * taken to get the pathable there as close to the desired time as
-     * possible, but framerate variation may prevent it from arriving
-     * exactly on time.
+     * Computes the velocity at which the pathable will need to travel along this path such that
+     * it will arrive at the destination in approximately the specified number of milliseconds.
+     * Efforts are taken to get the pathable there as close to the desired time as possible, but
+     * framerate variation may prevent it from arriving exactly on time.
      */
     public void setDuration (long millis)
     {
@@ -161,8 +151,8 @@ public class LineSegmentPath
         // information to compute our velocity
         int ncount = _nodes.size();
         if (ncount < 2) {
-            log.warning("Requested to set duration of bogus path " +
-                        "[path=" + this + ", duration=" + millis + "].");
+            log.warning("Requested to set duration of bogus path",
+                "path", this, "duration", millis);
             return;
         }
 
@@ -185,8 +175,7 @@ public class LineSegmentPath
         // give the pathable a chance to perform any starting antics
         pable.pathBeginning();
 
-        // if we have only one node then let the pathable know that we're
-        // done straight away
+        // if we have only one node then let the pathable know that we're done straight away
         if (size() < 2) {
             // move the pathable to the location specified by the first
             // node (assuming we have a first node)
@@ -257,16 +246,14 @@ public class LineSegmentPath
     }
 
     /**
-     * Place the pathable moving along the path at the end of the previous
-     * path node, face it appropriately for the next node, and start it on
-     * its way.  Returns whether the pathable position moved.
+     * Place the pathable moving along the path at the end of the previous path node, face it
+     * appropriately for the next node, and start it on its way. Returns whether the pathable
+     * position moved.
      */
-    protected boolean headToNextNode (
-        Pathable pable, long startstamp, long now)
+    protected boolean headToNextNode (Pathable pable, long startstamp, long now)
     {
         if (_niter == null) {
-            throw new IllegalStateException(
-                "headToNextNode() called before init()");
+            throw new IllegalStateException("headToNextNode() called before init()");
         }
 
         // check to see if we've completed our path
@@ -327,9 +314,8 @@ public class LineSegmentPath
     }
 
     /**
-     * Populate the path with the path nodes that lead the pathable from
-     * its starting position to the given destination coordinates
-     * following the given list of screen coordinates.
+     * Populate the path with the path nodes that lead the pathable from its starting position to
+     * the given destination coordinates following the given list of screen coordinates.
      */
     protected void createPath (List<Point> points)
     {

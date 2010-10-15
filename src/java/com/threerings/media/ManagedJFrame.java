@@ -31,8 +31,7 @@ import java.awt.Window;
 import javax.swing.JFrame;
 
 /**
- * When using the {@link FrameManager}, one must use this top-level frame
- * class.
+ * When using the {@link FrameManager}, one must use this top-level frame class.
  */
 public class ManagedJFrame extends JFrame
     implements FrameManager.ManagedRoot
@@ -82,8 +81,7 @@ public class ManagedJFrame extends JFrame
     }
 
     /**
-     * We catch paint requests and forward them on to the repaint
-     * infrastructure.
+     * We catch paint requests and forward them on to the repaint infrastructure.
      */
     @Override
     public void paint (Graphics g)
@@ -92,8 +90,7 @@ public class ManagedJFrame extends JFrame
     }
 
     /**
-     * We catch update requests and forward them on to the repaint
-     * infrastructure.
+     * We catch update requests and forward them on to the repaint infrastructure.
      */
     @Override
     public void update (Graphics g)

@@ -77,7 +77,7 @@ for ($i = 0; $i < @ARGV; $i++) {
     if ($arg eq "-p") {
         $pid_file = $ARGV[$i+1];
         splice(@ARGV, $i, 2);
-	$i -= 1; # decrement i so that things stay in sync
+        $i -= 1; # decrement i so that things stay in sync
     }
 }
 

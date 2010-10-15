@@ -280,8 +280,7 @@ public class TileSetBundler
                     continue;
                 }
 
-                // make sure this tileset's image file exists and check
-                // its last modified date
+                // make sure this tileset's image file exists and check its last modified date
                 File tsfile = new File(bundleDesc.getParent(),
                                        set.getImagePath());
                 if (!tsfile.exists()) {

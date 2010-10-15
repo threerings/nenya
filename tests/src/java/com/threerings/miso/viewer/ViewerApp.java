@@ -47,8 +47,8 @@ import com.threerings.cast.bundle.BundledComponentRepository;
 import static com.threerings.miso.Log.log;
 
 /**
- * The ViewerApp is a scene viewing application that allows for trying
- * out game scenes in a pseudo-runtime environment.
+ * The ViewerApp is a scene viewing application that allows for trying out game scenes in a
+ * pseudo-runtime environment.
  */
 public class ViewerApp
 {
@@ -64,38 +64,33 @@ public class ViewerApp
         }
 
         // get the graphics environment
-        GraphicsEnvironment env =
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
         // get the target graphics device
         GraphicsDevice gd = env.getDefaultScreenDevice();
-        log.info("Graphics device [dev=" + gd +
-                 ", mem=" + gd.getAvailableAcceleratedMemory() +
-                 ", displayChange=" + gd.isDisplayChangeSupported() +
-                 ", fullScreen=" + gd.isFullScreenSupported() + "].");
+        log.info("Graphics device", "dev", gd, "mem", gd.getAvailableAcceleratedMemory(),
+            "displayChange", gd.isDisplayChangeSupported(),
+            "fullScreen", gd.isFullScreenSupported());
 
         // get the graphics configuration and display mode information
         GraphicsConfiguration gc = gd.getDefaultConfiguration();
         DisplayMode dm = gd.getDisplayMode();
-        log.info("Display mode [bits=" + dm.getBitDepth() +
-                 ", wid=" + dm.getWidth() + ", hei=" + dm.getHeight() +
-                 ", refresh=" + dm.getRefreshRate() + "].");
+        log.info("Display mode", "bits", dm.getBitDepth(), "wid", dm.getWidth(),
+            "hei", dm.getHeight(), "refresh", dm.getRefreshRate());
 
         // create the window
-	_frame = new ViewerFrame(gc);
+        _frame = new ViewerFrame(gc);
         _framemgr = FrameManager.newInstance(_frame);
 
         // we don't need to configure anything
         ResourceManager rmgr = new ResourceManager("rsrc");
-        rmgr.initBundles(
-            null, "config/resource/manager.properties", null);
+        rmgr.initBundles(null, "config/resource/manager.properties", null);
         ClientImageManager imgr = new ClientImageManager(rmgr, _frame);
-	_tilemgr = new MisoTileManager(rmgr, imgr);
-        _tilemgr.setTileSetRepository(
-            new BundledTileSetRepository(rmgr, imgr, "tilesets"));
+        _tilemgr = new MisoTileManager(rmgr, imgr);
+        _tilemgr.setTileSetRepository(new BundledTileSetRepository(rmgr, imgr, "tilesets"));
 
-	// create the context object
-	MisoContext ctx = new ContextImpl();
+        // create the context object
+        MisoContext ctx = new ContextImpl();
 
         // create the various managers
         BundledComponentRepository crepo =
@@ -111,14 +106,13 @@ public class ViewerApp
             SimpleMisoSceneParser parser = new SimpleMisoSceneParser("");
             SimpleMisoSceneModel model = parser.parseScene(args[0]);
             if (model == null) {
-                log.warning("No miso scene found in scene file " +
-                            "[path=" + args[0] + "].");
+                log.warning("No miso scene found in scene file", "path", args[0]);
                 System.exit(-1);
             }
             _panel.setSceneModel(model);
 
         } catch (Exception e) {
-            log.warning("Unable to parse scene [path=" + args[0] + "].", e);
+            log.warning("Unable to parse scene", "path", args[0], e);
             System.exit(-1);
         }
 
@@ -143,13 +137,11 @@ public class ViewerApp
      */
     protected class ContextImpl implements MisoContext
     {
-	public MisoTileManager getTileManager ()
-	{
-	    return _tilemgr;
-	}
+        public MisoTileManager getTileManager () {
+            return _tilemgr;
+        }
 
-        public FrameManager getFrameManager ()
-        {
+        public FrameManager getFrameManager () {
             return _framemgr;
         }
     }

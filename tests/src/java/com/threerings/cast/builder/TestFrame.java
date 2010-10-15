@@ -30,7 +30,7 @@ public class TestFrame extends JFrame
 {
     public TestFrame ()
     {
-	super("Character Builder");
+        super("Character Builder");
 
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

@@ -30,8 +30,7 @@ import java.awt.image.VolatileImage;
 import static com.threerings.media.Log.log;
 
 /**
- * A {@link FrameManager} extension that uses a volatile off-screen image
- * to do its rendering.
+ * A {@link FrameManager} extension that uses a volatile off-screen image to do its rendering.
  */
 public class BackFrameManager extends FrameManager
 {
@@ -92,8 +91,7 @@ public class BackFrameManager extends FrameManager
             }
             _fgfx.drawImage(_backimg, 0, 0, null);
 
-            // if we loop through a second time, we'll need to rerender
-            // everything
+            // if we loop through a second time, we'll need to rerender everything
             incremental = false;
 
         } while (_backimg.contentsLost());
@@ -118,8 +116,8 @@ public class BackFrameManager extends FrameManager
     }
 
     /**
-     * Creates the off-screen buffer used to perform double buffered
-     * rendering of the animated panel.
+     * Creates the off-screen buffer used to perform double buffered rendering of the animated
+     * panel.
      */
     protected void createBackBuffer (GraphicsConfiguration gc)
     {

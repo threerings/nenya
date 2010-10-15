@@ -28,11 +28,10 @@ import com.threerings.media.MediaPanel;
 import com.threerings.media.sprite.Sprite;
 
 /**
- * A Sprite that wraps an animation so that a sequence of frames can be easily
- *  moved around the screen.  Animations embedded here should not be added
- *  directly to a media panel as this sprite will manage them.  If the enclosed
- *  animation completes, we remove the sprite from the media panel, since the
- *  animation would normally do that itself.
+ * A Sprite that wraps an animation so that a sequence of frames can be easily moved around the
+ * screen. Animations embedded here should not be added directly to a media panel as this sprite
+ * will manage them. If the enclosed animation completes, we remove the sprite from the media
+ * panel, since the animation would normally do that itself.
  */
 public class AnimationSprite extends Sprite
 {

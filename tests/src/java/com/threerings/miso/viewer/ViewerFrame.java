@@ -44,7 +44,7 @@ public class ViewerFrame extends ManagedJFrame
      */
     public ViewerFrame (GraphicsConfiguration gc)
     {
-	super(gc);
+        super(gc);
 
         // set up the frame options
         setTitle("Scene Viewer");
@@ -57,8 +57,7 @@ public class ViewerFrame extends ManagedJFrame
 
         // create the "Settings" menu
         JMenu menuSettings = new JMenu("Settings");
-        MenuUtil.addMenuItem(
-            menuSettings, "Preferences", this, "handlePreferences");
+        MenuUtil.addMenuItem(menuSettings, "Preferences", this, "handlePreferences");
 
         // create the menu bar
         JMenuBar bar = new JMenuBar();
@@ -80,7 +79,7 @@ public class ViewerFrame extends ManagedJFrame
 
         // now add the new one
         _panel = panel;
-	getContentPane().add(_panel, BorderLayout.CENTER);
+        getContentPane().add(_panel, BorderLayout.CENTER);
     }
 
     /**
