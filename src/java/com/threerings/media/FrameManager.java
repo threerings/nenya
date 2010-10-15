@@ -170,7 +170,7 @@ public abstract class FrameManager
      * Instructs the frame manager to target the specified number of frames per second. If the
      * computation and rendering for a frame are completed with time to spare, the frame manager
      * will wait until the proper time to begin processing for the next frame. If a frame takes
-     * longer than its alotted time, the frame manager will immediately begin processing on the
+     * longer than its allotted time, the frame manager will immediately begin processing on the
      * next frame.
      */
     public void setTargetFrameRate (int fps)
@@ -765,7 +765,7 @@ public abstract class FrameManager
     /** Used to lazily set the clip when painting popups and other "layered" components. */
     protected boolean[] _clipped = new boolean[1];
 
-    /** The entites that are ticked each frame. */
+    /** The entities that are ticked each frame. */
     protected Object[] _participants = new Object[4];
 
     /** If we don't get ticked for 500ms, that's worth complaining about. */

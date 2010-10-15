@@ -90,7 +90,7 @@ public class MetaMediaManager
     }
 
     /**
-     * Returns the region manager used to coordiante our dirty regions.
+     * Returns the region manager used to coordinate our dirty regions.
      */
     public RegionManager getRegionManager ()
     {
@@ -217,7 +217,7 @@ public class MetaMediaManager
     }
 
     /**
-     * Our media front end should implement {@link FrameParticipant} and call this methed in their
+     * Our media front end should implement {@link FrameParticipant} and call this method in their
      * {@link FrameParticipant#tick} method. They must also first check {@link #isPaused} and not
      * call this method if we are paused. As they will probably want to have willTick() and
      * didTick() calldown methods, we cannot handle pausedness for them.
@@ -271,7 +271,7 @@ public class MetaMediaManager
     }
 
     /**
-     * Our media front end should implement {@link FrameParticipant} and call this methed in their
+     * Our media front end should implement {@link FrameParticipant} and call this method in their
      * {@link FrameParticipant#needsPaint} method.
      */
     public boolean needsPaint ()

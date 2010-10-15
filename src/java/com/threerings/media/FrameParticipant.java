@@ -57,7 +57,7 @@ public interface FrameParticipant
      * <p> Because clipping is expensive in terms of rectangle object
      * allocation, frame participants are given the opportunity to do
      * their own clipping because they are likely to want to clip to a
-     * more fine grained region than their entire bounds. If a particpant
+     * more fine grained region than their entire bounds. If a participant
      * does not wish to be actively rendered, it can safely return null.
      */
     public Component getComponent ();
