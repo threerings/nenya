@@ -152,14 +152,15 @@ public class ActiveRepaintManager extends RepaintManager
             return;
         }
 
+        drect = new Rectangle(x, y, width, height);
         if (DEBUG) {
             log.info("Dirtying component [comp=" + toString(comp) +
-                     ", drect=" + StringUtil.toString(new Rectangle(x, y, width, height)) + "].");
+                     ", drect=" + StringUtil.toString(drect) + "]");
         }
 
         // if we made it this far, we can queue up a dirty region for this component to be
         // repainted on the next tick
-        _dirty.put(comp, new Rectangle(x, y, width, height));
+        _dirty.put(comp, drect);
     }
 
     /**
