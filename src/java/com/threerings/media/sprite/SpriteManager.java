@@ -170,8 +170,7 @@ public class SpriteManager extends AbstractMediaManager
      */
     public void renderSpritePaths (Graphics2D gfx)
     {
-        for (int ii=0, nn=_sprites.size(); ii < nn; ii++) {
-            Sprite sprite = _sprites.get(ii);
+        for (Sprite sprite : _sprites) {
             sprite.paintPath(gfx);
         }
     }
