@@ -1,7 +1,9 @@
 //
-// aspirin library - Taking some of the pain out of Actionscript development.
-// Copyright (C) 2007-2010 Three Rings Design, Inc., All Rights Reserved
-// http://www.threerings.net/code/nenya/
+// $Id$
+//
+// Nenya library - tools for developing networked games
+// Copyright (C) 2002-2010 Three Rings Design, Inc., All Rights Reserved
+// http://code.google.com/p/nenya/
 //
 // This library is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published
