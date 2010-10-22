@@ -18,16 +18,9 @@
     <include name="samskivert.jar"/>
     <include name="narya-base*.jar"/>
     <include name="narya-distrib*.jar"/>
-    <!-- these LWJGL, JME and JME-BUI libraries are optional -->
+    <!-- these LWJGL (for OpenAL) and codec libraries are optional -->
     <include name="lwjgl.jar"/>
     <include name="lwjgl_util.jar"/>
-    <include name="jme-awt.jar"/>
-    <include name="jme-effects.jar"/>
-    <include name="jme-model.jar"/>
-    <include name="jme-sound.jar"/>
-    <include name="jme-terrain.jar"/>
-    <include name="jme.jar"/>
-    <include name="jme-bui.jar"/>
     <include name="jogg-0.0.7.jar"/>
     <include name="jorbis-0.0.15.jar"/>
     <include name="jl1.0.jar"/>

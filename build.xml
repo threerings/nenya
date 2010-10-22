@@ -73,7 +73,6 @@
     <javac srcdir="src/java" destdir="${classes.dir}" includeAntRuntime="false"
            debug="on" optimize="${build.optimize}" deprecation="on" source="1.5" target="1.5">
       <classpath refid="classpath"/>
-      <exclude name="com/threerings/jme/**" unless="build.jme"/>
       <exclude name="com/threerings/openal/**" unless="build.openal"/>
       <exclude name="com/threerings/**/tools/xml/**" unless="build.xml"/>
       <exclude name="**/OggPlayer.java"/>
@@ -218,10 +217,6 @@
     </jar>
     <jar destfile="${deploy.dir}/${lib.name}-chat.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/chat/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${lib.name}-jme.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/jme/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/**/jme/**"/>
     </jar>
     <jar destfile="${deploy.dir}/${lib.name}-openal.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>

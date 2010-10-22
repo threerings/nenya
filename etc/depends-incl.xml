@@ -9,14 +9,6 @@
      classname="org.lwjgl.LWJGLException" classpathref="classpath"/>
     <echo level="info" message="Have LWJGL: ${lwjgl.present}"/>
 
-    <available property="jme.present"
-     classname="com.jme.scene.Node" classpathref="classpath"/>
-    <echo level="info" message="Have JME: ${jme.present}"/>
-
-    <available property="jme-bui.present"
-     classname="com.jmex.bui.BWindow" classpathref="classpath"/>
-    <echo level="info" message="Have JME-BUI: ${jme-bui.present}"/>
-
     <available property="jorbis.present"
      classname="com.jcraft.jorbis.Info" classpathref="classpath"/>
     <echo level="info" message="Have JOrbis: ${jorbis.present}"/>
@@ -28,13 +20,6 @@
     <available property="xml-writer.present"
      classname="com.megginson.sax.DataWriter" classpathref="classpath"/>
     <echo level="info" message="Have XML Writer: ${xml-writer.present}"/>
-
-    <condition property="build.jme">
-      <and>
-        <isset property="jme.present"/>
-        <isset property="jme-bui.present"/>
-      </and>
-    </condition>
 
     <condition property="build.openal">
       <and>
