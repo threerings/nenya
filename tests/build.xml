@@ -89,7 +89,6 @@
     <javac srcdir="${src.dir}" destdir="${classes.dir}" includeAntRuntime="false"
       debug="on" optimize="off" deprecation="off">
       <classpath refid="classpath"/>
-      <exclude name="com/threerings/jme/**" unless="build.jme"/>
       <exclude name="com/threerings/openal/**" unless="build.openal"/>
       <exclude name="com/threerings/**/tools/xml/**" unless="build.xml"/>
       <exclude name="com/threerings/miso/viewer/**" unless="build.xml"/>
