@@ -86,9 +86,7 @@
   </target>
 
   <!-- adds readField and writeField methods to Stremable classes -->
-  <target name="procstream" depends="prepare">
-    <taskdef resource="com/threerings/presents/tools.properties"
-             classpath="${libs.dir}/narya-tools-full.jar"/>
+  <target name="procstream" depends="preptools">
     <instream outdir="${classes.dir}">
       <path refid="classpath"/>
       <fileset dir="${classes.dir}" includes="**/data/*.class"/>
