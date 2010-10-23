@@ -16,8 +16,7 @@
     <include name="javassist.jar"/>
     <!-- these might be named lib-SNAPSHOT-0.0.jar or lib.jar -->
     <include name="samskivert.jar"/>
-    <include name="narya-base*.jar"/>
-    <include name="narya-distrib*.jar"/>
+    <include name="narya*.jar"/>
     <!-- these LWJGL (for OpenAL) and codec libraries are optional -->
     <include name="lwjgl.jar"/>
     <include name="lwjgl_util.jar"/>
