@@ -1,18 +1,12 @@
 <?xml version="1.0" standalone="yes"?>
 <!-- build configuration -->
 <project name="nenya" default="compile" basedir=".">
-
-  <!-- import overriding properties -->
-  <property file="build.properties"/>
-
-  <!-- configuration parameters -->
-  <property name="lib.name"    value="nenya"/>
-  <property name="deploy.dir"  value="dist"/>
-  <property name="savedoc.dir" value="docs"/>
-
-  <!-- derived properties -->  
-  <property name="javadoc.home" value="${deploy.dir}/docs"/>
+  <property name="lib.name"     value="nenya"/>
+  <property name="src.dir"      value="src/main/java"/>
+  <property name="tsrc.dir"     value="src/test/java"/>
+  <property name="deploy.dir"   value="dist"/>
   <property name="classes.dir"  value="${deploy.dir}/classes"/>
+  <property name="tclasses.dir" value="${deploy.dir}/test-classes"/>
 
   <!-- import some targets to enumerate library dependencies -->
   <property name="libs.dir" value="lib"/>
@@ -31,10 +25,9 @@
     <mkdir dir="${deploy.dir}/lib"/>
     <mkdir dir="${classes.dir}"/>
     <mkdir dir="${classes.dir}/rsrc"/>
-    <mkdir dir="${javadoc.home}"/>
     <copy todir="${classes.dir}">
-      <fileset dir="src/java" includes="**/*.properties"/>
-      <fileset dir="src/java" includes="**/*.tmpl"/>
+      <fileset dir="${src.dir}" includes="**/*.properties"/>
+      <fileset dir="${src.dir}" includes="**/*.tmpl"/>
     </copy>
     <copy todir="${classes.dir}/rsrc">
       <fileset dir="rsrc" includes="**/*"/>
@@ -46,13 +39,12 @@
 
   <!-- makes sure our tools are compiled and defines the ant tasks -->
   <target name="preptools" depends="prepare">
-    <taskdef resource="com/threerings/presents/tools.properties"
-             classpath="${libs.dir}/narya-tools-full.jar"/>
+    <taskdef resource="com/threerings/presents/tools.properties" classpathref="classpath"/>
   </target>
 
   <!-- cleans out the intermediate build files -->
   <target name="clean" depends="common-clean">
-    <delete dir="${deploy.dir}/classes"/>
+    <delete dir="${classes.dir}"/>
     <delete dir="${deploy.dir}/docs"/>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.jar"/></delete>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.swc"/></delete>
@@ -70,7 +62,7 @@
 
   <!-- build the java class files -->
   <target name="compile" depends="check-available,prepare">
-    <javac srcdir="src/java" destdir="${classes.dir}" includeAntRuntime="false"
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" includeAntRuntime="false"
            debug="on" optimize="${build.optimize}" deprecation="on" source="1.5" target="1.5">
       <classpath refid="classpath"/>
       <exclude name="com/threerings/openal/**" unless="build.openal"/>
@@ -127,19 +119,20 @@
   <!-- installs the pre-built native libraries -->
   <condition property="isunix"><os family="unix"/></condition>
   <target name="ninstall" depends="prepare" if="isunix">
-    <exec os="Linux" dir="src/java/com/threerings/util/keybd/Linux" executable="make">
+    <exec os="Linux" dir="${src.dir}/com/threerings/util/keybd/Linux" executable="make">
       <arg line="install"/>
     </exec>
     <echo level="info" message="Installing native libraries for ${os.name}..."/>
-    <exec dir="src/java/com/threerings/util/unsafe/${os.name}" executable="make">
+    <exec dir="${src.dir}/com/threerings/util/unsafe/${os.name}" executable="make">
       <arg line="install"/>
     </exec>
   </target>
 
   <!-- build the javadoc documentation -->
   <target name="javadoc" depends="prepare">
-    <javadoc sourcepath="src/java" packagenames="com.threerings.*"
-             destdir="${javadoc.home}" stylesheetfile="docs/stylesheet.css"
+    <mkdir dir="${deploy.dir}/docs"/>
+    <javadoc sourcepath="${src.dir}" packagenames="com.threerings.*"
+             destdir="${deploy.dir}/docs" stylesheetfile="docs/stylesheet.css"
              additionalparam="-breakiterator"
              link="http://www.threerings.net/code/nenya/docs/api">
       <classpath refid="classpath"/>
@@ -150,17 +143,8 @@
       <link href="http://www.threerings.net/code/narya/docs/api"/>
       <link href="http://www.jmonkeyengine.com/doc"/>
     </javadoc>
-    <copy todir="${javadoc.home}">
-      <fileset dir="src/java" includes="**/*.png"/>
-    </copy>
-  </target>
-
-  <!-- builds the javadocs and stuffs them in a directory where they -->
-  <!-- won't be blown away when we do "clean" next time -->
-  <target name="savedoc" depends="javadoc">
-    <delete dir="${savedoc.dir}/api"/>
-    <copy todir="${savedoc.dir}/api">
-      <fileset dir="${javadoc.home}" includes="**/*"/>
+    <copy todir="${deploy.dir}/docs">
+      <fileset dir="${src.dir}" includes="**/*.png"/>
     </copy>
   </target>
 
@@ -283,7 +267,7 @@
   <!-- generates ActionScript versions of our Streamable classes -->
   <target name="genascript" depends="preptools">
     <genascript header="lib/SOURCE_HEADER" asroot="src/as">
-      <fileset dir="src/java" includes="**/data/*.java"/>
+      <fileset dir="${src.dir}" includes="**/data/*.java"/>
     </genascript>
   </target>
 
