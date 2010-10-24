@@ -4,19 +4,18 @@
   <fileset dir="${libs.dir}" id="nenya.libs">
     <!-- Java dependencies -->
     <include name="ant.jar"/>
+    <include name="commons-beanutils.jar"/>
     <include name="commons-collections.jar"/>
     <include name="commons-digester.jar"/>
     <include name="commons-logging.jar"/>
-    <include name="commons-beanutils.jar"/>
     <include name="guava.jar"/>
     <include name="guice.jar"/>
-    <include name="junit4.jar"/>
-    <include name="retroweaver-all-1.2.2.jar"/>
-    <include name="xml-writer.jar"/>
     <include name="javassist.jar"/>
-    <!-- these might be named lib-SNAPSHOT-0.0.jar or lib.jar -->
+    <include name="junit4.jar"/>
+    <include name="narya.jar"/>
+    <include name="retroweaver-all-1.2.2.jar"/>
     <include name="samskivert.jar"/>
-    <include name="narya*.jar"/>
+    <include name="xml-writer.jar"/>
     <!-- these LWJGL (for OpenAL) and codec libraries are optional -->
     <include name="lwjgl.jar"/>
     <include name="lwjgl_util.jar"/>
@@ -24,9 +23,9 @@
     <include name="jorbis-0.0.15.jar"/>
     <include name="jl1.0.jar"/>
     <!-- ActionScript dependencies -->
-    <include name="aspirin.swc"/>
-    <include name="naryalib*.swc"/>
-    <include name="flexlib*.swc"/>
     <include name="as3isolib-fp9.swc"/>
+    <include name="aspirin.swc"/>
+    <include name="flexlib.swc"/>
+    <include name="naryalib.swc"/>
   </fileset>
 </project>
