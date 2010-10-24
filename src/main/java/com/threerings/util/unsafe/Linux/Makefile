@@ -12,7 +12,7 @@ MKDIR=mkdir
 #
 # Directory definitions
 
-ROOT=../../../../../../..
+ROOT=../../../../../../../..
 LIBRARIES_PATH=-L/usr/X11R6/lib
 INSTALL_PATH=${ROOT}/dist/lib/i686-Linux
 

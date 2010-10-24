@@ -12,7 +12,7 @@ MKDIR=mkdir
 #
 # Directory definitions
 
-ROOT=../../../../../../..
+ROOT=../../../../../../../..
 LIBRARIES_PATH=
 OSINCDIR!=uname -s | tr 'A-Z' 'a-z'
 INSTALL_PATH=${ROOT}/dist/lib/i386-FreeBSD

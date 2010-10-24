@@ -14,7 +14,7 @@ DLLWRAP=i586-mingw32msvc-dllwrap
 #
 # Directory definitions
 
-ROOT=../../../../../../..
+ROOT=../../../../../../../..
 INSTALL_PATH=${ROOT}/dist/lib/i686-Windows
 
 #
