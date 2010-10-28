@@ -10,9 +10,5 @@
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/lwjgl/lwjgl.jar"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/lwjgl/lwjgl_util.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/narya"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/commons-digester.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/commons-lang.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/commons-logging.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/commons-io.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
