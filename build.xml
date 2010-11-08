@@ -380,7 +380,7 @@
   </target>
 
   <property name="scene" value="idyll"/>
-  <target name="miso-viewer" depends="compile,test-tsbundles,test-cbundles"
+  <target name="miso-viewer" depends="compile,test-colorpos,test-tsbundles,test-cbundles"
           description="Runs the Miso scene viewer.">
     <java classname="com.threerings.miso.viewer.ViewerApp"
           fork="true" classpathref="test.classpath">

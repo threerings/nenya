@@ -41,11 +41,11 @@ import com.threerings.miso.client.MisoScenePanel;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.util.MisoContext;
 
+import com.threerings.cast.CastUtil;
 import com.threerings.cast.CharacterDescriptor;
 import com.threerings.cast.CharacterManager;
 import com.threerings.cast.CharacterSprite;
 import com.threerings.cast.ComponentRepository;
-import com.threerings.cast.util.CastUtil;
 
 import static com.threerings.miso.Log.log;
 
