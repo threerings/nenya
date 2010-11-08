@@ -49,7 +49,7 @@ public abstract class TileSetRuleSet
     /**
      * @return The full path used to match tilesets.  Consists of the prefile plus _tilesetPath.
      */
-    public String getPath(){
+    public String getPath () {
         return _path;
     }
 

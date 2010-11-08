@@ -35,29 +35,29 @@ import com.threerings.media.tile.TileSet;
  * Parses {@link ObjectTileSet} instances from a tileset description. An
  * object tileset description looks like so:
  *
- * <pre>
- * &lt;tileset name="Sample Object Tileset"&gt;
- *   &lt;imagePath&gt;path/to/image.png&lt;/imagePath&gt;
- *   &lt;!-- the widths (per row) of each tile in pixels --&gt;
- *   &lt;widths&gt;265&lt;/widths&gt;
- *   &lt;!-- the heights (per row) of each tile in pixels --&gt;
- *   &lt;heights&gt;224&lt;/heights&gt;
- *   &lt;!-- the number of tiles in each row --&gt;
- *   &lt;tileCounts&gt;4&lt;/tileCounts&gt;
- *   &lt;!-- the offset in pixels to the upper left tile --&gt;
- *   &lt;offsetPos&gt;0, 0&lt;/offsetPos&gt;
- *   &lt;!-- the gap between tiles in pixels --&gt;
- *   &lt;gapSize&gt;0, 0&lt;/gapSize&gt;
- *   &lt;!-- the widths (in unit tile count) of the objects --&gt;
- *   &lt;objectWidths&gt;4, 3, 4, 3&lt;/objectWidths&gt;
- *   &lt;!-- the heights (in unit tile count) of the objects --&gt;
- *   &lt;objectHeights&gt;3, 4, 3, 4&lt;/objectHeights&gt;
- *   &lt;!-- the default render priorities for these object tiles --&gt;
- *   &lt;priorities&gt;0, 0, -1, 0&lt;/priorities&gt;
- *   &lt;!-- the constraints for these object tiles --&gt;
- *   &lt;constraints&gt;ATTACH_N, ATTACH_E, ATTACH_S, ATTACH_W&lt;/constraints&gt;
- * &lt;/tileset&gt;
- * </pre>
+ * {@code
+ * <tileset name="Sample Object Tileset">
+ *   <imagePath>path/to/image.png</imagePath>
+ *   <!-- the widths (per row) of each tile in pixels -->
+ *   <widths>265</widths>
+ *   <!-- the heights (per row) of each tile in pixels -->
+ *   <heights>224</heights>
+ *   <!-- the number of tiles in each row -->
+ *   <tileCounts>4</tileCounts>
+ *   <!-- the offset in pixels to the upper left tile -->
+ *   <offsetPos>0, 0</offsetPos>
+ *   <!-- the gap between tiles in pixels -->
+ *   <gapSize>0, 0</gapSize>
+ *   <!-- the widths (in unit tile count) of the objects -->
+ *   <objectWidths>4, 3, 4, 3</objectWidths>
+ *   <!-- the heights (in unit tile count) of the objects -->
+ *   <objectHeights>3, 4, 3, 4</objectHeights>
+ *   <!-- the default render priorities for these object tiles -->
+ *   <priorities>0, 0, -1, 0</priorities>
+ *   <!-- the constraints for these object tiles -->
+ *   <constraints>ATTACH_N, ATTACH_E, ATTACH_S, ATTACH_W</constraints>
+ * </tileset>
+ * }
  */
 public class ObjectTileSetRuleSet extends SwissArmyTileSetRuleSet
 {

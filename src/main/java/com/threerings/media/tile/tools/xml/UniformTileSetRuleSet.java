@@ -32,15 +32,15 @@ import static com.threerings.media.Log.log;
  * Parses {@link UniformTileSet} instances from a tileset description. A
  * uniform tileset description looks like so:
  *
- * <pre>
- * &lt;tileset name="Sample Uniform Tileset"&gt;
- *   &lt;imagePath&gt;path/to/image.png&lt;/imagePath&gt;
- *   &lt;!-- the width of each tile in pixels --&gt;
- *   &lt;width&gt;64&lt;/width&gt;
- *   &lt;!-- the height of each tile in pixels --&gt;
- *   &lt;height&gt;48&lt;/height&gt;
- * &lt;/tileset&gt;
- * </pre>
+ * {@code
+ * <tileset name="Sample Uniform Tileset">
+ *   <imagePath>path/to/image.png</imagePath>
+ *   <!-- the width of each tile in pixels -->
+ *   <width>64</width>
+ *   <!-- the height of each tile in pixels -->
+ *   <height>48</height>
+ * </tileset>
+ * }
  */
 public class UniformTileSetRuleSet extends TileSetRuleSet
 {
