@@ -21,10 +21,15 @@
 
 package com.threerings.media.tile.tools.xml;
 
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 import java.io.IOException;
+
+import com.threerings.media.tile.ObjectTileSet;
+import com.threerings.media.tile.SwissArmyTileSet;
+import com.threerings.media.tile.UniformTileSet;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -35,30 +40,59 @@ public class XMLTileSetParserTest
 {
     @Test
     public void testRuleSets ()
+        throws IOException
     {
-        HashMap<String, TileSet> sets = new HashMap<String, TileSet>();
+        Map<String, TileSet> sets = new HashMap<String, TileSet>();
 
         XMLTileSetParser parser = new XMLTileSetParser();
-        // add some rulesets
         parser.addRuleSet("tilesets/uniform", new UniformTileSetRuleSet());
         parser.addRuleSet("tilesets/swissarmy", new SwissArmyTileSetRuleSet());
         parser.addRuleSet("tilesets/object", new ObjectTileSetRuleSet());
 
         // load up the tilesets
-        try {
-            parser.loadTileSets(TILESET_PATH, sets);
+        parser.loadTileSets(TILESET_PATH, sets);
 
-            // print them out
-            Iterator<TileSet> iter = sets.values().iterator();
-            while (iter.hasNext()) {
-                // iter.next();
-                System.out.println(iter.next());
-            }
+        // make sure they were properly parsed
+        SwissArmyTileSet fset = (SwissArmyTileSet)sets.remove("Fringe");
+        // System.out.println(fset);
+        assertEquals("Fringe", fset.getName());
+        assertEquals("fringe.png", fset.getImagePath());
+        assertEquals(40, fset.getTileCount());
+        assertArrayEquals(repeat(64, 5), fset.getWidths());
+        assertArrayEquals(repeat(48, 5), fset.getHeights());
+        assertArrayEquals(repeat(8, 5), fset.getTileCounts());
 
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            fail("loadTileSets() failed");
+        ObjectTileSet bset = (ObjectTileSet)sets.remove("Building");
+        // System.out.println(bset);
+        assertEquals("Building", bset.getName());
+        assertEquals("building.png", bset.getImagePath());
+        assertEquals(4, bset.getTileCount());
+        assertArrayEquals(repeat(224, 1), bset.getWidths());
+        assertArrayEquals(repeat(293, 1), bset.getHeights());
+        assertArrayEquals(repeat(4, 1), bset.getTileCounts());
+        int[] owidths = { 4, 3, 4, 3 }, oheights = { 3, 4, 3, 4 };
+        for (int ii = 0; ii < 4; ii++) {
+            assertEquals(owidths[ii], bset.getBaseWidth(ii));
+            assertEquals(oheights[ii], bset.getBaseHeight(ii));
         }
+        // TODO: test offset pos and gap size
+
+        UniformTileSet iset = (UniformTileSet)sets.remove("Node Icons");
+        // System.out.println(iset);
+        assertEquals("Node Icons", iset.getName());
+        assertEquals("node-icons.png", iset.getImagePath());
+        assertEquals(16, iset.getWidth());
+        assertEquals(16, iset.getHeight());
+        // TODO: can't test getTileCount() since that requires real image data
+
+        assertEquals(0, sets.size());
+    }
+
+    protected int[] repeat (int value, int count)
+    {
+        int[] ints = new int[count];
+        Arrays.fill(ints, value);
+        return ints;
     }
 
     protected static final String TILESET_PATH = "rsrc/media/tile/tools/xml/tilesets.xml";
