@@ -215,9 +215,8 @@ public class ComponentBundlerTask extends Task
                     TileSet aset = actsets.get(info[2]);
                     if (aset == null) {
                         System.err.println(
-                            "No tileset definition for component action " +
-                            "[class=" + info[0] + ", name=" + info[1] +
-                            ", action=" + info[2] + "].");
+                            "No tileset definition for component action '" + info[2] +
+                            "' [class=" + info[0] + ", name=" + info[1] + "].");
                         continue;
                     }
                     aset.setImageProvider(improv);
@@ -454,8 +453,7 @@ public class ComponentBundlerTask extends Task
     }
 
     /**
-     * Parses the action tileset definitions and puts them into a hash
-     * map, keyed on action name.
+     * Parses the action tileset definitions and puts them into a hash map, keyed on action name.
      */
     protected HashMap<String, TileSet> parseActionTileSets ()
     {
@@ -463,7 +461,6 @@ public class ComponentBundlerTask extends Task
         digester.addSetProperties("actions" + ActionRuleSet.ACTION_PATH);
         addTileSetRuleSet(digester, new SwissArmyTileSetRuleSet());
         addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
-
 
         HashMap<String, TileSet> actsets = new ActionMap();
         digester.push(actsets);
