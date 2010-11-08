@@ -97,7 +97,7 @@
       <!-- TODO: we should publish a narya-tools "artifact" which has the
            javassist dependency listed as non-optional -->
       <dependency groupId="javassist" artifactId="javassist" version="3.8.0.GA"/>
-      <dependency groupId="com.threerings" artifactId="narya" version="1.0"/>
+      <dependency groupId="com.threerings" artifactId="narya" version="1.1"/>
     </artifact:dependencies>
     <taskdef resource="com/threerings/presents/tools.properties" classpathref="tools.classpath"/>
   </target>
