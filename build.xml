@@ -428,4 +428,14 @@
      <delete dir="${deploy.dir}/snapshot"/>
   </target>
 
+  <property name="scene" value="idyll"/>
+  <target name="miso-viewer" depends="compile,test-tsbundles,test-cbundles"
+          description="Runs the Miso scene viewer.">
+    <java classname="com.threerings.miso.viewer.ViewerApp"
+          fork="true" classpathref="test.classpath">
+      <sysproperty key="resource_dir" value="${testrsrc.dir}"/>
+      <sysproperty key="no_unpack_resources" value="true"/>
+      <arg value="${testrsrc.dir}/scenes/${scene}.xml"/>
+    </java>
+  </target>
 </project>
