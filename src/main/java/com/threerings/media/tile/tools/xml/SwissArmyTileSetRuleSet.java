@@ -38,21 +38,21 @@ import static com.threerings.media.Log.log;
  * Parses {@link SwissArmyTileSet} instances from a tileset description. A
  * swiss army tileset description looks like so:
  *
- * <pre>
- * &lt;tileset name="Sample Swiss Army Tileset"&gt;
- *   &lt;imagePath&gt;path/to/image.png&lt;/imagePath&gt;
- *   &lt;!-- the widths (per row) of each tile in pixels --&gt;
- *   &lt;widths&gt;64, 64, 64, 64&lt;/widths&gt;
- *   &lt;!-- the heights (per row) of each tile in pixels --&gt;
- *   &lt;heights&gt;48, 48, 48, 64&lt;/heights&gt;
- *   &lt;!-- the number of tiles in each row --&gt;
- *   &lt;tileCounts&gt;16, 5, 3, 10&lt;/tileCounts&gt;
- *   &lt;!-- the offset in pixels to the upper left tile --&gt;
- *   &lt;offsetPos&gt;8, 8&lt;/offsetPos&gt;
- *   &lt;!-- the gap between tiles in pixels --&gt;
- *   &lt;gapSize&gt;12, 12&lt;/gapSize&gt;
- * &lt;/tileset&gt;
- * </pre>
+ * {@code
+ * <tileset name="Sample Swiss Army Tileset">
+ *   <imagePath>path/to/image.png</imagePath>
+ *   <!-- the widths (per row) of each tile in pixels -->
+ *   <widths>64, 64, 64, 64</widths>
+ *   <!-- the heights (per row) of each tile in pixels -->
+ *   <heights>48, 48, 48, 64</heights>
+ *   <!-- the number of tiles in each row -->
+ *   <tileCounts>16, 5, 3, 10</tileCounts>
+ *   <!-- the offset in pixels to the upper left tile -->
+ *   <offsetPos>8, 8</offsetPos>
+ *   <!-- the gap between tiles in pixels -->
+ *   <gapSize>12, 12</gapSize>
+ * </tileset>
+ * }
  */
 public class SwissArmyTileSetRuleSet extends TileSetRuleSet
 {
