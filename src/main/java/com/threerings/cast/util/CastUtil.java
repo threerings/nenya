@@ -82,6 +82,12 @@ public class CastUtil
             ArrayList<Integer> choices = Lists.newArrayList();
             Iterators.addAll(choices, crepo.enumerateComponentIds(cclass));
 
+            // each of our components has up to four colorizations: two "global" skin colorizations
+            // and potentially a primary and secondary clothing colorization; in a real system one
+            // would probably keep a separate database of which character component required which
+            // colorizations, but here we just assume everything could have any of the four
+            // colorizations; it *usually* doesn't hose an image if you apply a recoloring that it
+            // does not support, but it can match stray colors unnecessarily
             zations[ii] = new Colorization[COLOR_CLASSES.length];
             for (int zz = 0; zz < COLOR_CLASSES.length; zz++) {
                 zations[ii][zz] = cpos.getRandomStartingColor(COLOR_CLASSES[zz]).getColorization();
