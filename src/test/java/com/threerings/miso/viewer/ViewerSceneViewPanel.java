@@ -41,11 +41,11 @@ import com.threerings.miso.client.MisoScenePanel;
 import com.threerings.miso.data.MisoSceneModel;
 import com.threerings.miso.util.MisoContext;
 
-import com.threerings.cast.CastUtil;
 import com.threerings.cast.CharacterDescriptor;
 import com.threerings.cast.CharacterManager;
 import com.threerings.cast.CharacterSprite;
 import com.threerings.cast.ComponentRepository;
+import com.threerings.cast.util.CastUtil;
 
 import static com.threerings.miso.Log.log;
 
@@ -61,8 +61,9 @@ public class ViewerSceneViewPanel extends MisoScenePanel
         super(ctx, MisoConfig.getSceneMetrics());
 
         // create the character descriptors
-        _descUser = CastUtil.getRandomDescriptor("female", crepo, cpos);
-        _descDecoy = CastUtil.getRandomDescriptor("male", crepo, cpos);
+        _descUser = CastUtil.getRandomDescriptor(
+            crepo, "female", COMP_CLASSES, cpos, COLOR_CLASSES);
+        _descDecoy = CastUtil.getRandomDescriptor(crepo, "male", COMP_CLASSES, cpos, COLOR_CLASSES);
 
         // create the manipulable sprite
         _sprite = createSprite(_spritemgr, charmgr, _descUser);
@@ -234,4 +235,13 @@ public class ViewerSceneViewPanel extends MisoScenePanel
 
     /** The test sprites that meander about aimlessly. */
     protected CharacterSprite _decoys[];
+
+    /** Defines our various character component classes. */
+    protected static final String[] COMP_CLASSES = {
+        "legs", "feet", "hand_left", "hand_right", "torso",
+        "head", "hair", "hat", "eyepatch" };
+
+    /** Defines the colorization classes used in the character component images. */
+    protected static final String[] COLOR_CLASSES = {
+        "skin", "hair", "textile_p", "textile_s" };
 }

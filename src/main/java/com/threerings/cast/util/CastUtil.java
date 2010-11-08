@@ -19,7 +19,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-package com.threerings.cast;
+package com.threerings.cast.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,6 +32,10 @@ import com.samskivert.util.RandomUtil;
 import com.threerings.media.image.ColorPository;
 import com.threerings.media.image.Colorization;
 
+import com.threerings.cast.CharacterDescriptor;
+import com.threerings.cast.ComponentClass;
+import com.threerings.cast.ComponentRepository;
+
 import static com.threerings.cast.Log.log;
 
 /**
@@ -43,11 +47,12 @@ public class CastUtil
      * Returns a new character descriptor populated with a random set of components.
      */
     public static CharacterDescriptor getRandomDescriptor (
-        String gender, ComponentRepository crepo, ColorPository cpos)
+        ComponentRepository crepo, String gender, String[] COMP_CLASSES,
+        ColorPository cpos, String[] COLOR_CLASSES)
     {
         // get all available classes
         ArrayList<ComponentClass> classes = Lists.newArrayList();
-        for (String element : CLASSES) {
+        for (String element : COMP_CLASSES) {
             String cname = gender + "/" + element;
             ComponentClass cclass = crepo.getComponentClass(cname);
 
@@ -100,11 +105,4 @@ public class CastUtil
 
         return new CharacterDescriptor(components, zations);
     }
-
-    // these are all specific to our test resourcse
-    protected static final String[] CLASSES = {
-        "legs", "feet", "hand_left", "hand_right", "torso",
-        "head", "hair", "hat", "eyepatch" };
-    protected static final String[] COLOR_CLASSES = {
-        "skin", "hair", "textile_p", "textile_s" };
 }
