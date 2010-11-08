@@ -91,7 +91,6 @@
     </condition>
   </target>
 
-  <!-- makes sure our tools are compiled and defines the ant tasks -->
   <target name="-preptools" depends="-prepare">
     <artifact:dependencies pathId="tools.classpath">
       <!-- TODO: we should publish a narya-tools "artifact" which has the
@@ -102,8 +101,7 @@
     <taskdef resource="com/threerings/presents/tools.properties" classpathref="tools.classpath"/>
   </target>
 
-  <!-- cleans out the intermediate build files -->
-  <target name="clean">
+  <target name="clean" description="Deletes most build artifacts.">
     <delete dir="${classes.dir}"/>
     <delete dir="${tclasses.dir}"/>
     <delete dir="${deploy.dir}/docs"/>
@@ -111,13 +109,11 @@
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.swc"/></delete>
   </target>
 
-  <!-- wipes the entire build directory clean -->
-  <target name="distclean">
+  <target name="distclean" description="Deletes all build artifacts.">
     <delete dir="${deploy.dir}"/>
   </target>
 
-  <!-- build the java class files -->
-  <target name="compile" depends="-check-available">
+  <target name="compile" depends="-check-available" description="Compiles source files.">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${src.dir}" destdir="${classes.dir}" includeAntRuntime="false"
            debug="on" optimize="${build.optimize}" deprecation="on" source="1.5" target="1.5">
@@ -142,8 +138,8 @@
     </javac>
   </target>
 
-  <!-- adds readField and writeField methods to Stremable classes -->
-  <target name="procstream" depends="-preptools">
+  <target name="procstream" depends="-preptools"
+          description="Instruments Streamable classes for use in sandbox environments.">
     <instream outdir="${classes.dir}">
       <path refid="built.classpath"/>
       <fileset dir="${classes.dir}" includes="**/data/*.class"/>
@@ -151,7 +147,6 @@
     </instream>
   </target>
 
-  <!-- checks whether our Flash library needs building -->
   <target name="-checkaslib">
     <condition property="no_build_aslib"><or>
       <not><available file="${flexsdk.dir}/lib/compc.jar"/></not>
@@ -161,8 +156,8 @@
     </or></condition>
   </target>
 
-  <!-- builds our Flash library -->
-  <target name="aslib" unless="no_build_aslib" depends="-checkaslib">
+  <target name="aslib" unless="no_build_aslib" depends="-checkaslib"
+          description="Builds ActionScript library.">
     <copy file="etc/aslib-config.xml.in" tofile="${deploy.dir}/aslib-config.xml">
       <filterset>
         <filter token="flex_sdk_dir" value="${flexsdk.dir}"/>
@@ -181,9 +176,8 @@
     <delete file="${deploy.dir}/aslib-config.xml"/>
   </target>
 
-  <!-- installs the pre-built native libraries -->
   <condition property="isunix"><os family="unix"/></condition>
-  <target name="ninstall" depends="-prepare" if="isunix">
+  <target name="-ninstall" depends="-prepare" if="isunix">
     <exec os="Linux" dir="${src.dir}/com/threerings/util/keybd/Linux" executable="make">
       <arg line="install"/>
     </exec>
@@ -194,7 +188,7 @@
   </target>
 
   <!-- build the javadoc documentation -->
-  <target name="javadoc" depends="-prepare">
+  <target name="javadoc" depends="-prepare" description="Builds javadocs.">
     <mkdir dir="${deploy.dir}/docs"/>
     <javadoc sourcepath="${src.dir}" packagenames="com.threerings.*"
              destdir="${deploy.dir}/docs" stylesheetfile="docs/stylesheet.css"
@@ -299,11 +293,11 @@
     </unit>
   </target>
 
-  <!-- a target for rebuilding everything -->
-  <target name="all" depends="clean,-prepare,compile,ninstall,tests,javadoc,dist"/>
+  <target name="all" depends="clean,-prepare,compile,-ninstall,tests,javadoc,dist"
+          description="Cleans and rebuilds everything, including javadocs."/>
 
-  <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="-prepare,compile,procstream,ninstall,aslib">
+  <target name="dist" depends="-prepare,compile,procstream,-ninstall,aslib"
+          description="Compiles everything and build distribution jar files.">
     <!-- build our various jar files -->
     <jar destfile="${deploy.dir}/${lib.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
@@ -332,8 +326,7 @@
     </jar>
   </target>
 
-  <!-- a helper task for 'retro' -->
-  <target name="vweave">
+  <target name="-vweave">
     <!-- various bits used by the retroweaver tasks -->
     <taskdef name="weave" classpathref="built.classpath"
              classname="com.rc.retroweaver.ant.RetroWeaverTask"/>
@@ -350,8 +343,8 @@
     </weave>
   </target>
 
-  <!-- converts our 1.5 code to a 1.4 compatible format -->
-  <target name="retro" depends="dist">
+  <target name="retro" depends="dist"
+          description="Converts our 1.5 code to a 1.4 compatible format">
     <mkdir dir="${deploy.dir}/retro"/>
 
     <!-- we weave everything a first time without verification so that -->
@@ -363,69 +356,18 @@
     <weave inputjar="${inpre}-rsrc.jar" outputjar="${outpre}-rsrc.jar"/>
 
     <!-- now weave again with the verifier to check for unweavable 1.5isms -->
-    <antcall target="vweave"><param name="which" value="cast"/></antcall>
-    <antcall target="vweave"><param name="which" value="micasa"/></antcall>
-    <antcall target="vweave"><param name="which" value="miso"/></antcall>
-    <antcall target="vweave"><param name="which" value="media"/></antcall>
-    <antcall target="vweave"><param name="which" value="rsrc"/></antcall>
+    <antcall target="-vweave"><param name="which" value="cast"/></antcall>
+    <antcall target="-vweave"><param name="which" value="micasa"/></antcall>
+    <antcall target="-vweave"><param name="which" value="miso"/></antcall>
+    <antcall target="-vweave"><param name="which" value="media"/></antcall>
+    <antcall target="-vweave"><param name="which" value="rsrc"/></antcall>
   </target>
 
-  <!-- generates ActionScript versions of our Streamable classes -->
-  <target name="genascript" depends="-preptools">
+  <target name="genascript" depends="-preptools"
+          description="Generates ActionScript versions of our Streamable classes.">
     <genascript header="lib/SOURCE_HEADER" asroot="src/as">
       <fileset dir="${src.dir}" includes="**/data/*.java"/>
     </genascript>
-  </target>
-
-  <!-- creates a tarball and zipfile for source distribution -->
-  <target name="distrib">
-     <echo message="You may want to stop and run 'ant savedoc' first."/>
-     <echo message="Building tar.gz distribution..."/>
-     <tar destfile="../nenya-snapshot.tar.gz" compression="gzip">
-       <tarfileset dir=".." mode="0775" dirmode="0775">
-         <include name="nenya/bin/**"/>
-         <exclude name="**/.svn"/>
-       </tarfileset>
-       <tarfileset dir=".." mode="0664" dirmode="0775">
-         <include name="nenya/**"/>
-         <exclude name="**/.svn"/>
-         <exclude name="nenya/dist/**"/>
-         <exclude name="nenya/code/**"/>
-         <exclude name="nenya/nenya-*.*"/>
-       </tarfileset>
-     </tar>
-     <echo message="Building zip distribution..."/>
-     <zip destfile="../nenya-snapshot.zip">
-       <fileset dir="..">
-         <include name="nenya/**"/>
-         <exclude name="**/.svn"/>
-         <exclude name="nenya/dist/**"/>
-         <exclude name="nenya/code/**"/>
-         <exclude name="nenya/nenya-*.*"/>
-       </fileset>
-     </zip>
-  </target>
-
-  <!-- creates a zipfile with our source distribution -->
-  <target name="snapshot">
-     <echo message="You may want to stop and run 'ant savedoc' first."/>
-     <delete file="${deploy.dir}/${lib.name}-snapshot.zip"/>
-     <mkdir dir="${deploy.dir}/snapshot/${lib.name}"/>
-     <copy todir="${deploy.dir}/snapshot/${lib.name}">
-       <fileset dir=".">
-         <include name="**"/>
-         <exclude name="dist/**"/>
-         <exclude name="${lib.name}-*.zip"/>
-       </fileset>
-     </copy>
-     <copy todir="${deploy.dir}/snapshot/${lib.name}/lib">
-       <fileset dir="${deploy.dir}/lib" includes="*.jar"/>
-     </copy>
-     <copy todir="${deploy.dir}/snapshot/${lib.name}/docs/api">
-       <fileset dir="${deploy.dir}/docs" includes="**"/>
-     </copy>
-     <zip destfile="${deploy.dir}/${lib.name}-snapshot.zip" basedir="${deploy.dir}/snapshot"/>
-     <delete dir="${deploy.dir}/snapshot"/>
   </target>
 
   <property name="scene" value="idyll"/>
