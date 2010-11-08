@@ -26,20 +26,15 @@ import java.util.Iterator;
 
 import java.io.IOException;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import com.threerings.media.tile.TileSet;
 
-public class XMLTileSetParserTest extends TestCase
+public class XMLTileSetParserTest
 {
-    public XMLTileSetParserTest ()
-    {
-        super(XMLTileSetParserTest.class.getName());
-    }
-
-    @Override
-    public void runTest ()
+    @Test
+    public void testRuleSets ()
     {
         HashMap<String, TileSet> sets = new HashMap<String, TileSet>();
 
@@ -56,8 +51,8 @@ public class XMLTileSetParserTest extends TestCase
             // print them out
             Iterator<TileSet> iter = sets.values().iterator();
             while (iter.hasNext()) {
-                iter.next();
-                // System.out.println(iter.next());
+                // iter.next();
+                System.out.println(iter.next());
             }
 
         } catch (IOException ioe) {
@@ -66,17 +61,5 @@ public class XMLTileSetParserTest extends TestCase
         }
     }
 
-    public static Test suite ()
-    {
-        return new XMLTileSetParserTest();
-    }
-
-    public static void main (String[] args)
-    {
-        XMLTileSetParserTest test = new XMLTileSetParserTest();
-        test.runTest();
-    }
-
-    protected static final String TILESET_PATH =
-        "rsrc/media/tile/tools/xml/tilesets.xml";
+    protected static final String TILESET_PATH = "rsrc/media/tile/tools/xml/tilesets.xml";
 }

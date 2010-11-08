@@ -103,27 +103,17 @@
   </target>
 
   <!-- cleans out the intermediate build files -->
-  <target name="clean" depends="common-clean">
+  <target name="clean">
     <delete dir="${classes.dir}"/>
+    <delete dir="${tclasses.dir}"/>
     <delete dir="${deploy.dir}/docs"/>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.jar"/></delete>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.swc"/></delete>
   </target>
 
   <!-- wipes the entire build directory clean -->
-  <target name="distclean" depends="common-clean">
+  <target name="distclean">
     <delete dir="${deploy.dir}"/>
-  </target>
-
-  <!-- common clean tasks -->
-  <target name="common-clean">
-<!--
-    <delete file="rsrc/bundles/tiles/tilesets.map"/>
-    <delete file="rsrc/bundles/components/components.map"/>
-    <delete file="rsrc/bundles/components/metadata.jar"/>
-    <delete><fileset dir="rsrc/bundles/tiles" includes="**/bundle.jar"/></delete>
-    <delete><fileset dir="rsrc/bundles/components" includes="**/components.jar"/></delete>
--->
   </target>
 
   <!-- build the java class files -->
@@ -239,8 +229,74 @@
     </java>
   </target>
 
-  <target name="tests" depends="compile" description="Builds and runs the tests.">
-    <!-- TODO -->
+  <target name="-prep-test-rsrcs">
+    <copy todir="${tclasses.dir}">
+      <fileset dir="src/test/resources" includes="**"/>
+    </copy>
+    <property name="testrsrc.dir" value="${tclasses.dir}/rsrc"/>
+  </target>
+
+  <target name="test-tsbundles" depends="-prep-test-rsrcs"
+          description="Build test tileset bundles.">
+    <taskdef name="tilebundle" classpathref="test.classpath"
+      classname="com.threerings.media.tile.bundle.tools.TileSetBundlerTask"/>
+    <taskdef name="conffringe" classpathref="test.classpath"
+      classname="com.threerings.miso.tile.tools.CompileFringeConfigurationTask"/>
+    <property name="tbundle.dir" value="${testrsrc.dir}/bundles/tiles"/>
+
+    <!-- blow away the tilesetid map file so that we get a consistent mapping every time -->
+    <delete file="${tbundle.dir}/tilesets.map"/>         
+
+    <tilebundle config="${tbundle.dir}/bundler-config.xml" mapfile="${tbundle.dir}/tilesets.map">
+      <fileset dir="${tbundle.dir}/ground" includes="**/*.xml"/>
+    </tilebundle>
+    <tilebundle config="${tbundle.dir}/bundler-config.xml" mapfile="${tbundle.dir}/tilesets.map">
+      <fileset dir="${tbundle.dir}/objects" includes="**/*.xml"/>
+    </tilebundle>
+
+    <conffringe tilesetmap="${tbundle.dir}/tilesets.map"
+                fringedef="${testrsrc.dir}/config/miso/tile/fringeconf.xml"
+                target="${testrsrc.dir}/config/miso/tile/fringeconf.dat"/>
+  </target>
+
+  <target name="test-cbundles" depends="-prep-test-rsrcs"
+          description="Builds test component bundles.">
+    <taskdef name="metabundle" classpathref="test.classpath"
+      classname="com.threerings.cast.bundle.tools.MetadataBundlerTask"/>
+    <taskdef name="cbundle" classpathref="test.classpath"
+      classname="com.threerings.cast.bundle.tools.ComponentBundlerTask"/>
+    <property name="cbundle.dir" value="${testrsrc.dir}/bundles/components"/>
+
+    <metabundle actiondef="${cbundle.dir}/actions.xml" classdef="${cbundle.dir}/classes.xml"
+                target="${cbundle.dir}/metadata.jar"/>
+
+    <!-- blow away the components map file so that we get a consistent mapping every time -->
+    <delete file="${cbundle.dir}/components.map"/>         
+    <cbundle actiondef="${cbundle.dir}/actions.xml" target="${cbundle.dir}/pirate/components.jar"
+             mapfile="${cbundle.dir}/components.map" root="${cbundle.dir}/pirate">
+      <fileset dir="${cbundle.dir}/pirate" includes="**/*.png" excludes="components/**"/>
+    </cbundle>
+    <cbundle actiondef="${cbundle.dir}/actions.xml" target="${cbundle.dir}/vessel/components.jar"
+             mapfile="${cbundle.dir}/components.map" root="${cbundle.dir}/vessel">
+      <fileset dir="${cbundle.dir}/vessel" includes="**/*.png" excludes="components/**"/>
+    </cbundle>
+  </target>
+
+  <property name="test" value=""/>
+  <target name="tests" depends="compile,test-tsbundles,test-cbundles" 
+          description="Runs unit tests. Use -Dtest=Foo to run only FooTest.">
+    <taskdef name="unit" classpathref="test.classpath"
+      classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+    <unit printsummary="off" haltonfailure="yes">
+      <classpath refid="test.classpath"/>
+      <sysproperty key="test_dir" value="${tclasses.dir}"/>
+      <sysproperty key="resource_dir" value="${testrsrc.dir}"/>
+      <sysproperty key="no_unpack_resources" value="true"/>
+      <formatter type="brief" usefile="false"/>
+      <batchtest>
+        <fileset dir="${tsrc.dir}" includes="**/*${test}*Test.java"/>
+      </batchtest>
+    </unit>
   </target>
 
   <!-- a target for rebuilding everything -->
