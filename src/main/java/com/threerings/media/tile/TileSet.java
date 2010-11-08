@@ -417,7 +417,6 @@ public abstract class TileSet
     {
         buf.append("name=").append(_name);
         buf.append(", path=").append(_imagePath);
-        buf.append(", tileCount=").append(getTileCount());
     }
 
     /** The path to the file containing the tile images. */
