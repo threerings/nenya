@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 
 import com.samskivert.util.RandomUtil;
 
+import com.threerings.media.image.ColorPository;
 import com.threerings.media.sprite.PathObserver;
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
@@ -54,15 +55,14 @@ public class ViewerSceneViewPanel extends MisoScenePanel
     /**
      * Construct the panel and initialize it with a context.
      */
-    public ViewerSceneViewPanel (MisoContext ctx,
-                                 CharacterManager charmgr,
-                                 ComponentRepository crepo)
+    public ViewerSceneViewPanel (
+        MisoContext ctx, CharacterManager charmgr, ComponentRepository crepo, ColorPository cpos)
     {
         super(ctx, MisoConfig.getSceneMetrics());
 
         // create the character descriptors
-        _descUser = CastUtil.getRandomDescriptor("female", crepo);
-        _descDecoy = CastUtil.getRandomDescriptor("male", crepo);
+        _descUser = CastUtil.getRandomDescriptor("female", crepo, cpos);
+        _descDecoy = CastUtil.getRandomDescriptor("male", crepo, cpos);
 
         // create the manipulable sprite
         _sprite = createSprite(_spritemgr, charmgr, _descUser);

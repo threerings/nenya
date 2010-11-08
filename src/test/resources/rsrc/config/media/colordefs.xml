@@ -1,0 +1,122 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- class ids are assigned by hand, which means that if you delete a -->
+<!-- colorization class, *do not* change the ids of the other colorization -->
+<!-- classes; reuse ids at your own risk -->
+<colors>
+  <!-- hair recolorations -->
+  <class classId="1" name="hair" source="#922226" range="0.05, 0.8, 1" starter="true">
+    <color colorId="1" name="red" offsets="0.02, -0.1, 0"/>
+    <color colorId="2" name="silver" offsets="0.13, -0.9, -0.15"/>
+    <color colorId="3" name="white" offsets="0.13, -0.8, .15"/>
+    <color colorId="4" name="black" offsets="0.6, -0.7, -0.6"/>
+    <color colorId="5" name="darkBrown" offsets="0.1, 0, -0.4"/>
+    <color colorId="6" name="lightBrown" offsets="0.11, -0.2, -0.2"/>
+    <color colorId="7" name="strawberryBlonde" offsets="0.1, -0.1, 0"/>
+    <color colorId="8" name="sandy" offsets="0.13, -0.4, -0.1"/>
+    <color colorId="9" name="blonde" offsets="0.15, -0.4, 0.05"/>
+  </class>
+
+  <!-- skin recolorations -->
+  <class classId="4" name="skin" source="#C550D7" range="0.08, 0.4, 1" starter="true">
+    <color colorId="1" name="darkest" offsets="-0.75, -0.2, -0.45"/>
+    <color colorId="2" name="dark" offsets="-0.75, 0.16, -0.26"/>
+    <color colorId="3" name="medium" offsets="-0.75, -0.05, -0.01"/>
+    <color colorId="4" name="tan" offsets="-0.73, -0.08, -0.03"/>
+    <color colorId="5" name="white" offsets="-0.74, -0.28, -0.02"/>
+    <color colorId="6" name="pale" offsets="-0.72, -0.42, 0"/>
+    <color colorId="7" name="pasty" offsets="-0.72, -0.48, 0"/>
+    <color colorId="8" name="ghost" offsets="-0.32, -0.35, 0.28" starter="false"/>
+  </class>
+
+  <!-- primary clothing recolorations -->
+  <class classId="2" name="textile_p" source="#922226" range="0.07, 0.7, 1" defaultId="3">
+    <color colorId="1" name="red" offsets="0, 0, 0" starter="true"/>
+    <color colorId="2" name="brown" offsets="-0.91, -0.2, -0.2" starter="true"/>
+    <color colorId="3" name="white" offsets="0, -1, 0.1" starter="true"/>
+    <color colorId="4" name="black" offsets="0, -1, -0.6"/>
+    <color colorId="5" name="grey" offsets="0, -1, -0.2"/>
+    <color colorId="6" name="yellow" offsets="-0.83, -0.2, 0.1"/>
+    <color colorId="7" name="pink" offsets="0.95, -0.2, 0.15"/>
+    <color colorId="8" name="violet" offsets="0.83, -0.1, -0.15"/>
+    <color colorId="9" name="purple" offsets="0.76, 0.05, -0.11"/>
+    <color colorId="10" name="navyBlue" offsets="0.65, -0.2, -0.2"/>
+    <color colorId="11" name="blue" offsets="-0.4, 0, 0" starter="true"/>
+    <color colorId="12" name="aqua" offsets="0.5, 0, -0.1"/>
+    <color colorId="13" name="lime" offsets="0.32, -0.1, -0.1"/>
+    <color colorId="14" name="green" offsets="0.3, -0.2, -0.4"/>
+    <color colorId="15" name="orange" offsets="0.08, 0, 0.05"/>
+    <color colorId="16" name="maroon" offsets="0, 0.1, -0.3"/>
+    <color colorId="17" name="darkBrown" offsets="-0.91, -0.2, -0.4"/>
+    <color colorId="18" name="gold" offsets="0.125, 0.4, 0.1"/>
+    <color colorId="19" name="atlantean" offsets="0.60, -0.36, 0.10"/>
+    <color colorId="20" name="rose" offsets="0.95, -0.5, 0.16"/>
+    <color colorId="21" name="lavender" offsets="0.76, -0.4, 0.05"/>
+    <color colorId="22" name="mint" offsets="-0.59, -0.35, 0.13"/>
+    <color colorId="23" name="lightGreen" offsets="-0.77, 0.072, -0.24"/>
+    <color colorId="24" name="magenta" offsets="0.91, 0.07, -0.04"/>
+    <color colorId="25" name="indigo" offsets="-0.29, -0.01, 0.1"/>
+    <color colorId="26" name="lemon" offsets="-0.83, -0.39, 0.16"/>
+    <color colorId="27" name="peach" offsets="0.1, -0.3, 0.15"/>
+    <color colorId="28" name="lightBlue" offsets="-0.462, -0.301, 0.161"/>
+    <!--
+    <color colorId="29" name="bluegrey" offsets="-0.4, -0.5, -0.15"/>
+    -->
+    <color colorId="30" name="persimmon" offsets="0.054, 0.516, 0.129"/>
+    <color colorId="31" name="royalBlue" offsets="-0.359, 0.4, 0.152"/>
+    <color colorId="32" name="iceBlue" offsets="-0.468, -0.548, 0.301"/>
+    <color colorId="33" name="springGreen" offsets="-0.757, 0.770, 0.099"/>
+    <color colorId="34" name="banana" offsets="0.140, 0.770, 0.300"/>
+    <color colorId="35" name="wine" offsets="-0.100, 0.770, -0.290"/>
+    <color colorId="36" name="eggplant" offsets="0.765, 0.086, -0.496"/>
+    <color colorId="37" name="brightRed" offsets="-0.010, 0.770, 0.200"/>
+    <color colorId="38" name="chocolate" offsets="0.050, 0.190, -0.440"/>
+    <color colorId="39" name="seaGreen" offsets="-0.542, 0.770, -0.272"/>
+    <color colorId="40" name="nightBlue" offsets="0.634, 0.770, -0.351"/>
+  </class>
+
+  <!-- secondary clothing recolorations -->
+  <class classId="3" name="textile_s" source="#57AC6A" range="0.1, 0.6, 1" defaultId="3">
+    <color colorId="1" name="red" offsets="0.65, 0, 0.2" starter="true"/>
+    <color colorId="2" name="brown" offsets="-0.28, -0.37, -0.1" starter="true"/>
+    <color colorId="3" name="white" offsets="0.72, -1, 0.2" starter="true"/>
+    <color colorId="4" name="black" offsets="0.72, -1, -0.5"/>
+    <color colorId="5" name="grey" offsets="0.2, -1, 0"/>
+    <color colorId="6" name="yellow" offsets="0.81, -0.25, 0.2"/>
+    <color colorId="7" name="pink" offsets="0.6, -0.27, 0.25"/>
+    <color colorId="8" name="violet" offsets="-0.55, -0.15, 0.09"/>
+    <color colorId="9" name="purple" offsets="-0.6, 0.1, 0.1"/>
+    <color colorId="10" name="navyBlue" offsets="0.28, -0.27, -0.07"/>
+    <color colorId="11" name="blue" offsets="0.25, -0.15, 0.2" starter="true"/>
+    <color colorId="12" name="aqua" offsets="0.15, 0, 0.15"/>
+    <color colorId="13" name="lime" offsets="-0.05, -0.1, 0.1"/>
+    <color colorId="14" name="green" offsets="-0.05, -0.25, -0.3"/>
+    <color colorId="15" name="orange" offsets="0.72, 0.04, 0.252"/>
+    <color colorId="16" name="maroon" offsets="0.65, 0.1, -0.2"/>
+    <color colorId="17" name="darkBrown" offsets="-0.28, -0.37, -0.27"/>
+    <color colorId="18" name="gold" offsets="0.76, 0.6, 0.24"/>
+    <color colorId="19" name="atlantean" offsets="0.25, -0.36, 0.12"/>
+    <color colorId="20" name="rose" offsets="0.6, -0.5, 0.3"/>
+    <color colorId="21" name="lavender" offsets="0.41, -0.4, 0.19"/>
+    <color colorId="22" name="mint" offsets="-0.94, -0.35, 0.27"/>
+    <color colorId="23" name="lightGreen" offsets="-1.12, 0.072, -0.1"/>
+    <color colorId="24" name="magenta" offsets="0.56, 0.07, 0.1"/>
+    <color colorId="25" name="indigo" offsets="0.36, -0.01, 0.3"/>
+    <color colorId="26" name="lemon" offsets="-0.18, -0.39, 0.3"/>
+    <color colorId="27" name="peach" offsets="-0.25, -0.3, 0.29"/>
+    <color colorId="28" name="lightBlue" offsets="0.171, -0.058, 0.325"/>
+    <!--
+    <color colorId="29" name="bluegrey" offsets="-0.75, -0.5, -0.01"/>
+    -->
+    <color colorId="30" name="persimmon" offsets="0.699, 0.796, 0.179"/>
+    <color colorId="31" name="royalBlue" offsets="0.285, 0.68, 0.202"/>
+    <color colorId="32" name="iceBlue" offsets="0.176, -0.268, 0.351"/>
+    <color colorId="33" name="springGreen" offsets="-0.113, 1.0, 0.149"/>
+    <color colorId="34" name="banana" offsets="0.784, 1.0, 0.350"/>
+    <color colorId="35" name="wine" offsets="0.544, 1.0, -0.240"/>
+    <color colorId="36" name="eggplant" offsets="0.409, 0.366, -0.446"/>
+    <color colorId="37" name="brightRed" offsets="0.634, 1.0, 0.250"/>
+    <color colorId="38" name="chocolate" offsets="0.694, 0.470, -0.390"/>
+    <color colorId="39" name="seaGreen" offsets="0.102, 1.0, -0.222"/>
+    <color colorId="40" name="nightBlue" offsets="0.278, 1.0, -0.301"/>
+  </class>
+</colors>

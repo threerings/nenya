@@ -230,7 +230,16 @@
     <property name="testrsrc.dir" value="${tclasses.dir}/rsrc"/>
   </target>
 
-  <target name="test-tsbundles" depends="-prep-test-rsrcs"
+  <target name="test-colorpos" depends="compile,-prep-test-rsrcs"
+          description="Builds the test colorpository data.">
+    <taskdef name="confcomp" classpathref="test.classpath"
+      classname="com.threerings.tools.CompiledConfigTask"/>
+    <confcomp parser="com.threerings.media.image.tools.xml.ColorPositoryParser"
+      configdef="${testrsrc.dir}/config/media/colordefs.xml"
+      target="${testrsrc.dir}/config/media/colordefs.dat"/>
+  </target>
+
+  <target name="test-tsbundles" depends="compile,-prep-test-rsrcs"
           description="Build test tileset bundles.">
     <taskdef name="tilebundle" classpathref="test.classpath"
       classname="com.threerings.media.tile.bundle.tools.TileSetBundlerTask"/>
@@ -253,7 +262,7 @@
                 target="${testrsrc.dir}/config/miso/tile/fringeconf.dat"/>
   </target>
 
-  <target name="test-cbundles" depends="-prep-test-rsrcs"
+  <target name="test-cbundles" depends="compile,-prep-test-rsrcs"
           description="Builds test component bundles.">
     <taskdef name="metabundle" classpathref="test.classpath"
       classname="com.threerings.cast.bundle.tools.MetadataBundlerTask"/>
@@ -277,7 +286,7 @@
   </target>
 
   <property name="test" value=""/>
-  <target name="tests" depends="compile,test-tsbundles,test-cbundles" 
+  <target name="tests" depends="compile,test-colorpos,test-tsbundles,test-cbundles" 
           description="Runs unit tests. Use -Dtest=Foo to run only FooTest.">
     <taskdef name="unit" classpathref="test.classpath"
       classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>

@@ -29,6 +29,9 @@ import com.google.common.collect.Lists;
 
 import com.samskivert.util.RandomUtil;
 
+import com.threerings.media.image.ColorPository;
+import com.threerings.media.image.Colorization;
+
 import com.threerings.cast.CharacterDescriptor;
 import com.threerings.cast.ComponentClass;
 import com.threerings.cast.ComponentRepository;
@@ -41,11 +44,10 @@ import static com.threerings.cast.Log.log;
 public class CastUtil
 {
     /**
-     * Returns a new character descriptor populated with a random set of
-     * components.
+     * Returns a new character descriptor populated with a random set of components.
      */
     public static CharacterDescriptor getRandomDescriptor (
-        String gender, ComponentRepository crepo)
+        String gender, ComponentRepository crepo, ColorPository cpos)
     {
         // get all available classes
         ArrayList<ComponentClass> classes = Lists.newArrayList();
@@ -63,8 +65,7 @@ public class CastUtil
             // make sure there are some components in this class
             Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
             if (!iter.hasNext()) {
-                log.info("Skipping class for which we have no components " +
-                         "[class=" + cclass + "].");
+                log.info("Skipping class for which we have no components [class=" + cclass + "].");
                 continue;
             }
 
@@ -72,14 +73,19 @@ public class CastUtil
         }
 
         // select the components
-        int size = classes.size();
-        int components[] = new int[size];
-        for (int ii = 0; ii < size; ii++) {
+        int[] components = new int[classes.size()];
+        Colorization[][] zations = new Colorization[components.length][];
+        for (int ii = 0; ii < components.length; ii++) {
             ComponentClass cclass = classes.get(ii);
 
             // get the components available for this class
             ArrayList<Integer> choices = Lists.newArrayList();
             Iterators.addAll(choices, crepo.enumerateComponentIds(cclass));
+
+            zations[ii] = new Colorization[COLOR_CLASSES.length];
+            for (int zz = 0; zz < COLOR_CLASSES.length; zz++) {
+                zations[ii][zz] = cpos.getRandomStartingColor(COLOR_CLASSES[zz]).getColorization();
+            }
 
             // choose a random component
             if (choices.size() > 0) {
@@ -90,10 +96,13 @@ public class CastUtil
             }
         }
 
-        return new CharacterDescriptor(components, null);
+        return new CharacterDescriptor(components, zations);
     }
 
+    // these are all specific to our test resourcse
     protected static final String[] CLASSES = {
         "legs", "feet", "hand_left", "hand_right", "torso",
         "head", "hair", "hat", "eyepatch" };
+    protected static final String[] COLOR_CLASSES = {
+        "skin", "hair", "textile_p", "textile_s" };
 }

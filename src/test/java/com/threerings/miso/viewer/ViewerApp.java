@@ -34,6 +34,7 @@ import com.threerings.resource.ResourceManager;
 
 import com.threerings.media.FrameManager;
 import com.threerings.media.image.ClientImageManager;
+import com.threerings.media.image.ColorPository;
 import com.threerings.media.tile.bundle.BundledTileSetRepository;
 
 import com.threerings.miso.data.SimpleMisoSceneModel;
@@ -96,9 +97,10 @@ public class ViewerApp
         BundledComponentRepository crepo =
             new BundledComponentRepository(rmgr, imgr, "components");
         CharacterManager charmgr = new CharacterManager(imgr, crepo);
+        ColorPository cpos = ColorPository.loadColorPository(rmgr);
 
         // create our scene view panel
-        _panel = new ViewerSceneViewPanel(ctx, charmgr, crepo);
+        _panel = new ViewerSceneViewPanel(ctx, charmgr, crepo, cpos);
         _frame.setPanel(_panel);
 
         // load up the scene specified by the user
