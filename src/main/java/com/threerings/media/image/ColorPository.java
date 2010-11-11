@@ -58,7 +58,7 @@ public class ColorPository implements Serializable
      * Used to store information on a class of colors. These are public to simplify the XML
      * parsing process, so pay them no mind.
      */
-    public static class ClassRecord implements Serializable
+    public static class ClassRecord implements Serializable, Comparable<ClassRecord>
     {
         /** An integer identifier for this class. */
         public int classId;
@@ -172,6 +172,12 @@ public class ColorPository implements Serializable
             return colors.get(defaultId);
         }
 
+        // from interface Comparable<ClassRecord>
+        public int compareTo (ClassRecord other)
+        {
+            return name.compareTo(other.name);
+        }
+
         @Override
         public String toString ()
         {
@@ -193,7 +199,7 @@ public class ColorPository implements Serializable
      * Used to store information on a particular color. These are public to simplify the XML
      * parsing process, so pay them no mind.
      */
-    public static class ColorRecord implements Serializable
+    public static class ColorRecord implements Serializable, Comparable<ColorRecord>
     {
         /** The colorization class to which we belong. */
         public ClassRecord cclass;
@@ -233,6 +239,12 @@ public class ColorPository implements Serializable
 //             }
 //             return _zation;
             return new Colorization(getColorPrint(), cclass.source, cclass.range, offsets);
+        }
+
+        // from interface Comparable<ColorRecord>
+        public int compareTo (ColorRecord other)
+        {
+            return name.compareTo(other.name);
         }
 
         @Override
