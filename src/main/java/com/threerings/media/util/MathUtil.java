@@ -103,9 +103,7 @@ public class MathUtil
 
     /**
      * Computes the floored division <code>dividend/divisor</code> which
-     * is useful when dividing potentially negative numbers into bins. For
-     * positive numbers, it is the same as normal division, for negative
-     * numbers it returns <code>(dividend - divisor + 1) / divisor</code>.
+     * is useful when dividing potentially negative numbers into bins.
      *
      * <p> For example, the following numbers floorDiv 10 are:
      * <pre>
@@ -115,7 +113,9 @@ public class MathUtil
      */
     public static int floorDiv (int dividend, int divisor)
     {
-        return ((dividend >= 0) ? dividend : (dividend - divisor + 1))/divisor;
+        return ((dividend >= 0) == (divisor >= 0)) ?
+            dividend / divisor : (divisor >= 0 ?
+                    (dividend - divisor + 1) / divisor : (dividend - divisor - 1) / divisor);
     }
 
     /**
