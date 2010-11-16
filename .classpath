@@ -3,7 +3,7 @@
 	<classpathentry excluding="**/.svn/**" kind="src" output="dist/classes" path="src/main/java"/>
 	<classpathentry excluding="**/.svn/**" kind="src" output="dist/test-classes" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/xml-writer.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/com/megginson/sax/xml-writer/0.2/xml-writer-0.2.jar"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/jogg-0.0.7.jar"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/jorbis-0.0.15.jar"/>
 	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/jl1.0.jar"/>
