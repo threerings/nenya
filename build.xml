@@ -18,7 +18,7 @@
     <include name="jl1.0.jar"/>
     <!-- ActionScript dependencies -->
     <include name="as3isolib-fp9.swc"/>
-    <include name="aspirin.swc"/>
+    <include name="aspirin*.swc"/>
     <include name="flexlib.swc"/>
     <include name="naryalib.swc"/>
   </fileset>
