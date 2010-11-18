@@ -1,6 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
 <project name="nenya" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
-  <property name="lib.name"     value="nenya"/>
   <property name="src.dir"      value="src/main/java"/>
   <property name="tsrc.dir"     value="src/test/java"/>
   <property name="deploy.dir"   value="dist"/>
@@ -50,7 +49,7 @@
     <!-- TEMP: this can go away when all of our depends come from Maven -->
     <mkdir dir="${deploy.dir}/lib"/>
     <copy todir="${deploy.dir}/lib" flatten="true">
-      <fileset refid="${lib.name}.libs"/>
+      <fileset refid="${ant.project.name}.libs"/>
     </copy>
     <!-- end TEMP -->
 
@@ -153,7 +152,7 @@
     </condition>
     <condition property="no_rebuild_aslib"><or>
       <isset property="no_build_aslib"/>
-      <uptodate targetfile="${deploy.dir}/${lib.name}lib.swc">
+      <uptodate targetfile="${deploy.dir}/${ant.project.name}lib.swc">
         <srcfiles dir="src/as" includes="**/*.as"/>
       </uptodate>
     </or></condition>
@@ -164,7 +163,7 @@
     <copy file="etc/aslib-config.xml.in" tofile="${deploy.dir}/aslib-config.xml">
       <filterset>
         <filter token="flex_sdk_dir" value="${flexsdk.dir}"/>
-        <filter token="lib_name" value="${lib.name}"/>
+        <filter token="lib_name" value="${ant.project.name}"/>
       </filterset>
     </copy>
     <java jar="${flexsdk.dir}/lib/compc.jar" fork="true" failonerror="true">
@@ -174,7 +173,7 @@
       <arg value="-compiler.source-path=src/as/"/>
       <arg value="-include-sources=src/as/"/>
       <arg value="-output"/>
-      <arg value="${deploy.dir}/${lib.name}lib.swc"/>
+      <arg value="${deploy.dir}/${ant.project.name}lib.swc"/>
     </java>
     <delete file="${deploy.dir}/aslib-config.xml"/>
   </target>
@@ -296,13 +295,15 @@
           description="Runs unit tests. Use -Dtest=Foo to run only FooTest.">
     <taskdef name="unit" classpathref="test.classpath"
       classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+    <mkdir dir="${deploy.dir}/test-reports"/>
     <unit printsummary="off" haltonfailure="yes">
       <classpath refid="test.classpath"/>
       <sysproperty key="test_dir" value="${tclasses.dir}"/>
       <sysproperty key="resource_dir" value="${testrsrc.dir}"/>
       <sysproperty key="no_unpack_resources" value="true"/>
       <formatter type="brief" usefile="false"/>
-      <batchtest>
+      <formatter type="xml"/>
+      <batchtest todir="${deploy.dir}/test-reports">
         <fileset dir="${tsrc.dir}" includes="**/*${test}*Test.java"/>
       </batchtest>
     </unit>
@@ -314,10 +315,10 @@
   <target name="dist" depends="-prepare,compile,procstream,-ninstall,aslib"
           description="Compiles everything and build distribution jar files.">
     <!-- build our various jar files -->
-    <jar destfile="${deploy.dir}/${lib.name}-rsrc.jar">
+    <jar destfile="${deploy.dir}/${ant.project.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${lib.name}-media.jar">
+    <jar destfile="${deploy.dir}/${ant.project.name}-media.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
       <fileset dir="${classes.dir}" includes="com/threerings/tools/**"/>
@@ -325,57 +326,20 @@
           excludes="**/*.c,**/Makefile,**/*.h"/>
       <fileset dir="${classes.dir}" includes="com/threerings/NenyaLog*"/>
     </jar>
-    <jar destfile="${deploy.dir}/${lib.name}-miso.jar">
+    <jar destfile="${deploy.dir}/${ant.project.name}-miso.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/miso/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/miso/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${lib.name}-cast.jar">
+    <jar destfile="${deploy.dir}/${ant.project.name}-cast.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
       <fileset dir="${classes.dir}" includes="rsrc/**/cast/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${lib.name}-chat.jar">
+    <jar destfile="${deploy.dir}/${ant.project.name}-chat.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/chat/**"/>
     </jar>
-    <jar destfile="${deploy.dir}/${lib.name}-openal.jar">
+    <jar destfile="${deploy.dir}/${ant.project.name}-openal.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>
     </jar>
-  </target>
-
-  <target name="-vweave">
-    <!-- various bits used by the retroweaver tasks -->
-    <taskdef name="weave" classpathref="built.classpath"
-             classname="com.rc.retroweaver.ant.RetroWeaverTask"/>
-    <property name="inpre" value="${deploy.dir}/${lib.name}"/>
-    <property name="outpre" value="${deploy.dir}/retro/${lib.name}"/>
-    <path id="retrocp">
-      <pathelement location="/usr/local/jdk1.4/jre/lib/rt.jar"/>
-      <fileset dir="lib" includes="**/*.jar"/>
-      <fileset dir="${deploy.dir}/retro" includes="*.jar"/>
-    </path>
-    <weave inputjar="${inpre}-${which}.jar" outputjar="${outpre}-${which}.jar"
-           failonerror="true">
-      <classpath refid="retrocp"/>
-    </weave>
-  </target>
-
-  <target name="retro" depends="dist"
-          description="Converts our 1.5 code to a 1.4 compatible format">
-    <mkdir dir="${deploy.dir}/retro"/>
-
-    <!-- we weave everything a first time without verification so that -->
-    <!-- interdependencies will resolve the second time -->
-    <weave inputjar="${inpre}-cast.jar" outputjar="${outpre}-cast.jar"/>
-    <weave inputjar="${inpre}-micasa.jar" outputjar="${outpre}-micasa.jar"/>
-    <weave inputjar="${inpre}-miso.jar" outputjar="${outpre}-miso.jar"/>
-    <weave inputjar="${inpre}-media.jar" outputjar="${outpre}-media.jar"/>
-    <weave inputjar="${inpre}-rsrc.jar" outputjar="${outpre}-rsrc.jar"/>
-
-    <!-- now weave again with the verifier to check for unweavable 1.5isms -->
-    <antcall target="-vweave"><param name="which" value="cast"/></antcall>
-    <antcall target="-vweave"><param name="which" value="micasa"/></antcall>
-    <antcall target="-vweave"><param name="which" value="miso"/></antcall>
-    <antcall target="-vweave"><param name="which" value="media"/></antcall>
-    <antcall target="-vweave"><param name="which" value="rsrc"/></antcall>
   </target>
 
   <target name="genascript" depends="-preptools"
@@ -394,5 +358,14 @@
       <sysproperty key="no_unpack_resources" value="true"/>
       <arg value="${testrsrc.dir}/scenes/${scene}.xml"/>
     </java>
+  </target>
+
+  <property name="maven.deploy.repo" value="file://${user.home}/.m2/repository"/>
+  <target name="maven-deploy" depends="dist,tests" 
+          description="Deploys our build artifacts to a Maven repository.">
+    <artifact:deploy file="${deploy.dir}/${ant.project.name}.jar" uniqueVersion="false">
+      <remoteRepository url="${maven.deploy.repo}"/>
+      <pom refid="pom"/>
+    </artifact:deploy>
   </target>
 </project>
