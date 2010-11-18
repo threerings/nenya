@@ -226,14 +226,16 @@
     </java>
   </target>
 
-  <target name="-prep-test-rsrcs">
+  <target name="-prep-test-rsrcs" depends="-prepare">
     <copy todir="${tclasses.dir}">
       <fileset dir="src/test/resources" includes="**"/>
     </copy>
     <property name="testrsrc.dir" value="${tclasses.dir}/rsrc"/>
   </target>
 
-  <target name="test-colorpos" depends="compile,-prep-test-rsrcs"
+  <!-- these can't depend on the compile target otherwise things break when we -->
+  <!-- call into -test-rsrcs from Maven, alas -->
+  <target name="test-colorpos" depends="-prep-test-rsrcs"
           description="Builds the test colorpository data.">
     <taskdef name="confcomp" classpathref="test.classpath"
       classname="com.threerings.tools.CompiledConfigTask"/>
@@ -242,7 +244,7 @@
       target="${testrsrc.dir}/config/media/colordefs.dat"/>
   </target>
 
-  <target name="test-tsbundles" depends="compile,-prep-test-rsrcs"
+  <target name="test-tsbundles" depends="-prep-test-rsrcs"
           description="Build test tileset bundles.">
     <taskdef name="tilebundle" classpathref="test.classpath"
       classname="com.threerings.media.tile.bundle.tools.TileSetBundlerTask"/>
@@ -265,7 +267,7 @@
                 target="${testrsrc.dir}/config/miso/tile/fringeconf.dat"/>
   </target>
 
-  <target name="test-cbundles" depends="compile,-prep-test-rsrcs"
+  <target name="test-cbundles" depends="-prep-test-rsrcs"
           description="Builds test component bundles.">
     <taskdef name="metabundle" classpathref="test.classpath"
       classname="com.threerings.cast.bundle.tools.MetadataBundlerTask"/>
@@ -289,7 +291,8 @@
   </target>
 
   <property name="test" value=""/>
-  <target name="tests" depends="compile,test-colorpos,test-tsbundles,test-cbundles" 
+  <target name="-test-rsrcs" depends="test-colorpos,test-tsbundles,test-cbundles"/>
+  <target name="tests" depends="compile,-test-rsrcs" 
           description="Runs unit tests. Use -Dtest=Foo to run only FooTest.">
     <taskdef name="unit" classpathref="test.classpath"
       classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
