@@ -152,8 +152,12 @@
       </uptodate>
     </or></condition>
   </target>
+  <target name="-noteaslib" if="no_build_aslib"><echo>
+    NOTE: not building ActionScript library. Pass -Dflexsdk.dir=DIR to
+    activate ActionScript library build.
+  </echo></target>
 
-  <target name="aslib" unless="no_rebuild_aslib" depends="-checkaslib"
+  <target name="aslib" unless="no_rebuild_aslib" depends="-checkaslib,-noteaslib"
           description="Builds ActionScript library.">
     <!-- obtain our ActionScript dependencies via Maven -->
     <artifact:pom id="as-pom" file="as-pom.xml"/>
