@@ -314,7 +314,8 @@
 
   <target name="dist" depends="-prepare,compile,procstream,-ninstall,aslib"
           description="Compiles everything and build distribution jar files.">
-    <!-- build our various jar files -->
+    <jar destfile="${deploy.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
+    <!-- also build our various split jar files -->
     <jar destfile="${deploy.dir}/${ant.project.name}-rsrc.jar">
       <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
     </jar>
