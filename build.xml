@@ -15,11 +15,6 @@
     <include name="jogg-0.0.7.jar"/>
     <include name="jorbis-0.0.15.jar"/>
     <include name="jl1.0.jar"/>
-    <!-- ActionScript dependencies -->
-    <include name="as3isolib-fp9.swc"/>
-    <include name="aspirin*.swc"/>
-    <include name="flexlib.swc"/>
-    <include name="naryalib.swc"/>
   </fileset>
   <!-- end TEMP -->
 
@@ -160,6 +155,15 @@
 
   <target name="aslib" unless="no_rebuild_aslib" depends="-checkaslib"
           description="Builds ActionScript library.">
+    <!-- obtain our ActionScript dependencies via Maven -->
+    <artifact:pom id="as-pom" file="as-pom.xml"/>
+    <artifact:dependencies filesetId="aslibs.fileset" pomRefId="as-pom" useScope="compile"/>
+    <copy todir="${deploy.dir}/lib">
+      <fileset dir="lib" includes="as3isolib-*.swc"/>
+      <fileset refid="aslibs.fileset"/>
+      <mapper type="flatten"/>
+    </copy>
+
     <copy file="etc/aslib-config.xml.in" tofile="${deploy.dir}/aslib-config.xml">
       <filterset>
         <filter token="flex_sdk_dir" value="${flexsdk.dir}"/>
