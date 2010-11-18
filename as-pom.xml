@@ -17,6 +17,10 @@
       <id>flexlib-repo</id>
       <url>http://maven.ow2.org/maven2</url>
     </repository>
+    <repository>
+      <id>ooo-repo</id>
+      <url>http://build.earth.threerings.net/maven-repository</url>
+    </repository>
   </repositories>
 
   <dependencies>
