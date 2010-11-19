@@ -18,6 +18,10 @@
       <url>http://maven.ow2.org/maven2</url>
     </repository>
     <repository>
+      <id>ooo-maven-repo</id>
+      <url>http://ooo-maven.googlecode.com/hg/repository</url>
+    </repository>
+    <repository>
       <id>ooo-repo</id>
       <url>http://build.earth.threerings.net/maven-repository</url>
     </repository>
@@ -35,6 +39,13 @@
       <groupId>flexlib</groupId>
       <artifactId>flexlib-bin</artifactId>
       <version>2.4</version>
+      <scope>compile</scope>
+      <type>swc</type>
+    </dependency>
+    <dependency>
+      <groupId>as3isolib</groupId>
+      <artifactId>as3isolib-fp9</artifactId>
+      <version>r298</version>
       <scope>compile</scope>
       <type>swc</type>
     </dependency>

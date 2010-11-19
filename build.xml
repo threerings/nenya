@@ -116,7 +116,6 @@
     <artifact:pom id="as-pom" file="as-pom.xml"/>
     <artifact:dependencies filesetId="aslibs.fileset" pomRefId="as-pom" useScope="compile"/>
     <copy todir="${deploy.dir}/lib">
-      <fileset dir="lib" includes="as3isolib-*.swc"/>
       <fileset refid="aslibs.fileset"/>
       <mapper type="flatten"/>
     </copy>
