@@ -52,8 +52,8 @@
       <url>http://ppnetmedia.com/repository</url>
     </repository>
     <repository>
-      <id>jcraft-repo</id>
-      <url>file://lib</url>
+      <id>ooo-maven-repo</id>
+      <url>http://ooo-maven.googlecode.com/hg/repository</url>
     </repository>
     <repository>
       <id>ooo-repo</id>
