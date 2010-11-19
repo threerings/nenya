@@ -36,7 +36,9 @@
 
   <scm>
     <connection>scm:svn:http://nenya.googlecode.com/svn/trunk/</connection>
-    <developerConnection>scm:svn:https://nenya.googlecode.com/svn/trunk/</developerConnection>
+    <developerConnection>
+      scm:svn:svn+ssh://src.earth.threerings.net/nenya/trunk/
+    </developerConnection>
     <url>http://nenya.googlecode.com/svn/trunk/</url>
   </scm>
 
