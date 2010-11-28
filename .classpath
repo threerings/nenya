@@ -4,11 +4,11 @@
 	<classpathentry excluding="**/.svn/**" kind="src" output="dist/test-classes" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/com/megginson/sax/xml-writer/0.2/xml-writer-0.2.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/jogg-0.0.7.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/jorbis-0.0.15.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/jl1.0.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/lwjgl/lwjgl.jar"/>
-	<classpathentry exported="true" kind="var" path="EXT_LIBS_DIR/lwjgl/lwjgl_util.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/narya"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/com/jcraft/jogg/0.0.7/jogg-0.0.7.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/com/jcraft/jorbis/0.0.15/jorbis-0.0.15.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/lwjgl/lwjgl/2.6/lwjgl-2.6.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/lwjgl/lwjgl_util/2.6/lwjgl_util-2.6.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/net/javazoom/jlayer/1.0/jlayer-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
