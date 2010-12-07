@@ -383,30 +383,26 @@ public class ComponentBundlerTask extends Task
     {
         // first strip off the root
         if (!path.startsWith(_root)) {
-            throw new BuildException("Can't bundle images outside the " +
-                                     "root directory [root=" + _root +
-                                     ", path=" + path + "].");
+            throw new BuildException("Can't bundle images outside the root directory " +
+                                     "[root=" + _root + ", path=" + path + "].");
         }
         path = path.substring(_root.length());
 
-        // strip off any preceding slash
-        if (path.startsWith("/")) {
+        // strip off any preceding file separator
+        if (path.startsWith(File.separator)) {
             path = path.substring(1);
         }
 
         // now strip off the file extension
         if (!path.endsWith(BundleUtil.IMAGE_EXTENSION)) {
-            throw new BuildException("Can't bundle malformed image file " +
-                                     "[path=" + path + "].");
+            throw new BuildException("Can't bundle malformed image file [path=" + path + "].");
         }
-        path = path.substring(0, path.length() -
-                              BundleUtil.IMAGE_EXTENSION.length());
+        path = path.substring(0, path.length() - BundleUtil.IMAGE_EXTENSION.length());
 
-        // now decompose the path; the component type and action must
-        // always be a single string but the class can span multiple
-        // directories for easier component organization; thus
-        // "male/head/goatee/standing" will be parsed as [class=male/head,
-        // type=goatee, action=standing]
+        // now decompose the path; the component type and action must always be a single string but
+        // the class can span multiple directories for easier component organization; thus
+        // "male/head/goatee/standing" will be parsed as
+        // [class=male/head, type=goatee, action=standing]
         String malmsg = "Can't decode malformed image path: '" + path + "'";
         String[] info = new String[3];
         int lsidx = path.lastIndexOf(File.separator);
@@ -420,18 +416,19 @@ public class ComponentBundlerTask extends Task
         }
         info[1] = path.substring(slsidx+1, lsidx);
         info[0] = path.substring(0, slsidx);
+        // we need to turn file separator characters (platform dependent) into jar path separator
+        // characters (always forward slash)
+        info[0].replace(File.separatorChar, '/');
         return info;
     }
 
     /**
-     * Composes a triplet of [class, name, action] into the path that
-     * should be supplied to the JarEntry that contains the associated
-     * image data.
+     * Composes a triplet of [class, name, action] into the path that should be supplied to the
+     * JarEntry that contains the associated image data.
      */
     protected String composePath (String[] info, String extension)
     {
-        return (info[0] + File.separator + info[1] +
-                File.separator + info[2] + extension);
+        return (info[0] + "/" + info[1] + "/" + info[2] + extension);
     }
 
     protected void ensureSet (Object value, String errmsg)
