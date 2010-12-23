@@ -173,7 +173,7 @@ public class BundledComponentRepository
      */
     public void setWipeOnFailure (boolean wipeOnFailure)
     {
-        _wipeOnFailure = true;
+        _wipeOnFailure = wipeOnFailure;
     }
 
     // documentation inherited
