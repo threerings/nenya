@@ -70,7 +70,7 @@ public class Colorization
     }
 
     /**
-     * Adjusts the supplied color by the offests in this colorization,
+     * Adjusts the supplied color by the offsets in this colorization,
      * taking the appropriate measures for hue (wrapping it around) and
      * saturation and value (clipping).
      *
