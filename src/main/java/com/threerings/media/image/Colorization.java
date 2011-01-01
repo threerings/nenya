@@ -47,8 +47,7 @@ public class Colorization
     /**
      * Constructs a colorization record with the specified identifier.
      */
-    public Colorization (int colorizationId, Color rootColor,
-                         float[] range, float[] offsets)
+    public Colorization (int colorizationId, Color rootColor, float[] range, float[] offsets)
     {
         this.colorizationId = colorizationId;
         this.rootColor = rootColor;
@@ -56,8 +55,7 @@ public class Colorization
         this.offsets = offsets;
 
         // compute our HSV and fixed HSV
-        _hsv = Color.RGBtoHSB(rootColor.getRed(), rootColor.getGreen(),
-                              rootColor.getBlue(), null);
+        _hsv = Color.RGBtoHSB(rootColor.getRed(), rootColor.getGreen(), rootColor.getBlue(), null);
         _fhsv = toFixedHSV(_hsv, null);
     }
 
@@ -70,9 +68,8 @@ public class Colorization
     }
 
     /**
-     * Adjusts the supplied color by the offsets in this colorization,
-     * taking the appropriate measures for hue (wrapping it around) and
-     * saturation and value (clipping).
+     * Adjusts the supplied color by the offsets in this colorization, taking the appropriate
+     * measures for hue (wrapping it around) and saturation and value (clipping).
      *
      * @return the RGB value of the recolored color.
      */
@@ -93,12 +90,11 @@ public class Colorization
     }
 
     /**
-     * Returns true if this colorization matches the supplied color, false
-     * otherwise.
+     * Returns true if this colorization matches the supplied color, false otherwise.
      *
      * @param hsv the HSV values for the color in question.
-     * @param fhsv the HSV values converted to fixed point via {@link
-     * #toFixedHSV} for the color in question.
+     * @param fhsv the HSV values converted to fixed point via {@link #toFixedHSV} for the color
+     * in question.
      */
     public boolean matches (float[] hsv, int[] fhsv)
     {
@@ -149,16 +145,14 @@ public class Colorization
     }
 
     /**
-     * Converts floating point HSV values to a fixed point integer
-     * representation.
+     * Converts floating point HSV values to a fixed point integer representation.
      *
      * @param hsv the HSV values to be converted.
-     * @param fhsv the destination array into which the fixed values will
-     * be stored. If this is null, a new array will be created of the
-     * appropriate length.
+     * @param fhsv the destination array into which the fixed values will be stored. If this is
+     * null, a new array will be created of the appropriate length.
      *
-     * @return the <code>fhsv</code> parameter if it was non-null or the
-     * newly created target array.
+     * @return the <code>fhsv</code> parameter if it was non-null or the newly created target
+     * array.
      */
     public static int[] toFixedHSV (float[] hsv, int[] fhsv)
     {

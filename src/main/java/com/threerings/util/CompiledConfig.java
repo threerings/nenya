@@ -30,9 +30,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Used to load and store compiled configuration data (generally XML files
- * that are parsed into Java object models and then serialized for rapid
- * and simple access on the client and server).
+ * Used to load and store compiled configuration data (generally XML files that are parsed into
+ * Java object models and then serialized for rapid and simple access on the client and server).
  */
 public class CompiledConfig
 {
@@ -52,8 +51,7 @@ public class CompiledConfig
     }
 
     /**
-     * Serializes the supplied configuration object to the specified file
-     * path.
+     * Serializes the supplied configuration object to the specified file path.
      */
     public static void saveConfig (File target, Serializable config)
         throws IOException

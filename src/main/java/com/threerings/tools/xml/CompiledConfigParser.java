@@ -35,18 +35,16 @@ import com.threerings.util.CompiledConfig;
 import com.threerings.tools.CompiledConfigTask;
 
 /**
- * An abstract base implementation of a parser that is used to compile
- * configuration definitions into config objects for use by the client and
- * server.
- *
+ * An abstract base implementation of a parser that is used to compile configuration definitions
+ * into config objects for use by the client and server.
+ * 
  * @see CompiledConfig
  * @see CompiledConfigTask
  */
 public abstract class CompiledConfigParser
 {
     /**
-     * Parses the supplied configuration file into a serializable
-     * configuration object.
+     * Parses the supplied configuration file into a serializable configuration object.
      */
     public Serializable parseConfig (File source)
         throws IOException, SAXException
@@ -60,8 +58,7 @@ public abstract class CompiledConfigParser
     }
 
     /**
-     * Creates the config object instance that will be populated during
-     * the parsing process.
+     * Creates the config object instance that will be populated during the parsing process.
      */
     protected abstract Serializable createConfigObject ();
 

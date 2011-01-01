@@ -85,8 +85,7 @@ public class ColorPository implements Serializable
         public HashIntMap<ColorRecord> colors = new HashIntMap<ColorRecord>();
 
         /** Used when parsing the color definitions. */
-        public void addColor (ColorRecord record)
-        {
+        public void addColor (ColorRecord record) {
             // validate the color id
             if (record.colorId > 127) {
                 log.warning("Refusing to add color record; colorId > 127",
@@ -133,14 +132,12 @@ public class ColorPository implements Serializable
         }
 
         /** Returns a random starting id from the entries in this class. */
-        public ColorRecord randomStartingColor ()
-        {
+        public ColorRecord randomStartingColor () {
             return randomStartingColor(RandomUtil.rand);
         }
 
         /** Returns a random starting id from the entries in this class. */
-        public ColorRecord randomStartingColor (Random rand)
-        {
+        public ColorRecord randomStartingColor (Random rand) {
             // figure out our starter ids if we haven't already
             if (_starters == null) {
                 ArrayList<ColorRecord> list = Lists.newArrayList();
@@ -164,23 +161,19 @@ public class ColorPository implements Serializable
         }
 
         /**
-         * Get the default ColorRecord defined for this color class, or
-         * null if none.
+         * Get the default ColorRecord defined for this color class, or null if none.
          */
-        public ColorRecord getDefault ()
-        {
+        public ColorRecord getDefault () {
             return colors.get(defaultId);
         }
 
         // from interface Comparable<ClassRecord>
-        public int compareTo (ClassRecord other)
-        {
+        public int compareTo (ClassRecord other) {
             return name.compareTo(other.name);
         }
 
         @Override
-        public String toString ()
-        {
+        public String toString () {
             return "[id=" + classId + ", name=" + name + ", source=#" +
                 Integer.toString(source.getRGB() & 0xFFFFFF, 16) +
                 ", range=" + StringUtil.toString(range) +
@@ -223,16 +216,14 @@ public class ColorPository implements Serializable
          * to identify a colorization record. This value will always be a positive integer that
          * fits into 16 bits.
          */
-        public int getColorPrint ()
-        {
+        public int getColorPrint () {
             return ((cclass.classId << 8) | colorId);
         }
 
         /**
          * Returns the data in this record configured as a colorization instance.
          */
-        public Colorization getColorization ()
-        {
+        public Colorization getColorization () {
 //             if (_zation == null) {
 //                 _zation = new Colorization(getColorPrint(), cclass.source,
 //                                            cclass.range, offsets);
@@ -242,14 +233,12 @@ public class ColorPository implements Serializable
         }
 
         // from interface Comparable<ColorRecord>
-        public int compareTo (ColorRecord other)
-        {
+        public int compareTo (ColorRecord other) {
             return name.compareTo(other.name);
         }
 
         @Override
-        public String toString ()
-        {
+        public String toString () {
             return "[id=" + colorId + ", name=" + name +
                 ", offsets=" + StringUtil.toString(offsets) + ", starter=" + starter + "]";
         }
@@ -270,14 +259,13 @@ public class ColorPository implements Serializable
         return _classes.values().iterator();
     }
 
-    public Collection<ClassRecord>  getClasses ()
+    public Collection<ClassRecord> getClasses ()
     {
         return _classes.values();
     }
 
     /**
-     * Returns an array containing the records for the colors in the
-     * specified class.
+     * Returns an array containing the records for the colors in the specified class.
      */
     public ColorRecord[] enumerateColors (String className)
     {
@@ -297,8 +285,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Returns an array containing the ids of the colors in the specified
-     * class.
+     * Returns an array containing the ids of the colors in the specified class.
      */
     public int[] enumerateColorIds (String className)
     {
@@ -488,8 +475,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Loads up a serialized color pository from the supplied resource
-     * manager.
+     * Loads up a serialized color pository from the supplied resource manager.
      */
     public static ColorPository loadColorPository (ResourceManager rmgr)
     {
@@ -502,8 +488,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Loads up a serialized color pository from the supplied resource
-     * manager.
+     * Loads up a serialized color pository from the supplied resource manager.
      */
     public static ColorPository loadColorPository (InputStream source)
     {

@@ -422,7 +422,7 @@ public class ResourceManager
             return (File.separatorChar == '/') ? path : path.replace(File.separatorChar, '/');
 
         } catch (IOException e) {
-            log.warning("Failed to determine resource path [file=" + file + "].", e);
+            log.warning("Failed to determine resource path", "file", file, e);
             return null;
         }
     }
@@ -937,16 +937,14 @@ public class ResourceManager
     /** Used to unpack bundles on a separate thread. */
     protected static class Unpacker extends Thread
     {
-        public Unpacker (List<ResourceBundle> bundles, InitObserver obs)
-        {
+        public Unpacker (List<ResourceBundle> bundles, InitObserver obs) {
             _bundles = bundles;
             _obs = obs;
             _startTime = System.currentTimeMillis();
         }
 
         @Override
-        public void run ()
-        {
+        public void run () {
             try {
                 // Tell the observer were starting
                 if (_obs != null) {
@@ -998,11 +996,9 @@ public class ResourceManager
     protected static class ObservedResource
     {
         /** The observers listening for modifications to this resource. */
-        public WeakObserverList<ModificationObserver> observers =
-            WeakObserverList.newFastUnsafe();
+        public WeakObserverList<ModificationObserver> observers = WeakObserverList.newFastUnsafe();
 
-        public ObservedResource (File file)
-        {
+        public ObservedResource (File file) {
             _file = file;
             _lastModified = file.lastModified();
         }
@@ -1015,8 +1011,7 @@ public class ResourceManager
          * @return <code>true</code> if the list of observers is empty and the resource should be
          * removed from the observed list, <code>false</code> if it should remain in the list.
          */
-        public boolean checkForModification (String path)
-        {
+        public boolean checkForModification (String path) {
             long newLastModified = _file.lastModified();
             if (newLastModified > _lastModified) {
                 _resourceModifiedOp.init(path, _lastModified = newLastModified);
@@ -1036,15 +1031,13 @@ public class ResourceManager
     protected static class ResourceModifiedOp
         implements ObserverList.ObserverOp<ModificationObserver>
     {
-        public void init (String path, long lastModified)
-        {
+        public void init (String path, long lastModified) {
             _path = path;
             _lastModified = lastModified;
         }
 
         // documentation inherited from interface ObserverOp
-        public boolean apply (ModificationObserver obs)
-        {
+        public boolean apply (ModificationObserver obs) {
             obs.resourceModified(_path, _lastModified);
             return true;
         }

@@ -37,8 +37,8 @@ import com.threerings.media.image.ColorPository.ColorRecord;
 import com.threerings.tools.xml.CompiledConfigParser;
 
 /**
- * Parses the XML color repository definition and creates a {@link
- * ColorPository} instance that reflects its contents.
+ * Parses the XML color repository definition and creates a {@link ColorPository} instance that
+ * reflects its contents.
  */
 public class ColorPositoryParser extends CompiledConfigParser
 {
