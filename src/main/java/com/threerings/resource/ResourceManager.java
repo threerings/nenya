@@ -886,11 +886,7 @@ public class ResourceManager
     {
         BufferedImage image;
 
-        // Java 1.4.2 and below can't deal with the MemoryCacheImageInputStream without throwing
-        //  a hissy fit.
-        if (iis instanceof ImageInputStream ||
-            getNumericJavaVersion(System.getProperty("java.version")) <
-                                  getNumericJavaVersion("1.5.0")) {
+        if (iis instanceof ImageInputStream) {
             image = ImageIO.read(iis);
 
         } else {
