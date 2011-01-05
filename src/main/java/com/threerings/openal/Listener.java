@@ -42,6 +42,30 @@ public class Listener
     }
 
     /**
+     * Returns the x component of the listener's position.
+     */
+    public float getPositionX ()
+    {
+        return _px;
+    }
+
+    /**
+     * Returns the y component of the listener's position.
+     */
+    public float getPositionY ()
+    {
+        return _py;
+    }
+
+    /**
+     * Returns the z component of the listener's position.
+     */
+    public float getPositionZ ()
+    {
+        return _pz;
+    }
+
+    /**
      * Sets the velocity of the listener.
      */
     public void setVelocity (float x, float y, float z)
