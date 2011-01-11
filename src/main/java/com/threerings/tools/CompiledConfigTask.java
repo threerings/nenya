@@ -109,7 +109,6 @@ public class CompiledConfigTask extends Task
         }
 
         String baseDir = getProject().getBaseDir().getPath();
-        System.out.println("Converting source " + source + " by replacing " + baseDir + " with " + _dest);
         File target = new File(source.getPath().replace(baseDir, _dest.getPath()));
         target = new File(FileUtil.resuffix(target, ".xml", ".dat"));
         return target;
