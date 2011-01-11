@@ -22,7 +22,6 @@
 package com.threerings.tools;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import java.io.File;
 import java.io.Serializable;
@@ -110,7 +109,8 @@ public class CompiledConfigTask extends Task
         }
 
         String baseDir = getProject().getBaseDir().getPath();
-        File target = new File(source.getPath().replaceAll(Pattern.quote(baseDir), _dest.getPath()));
+        System.out.println("Converting source " + source + " by replacing " + baseDir + " with " + _dest);
+        File target = new File(source.getPath().replace(baseDir, _dest.getPath()));
         target = new File(FileUtil.resuffix(target, ".xml", ".dat"));
         return target;
     }
