@@ -4,7 +4,7 @@
   <groupId>com.threerings</groupId>
   <artifactId>nenya</artifactId>
   <packaging>jar</packaging>
-  <version>1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <name>nenya</name>
   <description>Facilities for making networked multiplayer games.</description>
   <url>http://code.google.com/p/nenya/</url>
