@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -392,6 +393,13 @@ public class ResourceManager
         }
         if (!"/".equals(File.separator)) {
             path = path.replace("/", File.separator);
+        }
+        // first try a locale-specific file
+        if (_localePrefix != null) {
+            File file = new File(_rdir, PathUtil.appendPath(_localePrefix, path));
+            if (file.exists()) {
+                return file;
+            }
         }
         return new File(_rdir, path);
     }
