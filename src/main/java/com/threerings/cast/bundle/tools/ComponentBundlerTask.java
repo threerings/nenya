@@ -24,15 +24,14 @@ package com.threerings.cast.bundle.tools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.Deflater;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -45,7 +44,6 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
@@ -63,14 +61,10 @@ import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.SimpleCachingImageProvider;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TrimmedTileSet;
-import com.threerings.media.tile.tools.xml.SwissArmyTileSetRuleSet;
-import com.threerings.media.tile.tools.xml.TileSetRuleSet;
-import com.threerings.media.tile.tools.xml.UniformTileSetRuleSet;
 
 import com.threerings.cast.ComponentIDBroker;
 import com.threerings.cast.StandardActions;
 import com.threerings.cast.bundle.BundleUtil;
-import com.threerings.cast.tools.xml.ActionRuleSet;
 
 /**
  * Ant task for creating component bundles. This task must be configured
@@ -165,7 +159,15 @@ public class ComponentBundlerTask extends Task
                   "definitions via the 'actiondef' attribute.");
 
         // parse in the action tilesets
-        HashMap<String, TileSet> actsets = parseActionTileSets();
+        Map<String, TileSet> actsets;
+        try {
+            actsets = ComponentBundlerUtil.parseActionTileSets(_actionDef);
+        } catch (FileNotFoundException fnfe) {
+            throw new BuildException("Unable to load action definition file " +
+                                     "[path=" + _actionDef.getPath() + "].", fnfe);
+        } catch (Exception e) {
+            throw new BuildException("Parsing error.", e);
+        }
 
         // load up our component ID broker
         ComponentIDBroker broker = loadBroker(_mapfile);
@@ -440,46 +442,6 @@ public class ComponentBundlerTask extends Task
     }
 
     /**
-     * Configures <code>ruleSet</code> and hooks it into <code>digester</code>.
-     */
-    protected static void addTileSetRuleSet (Digester digester, TileSetRuleSet ruleSet)
-    {
-        ruleSet.setPrefix("actions" + ActionRuleSet.ACTION_PATH);
-        digester.addRuleSet(ruleSet);
-        digester.addSetNext(ruleSet.getPath(), "addTileSet", TileSet.class.getName());
-    }
-
-    /**
-     * Parses the action tileset definitions and puts them into a hash map, keyed on action name.
-     */
-    protected HashMap<String, TileSet> parseActionTileSets ()
-    {
-        Digester digester = new Digester();
-        digester.addSetProperties("actions" + ActionRuleSet.ACTION_PATH);
-        addTileSetRuleSet(digester, new SwissArmyTileSetRuleSet());
-        addTileSetRuleSet(digester, new UniformTileSetRuleSet("/uniformTileset"));
-
-        HashMap<String, TileSet> actsets = new ActionMap();
-        digester.push(actsets);
-
-        try {
-            FileInputStream fin = new FileInputStream(_actionDef);
-            BufferedInputStream bin = new BufferedInputStream(fin);
-            digester.parse(bin);
-
-        } catch (FileNotFoundException fnfe) {
-            String errmsg = "Unable to load action definition file " +
-                "[path=" + _actionDef.getPath() + "].";
-            throw new BuildException(errmsg, fnfe);
-
-        } catch (Exception e) {
-            throw new BuildException("Parsing error.", e);
-        }
-
-        return actsets;
-    }
-
-    /**
      * Creates the base output stream to which to write our bundle's files.
      */
     protected OutputStream createOutputStream (File target)
@@ -518,19 +480,6 @@ public class ComponentBundlerTask extends Task
         throws IOException
     {
         return TrimmedTileSet.trimTileSet(aset, fout);
-    }
-
-    /** Used when parsing action tilesets. */
-    public static class ActionMap extends HashMap<String, TileSet>
-    {
-        public void setName (String name) {
-            _name = name;
-        }
-        public void addTileSet (TileSet set) {
-            set.setName(_name);
-            put(_name, set);
-        }
-        protected String _name;
     }
 
     /**
