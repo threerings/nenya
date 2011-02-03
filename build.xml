@@ -251,8 +251,7 @@
   </target>
 
   <property name="test" value=""/>
-  <target name="-test-rsrcs" depends="test-colorpos,test-tsbundles,test-cbundles"/>
-  <target name="tests" depends="compile,-test-rsrcs" 
+  <target name="test-units" depends="compile" 
           description="Runs unit tests. Use -Dtest=Foo to run only FooTest.">
     <taskdef name="unit" classpathref="test.classpath"
       classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
@@ -269,6 +268,9 @@
       </batchtest>
     </unit>
   </target>
+
+  <target name="tests" depends="test-colorpos,test-tsbundles,test-cbundles,test-units"
+          description="Runs all tests."/>
 
   <target name="all" depends="clean,-prepare,compile,-ninstall,tests,javadoc,dist"
           description="Cleans and rebuilds everything, including javadocs."/>
