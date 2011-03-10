@@ -68,7 +68,7 @@ public class DSetList extends List
     }
 
     /**
-     * Set the aata to be displayed by this List, if not being attached to a DObject.
+     * Set the data to be displayed by this List, if not being attached to a DObject.
      */
     public function setData (array :Array /* of DSet_Entry */) :void
     {
