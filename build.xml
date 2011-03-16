@@ -65,9 +65,6 @@
     <mkdir dir="${tclasses.dir}"/>
     <ooojavac srcdir="${tsrc.dir}" destdir="${tclasses.dir}"
         version="1.5" classpathref="test.classpath"/>
-<!--
-      <exclude name="com/threerings/openal/**" unless="build.openal"/>
--->
   </target>
 
   <target name="procstream" depends="-preptools"
