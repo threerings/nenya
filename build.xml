@@ -29,15 +29,12 @@
 
   <target name="-preptools" depends="-prepare">
     <artifact:dependencies pathId="tools.classpath">
-      <!-- TODO: we should publish a narya-tools "artifact" which has the
-           javassist dependency listed as non-optional -->
-      <dependency groupId="javassist" artifactId="javassist" version="3.8.0.GA"/>
-      <dependency groupId="com.threerings" artifactId="narya" version="1.1"/>
+      <dependency groupId="com.threerings" artifactId="narya-tools" version="1.8-SNAPSHOT"/>
     </artifact:dependencies>
     <taskdef resource="com/threerings/presents/tools.properties" classpathref="tools.classpath"/>
   </target>
 
-  <target name="clean" description="Deletes most build artifacts.">
+  <target name="clean" depends="-init-ooo" description="Deletes most build artifacts.">
     <delete dir="${classes.dir}"/>
     <delete dir="${tclasses.dir}"/>
     <delete dir="${deploy.dir}/docs"/>
