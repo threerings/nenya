@@ -23,12 +23,14 @@ package com.threerings.media.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import java.awt.Point;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import com.samskivert.util.HashIntMap;
 
@@ -324,7 +326,7 @@ public class AStarPathUtil
         public SortedSet<Node> open;
 
         /** The set of closed nodes being searched. */
-        public ArrayList<Node> closed;
+        public Set<Node> closed;
 
         /** The destination coordinates in the tile array. */
         public int destx, desty;
@@ -344,7 +346,7 @@ public class AStarPathUtil
 
             // construct the open and closed lists
             open = new TreeSet<Node>();
-            closed = Lists.newArrayList();
+            closed = Sets.newIdentityHashSet();
         }
 
         /**
