@@ -246,7 +246,7 @@ public class AStarPathUtil
 
         // skip if it's already in the open or closed list or if its
         // actual cost is less than the just-calculated cost
-        if ((info.open.contains(np) || np.closed) && np.g <= newg) {
+        if ((np.closed || info.open.contains(np)) && np.g <= newg) {
             return;
         }
 
