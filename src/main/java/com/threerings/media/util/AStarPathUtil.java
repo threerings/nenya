@@ -23,14 +23,12 @@ package com.threerings.media.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import java.awt.Point;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import com.samskivert.util.HashIntMap;
 
@@ -187,7 +185,7 @@ public class AStarPathUtil
             stepper.considerSteps(n.x, n.y);
 
             // push the node on the closed list
-            info.closed.add(n);
+            n.closed = true;
         }
 
         // return the best path we could find if we were asked to do so
@@ -248,7 +246,7 @@ public class AStarPathUtil
 
         // skip if it's already in the open or closed list or if its
         // actual cost is less than the just-calculated cost
-        if ((info.open.contains(np) || info.closed.contains(np)) && np.g <= newg) {
+        if ((info.open.contains(np) || np.closed) && np.g <= newg) {
             return;
         }
 
@@ -263,7 +261,7 @@ public class AStarPathUtil
         np.f = np.g + np.h;
 
         // remove it from the closed list if it's present
-        info.closed.remove(np);
+        np.closed = false;
 
         // add it to the open list for further consideration
         info.open.add(np);
@@ -325,9 +323,6 @@ public class AStarPathUtil
         /** The set of open nodes being searched. */
         public SortedSet<Node> open;
 
-        /** The set of closed nodes being searched. */
-        public Set<Node> closed;
-
         /** The destination coordinates in the tile array. */
         public int destx, desty;
 
@@ -346,7 +341,6 @@ public class AStarPathUtil
 
             // construct the open and closed lists
             open = new TreeSet<Node>();
-            closed = Sets.newIdentityHashSet();
         }
 
         /**
@@ -421,6 +415,9 @@ public class AStarPathUtil
 
         /** The node's monotonically-increasing unique identifier. */
         public int id;
+
+        /** Whether or not this node is on the closed list. */
+        public boolean closed;
 
         public Node (int x, int y) {
             this.x = x;
