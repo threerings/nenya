@@ -137,7 +137,7 @@
     <property name="tbundle.dir" value="${testrsrc.dir}/bundles/tiles"/>
 
     <!-- blow away the tilesetid map file so that we get a consistent mapping every time -->
-    <delete file="${tbundle.dir}/tilesets.map"/>         
+    <delete file="${tbundle.dir}/tilesets.map"/>
 
     <tilebundle config="${tbundle.dir}/bundler-config.xml" mapfile="${tbundle.dir}/tilesets.map">
       <fileset dir="${tbundle.dir}/ground" includes="**/*.xml"/>
@@ -163,7 +163,7 @@
                 target="${cbundle.dir}/metadata.jar"/>
 
     <!-- blow away the components map file so that we get a consistent mapping every time -->
-    <delete file="${cbundle.dir}/components.map"/>         
+    <delete file="${cbundle.dir}/components.map"/>
     <cbundle actiondef="${cbundle.dir}/actions.xml" target="${cbundle.dir}/pirate/components.jar"
              mapfile="${cbundle.dir}/components.map" root="${cbundle.dir}/pirate">
       <fileset dir="${cbundle.dir}/pirate" includes="**/*.png" excludes="components/**"/>
@@ -175,7 +175,7 @@
   </target>
 
   <property name="test" value=""/>
-  <target name="test-units" depends="compile" 
+  <target name="test-units" depends="compile"
           description="Runs unit tests. Use -Dtest=Foo to run only FooTest.">
     <taskdef name="unit" classpathref="test.classpath"
       classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
@@ -193,13 +193,13 @@
     </unit>
   </target>
 
-  <target name="tests" depends="test-colorpos,test-tsbundles,test-cbundles,test-units"
+  <target name="tests" depends="dist,test-colorpos,test-tsbundles,test-cbundles,test-units"
           description="Runs all tests."/>
 
-  <target name="all" depends="clean,-prepare,compile,-ninstall,tests,javadoc,dist"
+  <target name="all" depends="clean,-prepare,compile,-ninstall,tests,javadoc,dist,aslib"
           description="Cleans and rebuilds everything, including javadocs."/>
 
-  <target name="dist" depends="-prepare,compile,procstream,-ninstall,aslib"
+  <target name="dist" depends="-prepare,compile,procstream,-ninstall"
           description="Compiles everything and build distribution jar files.">
     <jar destfile="${deploy.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
     <!-- also build our various split jar files -->
@@ -248,8 +248,7 @@
     </java>
   </target>
 
-  <property name="maven.deploy.repo" value="file://${user.home}/.m2/repository"/>
-  <target name="maven-deploy" depends="dist,tests" 
+  <target name="maven-deploy" depends="dist,aslib"
           description="Deploys our build artifacts to a Maven repository.">
     <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" srcdir="${src.dir}" pom="pom.xml"/>
     <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="etc/tools-pom.xml"/>
