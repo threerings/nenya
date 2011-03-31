@@ -28,7 +28,7 @@ import java.awt.geom.Point2D;
 import static com.threerings.geom.Log.log;
 
 /**
- * General geometry utilites.
+ * General geometry utilities.
  */
 public class GeomUtil
 {

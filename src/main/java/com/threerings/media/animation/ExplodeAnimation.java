@@ -171,7 +171,7 @@ public class ExplodeAnimation extends Animation
             }
         }
 
-        // figure out the distance the chunks have travelled
+        // figure out the distance the chunks have traveled
         long msecs = timestamp - _start;
 
         if (_info.delay != -1) {

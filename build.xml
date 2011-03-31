@@ -200,7 +200,7 @@
           description="Cleans and rebuilds everything, including javadocs."/>
 
   <target name="dist" depends="-prepare,compile,procstream,-ninstall"
-          description="Compiles everything and build distribution jar files.">
+          description="Compiles everything and builds distribution jar files.">
     <jar destfile="${deploy.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
     <!-- also build our various split jar files -->
     <jar destfile="${deploy.dir}/${ant.project.name}-rsrc.jar">
