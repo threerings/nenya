@@ -207,8 +207,8 @@
           <includes>
             <include>com/threerings/**/*Test.java</include>
           </includes>
-          <!-- we have to skip these tests as they depend on resources being --
-            -- prepared which are too fiddly to get working via Maven -->
+          <!-- we have to skip these tests as they depend on resources being -->
+          <!-- prepared which are too fiddly to get working via Maven -->
           <excludes>
             <exclude>com/threerings/**/BundledComponentRepositoryTest.java</exclude>
             <exclude>com/threerings/**/BundledTileSetRepositoryTest.java</exclude>
