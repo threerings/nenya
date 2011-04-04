@@ -4,7 +4,7 @@
   <groupId>com.threerings</groupId>
   <artifactId>nenya</artifactId>
   <packaging>jar</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <name>nenya</name>
   <description>Facilities for making networked multiplayer games.</description>
   <url>http://code.google.com/p/nenya/</url>
@@ -35,11 +35,11 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:http://nenya.googlecode.com/svn/trunk/</connection>
+    <connection>scm:svn:http://nenya.googlecode.com/svn/tags/nenya-1.2</connection>
     <developerConnection>
-      scm:svn:svn+ssh://src.earth.threerings.net/nenya/trunk/
+      scm:svn:svn+ssh://src.earth.threerings.net/nenya/tags/nenya-1.2
     </developerConnection>
-    <url>http://nenya.googlecode.com/svn/trunk/</url>
+    <url>http://nenya.googlecode.com/svn/tags/nenya-1.2</url>
   </scm>
 
   <repositories>
