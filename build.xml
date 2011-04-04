@@ -110,15 +110,13 @@
     <asdoc srcdir="${asrc.dir}" libpath="${aslib.path}" destdir="${deploy.dir}/asdocs"/>
   </target>
 
-  <target name="-prep-test-rsrcs" depends="-prepare">
+  <target name="-prep-test-rsrcs" depends="compile">
     <copy todir="${tclasses.dir}">
       <fileset dir="src/test/resources" includes="**"/>
     </copy>
     <property name="testrsrc.dir" value="${tclasses.dir}/rsrc"/>
   </target>
 
-  <!-- these can't depend on the compile target otherwise things break when we -->
-  <!-- call into -test-rsrcs from Maven, alas -->
   <target name="test-colorpos" depends="-prep-test-rsrcs"
           description="Builds the test colorpository data.">
     <taskdef name="confcomp" classpathref="test.classpath"
