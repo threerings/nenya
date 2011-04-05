@@ -270,8 +270,7 @@ public class ClipBuffer
     protected int _state;
     protected Buffer _buffer;
     protected int _size;
-    protected ObserverList<Observer> _observers =
-        new ObserverList<Observer>(ObserverList.FAST_UNSAFE_NOTIFY);
+    protected ObserverList<Observer> _observers = ObserverList.newFastUnsafe();
     protected int _bound;
 
     protected static final int UNLOADED = 0;
