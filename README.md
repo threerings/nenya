@@ -74,7 +74,7 @@ remove the vast majority of the boilerplate above.
 If you prefer to download pre-built binaries, those can be had here:
 
 * [nenya-1.2.jar](http://threerings.github.com/maven-repo/com/threerings/nenya/1.2/nenya-1.2.jar)
-* [nenya-tools-1.2.swc](http://threerings.github.com/maven-repo/com/threerings/nenya-tools/1.2/nenya-tools-1.2.jar)
+* [nenya-tools-1.2.jar](http://threerings.github.com/maven-repo/com/threerings/nenya-tools/1.2/nenya-tools-1.2.jar)
 * [nenyalib-1.2.swc](http://threerings.github.com/maven-repo/com/threerings/nenyalib/1.2/nenyalib-1.2.swc)
 
 Distribution
