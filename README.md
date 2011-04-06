@@ -40,6 +40,16 @@ Invoke ant with any of the following targets:
 Artifacts
 ---------
 
+Nenya provides three different build artifacts, for differing purposes:
+
+* nenya: contains the main Java library; exports dependencies only for
+  libraries which are required by a running client or server.
+* nenya-tools: contains the media precompilation portions of Nenya which one
+  need integrate into their build; exports dependencies for libraries needed
+  when running precompilation.
+* nenyalib: contains the main ActionScript library; exports dependencies for
+  libraries needed when building a SWF using nenyalib.
+
 A Maven repository containing released versions of the Nenya Java and
 ActionScript artifacts are maintained here. To add a Nenya dependency to a
 Maven project, add the following to your `pom.xml`:
@@ -64,6 +74,7 @@ remove the vast majority of the boilerplate above.
 If you prefer to download pre-built binaries, those can be had here:
 
 * [nenya-1.2.jar](http://threerings.github.com/nenya/maven/com/threerings/nenya/1.2/nenya-1.2.jar)
+* [nenya-tools-1.2.swc](http://threerings.github.com/nenya/maven/com/threerings/nenya-tools/1.2/nenya-tools-1.2.jar)
 * [nenyalib-1.2.swc](http://threerings.github.com/nenya/maven/com/threerings/nenyalib/1.2/nenyalib-1.2.swc)
 
 Distribution
