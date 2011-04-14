@@ -265,10 +265,9 @@ public class Sound
      */
     public void pause ()
     {
+        _stateDesired = AL10.AL_PAUSED;
         if (_source != null) {
             _source.pause();
-        } else {
-            _stateDesired = AL10.AL_PAUSED;
         }
     }
 
@@ -278,10 +277,9 @@ public class Sound
      */
     public void stop ()
     {
+        _stateDesired = AL10.AL_STOPPED;
         if (_source != null) {
             _source.stop();
-        } else {
-            _stateDesired = AL10.AL_STOPPED;
         }
     }
 
@@ -291,6 +289,14 @@ public class Sound
     public boolean isPlaying ()
     {
         return _source != null && _source.isPlaying();
+    }
+
+    /**
+     * Called to check if this sound wants to start playing.
+     */
+    public boolean isPending ()
+    {
+        return _stateDesired == AL10.AL_PLAYING;
     }
 
     protected Sound (SoundGroup group, ClipBuffer buffer)
@@ -306,6 +312,7 @@ public class Sound
             if (obs != null) {
                 obs.soundStarted(null);
             }
+            _stateDesired = AL10.AL_INVALID;
             return false;
         }
 
@@ -332,6 +339,7 @@ public class Sound
                         // left hanging
                         if (obs != null && _stateDesired != AL10.AL_STOPPED) {
                             obs.soundStarted(Sound.this);
+                            _stateDesired = AL10.AL_INVALID;
                         }
                     }
                 });
@@ -341,6 +349,7 @@ public class Sound
                 if (obs != null) {
                     obs.soundStarted(null);
                 }
+                _stateDesired = AL10.AL_INVALID;
                 return false;
             }
         }
@@ -354,6 +363,7 @@ public class Sound
         if (_source == null) {
             _source = _group.acquireSource(this);
             if (_source == null) {
+                _stateDesired = AL10.AL_INVALID;
                 return false;
             }
 
@@ -424,7 +434,7 @@ public class Sound
     protected Source _source;
 
     /** The desired state of the sound (stopped, playing, paused) after resolution. */
-    protected int _stateDesired;
+    protected int _stateDesired = AL10.AL_INVALID;
 
     /** Whether or not looping is desired after resolution. */
     protected boolean _loopDesired;
