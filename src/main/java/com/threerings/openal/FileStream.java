@@ -54,7 +54,7 @@ public class FileStream extends URLStream
     public void queueFile (File file, boolean loop)
     {
         try {
-            _queue.add(new QueuedFile(file.toURI().toURL(), loop));
+            queueFile(file.toURI().toURL(), loop);
         } catch (MalformedURLException e) {
             log.warning("Invalid file url.", "file", file, e);
         }
