@@ -28,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.net.URL;
+
 import java.nio.ByteBuffer;
 
 import com.google.common.collect.Maps;
@@ -53,27 +55,36 @@ public abstract class StreamDecoder
     public static StreamDecoder createInstance (File file)
         throws IOException
     {
-        String path = file.getPath();
+        return createInstance(file.toURI().toURL());
+    }
+
+    /**
+     * Creates and initializes a stream decoder for the specified URL.
+     */
+    public static StreamDecoder createInstance (URL url)
+        throws IOException
+    {
+        String path = url.getPath();
         int idx = path.lastIndexOf('.');
         if (idx == -1) {
-            log.warning("Missing extension for file [file=" + path + "].");
+            log.warning("Missing extension for URL.", "url", url);
             return null;
         }
         String extension = path.substring(idx+1);
         Class<? extends StreamDecoder> clazz = _extensions.get(extension);
         if (clazz == null) {
-            log.warning("No decoder registered for extension [extension=" + extension +
-                ", file=" + path + "].");
+            log.warning("No decoder registered for extension.",
+                "extension", extension, "url", url);
             return null;
         }
         StreamDecoder decoder;
         try {
             decoder = clazz.newInstance();
         } catch (Exception e) {
-            log.warning("Error instantiating decoder [file=" + path + ", error=" + e + "].");
+            log.warning("Error instantiating decoder.", "url", url, e);
             return null;
         }
-        decoder.init(new FileInputStream(file));
+        decoder.init(url.openStream());
         return decoder;
     }
 

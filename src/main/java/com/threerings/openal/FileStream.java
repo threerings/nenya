@@ -21,19 +21,17 @@
 
 package com.threerings.openal;
 
-import java.util.ArrayList;
-
 import java.io.File;
 import java.io.IOException;
 
-import java.nio.ByteBuffer;
+import java.net.MalformedURLException;
 
-import com.google.common.collect.Lists;
+import static com.threerings.openal.Log.log;
 
 /**
  * An audio stream read from one or more files.
  */
-public class FileStream extends Stream
+public class FileStream extends URLStream
 {
     /**
      * Creates a new stream for the specified file.
@@ -44,9 +42,7 @@ public class FileStream extends Stream
     public FileStream (SoundManager soundmgr, File file, boolean loop)
         throws IOException
     {
-        super(soundmgr);
-        _file = new QueuedFile(file, loop);
-        _decoder = StreamDecoder.createInstance(file);
+        super(soundmgr, file.toURI().toURL(), loop);
     }
 
     /**
@@ -57,60 +53,10 @@ public class FileStream extends Stream
      */
     public void queueFile (File file, boolean loop)
     {
-        _queue.add(new QueuedFile(file, loop));
-    }
-
-    @Override
-    protected int getFormat ()
-    {
-        return _decoder.getFormat();
-    }
-
-    @Override
-    protected int getFrequency ()
-    {
-        return _decoder.getFrequency();
-    }
-
-    @Override
-    protected int populateBuffer (ByteBuffer buf)
-        throws IOException
-    {
-        int read = _decoder.read(buf);
-        while (buf.hasRemaining() && (!_queue.isEmpty() || _file.loop)) {
-            if (!_queue.isEmpty()) {
-                _file = _queue.remove(0);
-            }
-            _decoder = StreamDecoder.createInstance(_file.file);
-            read = Math.max(0, read);
-            read += _decoder.read(buf);
-        }
-        return read;
-    }
-
-    /** The file currently being played. */
-    protected QueuedFile _file;
-
-    /** The stream decoder for the current file. */
-    protected StreamDecoder _decoder;
-
-    /** The queue of files to play after the current one. */
-    protected ArrayList<QueuedFile> _queue = Lists.newArrayList();
-
-    /** A file queued for play. */
-    protected class QueuedFile
-    {
-        /** The file to play. */
-        public File file;
-
-        /** Whether or not to play the file in a loop when there's nothing
-         * in the queue. */
-        public boolean loop;
-
-        public QueuedFile (File file, boolean loop)
-        {
-            this.file = file;
-            this.loop = loop;
+        try {
+            _queue.add(new QueuedFile(file.toURI().toURL(), loop));
+        } catch (MalformedURLException e) {
+            log.warning("Invalid file url.", "file", file, e);
         }
     }
 }
