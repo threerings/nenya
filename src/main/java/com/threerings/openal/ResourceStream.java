@@ -25,38 +25,63 @@ import java.io.File;
 import java.io.IOException;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import static com.threerings.openal.Log.log;
 
 /**
- * An audio stream read from one or more files.
+ * An audio stream read from one or more resources (via "resource://" URLs, so
+ * {@link com.threerings.resource.ResourceManager#activateResourceProtocol} must be called).
  */
-public class FileStream extends URLStream
+public class ResourceStream extends URLStream
 {
     /**
-     * Creates a new stream for the specified file.
+     * Creates a new stream for the specified resource (from the default bundle).
      *
      * @param loop whether or not to play the file in a continuous loop
      * if there's nothing on the queue
      */
-    public FileStream (SoundManager soundmgr, File file, boolean loop)
+    public ResourceStream (SoundManager soundmgr, String resource, boolean loop)
         throws IOException
     {
-        super(soundmgr, file.toURI().toURL(), loop);
+        this(soundmgr, "", resource, loop);
     }
 
     /**
-     * Adds a file to the queue of files to play.
+     * Creates a new stream for the specified resource.
+     *
+     * @param loop whether or not to play the file in a continuous loop
+     * if there's nothing on the queue
+     */
+    public ResourceStream (SoundManager soundmgr, String bundle, String resource, boolean loop)
+        throws IOException
+    {
+        super(soundmgr, new URL("resource://" + bundle + "/" + resource), loop);
+    }
+
+    /**
+     * Adds a resource (from the default bundle) to the queue of files to play.
      *
      * @param loop if true, play this file in a loop if there's nothing else
      * on the queue
      */
-    public void queueFile (File file, boolean loop)
+    public void queueResource (String resource, boolean loop)
+    {
+        queueResource("", resource, loop);
+    }
+
+    /**
+     * Adds a resource to the queue of files to play.
+     *
+     * @param loop if true, play this file in a loop if there's nothing else
+     * on the queue
+     */
+    public void queueResource (String bundle, String resource, boolean loop)
     {
         try {
-            queueURL(file.toURI().toURL(), loop);
+            queueURL(new URL("resource://" + bundle + "/" + resource), loop);
         } catch (MalformedURLException e) {
-            log.warning("Invalid file url.", "file", file, e);
+            log.warning("Invalid resource url.", "resource", resource, e);
         }
     }
 }

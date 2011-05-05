@@ -46,7 +46,7 @@ public class URLStream extends Stream
         throws IOException
     {
         super(soundmgr);
-        _file = new QueuedFile(url, loop);
+        _url = new QueuedURL(url, loop);
         _decoder = StreamDecoder.createInstance(url);
     }
 
@@ -56,9 +56,9 @@ public class URLStream extends Stream
      * @param loop if true, play this file in a loop if there's nothing else
      * on the queue
      */
-    public void queueFile (URL url, boolean loop)
+    public void queueURL (URL url, boolean loop)
     {
-        _queue.add(new QueuedFile(url, loop));
+        _queue.add(new QueuedURL(url, loop));
     }
 
     @Override
@@ -78,37 +78,37 @@ public class URLStream extends Stream
         throws IOException
     {
         int read = _decoder.read(buf);
-        while (buf.hasRemaining() && (!_queue.isEmpty() || _file.loop)) {
+        while (buf.hasRemaining() && (!_queue.isEmpty() || _url.loop)) {
             if (!_queue.isEmpty()) {
-                _file = _queue.remove(0);
+                _url = _queue.remove(0);
             }
-            _decoder = StreamDecoder.createInstance(_file.url);
+            _decoder = StreamDecoder.createInstance(_url.url);
             read = Math.max(0, read);
             read += _decoder.read(buf);
         }
         return read;
     }
 
-    /** The file currently being played. */
-    protected QueuedFile _file;
+    /** The URL currently being played. */
+    protected QueuedURL _url;
 
-    /** The stream decoder for the current file. */
+    /** The stream decoder for the current URL. */
     protected StreamDecoder _decoder;
 
-    /** The queue of files to play after the current one. */
-    protected ArrayList<QueuedFile> _queue = Lists.newArrayList();
+    /** The queue of URLs to play after the current one. */
+    protected ArrayList<QueuedURL> _queue = Lists.newArrayList();
 
-    /** A file queued for play. */
-    protected class QueuedFile
+    /** A URL queued for play. */
+    protected class QueuedURL
     {
         /** The URL of the file to play. */
         public URL url;
 
-        /** Whether or not to play the file in a loop when there's nothing
+        /** Whether or not to play the URL in a loop when there's nothing
          * in the queue. */
         public boolean loop;
 
-        public QueuedFile (URL url, boolean loop)
+        public QueuedURL (URL url, boolean loop)
         {
             this.url = url;
             this.loop = loop;
