@@ -60,12 +60,31 @@ public class FileResourceBundle extends ResourceBundle
      * @param source a file object that references our source jar file.
      * @param delay if true, the bundle will wait until someone calls {@link #sourceIsReady}
      * before allowing access to its resources.
-     * @param unpack if true the bundle will unpack itself into a temporary directory
+     * @param unpackFully if true the bundle will unpack itself fully.
      */
-    public FileResourceBundle (File source, boolean delay, boolean unpack)
+    public FileResourceBundle (File source, boolean delay, boolean unpackFully)
+    {
+        this(source, delay, unpackFully, true);
+    }
+
+    /**
+     * Constructs a resource bundle with the supplied jar file.
+     *
+     * @param source a file object that references our source jar file.
+     * @param delay if true, the bundle will wait until someone calls {@link #sourceIsReady}
+     * before allowing access to its resources.
+     * @param unpackFully if true the bundle will unpack itself fully.
+     * @param unpackEntries if true and unpackFully is false, individual entries will be
+     * unpacked into a temporary directory as needed (as opposed to being read directly from
+     * the jar file).
+     */
+    public FileResourceBundle (
+        File source, boolean delay, boolean unpackFully, boolean unpackEntries)
     {
         _source = source;
-        if (unpack) {
+        _unpackEntries = unpackEntries;
+
+        if (unpackFully) {
             String root = stripSuffix(source.getPath());
             _unpacked = new File(root + ".stamp");
             _cache = new File(root);
@@ -86,17 +105,25 @@ public class FileResourceBundle extends ResourceBundle
     public InputStream getResource (String path)
         throws IOException
     {
-        // unpack our resources into a temp directory so that we can load
-        // them quickly and the file system can cache them sensibly
-        File rfile = getResourceFile(path);
-        return (rfile == null) ? null : new FileInputStream(rfile);
+        // if specified, unpack our resources into a temp directory so that
+        // we can load them quickly and the file system can cache them sensibly
+        if (_unpackEntries) {
+            File rfile = getResourceFile(path);
+            return (rfile == null) ? null : new FileInputStream(rfile);
+        }
+        if (_jarSource == null && resolveJarFile()) {
+            return null;
+        }
+        JarEntry entry = _jarSource.getJarEntry(path);
+        return (entry == null) ? null : _jarSource.getInputStream(entry);
     }
 
     @Override
     public BufferedImage getImageResource (String path, boolean useFastIO)
         throws IOException
     {
-        return ResourceManager.loadImage(getResourceFile(path), useFastIO);
+        return _unpackEntries ? ResourceManager.loadImage(getResourceFile(path), useFastIO) :
+            ResourceManager.loadImage(getResource(path), useFastIO);
     }
 
     /**
@@ -399,6 +426,9 @@ public class FileResourceBundle extends ResourceBundle
 
     /** The jar file from which we load resources. */
     protected JarFile _jarSource;
+
+    /** Whether or not to unpack individual entries as needed from the jar file. */
+    protected boolean _unpackEntries;
 
     /** A directory in which we temporarily unpack our resource files. */
     protected static File _tmpdir;
