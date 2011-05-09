@@ -211,7 +211,7 @@ public class ResourceManager
         // check a system property to determine if we should unpack our bundles, but don't freak
         // out if we fail to read it
         try {
-            _unpackFully = !Boolean.getBoolean("no_unpack_resources");
+            _unpack = !Boolean.getBoolean("no_unpack_resources");
         } catch (SecurityException se) {
             // no problem, we're in a sandbox so we definitely won't be unpacking
         }
@@ -263,16 +263,7 @@ public class ResourceManager
      */
     public void setUnpackResources (boolean unpackResources)
     {
-        _unpackFully = unpackResources;
-    }
-
-    /**
-     * Configures whether we unpack individual jar entries as opposed to reading them directly from
-     * the jar.
-     */
-    public void setUnpackEntries (boolean unpackEntries)
-    {
-        _unpackEntries = unpackEntries;
+        _unpack = unpackResources;
     }
 
     /**
@@ -449,8 +440,7 @@ public class ResourceManager
     public boolean checkBundle (String path)
     {
         File bfile = getResourceFile(path);
-        return (bfile == null) ? false : new FileResourceBundle(
-            bfile, true, _unpackFully, _unpackEntries).isUnpacked();
+        return (bfile == null) ? false : new FileResourceBundle(bfile, true, _unpack).isUnpacked();
     }
 
     /**
@@ -469,8 +459,7 @@ public class ResourceManager
             return;
         }
 
-        final FileResourceBundle bundle = new FileResourceBundle(
-            bfile, true, _unpackFully, _unpackEntries);
+        final FileResourceBundle bundle = new FileResourceBundle(bfile, true, _unpack);
         if (bundle.isUnpacked()) {
             if (bundle.sourceIsReady()) {
                 listener.requestCompleted(bundle);
@@ -823,8 +812,7 @@ public class ResourceManager
     {
         if (setType.equals(FILE_SET_TYPE)) {
             FileResourceBundle bundle =
-                createFileResourceBundle(getResourceFile(path),
-                    true, _unpackFully, _unpackEntries);
+                createFileResourceBundle(getResourceFile(path), true, _unpack);
             if (!bundle.isUnpacked() || !bundle.sourceIsReady()) {
                 dlist.add(bundle);
             }
@@ -840,9 +828,9 @@ public class ResourceManager
      * Creates an appropriate bundle for fetching resources from files.
      */
     protected FileResourceBundle createFileResourceBundle (File source, boolean delay,
-        boolean unpackFully, boolean unpackEntries)
+        boolean unpack)
     {
-        return new FileResourceBundle(source, delay, unpackFully, unpackEntries);
+        return new FileResourceBundle(source, delay, unpack);
     }
 
     /**
@@ -1078,11 +1066,8 @@ public class ResourceManager
     /** The root path we give to network bundles for all resources they're interested in. */
     protected String _networkRootPath;
 
-    /** Whether or not to unpack our resource bundles fully. */
-    protected boolean _unpackFully;
-
-    /** Whether or not to unpack individual jar entries. */
-    protected boolean _unpackEntries = true;
+    /** Whether or not to unpack our resource bundles. */
+    protected boolean _unpack;
 
     /** Our default resource set. */
     protected ResourceBundle[] _default = new ResourceBundle[0];
