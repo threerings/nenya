@@ -81,7 +81,7 @@ Distribution
 ------------
 
 The Nenya library is released under the LGPL. The most recent version of the
-library is available at http://github.com/threerings/nenya/.
+library is available at http://github.com/threerings/nenya
 
 Contact
 -------
