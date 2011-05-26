@@ -65,8 +65,7 @@ public class ExplodeAnimation extends Animation
         public long delay;
 
         @Override
-        public String toString ()
-        {
+        public String toString () {
             return StringUtil.fieldsToString(this);
         }
     }

@@ -33,7 +33,6 @@ import java.awt.image.BufferedImage;
 
 import com.google.common.collect.Maps;
 
-import com.samskivert.util.StringUtil;
 import com.samskivert.util.Throttle;
 
 import com.threerings.media.image.BufferedMirage;
@@ -131,8 +130,8 @@ public abstract class TileSet
             return tset;
 
         } catch (CloneNotSupportedException cnse) {
-            log.warning("Unable to clone tileset prior to colorization [tset=" + this +
-                        ", zations=" + StringUtil.toString(zations) + ", error=" + cnse + "].");
+            log.warning("Unable to clone tileset prior to colorization",
+                "tset", this, "zations", zations, "error", cnse);
             return null;
         }
     }
@@ -272,7 +271,7 @@ public abstract class TileSet
         Mirage mirage = null;
         if (checkTileIndex(tileIndex)) {
             if (_improv == null) {
-                log.warning("Aiya! Tile set missing image provider [path=" + _imagePath + "].");
+                log.warning("Aiya! Tile set missing image provider", "path", _imagePath);
             } else {
                 mirage = _improv.getTileImage(_imagePath, bounds, zations);
             }
@@ -404,9 +403,8 @@ public abstract class TileSet
                 }
             }
         }
-        log.info("Tile caches [amem=" + (amem / 1024) + "k" +
-                 ", tmem=" + (Tile._totalTileMemory / 1024) + "k" +
-                 ", seen=" + _atiles.size() + ", asize=" + asize + "].");
+        log.info("Tile caches", "amem", (amem / 1024) + "k",
+            "tmem", (Tile._totalTileMemory / 1024) + "k", "seen", _atiles.size(), "asize", + asize);
     }
 
     /**

@@ -52,7 +52,7 @@ public abstract class SimpleCachingImageProvider implements ImageProvider
                 image = loadImage(path);
                 _cache.put(path, image);
             } catch (IOException ioe) {
-                log.warning("Failed to load image [path=" + path + ", ioe=" + ioe + "].");
+                log.warning("Failed to load image", "path", path, "ioe", ioe);
             }
         }
 

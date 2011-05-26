@@ -30,6 +30,5 @@ public interface SequencedAnimationObserver extends AnimationObserver
      * Called when the observed animation -- previously configured with an
      * {@link AnimationFrameSequencer} -- reached the specified frame.
      */
-    public void frameReached (Animation anim, long when,
-                              int frameIdx, int frameSeq);
+    public void frameReached (Animation anim, long when, int frameIdx, int frameSeq);
 }

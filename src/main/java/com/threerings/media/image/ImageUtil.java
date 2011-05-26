@@ -148,8 +148,7 @@ public class ImageUtil
             Color.RGBtoHSB(red, green, blue, hsv);
             Colorization.toFixedHSV(hsv, fhsv);
 
-            // see if this color matches and of our colorizations and
-            // recolor it if it does
+            // see if this color matches and of our colorizations and recolor it if it does
             for (int z = 0; z < zcount; z++) {
                 Colorization cz = zations[z];
                 if (cz != null && cz.matches(hsv, fhsv)) {
@@ -171,8 +170,7 @@ public class ImageUtil
      * Paints multiple copies of the supplied image using the supplied graphics context such that
      * the requested area is filled with the image.
      */
-    public static void tileImage (
-        Graphics2D gfx, Mirage image, int x, int y, int width, int height)
+    public static void tileImage (Graphics2D gfx, Mirage image, int x, int y, int width, int height)
     {
         int iwidth = image.getWidth(), iheight = image.getHeight();
         int xnum = width / iwidth, xplus = width % iwidth;

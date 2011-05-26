@@ -300,7 +300,7 @@ public abstract class AbstractMediaManager
     protected RegionManager _remgr;
 
     /** List of observers to notify at the end of the tick. */
-    protected List<Tuple<ObserverList<Object>,ObserverOp<Object>>> _notify = Lists.newArrayList();
+    protected List<Tuple<ObserverList<Object>, ObserverOp<Object>>> _notify = Lists.newArrayList();
 
     /** Our render-order sorted list of media. */
     @SuppressWarnings("unchecked") protected SortableArrayList<AbstractMedia> _media =

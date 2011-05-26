@@ -80,8 +80,7 @@ public class TileManager
     /**
      */
     public UniformTileSet loadTileSet (
-        ImageProvider improv, String improvKey, String imgPath,
-        int width, int height)
+        ImageProvider improv, String improvKey, String imgPath, int width, int height)
     {
         UniformTileSet uts = loadCachedTileSet(improvKey, imgPath, width, height);
         uts.setImageProvider(improv);
@@ -89,8 +88,7 @@ public class TileManager
     }
 
     /**
-     * Returns an image provider that will load images from the specified
-     * resource set.
+     * Returns an image provider that will load images from the specified resource set.
      */
     public ImageProvider getImageProvider (String rset)
     {

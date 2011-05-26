@@ -32,8 +32,7 @@ import com.samskivert.swing.util.SwingUtil;
 import static com.threerings.media.Log.log;
 
 /**
- * A utility class for positioning animations such that they don't overlap,
- * as best as possible.
+ * A utility class for positioning animations such that they don't overlap, as best as possible.
  */
 public class AnimationArranger
 {

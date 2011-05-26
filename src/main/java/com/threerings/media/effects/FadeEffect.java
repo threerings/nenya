@@ -32,8 +32,7 @@ public class FadeEffect
 {
     public FadeEffect (float alpha, float step, float target)
     {
-        if ((step == 0f) || (alpha > target && step > 0f) ||
-                (alpha < target && step < 0f)) {
+        if ((step == 0f) || (alpha > target && step > 0f) || (alpha < target && step < 0f)) {
             throw new IllegalArgumentException("Step specified is illegal: " +
                 "Fade would never finish (start=" + alpha + ", step=" + step +
                 ", target=" + target + ")");

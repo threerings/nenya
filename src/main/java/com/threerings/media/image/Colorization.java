@@ -100,8 +100,7 @@ public class Colorization
     {
         // check to see that this color is sufficiently "close" to the
         // root color based on the supplied distance parameters
-        if (distance(fhsv[0], _fhsv[0], Short.MAX_VALUE) >
-            range[0] * Short.MAX_VALUE) {
+        if (distance(fhsv[0], _fhsv[0], Short.MAX_VALUE) > range[0] * Short.MAX_VALUE) {
             return false;
         }
 

@@ -37,9 +37,8 @@ public interface AnimationFrameSequencer extends FrameSequencer
     public void setAnimation (Animation anim);
 
     /**
-     * A sequencer that can step through a series of frames in any order
-     * and speed and notify (via {@link SequencedAnimationObserver}) when
-     * specific frames are reached.
+     * A sequencer that can step through a series of frames in any order and speed and notify (via
+     * {@link SequencedAnimationObserver}) when specific frames are reached.
      */
     public static class MultiFunction implements AnimationFrameSequencer
     {
@@ -48,12 +47,10 @@ public interface AnimationFrameSequencer extends FrameSequencer
          *
          * @param sequence the ordering to display the frames.
          * @param msPerFrame the number of ms to display each frame.
-         * @param loop if false, the sequencer will report the end of
-         * the animation after progressing through all of the frames once,
-         * otherwise it will loop indefinitely.
+         * @param loop if false, the sequencer will report the end of the animation after
+         * progressing through all of the frames once, otherwise it will loop indefinitely.
          */
-        public MultiFunction (int[] sequence, long msPerFrame, boolean loop)
-        {
+        public MultiFunction (int[] sequence, long msPerFrame, boolean loop) {
             _length = sequence.length;
             _sequence = sequence;
             setDelay(msPerFrame);
@@ -66,20 +63,16 @@ public interface AnimationFrameSequencer extends FrameSequencer
          *
          * @param sequence the ordering to display the frames.
          * @param msPerFrame the number of ms to display each frame.
-         * @param marks if true for a frame, a FrameReachedEvent will
-         * be generated when that frame is reached.
-         * @param loop if false, the sequencer will report the end of
-         * the animation after progressing through all of the frames once,
-         * otherwise it will loop indefinitely.
+         * @param marks if true for a frame, a FrameReachedEvent will be generated when that frame
+         * is reached.
+         * @param loop if false, the sequencer will report the end of the animation after
+         * progressing through all of the frames once, otherwise it will loop indefinitely.
          */
-        public MultiFunction (
-            int[] sequence, long[] msPerFrame, boolean[] marks, boolean loop)
-        {
+        public MultiFunction (int[] sequence, long[] msPerFrame, boolean[] marks, boolean loop) {
             _length = sequence.length;
             if ((_length != msPerFrame.length) || (_length != marks.length)) {
                 throw new IllegalArgumentException(
-                    "All MultiFunction FrameSequencer arrays must be " +
-                    "the same length.");
+                    "All MultiFunction FrameSequencer arrays must be the same length.");
             }
 
             _sequence = sequence;
@@ -91,18 +84,16 @@ public interface AnimationFrameSequencer extends FrameSequencer
         /**
          * Set the delay to use.
          */
-        public void setDelay (long msPerFrame)
-        {
+        public void setDelay (long msPerFrame) {
             _delays = null;
             _delay = msPerFrame;
         }
 
         /**
-         * Set the length of the sequence we are to use, or 0 means set
-         * it to the length of the sequence array that we were constructed with.
+         * Set the length of the sequence we are to use, or 0 means set it to the length of the
+         * sequence array that we were constructed with.
          */
-        public void setLength (int len)
-        {
+        public void setLength (int len) {
             _length = (len == 0) ? _sequence.length : len;
             if (_curIdx >= _length) {
                 _curIdx = 0;
@@ -112,14 +103,12 @@ public interface AnimationFrameSequencer extends FrameSequencer
         /**
          * Do we reset the animation on init? Default is true.
          */
-        public void setResetOnInit (boolean resets)
-        {
+        public void setResetOnInit (boolean resets) {
             _resets = resets;
         }
 
         // documentation inherited from interface
-        public int init (MultiFrameImage source)
-        {
+        public int init (MultiFrameImage source) {
             int framecount = source.getFrameCount();
             // let's make sure our frames are valid
             for (int ii=0; ii < _length; ii++) {
@@ -140,14 +129,12 @@ public interface AnimationFrameSequencer extends FrameSequencer
         }
 
         // documentation inherited from interface
-        public void setAnimation (Animation anim)
-        {
+        public void setAnimation (Animation anim) {
             _animation = anim;
         }
 
         // documentation inherited from interface
-        public int tick (long tickStamp)
-        {
+        public int tick (long tickStamp) {
             // obtain our starting timestamp if we don't already have one
             if (_lastStamp == 0L) {
                 _lastStamp = tickStamp;
@@ -179,8 +166,7 @@ public interface AnimationFrameSequencer extends FrameSequencer
         }
 
         // documentation inherited from interface
-        public void fastForward (long timeDelta)
-        {
+        public void fastForward (long timeDelta) {
             // this method should be called "unpause"
             _lastStamp += timeDelta;
         }
@@ -188,20 +174,17 @@ public interface AnimationFrameSequencer extends FrameSequencer
         /**
          * Get the delay to use for the specified frame.
          */
-        protected final long getDelay (int index)
-        {
+        protected final long getDelay (int index) {
             return (_delays == null) ? _delay : _delays[index];
         }
 
         /**
          * Check to see if we need to notify that we've reached a marked frame.
          */
-        protected void checkNotify (long tickStamp)
-        {
+        protected void checkNotify (long tickStamp) {
             if (_marks[_curIdx]) {
                 _animation.queueNotification(
-                    new FrameReachedOp(_animation, tickStamp,
-                                       _sequence[_curIdx], _curIdx));
+                    new FrameReachedOp(_animation, tickStamp, _sequence[_curIdx], _curIdx));
             }
         }
 
@@ -238,8 +221,7 @@ public interface AnimationFrameSequencer extends FrameSequencer
         /** Used to dispatch {@link SequencedAnimationObserver#frameReached}. */
         protected static class FrameReachedOp implements ObserverList.ObserverOp<Object>
         {
-            public FrameReachedOp (Animation anim, long when,
-                                   int frameIdx, int frameSeq) {
+            public FrameReachedOp (Animation anim, long when, int frameIdx, int frameSeq) {
                 _anim = anim;
                 _when = when;
                 _frameIdx = frameIdx;

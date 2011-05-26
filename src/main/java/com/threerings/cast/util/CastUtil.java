@@ -58,15 +58,14 @@ public class CastUtil
 
             // make sure the component class exists
             if (cclass == null) {
-                log.warning("Missing definition for component class " +
-                            "[class=" + cname + "].");
+                log.warning("Missing definition for component class", "class", cname);
                 continue;
             }
 
             // make sure there are some components in this class
             Iterator<Integer> iter = crepo.enumerateComponentIds(cclass);
             if (!iter.hasNext()) {
-                log.info("Skipping class for which we have no components [class=" + cclass + "].");
+                log.info("Skipping class for which we have no components", "class", cclass);
                 continue;
             }
 
@@ -99,7 +98,7 @@ public class CastUtil
                 int idx = RandomUtil.getInt(choices.size());
                 components[ii] = choices.get(idx).intValue();
             } else {
-                log.info("Have no components in class [class=" + cclass + "].");
+                log.info("Have no components in class", "class", cclass);
             }
         }
 

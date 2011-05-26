@@ -382,14 +382,12 @@ public class OpenALSoundPlayer extends SoundPlayer
      */
     protected class TickingQueue extends BasicRunQueue
     {
-        public TickingQueue ()
-        {
+        public TickingQueue () {
             super("SoundPlayerQueue");
         }
 
         @Override
-        protected void iterate ()
-        {
+        protected void iterate () {
             long elapsed = _timer.getElapsedMillis() - _lastTick;
             Runnable r;
             if (elapsed >= STREAM_UPDATE_INTERVAL) {
@@ -438,14 +436,12 @@ public class OpenALSoundPlayer extends SoundPlayer
 
         public Sound sound;
 
-        public SoundGrabber (String pkgPath, String key)
-        {
+        public SoundGrabber (String pkgPath, String key) {
             String[] paths = getPaths(pkgPath, key);
             path = paths[RandomUtil.getInt(paths.length)];
         }
 
-        public void run ()
-        {
+        public void run () {
             sound = _group.getSound(path);
             soundLoaded();
         }

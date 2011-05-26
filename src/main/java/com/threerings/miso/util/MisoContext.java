@@ -26,8 +26,7 @@ import com.threerings.media.FrameManager;
 import com.threerings.miso.tile.MisoTileManager;
 
 /**
- * Provides Miso code with access to the managers that it needs to do its
- * thing.
+ * Provides Miso code with access to the managers that it needs to do its thing.
  */
 public interface MisoContext
 {
@@ -37,8 +36,8 @@ public interface MisoContext
     public FrameManager getFrameManager ();
 
     /**
-     * Returns a reference to the tile manager. This reference is valid
-     * for the lifetime of the application.
+     * Returns a reference to the tile manager. This reference is valid for the lifetime of the
+     * application.
      */
     public MisoTileManager getTileManager ();
 }

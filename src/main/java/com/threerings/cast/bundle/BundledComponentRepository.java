@@ -290,33 +290,29 @@ public class BundledComponentRepository
         /**
          * Constructs an instance that will obtain image data from the specified resource bundle.
          */
-        public ResourceBundleProvider (ImageManager imgr, ResourceBundle bundle)
-        {
+        public ResourceBundleProvider (ImageManager imgr, ResourceBundle bundle) {
             super(imgr, (String)null);
             _dprov = this;
             _bundle = bundle;
         }
 
         // from interface ImageDataProvider
-        public String getIdent ()
-        {
+        public String getIdent () {
             return "bcr:" + _bundle.getIdent();
         }
 
         // from interface ImageDataProvider
-        public BufferedImage loadImage (String path) throws IOException
-        {
+        public BufferedImage loadImage (String path) throws IOException {
             return _bundle.getImageResource(path, true);
         }
 
         // from interface FrameProvider
-        public ActionFrames getFrames (CharacterComponent component, String action, String type)
-        {
+        public ActionFrames getFrames (CharacterComponent component, String action, String type) {
             // obtain the action sequence definition for this action
             ActionSequence actseq = _actions.get(action);
             if (actseq == null) {
-                log.warning("Missing action sequence definition [action=" + action +
-                            ", component=" + component + "].");
+                log.warning("Missing action sequence definition",
+                    "action", action, "component", component);
                 return null;
             }
 
@@ -373,15 +369,15 @@ public class BundledComponentRepository
                 return createTileSetFrameImage(aset, actseq);
 
             } catch (Exception e) {
-                log.warning("Error loading tset for action '" + imgpath + "' " + component + ".", e);
+                log.warning("Error loading tset for action '" + imgpath + "' " + component + ".",
+                    e);
                 return null;
             }
         }
 
         // from interface FrameProvider
         public String getFramePath (CharacterComponent component, String action, String type,
-            Set<String> existentPaths)
-        {
+            Set<String> existentPaths) {
             String actionPath = makePath(component, action, type);
             if(!existentPaths.contains(actionPath)) {
                 return makePath(component, ActionSequence.DEFAULT_SEQUENCE, type);
@@ -389,8 +385,7 @@ public class BundledComponentRepository
             return actionPath;
         }
 
-        protected String makePath(CharacterComponent component, String action, String type)
-        {
+        protected String makePath(CharacterComponent component, String action, String type) {
             String imgpath = action;
             if (type != null) {
                 imgpath += "_" + type;
@@ -400,8 +395,7 @@ public class BundledComponentRepository
         }
 
         @Override
-        public Mirage getTileImage (String path, Rectangle bounds, Colorization[] zations)
-        {
+        public Mirage getTileImage (String path, Rectangle bounds, Colorization[] zations) {
             // we don't need our images prepared for screen rendering
             BufferedImage src = _imgr.getImage(getImageKey(path), zations);
             float percentageOfDataBuffer = 1;
@@ -429,8 +423,7 @@ public class BundledComponentRepository
          * Constructs a tileset frame image with the specified tileset and for the specified
          * orientation.
          */
-        public TileSetFrameImage (TileSet set, ActionSequence actseq)
-        {
+        public TileSetFrameImage (TileSet set, ActionSequence actseq) {
             this(set, actseq, 0, 0);
         }
 
@@ -438,8 +431,7 @@ public class BundledComponentRepository
          * Constructs a tileset frame image with the specified tileset and for the specified
          * orientation, with an optional translation.
          */
-        public TileSetFrameImage (TileSet set, ActionSequence actseq, int dx, int dy)
-        {
+        public TileSetFrameImage (TileSet set, ActionSequence actseq, int dx, int dy) {
             _set = set;
             _actseq = actseq;
             _dx = dx;
@@ -456,14 +448,12 @@ public class BundledComponentRepository
         }
 
         // documentation inherited from interface
-        public int getOrientationCount ()
-        {
+        public int getOrientationCount () {
             return _ocount;
         }
 
         // documentation inherited from interface
-        public TrimmedMultiFrameImage getFrames (final int orient)
-        {
+        public TrimmedMultiFrameImage getFrames (final int orient) {
             return new TrimmedMultiFrameImage() {
                 public int getFrameCount () {
                     return _fcount;
@@ -491,8 +481,7 @@ public class BundledComponentRepository
             };
         }
 
-        protected void paintTile(Graphics2D g, int orient, int index, int x, int y)
-        {
+        protected void paintTile(Graphics2D g, int orient, int index, int x, int y) {
             _set.getTile(getTileIndex(orient, index)).paint(g, x + _dx, y + _dy);
         }
 
@@ -507,36 +496,30 @@ public class BundledComponentRepository
         }
 
         // documentation inherited from interface
-        public int getXOrigin (int orient, int index)
-        {
+        public int getXOrigin (int orient, int index) {
             return _actseq.origin.x;
         }
 
         // documentation inherited from interface
-        public int getYOrigin (int orient, int index)
-        {
+        public int getYOrigin (int orient, int index) {
             return _actseq.origin.y;
         }
 
         // documentation inherited from interface
-        public ActionFrames cloneColorized (Colorization[] zations)
-        {
+        public ActionFrames cloneColorized (Colorization[] zations) {
             return new TileSetFrameImage(_set.clone(zations), _actseq);
         }
 
         // documentation inherited from interface
-        public ActionFrames cloneTranslated (int dx, int dy)
-        {
+        public ActionFrames cloneTranslated (int dx, int dy) {
             return new TileSetFrameImage(_set, _actseq, dx, dy);
         }
 
-        protected int getTileIndex (int orient, int index)
-        {
+        protected int getTileIndex (int orient, int index) {
             return _orients.get(orient) * _fcount + index;
         }
 
-        public Tile getTile (int orient, int index)
-        {
+        public Tile getTile (int orient, int index) {
             return _set.getTile(getTileIndex(orient, index));
         }
 

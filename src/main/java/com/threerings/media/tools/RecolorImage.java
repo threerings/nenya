@@ -498,8 +498,7 @@ public class RecolorImage extends JPanel
     {
         float[] hsv = new float[3];
         Color color = new Color(rgb);
-        Color.RGBtoHSB(color.getRed(), color.getGreen(),
-                       color.getBlue(), hsv);
+        Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsv);
         return hsv;
     }
 
@@ -619,7 +618,6 @@ public class RecolorImage extends JPanel
     protected ColorPository _colRepo;
 
     protected static final String IMAGE_PATH =
-        // "bundles/components/pirate/torso/regular/standing.png";
         "bundles/components/pirate/head/regular/standing.png";
 
     /** The actions for our various buttons. */

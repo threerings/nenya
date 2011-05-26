@@ -24,8 +24,7 @@ package com.threerings.media.util;
 import java.awt.Point;
 
 /**
- * Provides miscellaneous useful utility routines for mathematical
- * calculations.
+ * Provides miscellaneous useful utility routines for mathematical calculations.
  */
 public class MathUtil
 {
@@ -82,10 +81,9 @@ public class MathUtil
     }
 
     /**
-     * Returns the approximate circumference of the ellipse defined by the
-     * specified minor and major axes. The formula used (due to Ramanujan,
-     * via a paper of his entitled "Modular Equations and Approximations
-     * to Pi"), is <code>Pi(3a + 3b - sqrt[(a+3b)(b+3a)])</code>.
+     * Returns the approximate circumference of the ellipse defined by the specified minor and
+     * major axes. The formula used (due to Ramanujan, via a paper of his entitled "Modular
+     * Equations and Approximations to Pi"), is <code>Pi(3a + 3b - sqrt[(a+3b)(b+3a)])</code>.
      */
     public static double ellipseCircum (double a, double b)
     {
@@ -93,8 +91,8 @@ public class MathUtil
     }
 
     /**
-     * Returns positive 1 if the sign of the argument is positive, or -1
-     * if the sign of the argument is negative.
+     * Returns positive 1 if the sign of the argument is positive, or -1 if the sign of the
+     * argument is negative.
      */
     public static int sign (int value)
     {
@@ -121,8 +119,7 @@ public class MathUtil
     /**
      * Computes the standard deviation of the supplied values.
      *
-     * @return an array of three values: the mean, variance and standard
-     * deviation, in that order.
+     * @return an array of three values: the mean, variance and standard deviation, in that order.
      */
     public static float[] stddev (int[] values, int start, int length)
     {
@@ -146,8 +143,8 @@ public class MathUtil
     }
 
     /**
-     * Computes (N choose K), the number of ways to select K different
-     * elements from a set of size N.
+     * Computes (N choose K), the number of ways to select K different elements from a set of size
+     * N.
      */
     public static int choose (int n, int k)
     {

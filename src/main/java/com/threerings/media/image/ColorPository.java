@@ -475,7 +475,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Loads up a serialized color pository from the supplied resource manager.
+     * Loads up a serialized ColorPository from the supplied resource manager.
      */
     public static ColorPository loadColorPository (ResourceManager rmgr)
     {
@@ -488,7 +488,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Loads up a serialized color pository from the supplied resource manager.
+     * Loads up a serialized ColorPository from the supplied resource manager.
      */
     public static ColorPository loadColorPository (InputStream source)
     {

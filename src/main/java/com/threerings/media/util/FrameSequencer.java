@@ -22,63 +22,53 @@
 package com.threerings.media.util;
 
 /**
- * Used to control animation timing when displaying a {@link
- * MultiFrameImage}. This interface allows for constant framerates, or
- * more sophisticated animation timing.
+ * Used to control animation timing when displaying a {@link MultiFrameImage}. This interface
+ * allows for constant framerates, or more sophisticated animation timing.
  */
 public interface FrameSequencer
 {
     /**
-     * Called prior to the execution of an animation sequence (not
-     * necessarily immediately, so time stamps should be obtained in the
-     * first call to tick).
+     * Called prior to the execution of an animation sequence (not necessarily immediately, so
+     * time stamps should be obtained in the first call to tick).
      *
-     * @param source the multie-frame image that is providing the
-     * animation frames.
+     * @param source the multi-frame image that is providing the animation frames.
      * @return initial frame index
      */
     public int init (MultiFrameImage source);
 
     /**
-     * Called every display frame, the frame sequencer should return the
-     * index of the animation frame that should be displayed during this
-     * tick. If the sequencer returns -1, it is taken as an indication
-     * that the animation is finished and should be stopped.
+     * Called every display frame, the frame sequencer should return the index of the animation
+     * frame that should be displayed during this tick. If the sequencer returns -1, it is taken
+     * as an indication that the animation is finished and should be stopped.
      */
     public int tick (long tickStamp);
 
     /**
-     * Called if the display is paused for some length of time and then
-     * unpaused. Sequencers should adjust any time stamps they are
-     * maintaining internally by the delta so that time maintains the
-     * illusion of flowing smoothly forward.
+     * Called if the display is paused for some length of time and then unpaused. Sequencers
+     * should adjust any time stamps they are maintaining internally by the delta so that time
+     * maintains the illusion of flowing smoothly forward.
      */
     public void fastForward (long timeDelta);
 
     /**
-     * A frame sequencer that delivers a constant frame rate in either one
-     * shot or looping mode.
+     * A frame sequencer that delivers a constant frame rate in either one shot or looping mode.
      */
     public static class ConstantRate implements FrameSequencer
     {
         /**
-         * Creates a constant rate frame sequencer with the desired target
-         * frames per second.
+         * Creates a constant rate frame sequencer with the desired target frames per second.
          *
          * @param framesPerSecond the target frames per second.
-         * @param loop if false, the sequencer will report the end of
-         * the animation after progressing through all of the frames once,
-         * otherwise it will loop indefinitely.
+         * @param loop if false, the sequencer will report the end of the animation after
+         * progressing through all of the frames once, otherwise it will loop indefinitely.
          */
-        public ConstantRate (double framesPerSecond, boolean loop)
-        {
+        public ConstantRate (double framesPerSecond, boolean loop) {
             _millisPerFrame = (long)(1000d / framesPerSecond);
             _loop = loop;
         }
 
         // documentation inherited from interface
-        public int init (MultiFrameImage source)
-        {
+        public int init (MultiFrameImage source) {
             _frameCount = source.getFrameCount();
             _startStamp = 0l;
 
@@ -86,8 +76,7 @@ public interface FrameSequencer
         }
 
         // documentation inherited from interface
-        public int tick (long tickStamp)
-        {
+        public int tick (long tickStamp) {
             // obtain our starting timestamp if we don't already have one
             if (_startStamp == 0) {
                 _startStamp = tickStamp;
@@ -98,13 +87,11 @@ public interface FrameSequencer
 
             // if we're not looping and we've exhausted our frames, we
             // return -1 to indicate that the animation should stop
-            return (_loop || frameIdx < _frameCount) ? (frameIdx % _frameCount)
-                                                     : -1;
+            return (_loop || frameIdx < _frameCount) ? (frameIdx % _frameCount) : -1;
         }
 
         // documentation inherited from interface
-        public void fastForward (long timeDelta)
-        {
+        public void fastForward (long timeDelta) {
             _startStamp += timeDelta;
         }
 
