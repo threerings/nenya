@@ -189,7 +189,7 @@
           <quiet>true</quiet>
           <show>public</show>
           <links>
-            <link>http://samskivert.googlecode.com/svn/apidocs/</link>
+            <link>http://samskivert.github.com/samskivert/apidocs/</link>
             <link>http://guava-libraries.googlecode.com/svn/trunk/javadoc/</link>
             <link>http://evgeny-goldin.org/ant/api/</link>
           </links>
