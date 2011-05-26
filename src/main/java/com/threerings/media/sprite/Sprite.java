@@ -115,10 +115,10 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Sprites have an orientation in one of the eight cardinal directions: <code>NORTH</code>,
-     * <code>NORTHEAST</code>, etc. Derived classes can choose to override this member function and
-     * select a different set of images based on their orientation, or they can ignore the
-     * orientation information.
+     * Sprites have an orientation in one of the eight cardinal directions:
+     * {@link DirectionCodes#NORTH}, {@link DirectionCodes#NORTHEAST}, etc. Derived classes can
+     * choose to override this member function and select a different set of images based on their
+     * orientation, or they can ignore the orientation information.
      *
      * @see DirectionCodes
      */
@@ -129,7 +129,7 @@ public abstract class Sprite extends AbstractMedia
 
     /**
      * Returns the sprite's orientation as one of the eight cardinal directions:
-     * <code>NORTH</code>, <code>NORTHEAST</code>, etc.
+     * {@link DirectionCodes#NORTH}, {@link DirectionCodes#NORTHEAST}, etc.
      *
      * @see DirectionCodes
      */
@@ -218,7 +218,7 @@ public abstract class Sprite extends AbstractMedia
     }
 
     /**
-     * Set the sprite's active path and start moving it along its merry way.  If the sprite is
+     * Set the sprite's active path and start moving it along its merry way. If the sprite is
      * already moving along a previous path the old path will be lost and the new path will begin
      * to be traversed.
      *
@@ -289,8 +289,8 @@ public abstract class Sprite extends AbstractMedia
     /**
      * Ticks any path assigned to this sprite.
      *
-     * @return true if the path relocated the sprite as a result of this
-     * tick, false if it remained in the same position.
+     * @return true if the path relocated the sprite as a result of this tick, false if it
+     * remained in the same position.
      */
     protected boolean tickPath (long tickStamp)
     {

@@ -117,11 +117,12 @@ public class ImageSprite extends Sprite
      * Sets the animation mode for this sprite. The available modes are:
      *
      * <ul>
-     * <li><code>TIME_BASED</code>: cues the animation based on a target
-     * frame rate (specified via {@link #setFrameRate}).
-     * <li><code>MOVEMENT_CUED</code>: ticks the animation to the next
-     * frame every time the sprite is moved along its path.
-     * <li><code>NO_ANIMATION</code>: disables animation.
+     * <li>{@link #TIME_BASED}: cues the animation based on a target
+     * frame rate (specified via {@link #setFrameRate}).</li>
+     * <li>{@link #MOVEMENT_CUED}: ticks the animation to the next
+     * frame every time the sprite is moved along its path.</li>
+     * <li>{@link #NO_ANIMATION}:
+     * disables animation.</li>
      * </ul>
      *
      * @param mode the desired animation mode.
