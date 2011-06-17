@@ -21,7 +21,7 @@
 
 package com.threerings.media.tile {
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.StringUtil;
 
 public class BaseTileSet extends SwissArmyTileSet
@@ -78,7 +78,7 @@ public class BaseTileSet extends SwissArmyTileSet
     {
         super.populateClone(clone);
         var bClone :BaseTileSet = BaseTileSet(clone);
-        bClone._passable = _passable == null ? null : ArrayUtil.copyOf(_passable);
+        bClone._passable = _passable == null ? null : Arrays.copyOf(_passable);
     }
 
     override public function createClone () :TileSet

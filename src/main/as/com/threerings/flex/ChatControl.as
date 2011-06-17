@@ -38,7 +38,7 @@ import mx.controls.TextInput;
 
 import mx.events.FlexEvent;
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.DelayUtil;
 import com.threerings.util.StringUtil;
 
@@ -200,7 +200,7 @@ public class ChatControl extends HBox
 
         } else {
             _curLine = _txt.text;
-            ArrayUtil.removeAll(_controls, this);
+            Arrays.removeAll(_controls, this);
         }
     }
 

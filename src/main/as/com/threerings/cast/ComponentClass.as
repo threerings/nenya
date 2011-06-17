@@ -21,7 +21,7 @@
 
 package com.threerings.cast {
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Hashable;
 import com.threerings.util.Equalable;
 import com.threerings.util.StringUtil;
@@ -132,7 +132,7 @@ public class ComponentClass
         if (_overrides == null) {
             _overrides = [];
         }
-        ArrayUtil.sortedInsert(_overrides, override);
+        Arrays.sortedInsert(_overrides, override);
     }
 
     /**

@@ -21,7 +21,7 @@
 
 package com.threerings.media.tile {
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.StringUtil;
 
 /**
@@ -182,7 +182,7 @@ public class ObjectTileSet extends SwissArmyTileSet
     public function hasConstraint (tileIdx :int, constraint :String) :Boolean
     {
         return (_constraints == null) ? false :
-            ArrayUtil.contains(_constraints[tileIdx], constraint);
+            Arrays.contains(_constraints[tileIdx], constraint);
     }
 
     // documentation inherited from interface RecolorableTileSet
@@ -278,16 +278,16 @@ public class ObjectTileSet extends SwissArmyTileSet
     {
         super.populateClone(clone);
         var oClone :ObjectTileSet = ObjectTileSet(clone);
-        oClone._owidths = _owidths == null ? null : ArrayUtil.copyOf(_owidths);
-        oClone._oheights = _oheights == null ? null : ArrayUtil.copyOf(_oheights);
-        oClone._xorigins = _xorigins == null ? null : ArrayUtil.copyOf(_xorigins);
-        oClone._yorigins = _yorigins == null ? null : ArrayUtil.copyOf(_yorigins);
-        oClone._priorities = _priorities == null ? null : ArrayUtil.copyOf(_priorities);
-        oClone._ozations = _ozations == null ? null : ArrayUtil.copyOf(_ozations);
-        oClone._xspots = _xspots == null ? null : ArrayUtil.copyOf(_xspots);
-        oClone._yspots = _yspots == null ? null : ArrayUtil.copyOf(_yspots);
-        oClone._sorients = _sorients == null ? null : ArrayUtil.copyOf(_sorients);
-        oClone._constraints = _constraints == null ? null : ArrayUtil.copyOf(_constraints);
+        oClone._owidths = _owidths == null ? null : Arrays.copyOf(_owidths);
+        oClone._oheights = _oheights == null ? null : Arrays.copyOf(_oheights);
+        oClone._xorigins = _xorigins == null ? null : Arrays.copyOf(_xorigins);
+        oClone._yorigins = _yorigins == null ? null : Arrays.copyOf(_yorigins);
+        oClone._priorities = _priorities == null ? null : Arrays.copyOf(_priorities);
+        oClone._ozations = _ozations == null ? null : Arrays.copyOf(_ozations);
+        oClone._xspots = _xspots == null ? null : Arrays.copyOf(_xspots);
+        oClone._yspots = _yspots == null ? null : Arrays.copyOf(_yspots);
+        oClone._sorients = _sorients == null ? null : Arrays.copyOf(_sorients);
+        oClone._constraints = _constraints == null ? null : Arrays.copyOf(_constraints);
     }
 
     override public function createClone () :TileSet

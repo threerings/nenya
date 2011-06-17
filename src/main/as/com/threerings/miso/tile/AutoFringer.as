@@ -34,7 +34,7 @@ import com.threerings.media.tile.Tile;
 import com.threerings.media.tile.TileSet;
 import com.threerings.media.tile.TileManager;
 import com.threerings.media.tile.TileUtil;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Integer;
 import com.threerings.util.Log;
 import com.threerings.util.Maps;
@@ -173,7 +173,7 @@ public class AutoFringer
         fringes :Map, hashValue :int, passable :Boolean, masks :Map) :FringeTile
     {
         // sort the array so that higher priority fringers get drawn first
-        ArrayUtil.sort(fringers);
+        Arrays.sort(fringers);
 
         // Generate an identifier for the fringe tile being created as an array of the keys of its
         // component tiles in the order they'll be drawn in the fringe tile.

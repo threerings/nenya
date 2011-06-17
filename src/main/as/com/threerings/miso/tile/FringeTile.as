@@ -21,7 +21,7 @@
 
 package com.threerings.miso.tile {
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Hashable;
 
 import com.threerings.media.tile.BaseTile;
@@ -41,7 +41,7 @@ public class FringeTile extends BaseTile
             return false;
         }
         var fObj :FringeTile = FringeTile(obj);
-        return _passable == fObj._passable && ArrayUtil.equals(_fringeIds, fObj._fringeIds);
+        return _passable == fObj._passable && Arrays.equals(_fringeIds, fObj._fringeIds);
     }
 
     public function hashCode () :int

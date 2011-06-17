@@ -28,7 +28,7 @@ import flash.display.DisplayObject;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Hashable;
 import com.threerings.util.Integer;
 import com.threerings.util.Map;
@@ -133,12 +133,12 @@ public class CompositedActionFrames
      */
     protected function createFrames (orient :int, callback :Function) :void
     {
-        ArrayUtil.stableSort(_sources, function(cf1 :ComponentFrames, cf2 :ComponentFrames) :int {
+        Arrays.stableSort(_sources, function(cf1 :ComponentFrames, cf2 :ComponentFrames) :int {
             return (cf1.ccomp.getRenderPriority(_action.name, orient) -
                 cf2.ccomp.getRenderPriority(_action.name, orient));
         });
 
-        var idx :int = ArrayUtil.indexOf(_action.orients, orient);
+        var idx :int = Arrays.indexOf(_action.orients, orient);
 
         var frameCt :int = _action.tileset.getTileCounts()[idx];
         var width :int = _action.tileset.getWidths()[idx];

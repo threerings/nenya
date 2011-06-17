@@ -24,7 +24,7 @@ package com.threerings.media.tile {
 import flash.geom.Point;
 
 import com.threerings.media.tile.Tile;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.DirectionUtil;
 import com.threerings.util.Integer;
 import com.threerings.util.StringUtil;
@@ -161,7 +161,7 @@ public class ObjectTile extends Tile
     public function hasConstraint (constraint :String) :Boolean
     {
         return (_constraints == null) ? false :
-            ArrayUtil.contains(_constraints, constraint);
+            Arrays.contains(_constraints, constraint);
     }
 
     /**

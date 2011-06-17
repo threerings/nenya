@@ -23,7 +23,7 @@ package com.threerings.util {
 
 import flash.geom.Point;
 
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 
 public class DirectionUtil extends DirectionCodes
 {
@@ -155,11 +155,11 @@ public class DirectionUtil extends DirectionCodes
         var first :int = direction;
         var second :int = direction;
         for (var ii :int = 0; ii <= FINE_DIRECTION_COUNT / 2; ii++) {
-            if (ArrayUtil.contains(possible, first)) {
+            if (Arrays.contains(possible, first)) {
                 return first;
             }
 
-            if (ii != 0 && ArrayUtil.contains(possible, second)) {
+            if (ii != 0 && Arrays.contains(possible, second)) {
                 return second;
             }
 

@@ -22,7 +22,7 @@
 package com.threerings.cast {
 
 import com.threerings.media.image.Colorization;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Equalable;
 import com.threerings.util.Hashable;
 import com.threerings.util.StringUtil;
@@ -113,7 +113,7 @@ public class CharacterDescriptor
 
         // both the component ids and the colorizations must be equal
         var odesc :CharacterDescriptor = CharacterDescriptor(other);
-        if (!ArrayUtil.equals(_components, odesc._components)) {
+        if (!Arrays.equals(_components, odesc._components)) {
             return false;
         }
 
@@ -134,12 +134,12 @@ public class CharacterDescriptor
             return false;
         }
         for (var ii :int= 0; ii < zlength; ii++) {
-            if (!ArrayUtil.equals(_zations[ii], zations[ii])) {
+            if (!Arrays.equals(_zations[ii], zations[ii])) {
                 return false;
             }
         }
 
-        return ArrayUtil.equals(_xlations, odesc._xlations);
+        return Arrays.equals(_xlations, odesc._xlations);
     }
 
     public function toString () :String

@@ -25,7 +25,7 @@ import flash.events.Event;
 
 import com.threerings.cast.ComponentDataPack;
 import com.threerings.media.tile.TileDataPack;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.DataPack;
 import com.threerings.util.Log;
 import com.threerings.util.Map;
@@ -118,7 +118,7 @@ public class DataPackComponentRepository
             comps = [];
             _classComps.put(cclass, comps);
         }
-        if (!ArrayUtil.contains(comps, component)) {
+        if (!Arrays.contains(comps, component)) {
             comps.push(component);
         } else {
             log.info("Requested to register the same component twice?", "comp", component);

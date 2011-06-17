@@ -29,7 +29,7 @@ import com.threerings.io.SimpleStreamableObject;
 import com.threerings.io.TypedArray;
 import com.threerings.media.tile.TileUtil;
 import com.threerings.miso.util.ObjectSet;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.ClassUtil;
 import com.threerings.util.Cloneable;
 import com.threerings.util.Log;
@@ -75,7 +75,7 @@ public class SparseMisoSceneModel_Section extends SimpleStreamableObject
         this.x = x;
         this.y = y;
         this.width = width;
-        baseTileIds = TypedArray.create(int, ArrayUtil.create(width*height));
+        baseTileIds = TypedArray.create(int, Arrays.create(width*height));
     }
 
     public function getBaseTileId (col :int, row :int) :int
@@ -99,7 +99,7 @@ public class SparseMisoSceneModel_Section extends SimpleStreamableObject
         // sanity check: see if there is already an object of this
         // type at these coordinates
         var dupidx :int;
-        if ((dupidx = ArrayUtil.indexOf(objectInfo, info)) != -1) {
+        if ((dupidx = Arrays.indexOf(objectInfo, info)) != -1) {
             log.warning("Refusing to add duplicate object [ninfo=" + info +
 			", oinfo=" + objectInfo[dupidx] + "].");
             return false;
@@ -123,18 +123,18 @@ public class SparseMisoSceneModel_Section extends SimpleStreamableObject
     public function removeObject (info :ObjectInfo) :Boolean
     {
         // look for it in the interesting info array
-        var oidx :int = ArrayUtil.indexOf(objectInfo, info);
+        var oidx :int = Arrays.indexOf(objectInfo, info);
         if (oidx != -1) {
-            objectInfo = TypedArray(ArrayUtil.splice(objectInfo, oidx, 1));
+            objectInfo = TypedArray(Arrays.splice(objectInfo, oidx, 1));
             return true;
         }
 
         // look for it in the uninteresting arrays
         oidx = indexOfUn(info);
         if (oidx != -1) {
-            objectTileIds = TypedArray(ArrayUtil.splice(objectTileIds, oidx, 1));
-            objectXs = TypedArray(ArrayUtil.splice(objectXs, oidx, 1));
-            objectYs = TypedArray(ArrayUtil.splice(objectYs, oidx, 1));
+            objectTileIds = TypedArray(Arrays.splice(objectTileIds, oidx, 1));
+            objectXs = TypedArray(Arrays.splice(objectXs, oidx, 1));
+            objectYs = TypedArray(Arrays.splice(objectYs, oidx, 1));
             return true;
         }
 
@@ -213,10 +213,10 @@ public class SparseMisoSceneModel_Section extends SimpleStreamableObject
         section.x = x;
         section.y = y;
         section.width = width;
-        section.baseTileIds = TypedArray(ArrayUtil.copyOf(baseTileIds));
-        section.objectTileIds = TypedArray(ArrayUtil.copyOf(objectTileIds));
-        section.objectXs = TypedArray(ArrayUtil.copyOf(objectXs));
-        section.objectYs = TypedArray(ArrayUtil.copyOf(objectYs));
+        section.baseTileIds = TypedArray(Arrays.copyOf(baseTileIds));
+        section.objectTileIds = TypedArray(Arrays.copyOf(objectTileIds));
+        section.objectXs = TypedArray(Arrays.copyOf(objectXs));
+        section.objectYs = TypedArray(Arrays.copyOf(objectYs));
         section.objectInfo = TypedArray.create(ObjectInfo);
         for (var ii :int = 0; ii < objectInfo.length; ii++) {
             section.objectInfo[ii] = objectInfo[ii].clone();

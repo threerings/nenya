@@ -22,7 +22,7 @@
 package com.threerings.miso.util {
 
 import com.threerings.miso.data.ObjectInfo;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Log;
 
 /**
@@ -86,7 +86,7 @@ public class ObjectSet
      */
     public function removeAt (index :int) :void
     {
-        ArrayUtil.removeFirst(_objs, index);
+        Arrays.removeFirst(_objs, index);
     }
 
     /**
@@ -118,7 +118,7 @@ public class ObjectSet
      */
     public function toArray () :Array
     {
-        return ArrayUtil.copyOf(_objs);
+        return Arrays.copyOf(_objs);
     }
 
     public function toString () :String
@@ -151,7 +151,7 @@ public class ObjectSet
      */
     protected function indexOf (info :ObjectInfo) :int
     {
-        return ArrayUtil.binarySearch(_objs, 0, _objs.length, info, searchCompare);
+        return Arrays.binarySearch(_objs, 0, _objs.length, info, searchCompare);
     }
 
     /** Our sorted array of objects. */

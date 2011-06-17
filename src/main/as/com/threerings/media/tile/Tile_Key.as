@@ -22,7 +22,7 @@
 package com.threerings.media.tile {
 
 import com.threerings.media.image.Colorization;
-import com.threerings.util.ArrayUtil;
+import com.threerings.util.Arrays;
 import com.threerings.util.Hashable;
 
 /** Used when caching tiles. */
@@ -45,7 +45,7 @@ public class Tile_Key
             var okey :Tile_Key = Tile_Key(other);
             return (tileSet == okey.tileSet &&
                     tileIndex == okey.tileIndex &&
-                    ArrayUtil.equals(zations, okey.zations));
+                    Arrays.equals(zations, okey.zations));
         } else {
             return false;
         }
