@@ -18,8 +18,12 @@
       <url>http://maven.ow2.org/maven2</url>
     </repository>
     <repository>
-      <id>ooo-maven-repo</id>
+      <id>ooo-ext-maven-repo</id>
       <url>http://ooo-maven.googlecode.com/hg/repository</url>
+    </repository>
+    <repository>
+      <id>ooo-maven-repo</id>
+      <url>http://threerings.github.com/maven-repo</url>
     </repository>
   </repositories>
 
