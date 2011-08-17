@@ -147,6 +147,7 @@ public class ClipBuffer
 
         // create our OpenAL buffer and then queue ourselves up to have
         // our clip data loaded
+        AL10.alGetError(); // throw away any unchecked error prior to an op we want to check
         _buffer = new Buffer(_manager);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {
@@ -203,6 +204,7 @@ public class ClipBuffer
      */
     protected boolean bind (Clip clip)
     {
+        AL10.alGetError(); // throw away any unchecked error prior to an op we want to check
         _buffer.setData(clip.format, clip.data, clip.frequency);
         int errno = AL10.alGetError();
         if (errno != AL10.AL_NO_ERROR) {

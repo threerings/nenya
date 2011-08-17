@@ -124,6 +124,7 @@ public class SoundGroup
 
         // create our sources (or as many of them as we can)
         for (int ii = 0; ii < sources; ii++) {
+            AL10.alGetError(); // throw away any unchecked error prior to an op we want to check
             PooledSource pooled = new PooledSource();
             pooled.source = new Source(manager);
             int errno = AL10.alGetError();
