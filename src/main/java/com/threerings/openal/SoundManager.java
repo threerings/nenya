@@ -202,8 +202,6 @@ public class SoundManager
     {
         _rqueue = rqueue;
 
-        AL10.alGetError(); // throw away any unchecked error prior to an op we want to check
-
         // initialize the OpenAL sound system
         try {
             AL.create("", 44100, 15, false);
