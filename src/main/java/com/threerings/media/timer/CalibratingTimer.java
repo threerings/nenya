@@ -54,7 +54,13 @@ public abstract class CalibratingTimer
     // documentation inherited from interface
     public long getElapsedMicros ()
     {
-        return elapsed() / _microDivider;
+        // Some machines will have set _microDivider to 0
+        if (_microDivider == 0) {
+            // Just convert our millisecond value instead
+            return getElapsedMillis() * 1000;
+        } else {
+            return elapsed() / _microDivider;
+        }
     }
 
     // documentation inherited from interface
