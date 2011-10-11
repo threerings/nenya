@@ -46,10 +46,6 @@
       <url>http://lwjgl-maven.googlecode.com/svn/trunk/repository</url>
     </repository>
     <repository>
-      <id>javazoom-repo</id>
-      <url>http://ppnetmedia.com/repository</url>
-    </repository>
-    <repository>
       <id>ooo-repo</id>
       <url>http://threerings.github.com/maven-repo</url>
     </repository>
