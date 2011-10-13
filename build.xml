@@ -268,7 +268,7 @@
   <target name="-as-deploy" depends="aslib" if="flexsdk.dir">
     <mavendeploy file="${deploy.dir}/${ant.project.name}lib.swc" pom="etc/as-pom.xml"/>
   </target>
-  <target name="deploy" depends="dist,-as-deploy,javadoc"
+  <target name="deploy" depends="dist,-as-deploy,tests,javadoc"
           description="Deploys our build artifacts to a Maven repository.">
     <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"
                  srcdir="${src.dir}" docdir="${deploy.dir}/docs"/>
