@@ -79,7 +79,7 @@ public abstract class CalibratingTimer
         _startStamp = _priorCurrent = current();
         _driftMilliStamp = System.currentTimeMillis();
         _driftTimerStamp = current();
-        _calibrateInterval = new Interval() {
+        _calibrateInterval = new Interval(Interval.RUN_DIRECT) {
             @Override public void expired () {
                 calibrate();
             }

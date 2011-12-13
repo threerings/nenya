@@ -447,6 +447,7 @@ public class KeyboardManager
          */
         public KeyInfo (int keyCode)
         {
+            super(RUN_DIRECT);
             _keyCode = keyCode;
             _keyText = KeyEvent.getKeyText(_keyCode);
             _pressCommand = _xlate.getPressCommand(_keyCode);
@@ -461,6 +462,7 @@ public class KeyboardManager
          */
         public KeyInfo (char keyChar)
         {
+            super(RUN_DIRECT);
             _keyChar = keyChar;
             _keyText = "" +_keyChar;
             _pressCommand = _xlate.getPressCommand(_keyChar);
