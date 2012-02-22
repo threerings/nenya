@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.threerings</groupId>
   <artifactId>nenya</artifactId>
   <packaging>jar</packaging>
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <name>nenya</name>
   <description>Facilities for making networked multiplayer games.</description>
   <url>http://github.com/threerings/nenya/</url>
@@ -36,7 +36,7 @@
 
   <scm>
     <connection>scm:git:git://github.com/threerings/nenya.git</connection>
-    <developerConnection>scm:git:git@github.com:threerings/nenya.git</developerConnection>
+    <developerConnection>scm:svn:svn+ssh://src.earth.threerings.net/nenya/trunk</developerConnection>
     <url>http://github.com/threerings/nenya/</url>
   </scm>
 
@@ -241,7 +241,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
