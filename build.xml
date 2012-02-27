@@ -232,7 +232,7 @@
 
   <target name="genascript" depends="-preptools"
           description="Generates ActionScript versions of our Streamable classes.">
-    <genascript header="lib/SOURCE_HEADER" asroot="${asrc.dir}">
+    <genascript header="etc/SOURCE_HEADER" asroot="${asrc.dir}">
       <fileset dir="${src.dir}" includes="**/data/*.java"/>
     </genascript>
   </target>
