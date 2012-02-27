@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.threerings</groupId>
+    <artifactId>nenya-parent</artifactId>
+    <version>1.4-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nenya</artifactId>
+  <packaging>jar</packaging>
+  <name>Nenya Core</name>
+
+  <repositories>
+    <repository>
+      <id>lwjgl-repo</id>
+      <url>http://lwjgl-maven.googlecode.com/svn/trunk/repository</url>
+    </repository>
+    <repository>
+      <id>ooo-repo</id>
+      <url>http://threerings.github.com/maven-repo</url>
+    </repository>
+    <repository>
+      <id>ooo-ext-repo</id>
+      <url>http://ooo-maven.googlecode.com/hg/repository</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- exported dependencies -->
+    <dependency>
+      <groupId>com.samskivert</groupId>
+      <artifactId>samskivert</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>11.0.1</version>
+    </dependency>
+
+    <!-- optional dependencies -->
+    <dependency>
+      <groupId>com.threerings</groupId>
+      <artifactId>narya</artifactId>
+      <version>${narya.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.lwjgl</groupId>
+      <artifactId>lwjgl</artifactId>
+      <version>2.6</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.lwjgl</groupId>
+      <artifactId>lwjgl_util</artifactId>
+      <version>2.6</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>net.javazoom</groupId>
+      <artifactId>jlayer</artifactId>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jorbis</artifactId>
+      <version>0.0.15</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jogg</artifactId>
+      <version>0.0.7</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.8.0.GA</version>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- test/build dependencies -->
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- TODO: should these just be deleted? -->
+            <exclude>**/OggPlayer.java</exclude>
+            <exclude>**/ModPlayer.java</exclude>
+            <exclude>**/MidiPlayer.java</exclude>
+            <exclude>**/Mp3Player.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

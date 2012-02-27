@@ -1,9 +1,8 @@
 <?xml version="1.0" standalone="yes"?>
 <project name="nenya" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
   <property name="deploy.dir"   location="dist"/>
-  <property name="src.dir"      location="src/main/java"/>
-  <property name="asrc.dir"     location="src/main/as"/>
-  <property name="tsrc.dir"     location="src/test/java"/>
+  <property name="src.dir"      location="core/src/main/java"/>
+  <property name="asrc.dir"     location="aslib/src/main/as"/>
   <property name="classes.dir"  location="${deploy.dir}/classes"/>
   <property name="tclasses.dir" location="${deploy.dir}/test-classes"/>
 
@@ -12,16 +11,29 @@
   <import file="${user.home}/.m2/ooo-build/${ooo-build.vers}/ooo-build.xml"/>
 
   <target name="-prepare" depends="-init-ooo">
-    <mavendep pom="pom.xml"/>
-    <mavendep pom="etc/as-pom.xml" pathProp="aslib.path"/>
-    <mavendep pom="pom.xml" id="test" scope="test"/>
+    <mavendep pom="core/pom.xml" id="core" pathProp="core.path"/>
+    <mavendep pom="core/pom.xml" id="test" scope="test"/>
+    <!-- we can't use <mavendep> here because we need to exclude our pom depends -->
+    <artifact:dependencies filesetId="aslib.fileset" cacheDependencyRefs="true" type="swc"
+      dependencyRefsBuildFile="${deploy.dir}/aslib-pom.dependencies">
+      <pom file="aslib/pom.xml"/>
+    </artifact:dependencies>
+    <pathconvert pathsep="," property="aslib.path" refid="aslib.fileset"/>
+    <!-- we can't just use the tools/pom.xml here because it references core/pom.xml -->
+    <!-- Maven Ant Tasks are retarded when it comes to multi-module POMs -->
+    <!-- so we have to repeat what's in the tools/pom.xml here, yay! -->
+    <mavendep id="tools-test">
+      <dependency groupId="commons-digester" artifactId="commons-digester" version="1.8"/>
+      <dependency groupId="com.megginson.sax" artifactId="xml-writer" version="0.2"/>
+    </mavendep>
     <mkdir dir="${deploy.dir}"/>
     <path id="built.classpath">
-      <path refid="pom.xml.path"/>
+      <path refid="core.path"/>
       <pathelement location="${classes.dir}"/>
     </path>
     <path id="test.classpath">
       <path refid="test.path"/>
+      <path refid="tools-test.path"/>
       <pathelement location="${classes.dir}"/>
       <pathelement location="${tclasses.dir}"/>
     </path>
@@ -61,8 +73,7 @@
 
   <target name="compile" depends="-prepare" description="Compiles source files.">
     <mkdir dir="${classes.dir}"/>
-    <ooojavac version="1.5" srcdir="${src.dir}" destdir="${classes.dir}"
-        classpathref="pom.xml.path">
+    <ooojavac version="1.5" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="core.path">
       <exclude name="**/OggPlayer.java"/>
       <exclude name="**/ModPlayer.java"/>
       <exclude name="**/MidiPlayer.java"/>
@@ -70,8 +81,13 @@
     </ooojavac>
 
     <mkdir dir="${tclasses.dir}"/>
-    <ooojavac srcdir="${tsrc.dir}" destdir="${tclasses.dir}"
-        version="1.5" classpathref="test.classpath"/>
+    <ooojavac srcdir="core/src/test/java" destdir="${tclasses.dir}" version="1.5"
+              classpathref="test.classpath"/>
+    <!-- we also need the tools main and test sources for our testing -->
+    <ooojavac srcdir="tools/src/main/java" destdir="${tclasses.dir}" version="1.5"
+              classpathref="test.classpath"/>
+    <ooojavac srcdir="tools/src/test/java" destdir="${tclasses.dir}" version="1.5"
+              classpathref="test.classpath"/>
   </target>
 
   <target name="procstream" depends="-preptools"
@@ -122,7 +138,8 @@
 
   <target name="-prep-test-rsrcs" depends="compile">
     <copy todir="${tclasses.dir}">
-      <fileset dir="src/test/resources" includes="**"/>
+      <fileset dir="core/src/test/resources" includes="**"/>
+      <fileset dir="tools/src/test/resources" includes="**"/>
     </copy>
     <property name="testrsrc.dir" value="${tclasses.dir}/rsrc"/>
   </target>
@@ -196,7 +213,8 @@
       <formatter type="brief" usefile="false"/>
       <formatter type="xml"/>
       <batchtest todir="${deploy.dir}/test-reports">
-        <fileset dir="${tsrc.dir}" includes="**/*${test}*Test.java"/>
+        <fileset dir="core/src/test/java" includes="**/*${test}*Test.java"/>
+        <fileset dir="tools/src/test/java" includes="**/*${test}*Test.java"/>
       </batchtest>
     </unit>
   </target>
@@ -208,34 +226,8 @@
           description="Cleans and rebuilds everything, including javadocs."/>
 
   <target name="dist" depends="-prepare,compile,procstream,-ninstall"
-          description="Compiles everything and builds distribution jar files.">
+          description="Compiles everything and builds distribution jar file.">
     <jar destfile="${deploy.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
-    <!-- also build our various split jar files -->
-    <jar destfile="${deploy.dir}/${ant.project.name}-rsrc.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-media.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/tools/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/util/**"
-          excludes="**/*.c,**/Makefile,**/*.h"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/NenyaLog*"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-miso.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/miso/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/**/miso/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-cast.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/**/cast/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-chat.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/chat/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-openal.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>
-    </jar>
   </target>
 
   <target name="genascript" depends="-preptools"
