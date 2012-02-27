@@ -1,6 +1,4 @@
 //
-// $Id$
-//
 // Nenya library - tools for developing networked games
 // Copyright (C) 2002-2012 Three Rings Design, Inc., All Rights Reserved
 // http://code.google.com/p/nenya/
