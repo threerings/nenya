@@ -28,9 +28,15 @@ features of the library.
 Building
 --------
 
-The library is built using [Ant](http://ant.apache.org/).
+The library is built using Maven, or [Ant](http://ant.apache.org/).
 
-Invoke ant with any of the following targets:
+The Maven build uses the standard targets:
+
+    package: builds the code and creates the jars and swcs
+    install: builds and installs the artifacts into your local Maven repository
+    test: builds and runs the unit tests
+
+The Ant build uses the following targets:
 
     all: builds the distribution files and javadoc documentation
     compile: builds only the class files (dist/classes)
@@ -50,16 +56,9 @@ Nenya provides three different build artifacts, for differing purposes:
 * nenyalib: contains the main ActionScript library; exports dependencies for
   libraries needed when building a SWF using nenyalib.
 
-A Maven repository containing released versions of the Nenya Java and
-ActionScript artifacts are maintained here. To add a Nenya dependency to a
+Nenya is published to Maven Central. To add a Nenya dependency to a
 Maven project, add the following to your `pom.xml`:
 
-    <repositories>
-      <repository>
-        <id>ooo-repo</id>
-        <url>http://threerings.github.com/maven-repo</url>
-      </repository>
-    </repositories>
     <dependencies>
       <dependency>
         <groupId>com.threerings</groupId>
@@ -73,9 +72,9 @@ remove the vast majority of the boilerplate above.
 
 If you prefer to download pre-built binaries, those can be had here:
 
-* [nenya-1.2.jar](http://threerings.github.com/maven-repo/com/threerings/nenya/1.2/nenya-1.2.jar)
-* [nenya-tools-1.2.jar](http://threerings.github.com/maven-repo/com/threerings/nenya-tools/1.2/nenya-tools-1.2.jar)
-* [nenyalib-1.2.swc](http://threerings.github.com/maven-repo/com/threerings/nenyalib/1.2/nenyalib-1.2.swc)
+* [nenya-1.2.jar](http://repo2.maven.org/maven2/com/threerings/nenya/1.2/nenya-1.2.jar)
+* [nenya-tools-1.2.jar](http://repo2.maven.org/maven2/com/threerings/nenya-tools/1.2/nenya-tools-1.2.jar)
+* [nenyalib-1.2.swc](http://repo2.maven.org/maven2/com/threerings/nenyalib/1.2/nenyalib-1.2.swc)
 
 Distribution
 ------------
