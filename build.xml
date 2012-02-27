@@ -62,8 +62,8 @@
     <delete dir="${deploy.dir}/docs"/>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.jar"/></delete>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.swc"/></delete>
-    <cleanmavendepcache pom="pom.xml"/>
-    <cleanmavendepcache pom="etc/as-pom.xml"/>
+    <cleanmavendepcache pom="core/pom.xml"/>
+    <cleanmavendepcache pom="aslib/pom.xml"/>
     <cleanmavendepcache id="test"/>
   </target>
 
@@ -249,21 +249,25 @@
   </target>
 
   <target name="-as-install" depends="aslib" if="flexsdk.dir">
-    <maveninstall file="${deploy.dir}/${ant.project.name}lib.swc" pom="etc/as-pom.xml"/>
+    <maveninstall file="${deploy.dir}/${ant.project.name}lib.swc" pom="aslib/pom.xml"/>
   </target>
   <target name="install" depends="dist,-as-install"
           description="Deploys build artifacts to local Maven repository.">
     <maveninstall file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"/>
+<!-- TODO
     <maveninstall file="${deploy.dir}/${ant.project.name}.jar" pom="etc/tools-pom.xml"/>
+-->
   </target>
 
   <target name="-as-deploy" depends="aslib" if="flexsdk.dir">
-    <mavendeploy file="${deploy.dir}/${ant.project.name}lib.swc" pom="etc/as-pom.xml"/>
+    <mavendeploy file="${deploy.dir}/${ant.project.name}lib.swc" pom="aslib/pom.xml"/>
   </target>
   <target name="deploy" depends="dist,-as-deploy,tests,javadoc"
           description="Deploys our build artifacts to a Maven repository.">
     <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"
                  srcdir="${src.dir}" docdir="${deploy.dir}/docs"/>
+<!--
     <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="etc/tools-pom.xml"/>
+-->
   </target>
 </project>
