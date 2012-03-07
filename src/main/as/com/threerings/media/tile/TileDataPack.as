@@ -91,33 +91,40 @@ public class TileDataPack extends DataPack
 
     public function getTileSetImage (path :String, zations :Array, callback :Function) :void
     {
-        var key :String = zations == null ? path : path + ":" + StringUtil.toString(zations);
-
-        if (_cache.containsKey(key)) {
-            callback(_cache.get(key));
-        } else if (_pending.containsKey(key)) {
-            _pending.get(key).push(callback);
-        } else {
-            _pending.put(key, [callback]);
-            MultiLoader.getContents(PngRecolorUtil.recolorPNG(getFile(path), zations),
-                function(result :Bitmap) :void {
-                    _cache.put(key, result);
-                    for each (var func :Function in _pending.remove(key)) {
-                        func(result);
-                    }
-                });
-        }
+        getCacheEntry(path, zations, function (entry :CacheEntry) :void {
+            callback(entry.sheet);
+        });
     }
 
     public function getTileImage (path :String, bounds :Rectangle, zations :Array,
         callback :Function) :void
     {
-        getTileSetImage(path, zations, function(result :Bitmap) :void {
-            var data :BitmapData =
-                new BitmapData(bounds.width, bounds.height, true, 0x00000000);
-            data.copyPixels(Bitmap(result).bitmapData, bounds, new Point(0, 0));
-            callback(new Bitmap(data));
+        getCacheEntry(path, zations, function (entry :CacheEntry) :void {
+            callback(entry.getTileImage(bounds));
         });
+    }
+
+    protected function getCacheEntry (path, zations :Array, callback :Function) :void
+    {
+        var key :String = zations == null ? path : path + ":" + StringUtil.toString(zations);
+
+        var entry :CacheEntry = _cache.get(key);
+        if (entry != null) {
+            callback(entry);
+        } else if (_pending.containsKey(key)) {
+            _pending.get(key).push(callback);
+        } else {
+            _pending.put(key, [callback]);
+            MultiLoader.getContents(PngRecolorUtil.recolorPNG(getFile(path), zations),
+                function (sheet :Bitmap) :void {
+                    var entry :CacheEntry = new CacheEntry();
+                    entry.sheet = sheet;
+                    _cache.put(key, entry);
+                    for each (var func :Function in _pending.remove(key)) {
+                        func(entry);
+                    }
+                });
+        }
     }
 
     /** Cache of images loaded from this data pack. */
@@ -126,4 +133,40 @@ public class TileDataPack extends DataPack
     /** Any images we're in the process of resolving, map their key to a list of listeners*/
     protected var _pending :Map = Maps.newMapOf(String);
 }
+}
+
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+
+import com.threerings.util.Maps;
+import com.threerings.util.Map;
+
+class CacheEntry
+{
+    public var sheet :Bitmap;
+
+    public function getTileImage (rect :Rectangle) :Bitmap
+    {
+        var key :String = rect.x + "," + rect.y + "," + rect.width + "," + rect.height;
+
+        var image :Bitmap = _images.get(key);
+        if (image == null) {
+            var bmd :BitmapData = new BitmapData(rect.width, rect.height);
+            bmd.copyPixels(sheet.bitmapData, rect, new Point(0, 0));
+
+            image = new Bitmap(bmd);
+            _images.put(key, image);
+            trace("Cache MISS. Creating new bitmapdata, key=" + key);
+        } else {
+            trace("Cache hit");
+        }
+        return image;
+    }
+
+    // The sliced up tile images. Caches within caches!
+    protected var _images :Map = Maps.newBuilder(String)
+        // .makeWeakValues()
+        .build();
 }
