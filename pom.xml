@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.threerings</groupId>
-  <artifactId>nenya</artifactId>
-  <packaging>jar</packaging>
-  <version>1.4-SNAPSHOT</version>
-  <name>nenya</name>
-  <description>Facilities for making networked multiplayer games.</description>
-  <url>http://github.com/threerings/nenya/</url>
-  <issueManagement>
-    <url>http://github.com/threerings/nenya/issues</url>
-  </issueManagement>
-
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
   </parent>
+
+  <groupId>com.threerings</groupId>
+  <artifactId>nenya-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>1.5-SNAPSHOT</version>
+
+  <name>Nenya Parent</name>
+  <description>Facilities for making Java games.</description>
+  <url>http://github.com/threerings/nenya/</url>
+  <issueManagement>
+    <url>http://github.com/threerings/nenya/issues</url>
+  </issueManagement>
 
   <licenses>
     <license>
@@ -36,108 +37,20 @@
 
   <scm>
     <connection>scm:git:git://github.com/threerings/nenya.git</connection>
-    <developerConnection>scm:svn:svn+ssh://src.earth.threerings.net/nenya/trunk</developerConnection>
+    <developerConnection>scm:git:git@github.com:threerings/nenya.git</developerConnection>
     <url>http://github.com/threerings/nenya/</url>
   </scm>
 
-  <repositories>
-    <repository>
-      <id>lwjgl-repo</id>
-      <url>http://lwjgl-maven.googlecode.com/svn/trunk/repository</url>
-    </repository>
-    <repository>
-      <id>ooo-repo</id>
-      <url>http://threerings.github.com/maven-repo</url>
-    </repository>
-    <repository>
-      <id>ooo-ext-repo</id>
-      <url>http://ooo-maven.googlecode.com/hg/repository</url>
-    </repository>
-  </repositories>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <narya.version>1.11</narya.version>
+  </properties>
 
-  <dependencies>
-    <!-- exported dependencies -->
-    <dependency>
-      <groupId>com.samskivert</groupId>
-      <artifactId>samskivert</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>11.0.1</version>
-    </dependency>
-
-    <!-- optional dependencies -->
-    <dependency>
-      <groupId>com.threerings</groupId>
-      <artifactId>narya</artifactId>
-      <version>1.11</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.lwjgl</groupId>
-      <artifactId>lwjgl</artifactId>
-      <version>2.6</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.lwjgl</groupId>
-      <artifactId>lwjgl_util</artifactId>
-      <version>2.6</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>net.javazoom</groupId>
-      <artifactId>jlayer</artifactId>
-      <version>1.0</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jorbis</artifactId>
-      <version>0.0.15</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jogg</artifactId>
-      <version>0.0.7</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>javassist</groupId>
-      <artifactId>javassist</artifactId>
-      <version>3.8.0.GA</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>commons-digester</groupId>
-      <artifactId>commons-digester</artifactId>
-      <version>1.8</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>com.megginson.sax</groupId>
-      <artifactId>xml-writer</artifactId>
-      <version>0.2</version>
-      <optional>true</optional>
-    </dependency>
-
-    <!-- test/build dependencies -->
-    <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.7.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>core</module>
+    <module>tools</module>
+    <module>aslib</module>
+  </modules>
 
   <build>
     <plugins>
@@ -153,13 +66,6 @@
           <showWarnings>true</showWarnings>
           <!-- yes, those quoted spaces are a workaround sanctioned by the Maven idiocracy -->
           <compilerArgument>-Xlint" "-Xlint:-serial" "-Xlint:-path</compilerArgument>
-          <excludes>
-            <!-- TODO: should these just be deleted? -->
-            <exclude>**/OggPlayer.java</exclude>
-            <exclude>**/ModPlayer.java</exclude>
-            <exclude>**/MidiPlayer.java</exclude>
-            <exclude>**/Mp3Player.java</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -180,44 +86,10 @@
           <links>
             <link>http://samskivert.github.com/samskivert/apidocs/</link>
             <link>http://docs.guava-libraries.googlecode.com/git/javadoc/</link>
+            <link>http://threerings.github.com/narya/apidocs/</link>
             <link>http://evgeny-goldin.org/ant/api/</link>
           </links>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <includes>
-            <include>com/threerings/**/*Test.java</include>
-          </includes>
-          <!-- we have to skip these tests as they depend on resources being -->
-          <!-- prepared which are too fiddly to get working via Maven -->
-          <excludes>
-            <exclude>com/threerings/**/BundledComponentRepositoryTest.java</exclude>
-            <exclude>com/threerings/**/BundledTileSetRepositoryTest.java</exclude>
-          </excludes>
-          <systemPropertyVariables>
-            <resource_dir>target/test-classes/rsrc</resource_dir>
-            <no_unpack_resources>true</no_unpack_resources>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <version>2.3.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.5</version>
       </plugin>
     </plugins>
     <pluginManagement>

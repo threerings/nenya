@@ -1,30 +1,53 @@
 <?xml version="1.0" standalone="yes"?>
 <project name="nenya" default="compile" basedir="." xmlns:artifact="urn:maven-artifact-ant">
-  <property name="deploy.dir"   location="dist"/>
-  <property name="src.dir"      location="src/main/java"/>
-  <property name="asrc.dir"     location="src/main/as"/>
-  <property name="tsrc.dir"     location="src/test/java"/>
-  <property name="classes.dir"  location="${deploy.dir}/classes"/>
-  <property name="tclasses.dir" location="${deploy.dir}/test-classes"/>
+  <property name="deploy.dir"        location="dist"/>
+  <property name="src.dir"           location="core/src/main/java"/>
+  <property name="classes.dir"       location="${deploy.dir}/classes"/>
+  <property name="asrc.dir"          location="aslib/src/main/as"/>
+  <property name="tools-src.dir"     location="tools/src/main/java"/>
+  <property name="tools-classes.dir" location="${deploy.dir}/tools-classes"/>
+  <property name="test-classes.dir"  location="${deploy.dir}/test-classes"/>
 
   <property name="ooo-build.vers" value="2.9"/>
   <ant antfile="etc/bootstrap.xml"/>
   <import file="${user.home}/.m2/ooo-build/${ooo-build.vers}/ooo-build.xml"/>
 
   <target name="-prepare" depends="-init-ooo">
-    <mavendep pom="pom.xml"/>
-    <mavendep pom="etc/as-pom.xml" pathProp="aslib.path"/>
-    <mavendep pom="pom.xml" id="test" scope="test"/>
     <mkdir dir="${deploy.dir}"/>
+
+    <mavendep pom="core/pom.xml" id="core" pathProp="core.path"/>
     <path id="built.classpath">
-      <path refid="pom.xml.path"/>
+      <path refid="core.path"/>
       <pathelement location="${classes.dir}"/>
     </path>
+
+    <!-- we can't just use the tools/pom.xml here because it references core/pom.xml -->
+    <!-- Maven Ant Tasks are retarded when it comes to multi-module POMs -->
+    <!-- so we have to repeat what's in the tools/pom.xml here, yay! -->
+    <mavendep id="tools" pathProp="tools.path">
+      <dependency groupId="commons-digester" artifactId="commons-digester" version="1.8"/>
+      <dependency groupId="com.megginson.sax" artifactId="xml-writer" version="0.2"/>
+    </mavendep>
+    <path id="tools.classpath">
+      <path refid="core.path"/>
+      <path refid="tools.path"/>
+      <pathelement location="${classes.dir}"/>
+      <pathelement location="${tools-classes.dir}"/>
+    </path>
+
+    <mavendep pom="core/pom.xml" id="test" scope="test"/>
     <path id="test.classpath">
       <path refid="test.path"/>
-      <pathelement location="${classes.dir}"/>
-      <pathelement location="${tclasses.dir}"/>
+      <path refid="tools.classpath"/>
+      <pathelement location="${test-classes.dir}"/>
     </path>
+
+    <!-- we can't use <mavendep> here because we need to exclude our pom depends -->
+    <artifact:dependencies filesetId="aslib.fileset" cacheDependencyRefs="true" type="swc"
+      dependencyRefsBuildFile="${deploy.dir}/aslib-pom.dependencies">
+      <pom file="aslib/pom.xml"/>
+    </artifact:dependencies>
+    <pathconvert pathsep="," property="aslib.path" refid="aslib.fileset"/>
   </target>
 
   <target name="-prepare-as" depends="-prepare">
@@ -38,20 +61,20 @@
   </target>
 
   <target name="-preptools" depends="-prepare">
-    <artifact:dependencies pathId="tools.classpath">
+    <artifact:dependencies pathId="ntools.classpath">
       <dependency groupId="com.threerings" artifactId="narya-tools" version="1.11"/>
     </artifact:dependencies>
-    <taskdef resource="com/threerings/presents/tools.properties" classpathref="tools.classpath"/>
+    <taskdef resource="com/threerings/presents/tools.properties" classpathref="ntools.classpath"/>
   </target>
 
   <target name="clean" depends="-init-ooo" description="Deletes most build artifacts.">
     <delete dir="${classes.dir}"/>
-    <delete dir="${tclasses.dir}"/>
+    <delete dir="${test-classes.dir}"/>
     <delete dir="${deploy.dir}/docs"/>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.jar"/></delete>
     <delete failonerror="false"><fileset dir="${deploy.dir}" includes="*.swc"/></delete>
-    <cleanmavendepcache pom="pom.xml"/>
-    <cleanmavendepcache pom="etc/as-pom.xml"/>
+    <cleanmavendepcache pom="core/pom.xml"/>
+    <cleanmavendepcache pom="aslib/pom.xml"/>
     <cleanmavendepcache id="test"/>
   </target>
 
@@ -61,17 +84,22 @@
 
   <target name="compile" depends="-prepare" description="Compiles source files.">
     <mkdir dir="${classes.dir}"/>
-    <ooojavac version="1.5" srcdir="${src.dir}" destdir="${classes.dir}"
-        classpathref="pom.xml.path">
+    <ooojavac version="1.5" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="core.path">
       <exclude name="**/OggPlayer.java"/>
       <exclude name="**/ModPlayer.java"/>
       <exclude name="**/MidiPlayer.java"/>
       <exclude name="**/Mp3Player.java"/>
     </ooojavac>
 
-    <mkdir dir="${tclasses.dir}"/>
-    <ooojavac srcdir="${tsrc.dir}" destdir="${tclasses.dir}"
-        version="1.5" classpathref="test.classpath"/>
+    <mkdir dir="${tools-classes.dir}"/>
+    <ooojavac version="1.5" srcdir="${tools-src.dir}" destdir="${tools-classes.dir}"
+              classpathref="tools.classpath"/>
+
+    <mkdir dir="${test-classes.dir}"/>
+    <ooojavac srcdir="core/src/test/java" destdir="${test-classes.dir}" version="1.5"
+              classpathref="test.classpath"/>
+    <ooojavac srcdir="tools/src/test/java" destdir="${test-classes.dir}" version="1.5"
+              classpathref="test.classpath"/>
   </target>
 
   <target name="procstream" depends="-preptools"
@@ -121,10 +149,11 @@
   </target>
 
   <target name="-prep-test-rsrcs" depends="compile">
-    <copy todir="${tclasses.dir}">
-      <fileset dir="src/test/resources" includes="**"/>
+    <copy todir="${test-classes.dir}">
+      <fileset dir="core/src/test/resources" includes="**"/>
+      <fileset dir="tools/src/test/resources" includes="**"/>
     </copy>
-    <property name="testrsrc.dir" value="${tclasses.dir}/rsrc"/>
+    <property name="test-rsrc.dir" value="${test-classes.dir}/rsrc"/>
   </target>
 
   <target name="test-colorpos" depends="-prep-test-rsrcs"
@@ -132,8 +161,8 @@
     <taskdef name="confcomp" classpathref="test.classpath"
       classname="com.threerings.tools.CompiledConfigTask"/>
     <confcomp parser="com.threerings.media.image.tools.xml.ColorPositoryParser"
-      configdef="${testrsrc.dir}/config/media/colordefs.xml"
-      target="${testrsrc.dir}/config/media/colordefs.dat"/>
+      configdef="${test-rsrc.dir}/config/media/colordefs.xml"
+      target="${test-rsrc.dir}/config/media/colordefs.dat"/>
   </target>
 
   <target name="test-tsbundles" depends="-prep-test-rsrcs"
@@ -142,7 +171,7 @@
       classname="com.threerings.media.tile.bundle.tools.TileSetBundlerTask"/>
     <taskdef name="conffringe" classpathref="test.classpath"
       classname="com.threerings.miso.tile.tools.CompileFringeConfigurationTask"/>
-    <property name="tbundle.dir" value="${testrsrc.dir}/bundles/tiles"/>
+    <property name="tbundle.dir" value="${test-rsrc.dir}/bundles/tiles"/>
 
     <!-- blow away the tilesetid map file so that we get a consistent mapping every time -->
     <delete file="${tbundle.dir}/tilesets.map"/>
@@ -155,8 +184,8 @@
     </tilebundle>
 
     <conffringe tilesetmap="${tbundle.dir}/tilesets.map"
-                fringedef="${testrsrc.dir}/config/miso/tile/fringeconf.xml"
-                target="${testrsrc.dir}/config/miso/tile/fringeconf.dat"/>
+                fringedef="${test-rsrc.dir}/config/miso/tile/fringeconf.xml"
+                target="${test-rsrc.dir}/config/miso/tile/fringeconf.dat"/>
   </target>
 
   <target name="test-cbundles" depends="-prep-test-rsrcs"
@@ -165,7 +194,7 @@
       classname="com.threerings.cast.bundle.tools.MetadataBundlerTask"/>
     <taskdef name="cbundle" classpathref="test.classpath"
       classname="com.threerings.cast.bundle.tools.ComponentBundlerTask"/>
-    <property name="cbundle.dir" value="${testrsrc.dir}/bundles/components"/>
+    <property name="cbundle.dir" value="${test-rsrc.dir}/bundles/components"/>
 
     <metabundle actiondef="${cbundle.dir}/actions.xml" classdef="${cbundle.dir}/classes.xml"
                 target="${cbundle.dir}/metadata.jar"/>
@@ -190,13 +219,14 @@
     <mkdir dir="${deploy.dir}/test-reports"/>
     <unit printsummary="off" haltonfailure="yes">
       <classpath refid="test.classpath"/>
-      <sysproperty key="test_dir" value="${tclasses.dir}"/>
-      <sysproperty key="resource_dir" value="${testrsrc.dir}"/>
+      <sysproperty key="test_dir" value="${test-classes.dir}"/>
+      <sysproperty key="resource_dir" value="${test-rsrc.dir}"/>
       <sysproperty key="no_unpack_resources" value="true"/>
       <formatter type="brief" usefile="false"/>
       <formatter type="xml"/>
       <batchtest todir="${deploy.dir}/test-reports">
-        <fileset dir="${tsrc.dir}" includes="**/*${test}*Test.java"/>
+        <fileset dir="core/src/test/java" includes="**/*${test}*Test.java"/>
+        <fileset dir="tools/src/test/java" includes="**/*${test}*Test.java"/>
       </batchtest>
     </unit>
   </target>
@@ -208,39 +238,14 @@
           description="Cleans and rebuilds everything, including javadocs."/>
 
   <target name="dist" depends="-prepare,compile,procstream,-ninstall"
-          description="Compiles everything and builds distribution jar files.">
+          description="Compiles everything and builds distribution jar file.">
     <jar destfile="${deploy.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
-    <!-- also build our various split jar files -->
-    <jar destfile="${deploy.dir}/${ant.project.name}-rsrc.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/resource/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-media.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/geom/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/media/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/tools/**"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/util/**"
-          excludes="**/*.c,**/Makefile,**/*.h"/>
-      <fileset dir="${classes.dir}" includes="com/threerings/NenyaLog*"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-miso.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/miso/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/**/miso/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-cast.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/cast/**"/>
-      <fileset dir="${classes.dir}" includes="rsrc/**/cast/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-chat.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/chat/**"/>
-    </jar>
-    <jar destfile="${deploy.dir}/${ant.project.name}-openal.jar">
-      <fileset dir="${classes.dir}" includes="com/threerings/openal/**"/>
-    </jar>
+    <jar destfile="${deploy.dir}/${ant.project.name}-tools.jar" basedir="${tools-classes.dir}"/>
   </target>
 
   <target name="genascript" depends="-preptools"
           description="Generates ActionScript versions of our Streamable classes.">
-    <genascript header="lib/SOURCE_HEADER" asroot="${asrc.dir}">
+    <genascript header="etc/SOURCE_HEADER" asroot="${asrc.dir}">
       <fileset dir="${src.dir}" includes="**/data/*.java"/>
     </genascript>
   </target>
@@ -250,28 +255,28 @@
           description="Runs the Miso scene viewer.">
     <java classname="com.threerings.miso.viewer.ViewerApp"
           fork="true" classpathref="test.classpath">
-      <sysproperty key="resource_dir" value="${testrsrc.dir}"/>
+      <sysproperty key="resource_dir" value="${test-rsrc.dir}"/>
       <sysproperty key="no_unpack_resources" value="true"/>
-      <arg value="${testrsrc.dir}/scenes/${scene}.xml"/>
+      <arg value="${test-rsrc.dir}/scenes/${scene}.xml"/>
     </java>
   </target>
 
   <target name="-as-install" depends="aslib" if="flexsdk.dir">
-    <maveninstall file="${deploy.dir}/${ant.project.name}lib.swc" pom="etc/as-pom.xml"/>
+    <maveninstall file="${deploy.dir}/${ant.project.name}lib.swc" pom="aslib/pom.xml"/>
   </target>
   <target name="install" depends="dist,-as-install"
           description="Deploys build artifacts to local Maven repository.">
     <maveninstall file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"/>
-    <maveninstall file="${deploy.dir}/${ant.project.name}.jar" pom="etc/tools-pom.xml"/>
+    <maveninstall file="${deploy.dir}/${ant.project.name}-tools.jar" pom="tools/pom.xml"/>
   </target>
 
   <target name="-as-deploy" depends="aslib" if="flexsdk.dir">
-    <mavendeploy file="${deploy.dir}/${ant.project.name}lib.swc" pom="etc/as-pom.xml"/>
+    <mavendeploy file="${deploy.dir}/${ant.project.name}lib.swc" pom="aslib/pom.xml"/>
   </target>
   <target name="deploy" depends="dist,-as-deploy,tests,javadoc"
           description="Deploys our build artifacts to a Maven repository.">
     <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"
                  srcdir="${src.dir}" docdir="${deploy.dir}/docs"/>
-    <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="etc/tools-pom.xml"/>
+    <mavendeploy file="${deploy.dir}/${ant.project.name}-tools.jar" pom="tools/pom.xml"/>
   </target>
 </project>
