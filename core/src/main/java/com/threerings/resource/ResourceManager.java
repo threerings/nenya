@@ -407,8 +407,8 @@ public class ResourceManager
         if (_rdir == null) {
             return null;
         }
-        if (!"/".equals(File.separator)) {
-            path = path.replace("/", File.separator);
+        if ('/' != File.separatorChar) {
+            path = path.replace('/', File.separatorChar);
         }
         // first try a locale-specific file
         String localePath = getLocalePath(path);
