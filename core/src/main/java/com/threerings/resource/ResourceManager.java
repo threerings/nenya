@@ -838,8 +838,8 @@ public class ResourceManager
     /**
      * Creates an appropriate bundle for fetching resources from files.
      */
-    protected FileResourceBundle createFileResourceBundle (File source, boolean delay,
-        boolean unpack)
+    protected FileResourceBundle createFileResourceBundle (
+        File source, boolean delay, boolean unpack)
     {
         return new FileResourceBundle(source, delay, unpack);
     }
@@ -847,10 +847,22 @@ public class ResourceManager
     /**
      * Creates an appropriate bundle for fetching resources from the network.
      */
-    protected ResourceBundle createNetworkResourceBundle (String root, String path,
-        Set<String> rsrcList)
+    protected ResourceBundle createNetworkResourceBundle (
+        String root, String path, Set<String> rsrcList)
     {
         return new NetworkResourceBundle(root, path, rsrcList);
+    }
+
+    /**
+     * Returns an InputStream from this manager's classloader for the given path.
+     */
+    protected InputStream getInputStreamFromClasspath (final String fullyQualifiedPath)
+    {
+        return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
+            public InputStream run () {
+                return _loader.getResourceAsStream(fullyQualifiedPath);
+            }
+        });
     }
 
     /**
@@ -874,18 +886,6 @@ public class ResourceManager
             return FastImageIO.read(file);
         }
         return ImageIO.read(file);
-    }
-
-    /**
-     * Returns an InputStream from this manager's classloader for the given path.
-     */
-    protected InputStream getInputStreamFromClasspath (final String fullyQualifiedPath)
-    {
-        return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-            public InputStream run () {
-                return _loader.getResourceAsStream(fullyQualifiedPath);
-            }
-        });
     }
 
     /**
