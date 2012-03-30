@@ -266,7 +266,8 @@
   </target>
   <target name="install" depends="dist,-as-install"
           description="Deploys build artifacts to local Maven repository.">
-    <maveninstall file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"/>
+    <maveninstall file="pom.xml" pom="pom.xml"/>
+    <maveninstall file="${deploy.dir}/${ant.project.name}.jar" pom="core/pom.xml"/>
     <maveninstall file="${deploy.dir}/${ant.project.name}-tools.jar" pom="tools/pom.xml"/>
   </target>
 
@@ -275,7 +276,8 @@
   </target>
   <target name="deploy" depends="dist,-as-deploy,tests,javadoc"
           description="Deploys our build artifacts to a Maven repository.">
-    <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="pom.xml"
+    <mavendeploy file="pom.xml" pom="pom.xml"/>
+    <mavendeploy file="${deploy.dir}/${ant.project.name}.jar" pom="core/pom.xml"
                  srcdir="${src.dir}" docdir="${deploy.dir}/docs"/>
     <mavendeploy file="${deploy.dir}/${ant.project.name}-tools.jar" pom="tools/pom.xml"/>
   </target>
