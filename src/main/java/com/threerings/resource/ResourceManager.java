@@ -164,6 +164,20 @@ public class ResourceManager
     }
 
     /**
+     * Transforms a regular resource path into a locale-specific path. The returned path
+     * does not need to represent a valid resource. The ResourceManager will attempt to use
+     * the locale-specific path, but if it fails will fall back to the generic path.
+     */
+    public interface LocaleHandler
+    {
+        /**
+         * Return a locale-specific path, or null if the specified path cannot or need not
+         * be transformed.
+         */
+        String getLocalePath (String path);
+    }
+
+    /**
      * Constructs a resource manager which will load resources via the classloader, prepending
      * <code>resourceRoot</code> to their path.
      *
@@ -241,19 +255,24 @@ public class ResourceManager
     }
 
     /**
-     * Returns where we're currently looking for locale-specific resources.
+     * Configure a default LocaleHandler with the specified prefix.
      */
-    public String getLocalePrefix ()
+    public void setLocalePrefix (final String prefix)
     {
-        return _localePrefix;
+        setLocaleHandler(
+            new LocaleHandler() {
+                public String getLocalePath (String path) {
+                    return PathUtil.appendPath(prefix, path);
+                }
+            });
     }
 
     /**
-     * Set where we should look for locale-specific resources.
+     * Configure a custom LocaleHandler.
      */
-    public void setLocalePrefix (String prefix)
+    public void setLocaleHandler (LocaleHandler localeHandler)
     {
-        _localePrefix = prefix;
+        _localeHandler = localeHandler;
     }
 
     /**
@@ -394,8 +413,9 @@ public class ResourceManager
             path = path.replace("/", File.separator);
         }
         // first try a locale-specific file
-        if (_localePrefix != null) {
-            File file = new File(_rdir, PathUtil.appendPath(_localePrefix, path));
+        String localePath = getLocalePath(path);
+        if (localePath != null) {
+            File file = new File(_rdir, localePath);
             if (file.exists()) {
                 return file;
             }
@@ -515,18 +535,20 @@ public class ResourceManager
     public InputStream getResource (String path)
         throws IOException
     {
-        InputStream in = null;
+        String localePath = getLocalePath(path);
+        InputStream in;
 
         // first look for this resource in our default resource bundle
         for (ResourceBundle bundle : _default) {
             // Try a localized version first.
-            if (_localePrefix != null) {
-                in = bundle.getResource(PathUtil.appendPath(_localePrefix, path));
+            if (localePath != null) {
+                in = bundle.getResource(localePath);
+                if (in != null) {
+                    return in;
+                }
             }
             // If that didn't work, try generic.
-            if (in == null) {
-                in = bundle.getResource(path);
-            }
+            in = bundle.getResource(path);
             if (in != null) {
                 return in;
             }
@@ -539,9 +561,8 @@ public class ResourceManager
         }
 
         // if we still didn't find anything, try the classloader; first try a locale-specific file
-        if (_localePrefix != null) {
-            String rpath = PathUtil.appendPath(_rootPath, PathUtil.appendPath(_localePrefix, path));
-            in = getInputStreamFromClasspath(rpath);
+        if (localePath != null) {
+            in = getInputStreamFromClasspath(PathUtil.appendPath(_rootPath, localePath));
             if (in != null) {
                 return in;
             }
@@ -567,19 +588,20 @@ public class ResourceManager
     public BufferedImage getImageResource (String path)
         throws IOException
     {
+        String localePath = getLocalePath(path);
+
         // first look for this resource in our default resource bundle
         for (ResourceBundle bundle : _default) {
             // try a localized version first
-            BufferedImage image = null;
-            if (_localePrefix != null) {
-                image = bundle.getImageResource(PathUtil.appendPath(_localePrefix, path), false);
+            BufferedImage image;
+            if (localePath != null) {
+                image = bundle.getImageResource(localePath, false);
+                if (image != null) {
+                    return image;
+                }
             }
-
             // if we didn't find that, try generic
-            if (image == null) {
-                image = bundle.getImageResource(path, false);
-            }
-
+            image = bundle.getImageResource(path, false);
             if (image != null) {
                 return image;
             }
@@ -591,17 +613,15 @@ public class ResourceManager
             return loadImage(file, path.endsWith(FastImageIO.FILE_SUFFIX));
         }
 
-        // first try a locale-specific file
-        if (_localePrefix != null) {
-            String rpath = PathUtil.appendPath(_rootPath, PathUtil.appendPath(_localePrefix, path));
-            InputStream in = getInputStreamFromClasspath(rpath);
+        // if we still didn't find anything, try the classloader
+        InputStream in;
+        if (localePath != null) {
+            in = getInputStreamFromClasspath(PathUtil.appendPath(_rootPath, localePath));
             if (in != null) {
                 return loadImage(in);
             }
         }
-
-        // if we still didn't find anything, try the classloader
-        InputStream in = getInputStreamFromClasspath(PathUtil.appendPath(_rootPath, path));
+        in = getInputStreamFromClasspath(PathUtil.appendPath(_rootPath, path));
         if (in != null) {
             return loadImage(in);
         }
@@ -630,24 +650,21 @@ public class ResourceManager
                 "Unable to locate resource [set=" + rset + ", path=" + path + "]");
         }
 
+        String localePath = getLocalePath(path);
         // look for the resource in any of the bundles
-        int size = bundles.length;
-        for (int ii = 0; ii < size; ii++) {
-            InputStream instr = null;
-
+        for (ResourceBundle bundle : bundles) {
+            InputStream in;
             // Try a localized version first.
-            if (_localePrefix != null) {
-                instr = bundles[ii].getResource(PathUtil.appendPath(_localePrefix, path));
+            if (localePath != null) {
+                in = bundle.getResource(localePath);
+                if (in != null) {
+                    return in;
+                }
             }
             // If we didn't find that, try a generic.
-            if (instr == null) {
-                instr = bundles[ii].getResource(path);
-            }
-            if (instr != null) {
-//                 Log.info("Found resource [rset=" + rset +
-//                          ", bundle=" + bundles[ii].getSource().getPath() +
-//                          ", path=" + path + ", in=" + instr + "].");
-                return instr;
+            in = bundle.getResource(path);
+            if (in != null) {
+                return in;
             }
         }
 
@@ -672,30 +689,26 @@ public class ResourceManager
                 "Unable to locate image resource [set=" + rset + ", path=" + path + "]");
         }
 
+        String localePath = getLocalePath(path);
         // look for the resource in any of the bundles
-        int size = bundles.length;
-        for (int ii = 0; ii < size; ii++) {
-            BufferedImage image = null;
+        for (ResourceBundle bundle : bundles) {
+            BufferedImage image;
             // try a localized version first
-            if (_localePrefix != null) {
-                image =
-                    bundles[ii].getImageResource(PathUtil.appendPath(_localePrefix, path), false);
+            if (localePath != null) {
+                image = bundle.getImageResource(localePath, false);
+                if (image != null) {
+                    return image;
+                }
             }
-
             // if we didn't find that, try generic
-            if (image == null) {
-                image = bundles[ii].getImageResource(path, false);
-            }
-
+            image = bundle.getImageResource(path, false);
             if (image != null) {
-//                 Log.info("Found image resource [rset=" + rset +
-//                          ", bundle=" + bundles[ii].getSource() + ", path=" + path + "].");
                 return image;
             }
         }
 
-        String errmsg = "Unable to locate image resource [set=" + rset + ", path=" + path + "]";
-        throw new FileNotFoundException(errmsg);
+        throw new FileNotFoundException(
+            "Unable to locate image resource [set=" + rset + ", path=" + path + "]");
     }
 
     /**
@@ -840,6 +853,14 @@ public class ResourceManager
         Set<String> rsrcList)
     {
         return new NetworkResourceBundle(root, path, rsrcList);
+    }
+
+    /**
+     * Transform the path into a locale-specific one, or return null.
+     */
+    protected String getLocalePath (String path)
+    {
+        return (_localeHandler == null) ? null : _localeHandler.getLocalePath(path);
     }
 
     /**
@@ -1075,8 +1096,8 @@ public class ResourceManager
     /** A table of our resource sets. */
     protected HashMap<String, ResourceBundle[]> _sets = Maps.newHashMap();
 
-    /** Locale to search for locale-specific resources, if any. */
-    protected String _localePrefix = null;
+    /** Converts a path to a locale-specific path. */
+    protected LocaleHandler _localeHandler;
 
     /** Maps resource paths to observed file resources. */
     protected HashMap<String, ObservedResource> _observed = Maps.newHashMap();
