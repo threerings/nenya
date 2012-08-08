@@ -27,6 +27,8 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import com.google.common.primitives.Ints;
+
 import com.samskivert.util.ObserverList;
 import com.samskivert.util.StringUtil;
 
@@ -164,7 +166,7 @@ public abstract class AbstractMedia
      */
     public int renderCompareTo (AbstractMedia other)
     {
-        int result = _renderOrder - other._renderOrder;
+        int result = Ints.compare(_renderOrder, other._renderOrder);
         return (result != 0) ? result : naturalCompareTo(other);
     }
 
