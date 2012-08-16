@@ -336,7 +336,7 @@ public abstract class AbstractMedia
      */
     protected int naturalCompareTo (AbstractMedia other)
     {
-        return hashCode() - other.hashCode();
+        return Ints.compare(hashCode(), other.hashCode());
     }
 
     /**
