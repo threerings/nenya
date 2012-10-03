@@ -118,15 +118,14 @@ public class SoundLoader
     {
         Config c = _configs.get(packagePath);
         if (c == null) {
-            String propPath = packagePath + Sounds.PROP_NAME;
             Properties props = new Properties();
+            String propFilename = packagePath + Sounds.PROP_NAME + ".properties";
             try {
-                props = ConfigUtil.loadInheritedProperties(propPath + ".properties",
-                    _rmgr.getClassLoader());
+                props = ConfigUtil.loadInheritedProperties(propFilename, _rmgr.getClassLoader());
             } catch (IOException ioe) {
-                log.warning("Failed to load sound properties", "path", propPath, ioe);
+                log.warning("Failed to load sound properties", "filename", propFilename, ioe);
             }
-            c = new Config(propPath, props);
+            c = new Config(props);
             _configs.put(packagePath, c);
         }
         return c;
