@@ -31,12 +31,12 @@
     <dependency>
       <groupId>com.samskivert</groupId>
       <artifactId>samskivert</artifactId>
-      <version>1.5</version>
+      <version>1.7</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>11.0.1</version>
+      <artifactId>guava-jdk5</artifactId>
+      <version>13.0</version>
     </dependency>
 
     <!-- optional dependencies -->
