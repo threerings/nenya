@@ -43,7 +43,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <narya.version>1.11</narya.version>
+    <narya.version>1.13-SNAPSHOT</narya.version>
   </properties>
 
   <modules>
