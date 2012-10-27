@@ -23,21 +23,21 @@ package com.threerings.media.tile.bundle.tools;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.zip.Deflater;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import com.google.common.collect.Lists;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
@@ -46,6 +46,8 @@ import com.samskivert.io.StreamUtil;
 import com.samskivert.util.HashIntMap;
 
 import com.threerings.resource.FastImageIO;
+
+import com.threerings.tools.JSONConversion;
 
 import com.threerings.media.tile.ImageProvider;
 import com.threerings.media.tile.ObjectTileSet;
@@ -115,6 +117,90 @@ import static com.threerings.media.Log.log;
 public class TileSetBundler
 {
     /**
+     * Wraps up the configuration options for writing a tile set bundle to disk and provides a
+     * method to perform the write.
+     */
+    public static class Writer
+    {
+        /** The target jar file or directory. */
+        public final BundleWriter bwriter;
+
+        /** The bundle to write. */
+        public final TileSetBundle bundle;
+
+        /** Loads images for the bundle. */
+        public final ImageProvider improv;
+
+        /**
+         * Creates a new writer.
+         *
+         * @param bwriter the tileset bundle file or directory that will be created.
+         * @param bundle contains the tilesets we'd like to save out to the bundle.
+         * @param improv the image provider.
+         */
+        public Writer (BundleWriter bwriter, TileSetBundle bundle, ImageProvider improv)
+        {
+            this.bundle = bundle;
+            this.bwriter = bwriter;
+            this.improv = improv;
+        }
+
+        /**
+         * Sets whether or not we trim the tileset's image in the process of writing out the
+         * new bundle. Trimming will mutate tilesets directly, so beware.
+         */
+        public Writer trimImages (boolean trim)
+        {
+            this.trim = trim;
+            return this;
+        }
+
+        /**
+         * Sets whether or not we write out raw images.
+         */
+        public Writer useRawImages (boolean raw)
+        {
+            this.raw = raw;
+            return this;
+        }
+
+        /**
+         * Sets the image base.
+         * TODO: learn what this does and improve comment. should it just be a special improv?
+         */
+        public Writer imageBase (String imageBase)
+        {
+            this.imageBase = imageBase;
+            return this;
+        }
+
+        /**
+         * Sets whether we write out a json file containing the meta data.
+         * @param json if non-null, used to write out the bundle contents to tsbundles.json text
+         *   file. Otherwise, the default binary obbject output is used.
+         */
+        public Writer useJson (JSONConversion.Config json)
+        {
+            this.json = json;
+            return this;
+        }
+
+        /**
+         * Using the configured options, creates the new target bundle.
+         */
+        public void create ()
+            throws IOException
+        {
+            TileSetBundler.createBundle(this);
+        }
+
+        boolean trim = true;
+        boolean raw = true;
+        String imageBase;
+        JSONConversion.Config json;
+    }
+
+    /**
      * Constructs a tileset bundler with the specified path to a bundler
      * configuration file. The configuration file will be loaded and used
      * to configure this tileset bundler.
@@ -132,19 +218,6 @@ public class TileSetBundler
     public TileSetBundler (File configFile)
         throws IOException
     {
-        this(configFile, false, false);
-    }
-
-    /**
-     * Constructs a tileset bundler with the specified bundler config
-     * file and whether to keep pngs as-is or if not, re-encode them.
-     */
-    public TileSetBundler (File configFile, boolean keepRawPngs, boolean uncompressed)
-        throws IOException
-    {
-        _keepRawPngs = keepRawPngs;
-        _uncompressed = uncompressed;
-
         // we parse our configuration with a digester
         Digester digester = new Digester();
 
@@ -200,46 +273,24 @@ public class TileSetBundler
     }
 
     /**
-     * Creates a tileset bundle at the location specified by the
-     * <code>targetPath</code> parameter, based on the description
+     * Prepares to create a tileset bundle at the location specified by the
+     * <code>target</code> parameter, based on the description
      * provided via the <code>bundleDesc</code> parameter.
      *
      * @param idBroker the tileset id broker that will be used to map
      * tileset names to tileset ids.
      * @param bundleDesc a file object pointing to the bundle description
      * file.
-     * @param targetPath the path of the tileset bundle file that will be
-     * created.
+     * @param target the tileset bundle file or directory that will be created.
+     *
+     * @return a writer object that can be used to configure and create the target
+     * bundle, or null if the target is up to date with respect to all source files
      *
      * @exception IOException thrown if an error occurs reading, writing
      * or processing anything.
      */
-    public void createBundle (
-        TileSetIDBroker idBroker, File bundleDesc, String targetPath)
-        throws IOException
-    {
-        createBundle(idBroker, bundleDesc, new File(targetPath));
-    }
-
-    /**
-     * Creates a tileset bundle at the location specified by the
-     * <code>targetPath</code> parameter, based on the description
-     * provided via the <code>bundleDesc</code> parameter.
-     *
-     * @param idBroker the tileset id broker that will be used to map
-     * tileset names to tileset ids.
-     * @param bundleDesc a file object pointing to the bundle description
-     * file.
-     * @param target the tileset bundle file that will be created.
-     *
-     * @return true if the bundle was rebuilt, false if it was not because
-     * the bundle file was newer than all involved source files.
-     *
-     * @exception IOException thrown if an error occurs reading, writing
-     * or processing anything.
-     */
-    public boolean createBundle (
-        TileSetIDBroker idBroker, final File bundleDesc, File target)
+    public Writer process (
+        TileSetIDBroker idBroker, final File bundleDesc, BundleWriter target)
         throws IOException
     {
         // stick an array list on the top of the stack into which we will
@@ -321,8 +372,8 @@ public class TileSetBundler
         }
 
         // see if our newest file is newer than the tileset bundle
-        if (skipIfTargetNewer() && newest < target.lastModified()) {
-            return false;
+        if (target.isNewerThan(newest)) {
+            return null;
         }
 
         // create an image provider for loading our tileset images
@@ -334,59 +385,26 @@ public class TileSetBundler
             }
         };
 
-        return createBundle(target, bundle, improv, bundleDesc.getParent(), newest);
+        return new Writer(target, bundle, improv).imageBase(bundleDesc.getParent());
     }
 
     /**
-     * Finish the creation of a tileset bundle jar file.
-     *
-     * @param target the tileset bundle file that will be created.
-     * @param bundle contains the tilesets we'd like to save out to the bundle.
-     * @param improv the image provider.
-     * @param imageBase the base directory for getting images for non
-     * @param newestMod the most recent modification to any part of the bundle.  By default we
-     *   ignore this since we normally duck out if we're up to date.
-     * ObjectTileSet tilesets.
+     * Create the tileset bundle on disk using previously configured options.
      */
-    public boolean createBundle (
-        File target, TileSetBundle bundle, ImageProvider improv, String imageBase, long newestMod)
+    protected static void createBundle (Writer target)
         throws IOException
     {
-        return createBundleJar(target, bundle, improv, imageBase, _keepRawPngs, _uncompressed);
-    }
-
-    /**
-     * Create a tileset bundle jar file.
-     *
-     * @param target the tileset bundle file that will be created.
-     * @param bundle contains the tilesets we'd like to save out to the bundle.
-     * @param improv the image provider.
-     * @param imageBase the base directory for getting images for non-ObjectTileSet tilesets.
-     * @param keepOriginalPngs bundle up the original PNGs as PNGs instead of converting to the
-     * FastImageIO raw format
-     */
-    public static boolean createBundleJar (
-        File target, TileSetBundle bundle, ImageProvider improv, String imageBase,
-        boolean keepOriginalPngs, boolean uncompressed)
-        throws IOException
-    {
-        // now we have to create the actual bundle file
-        FileOutputStream fout = new FileOutputStream(target);
-        Manifest manifest = new Manifest();
-        JarOutputStream jar = new JarOutputStream(fout, manifest);
-        jar.setLevel(uncompressed ? Deflater.NO_COMPRESSION : Deflater.BEST_COMPRESSION);
-
         try {
             // write all of the image files to the bundle, converting the
             // tilesets to trimmed tilesets in the process
-            Iterator<Integer> iditer = bundle.enumerateTileSetIds();
+            Iterator<Integer> iditer = target.bundle.enumerateTileSetIds();
 
             // Store off the updated TileSets in a separate Map so we can wait to change the
             // bundle till we're done iterating.
             HashIntMap<TileSet> toUpdate = new HashIntMap<TileSet>();
             while (iditer.hasNext()) {
                 int tileSetId = iditer.next().intValue();
-                TileSet set = bundle.getTileSet(tileSetId);
+                TileSet set = target.bundle.getTileSet(tileSetId);
                 String imagePath = set.getImagePath();
 
                 // sanity checks
@@ -397,22 +415,23 @@ public class TileSetBundler
                 }
 
                 // if this is an object tileset, trim it
-                if (!keepOriginalPngs && (set instanceof ObjectTileSet)) {
+                if (target.trim && (set instanceof ObjectTileSet)) {
                     // set the tileset up with an image provider; we
                     // need to do this so that we can trim it!
-                    set.setImageProvider(improv);
+                    set.setImageProvider(target.improv);
 
-                    // we're going to trim it, so adjust the path
-                    imagePath = adjustImagePath(imagePath);
-                    jar.putNextEntry(new JarEntry(imagePath));
+                    // add .raw if requested
+                    if (target.raw) {
+                        imagePath = adjustImagePath(imagePath);
+                    }
+                    OutputStream dest = target.bwriter.startNewFile(imagePath);
 
                     try {
                         // create a trimmed object tileset, which will
-                        // write the trimmed tileset image to the jar
-                        // output stream
+                        // write the trimmed tileset image to the target file
                         TrimmedObjectTileSet tset =
-                            TrimmedObjectTileSet.trimObjectTileSet(
-                                (ObjectTileSet)set, jar);
+                            TrimmedObjectTileSet.trimObjectTileSet((ObjectTileSet)set, dest,
+                                target.raw ? FastImageIO.FILE_SUFFIX : "png");
                         tset.setImagePath(imagePath);
                         // replace the original set with the trimmed
                         // tileset in the tileset bundle
@@ -429,18 +448,21 @@ public class TileSetBundler
                 } else {
                     // read the image file and convert it to our custom
                     // format in the bundle
-                    File ifile = new File(imageBase, imagePath);
+                    File ifile = new File(target.imageBase, imagePath);
                     try {
                         BufferedImage image = ImageIO.read(ifile);
-                        if (!keepOriginalPngs && FastImageIO.canWrite(image)) {
+                        if (target.raw && FastImageIO.canWrite(image)) {
                             imagePath = adjustImagePath(imagePath);
-                            jar.putNextEntry(new JarEntry(imagePath));
+                            // NOTE: DirectoryTileSetBundler used to check the modification time
+                            // of the target image here. There may be something to it, but it
+                            // looked unnecessary
+                            OutputStream dest = target.bwriter.startNewFile(imagePath);
                             set.setImagePath(imagePath);
-                            FastImageIO.write(image, jar);
+                            FastImageIO.write(image, dest);
                         } else {
-                            jar.putNextEntry(new JarEntry(imagePath));
+                            OutputStream dest = target.bwriter.startNewFile(imagePath);
                             FileInputStream imgin = new FileInputStream(ifile);
-                            StreamUtil.copy(imgin, jar);
+                            StreamUtil.copy(imgin, dest);
                         }
                     } catch (Exception e) {
                         String msg = "Failure bundling image " + ifile +
@@ -449,38 +471,44 @@ public class TileSetBundler
                     }
                 }
             }
-            bundle.putAll(toUpdate);
+            target.bundle.putAll(toUpdate);
 
             // now write a serialized representation of the tileset bundle
-            // object to the bundle jar file
-            JarEntry entry = new JarEntry(BundleUtil.METADATA_PATH);
-            jar.putNextEntry(entry);
-            ObjectOutputStream oout = new ObjectOutputStream(jar);
-            oout.writeObject(bundle);
-            oout.flush();
+            if (target.json != null) {
+                JSONArray array = new JSONArray();
+                for (Iterator<Integer> tileSetId = target.bundle.enumerateTileSetIds();
+                        tileSetId.hasNext(); ) {
+                    JSONObject tset = new JSONObject();
+                    int id = tileSetId.next();
+                    tset.put("id", id);
+                    tset.put("set", target.json.convert(target.bundle.get(id)));
+                    array.add(tset);
+                }
+
+                // now write a serialized representation of the tileset bundle
+                OutputStream fout = target.bwriter.startNewFile(BundleUtil.METADATA_JSON_PATH);
+                fout.write(array.toString().getBytes());
+                fout.close();
+            } else {
+                // object to the bundle jar file
+                ObjectOutputStream oout = new ObjectOutputStream(
+                    target.bwriter.startNewFile(BundleUtil.METADATA_PATH));
+                oout.writeObject(target.bundle);
+                oout.flush();
+            }
 
             // finally close up the jar file and call ourself done
-            jar.close();
-
-            return true;
+            target.bwriter.close();
 
         } catch (Exception e) {
             // remove the incomplete jar file and rethrow the exception
-            jar.close();
-            if (!target.delete()) {
+            target.bwriter.close();
+            if (!target.bwriter.delete()) {
                 log.warning("Failed to close botched bundle '" + target + "'.");
             }
             String errmsg = "Failed to create bundle " + target + ": " + e;
             throw (IOException) new IOException(errmsg).initCause(e);
         }
-    }
-
-    /**
-     * Returns whether we should skip updating the bundle if the target is newer than any component.
-     */
-    protected boolean skipIfTargetNewer ()
-    {
-        return true;
     }
 
     /** Replaces the image suffix with <code>.raw</code>. */
@@ -513,10 +541,4 @@ public class TileSetBundler
 
     /** The digester we use to parse bundle descriptions. */
     protected Digester _digester;
-
-    /** Whether we should keep pngs as-is rather than re-encoding. */
-    protected boolean _keepRawPngs;
-
-    /** Normally we compress the jar, but if we want to leave them uncompressed, we set this. */
-    protected boolean _uncompressed;
 }

@@ -46,7 +46,7 @@ public class BuildTestTileSetBundle
             // create our bundler and get going
             TileSetBundler bundler = new TileSetBundler(configPath);
             File descFile = new File(descPath);
-            bundler.createBundle(broker, descFile, targetPath);
+            bundler.process(broker, descFile, new BundleWriter(new File(targetPath))).create();
 
         } catch (IOException ioe) {
             ioe.printStackTrace();

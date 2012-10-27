@@ -37,9 +37,13 @@ import com.threerings.resource.ResourceBundle;
  */
 public class BundleUtil
 {
-    /** The path to the metadata resource that we will attempt to load
-     * from our resource set. */
+    /** The path to the binary metadata resource that jvm clients will attempt to load
+     * from the bundle's resource set. */
     public static final String METADATA_PATH = "tsbundles.dat";
+
+    /** The path to the text metadata resource that playn clients will attempt to load
+     * from the bundle's resource set. */
+    public static final String METADATA_JSON_PATH = "tsbundles.json";
 
     /**
      * Extracts, but does not initialize, a serialized tileset bundle

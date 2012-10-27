@@ -99,7 +99,7 @@ public class TileSetBundlerTask extends Task
         File cfile = null;
         try {
             // create a tileset bundler
-            TileSetBundler bundler = createBundler();
+            TileSetBundler bundler = new TileSetBundler(_config);
 
             // create our tileset id broker
             MapFileTileSetIDBroker broker =
@@ -125,16 +125,18 @@ public class TileSetBundlerTask extends Task
                                            "Config file should end with .xml.");
                         continue;
                     }
-                    String bpath = getTargetPath(fromDir, cpath);
-                    File bfile = new File(bpath);
+                    BundleWriter bwriter = createWriter(fromDir, cpath);
 
                     // create the bundle
-                    if (bundler.createBundle(broker, cfile, bfile)) {
+                    TileSetBundler.Writer writer = bundler.process(broker, cfile, bwriter);
+                    if (writer != null) {
+                        writer.useRawImages(!_keepRawPngs); // something is lost in translation here
+                        writer.create();
                         System.out.println(
                             "Created bundle from '" + cpath + "'...");
                     } else {
                         System.out.println(
-                            "Tileset bundle up to date '" + bpath + "'.");
+                            "Tileset bundle up to date '" + bwriter + "'.");
                     }
                 }
             }
@@ -152,18 +154,11 @@ public class TileSetBundlerTask extends Task
     /**
      * Create the bundler to use during creation.
      */
-    protected TileSetBundler createBundler ()
+    protected BundleWriter createWriter (File fromDir, String path)
         throws IOException
     {
-        return new TileSetBundler(_config, _keepRawPngs, _uncompressed);
-    }
-
-    /**
-     * Returns the target path in which our bundler will write the tile set.
-     */
-    protected String getTargetPath (File fromDir, String path)
-    {
-        return path.substring(0, path.length()-4) + ".jar";
+        return new BundleWriter(
+            new File(path.substring(0, path.length()-4) + ".jar"), _uncompressed);
     }
 
     protected void ensureSet (Object value, String errmsg)

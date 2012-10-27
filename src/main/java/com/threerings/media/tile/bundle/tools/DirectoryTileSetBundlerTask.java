@@ -48,17 +48,11 @@ public class DirectoryTileSetBundlerTask extends TileSetBundlerTask
     }
 
     @Override
-    protected TileSetBundler createBundler ()
+    protected BundleWriter createWriter (File fromDir, String path)
         throws IOException
     {
-        return new DirectoryTileSetBundler(_config);
-    }
-
-    @Override
-    protected String getTargetPath (File fromDir, String path)
-    {
         File xmlFile = new File(path.replace(fromDir.getPath(), _deployDir.getPath()));
-        return xmlFile.getParent();
+        return new BundleWriter(xmlFile.getParentFile());
     }
 
     /** The directory in which we want to place our tile set files for deployment. */
