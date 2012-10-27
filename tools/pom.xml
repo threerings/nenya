@@ -38,6 +38,13 @@
       <artifactId>playn-core</artifactId>
       <version>1.5.1</version>
     </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.4</version>
+      <classifier>jdk15</classifier>
+      <optional>true</optional>
+    </dependency>
     <!-- if you add a dependency here, be sure to hack it into build.xml, yay Ant! -->
 
     <!-- test/build dependencies -->
