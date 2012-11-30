@@ -19,7 +19,9 @@
 
 package com.threerings.media.tile.util;
 
+import java.awt.AlphaComposite;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
@@ -162,6 +164,11 @@ public class TileSetTrimmer
         try {
             image = ImageUtil.createCompatibleImage(source.getRawTileSetImage(),
                 bounds.width, bounds.height);
+
+            // Empty it out
+            Graphics2D graphics = (Graphics2D)image.getGraphics();
+            graphics.setComposite(AlphaComposite.Clear);
+            graphics.fillRect(0, 0, bounds.width, bounds.height);
 
         } catch (RasterFormatException rfe) {
             throw new IOException("Failed to create trimmed tileset image " +
