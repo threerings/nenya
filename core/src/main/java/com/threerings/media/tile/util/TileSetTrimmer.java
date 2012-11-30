@@ -19,16 +19,26 @@
 
 package com.threerings.media.tile.util;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
+import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RasterFormatException;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
+
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import com.threerings.resource.FastImageIO;
 
@@ -40,7 +50,7 @@ import com.threerings.media.tile.TileSet;
  * which means that each tile is converted to an image that contains the
  * smallest rectangular region of the original image that contains all
  * non-transparent pixels. These trimmed images are then written out to a
- * single image, packed together left to right.
+ * single image, packed together.
  */
 public class TileSetTrimmer
 {
@@ -71,13 +81,28 @@ public class TileSetTrimmer
     }
 
     /**
+     * Used to pack the trimmed tiles into the final image.
+     */
+    public static interface Packer
+    {
+        /** Add trimmed bounds for a tile. */
+        void addTile (int tileIndex, int width, int height);
+
+        /** Do the deed and return dimensions of the packaged layout. */
+        Dimension pack ();
+
+        /** Get the packed bounds of the given tile. */
+        Rectangle getPosition (int tileIndex);
+    }
+
+    /**
      * Convenience function to trim the tile set using FastImageIO to save the result.
      */
     public static void trimTileSet (
-        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr)
+        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr, Packer packer)
         throws IOException
     {
-        trimTileSet(source, destImage, tmr, FastImageIO.FILE_SUFFIX);
+        trimTileSet(source, destImage, tmr, FastImageIO.FILE_SUFFIX, packer);
     }
 
     /**
@@ -95,7 +120,8 @@ public class TileSetTrimmer
      * @param imgFormat the format in which to write the image file - or if null, use FastImageIO.
      */
     public static void trimTileSet (
-        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr, String imgFormat)
+        TileSet source, OutputStream destImage, TrimMetricsReceiver tmr, String imgFormat,
+        Packer packer)
         throws IOException
     {
         int tcount = source.getTileCount();
@@ -106,50 +132,50 @@ public class TileSetTrimmer
         Rectangle[] tbounds = new Rectangle[tcount];
 
         // compute some tile metrics
-        int nextx = 0, maxy = 0;
         for (int ii = 0; ii < tcount; ii++) {
             // extract the image from the original tileset
             try {
                 timgs[ii] = source.getRawTileImage(ii);
             } catch (RasterFormatException rfe) {
                 throw new IOException("Failed to get tile image " +
-                                      "[tidx=" + ii + ", tset=" + source +
-                                      ", rfe=" + rfe + "].");
+                    "[tidx=" + ii + ", tset=" + source + ", rfe=" + rfe + "].");
             }
 
             // figure out how tightly we can trim it
             tbounds[ii] = new Rectangle();
             ImageUtil.computeTrimmedBounds(timgs[ii], tbounds[ii]);
 
-            // let our caller know what we did
-            tmr.trimmedTile(ii, nextx, 0, tbounds[ii].x, tbounds[ii].y,
-                            tbounds[ii].width, tbounds[ii].height);
+            packer.addTile(ii, tbounds[ii].width, tbounds[ii].height);
+        }
 
-            // adjust the new tileset image dimensions
-            maxy = Math.max(maxy, tbounds[ii].height);
-            nextx += tbounds[ii].width;
+        Dimension bounds = packer.pack();
+
+        for (int ii = 0; ii < tcount; ii++) {
+            // let our caller know what we did
+            Rectangle rect = packer.getPosition(ii);
+            tmr.trimmedTile(ii, rect.x, rect.y, tbounds[ii].x, tbounds[ii].y,
+                            tbounds[ii].width, tbounds[ii].height);
         }
 
         // create the new tileset image
         BufferedImage image = null;
         try {
-            image = ImageUtil.createCompatibleImage(source.getRawTileSetImage(), nextx, maxy);
+            image = ImageUtil.createCompatibleImage(source.getRawTileSetImage(),
+                bounds.width, bounds.height);
 
         } catch (RasterFormatException rfe) {
             throw new IOException("Failed to create trimmed tileset image " +
-                                  "[wid=" + nextx + ", hei=" + maxy +
-                                  ", tset=" + source + ", rfe=" + rfe + "].");
+                "[bounds=" + bounds + ", tset=" + source + ", rfe=" + rfe + "].");
         }
 
         // copy the tile data
         WritableRaster drast = image.getRaster();
-        int xoff = 0;
         for (int ii = 0; ii < tcount; ii++) {
+            Rectangle pos = packer.getPosition(ii);
             Rectangle tb = tbounds[ii];
             Raster srast = timgs[ii].getRaster().createChild(
                 tb.x, tb.y, tb.width, tb.height, 0, 0, null);
-            drast.setRect(xoff, 0, srast);
-            xoff += tb.width;
+            drast.setRect(pos.x, pos.y, srast);
         }
 
         if (destImage != null) {
@@ -159,6 +185,101 @@ public class TileSetTrimmer
             } else {
                 ImageIO.write(image, imgFormat, destImage);
             }
+        }
+    }
+
+    /** Includes some boilerplate to handle bits of the packing process. */
+    public static abstract class BasePacker implements Packer
+    {
+        public void addTile (int tileIndex, int width, int height) {
+            if (_packed) {
+                throw new IllegalStateException("Cannot add tile after packing.");
+            }
+            _tiles.put(tileIndex, new Rectangle(0, 0, width, height));
+        }
+
+        final public Dimension pack () {
+            if (_packed) {
+                throw new IllegalStateException("Cannot pack repeatedly.");
+            }
+            if (_tiles.isEmpty()) {
+                throw new IllegalStateException("Cannot pack empty tileset");
+            }
+
+            _packed = true;
+            return doPack();
+        }
+
+        protected abstract Dimension doPack ();
+
+        public Rectangle getPosition (int tileIndex) {
+            if (!_packed) {
+                throw new IllegalStateException("Cannot get tile position before packing.");
+            }
+            return _tiles.get(tileIndex);
+        }
+
+        protected Map<Integer, Rectangle> _tiles = Maps.newHashMap();
+        protected boolean _packed;
+    };
+
+    /**
+     * Packs the tiles together in a wide strip in tile order.
+     */
+    public static class StripPacker extends RowPacker
+    {
+        public StripPacker () {
+            super(Integer.MAX_VALUE, false);
+        }
+    };
+
+    /**
+     * Packs into rows of the given maximum width, optionally shuffling tiles around to help
+     * things pack a little less wastefully if the tiles vary in height.
+     */
+    public static class RowPacker extends BasePacker
+    {
+        public final int maxWidth;
+        public final boolean sort;
+
+        public RowPacker (int maxWidth, boolean sort) {
+            this.maxWidth = maxWidth;
+            this.sort = sort;
+        }
+
+        @Override protected Dimension doPack () {
+            Dimension dim = new Dimension(0, 0);
+            int x = 0;
+            int y = 0;
+
+            Collection<Rectangle> rects = _tiles.values();
+            if (sort) {
+                rects = Lists.newArrayList(_tiles.values());
+                Collections.sort((List<Rectangle>)rects, new Comparator<Rectangle>() {
+                    @Override public int compare (Rectangle a, Rectangle b) {
+                        return ComparisonChain.start().
+                            compare(b.height, a.height).
+                            compare(b.width, a.width).
+                            result();
+                    }
+                });
+            }
+
+            for (Rectangle rect : rects) {
+                if (x + rect.width > maxWidth) {
+                    x = 0;
+                    y = dim.height;
+                }
+
+                rect.x = x;
+                x += rect.width;
+                rect.y = y;
+
+                dim.height = Math.max(dim.height, y + rect.height);
+                dim.width = Math.max(dim.width, x);
+            }
+
+            return dim;
         }
     }
 }

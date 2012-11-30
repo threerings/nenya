@@ -71,14 +71,24 @@ public class TrimmedTileSet extends TileSet
     }
 
     /**
+     * Convenience function to trim the tile set to a file using the simplest packer.
+     */
+    public static TrimmedTileSet trimTileSet (
+        TileSet source, OutputStream destImage, String imgFormat)
+        throws IOException
+    {
+        return trimTileSet(source, destImage, imgFormat, new TileSetTrimmer.StripPacker());
+    }
+
+    /**
      * Creates a trimmed tileset from the supplied source tileset. The image path must be set by
      * hand to the appropriate path based on where the image data that is written to the
      * <code>destImage</code> parameter is actually stored on the file system. The image format
      * indicateds how the resulting image should be saved.  If null, we save using FastImageIO
      * See {@link TileSetTrimmer#trimTileSet} for further information.
      */
-    public static TrimmedTileSet trimTileSet (TileSet source, OutputStream destImage,
-                                              String imgFormat)
+    public static TrimmedTileSet trimTileSet (
+        TileSet source, OutputStream destImage, String imgFormat, TileSetTrimmer.Packer packer)
         throws IOException
     {
         final TrimmedTileSet tset = new TrimmedTileSet();
@@ -101,7 +111,7 @@ public class TrimmedTileSet extends TileSet
                 tset._obounds[tileIndex] = new Rectangle(imageX, imageY, trimWidth, trimHeight);
             }
         };
-        TileSetTrimmer.trimTileSet(source, destImage, tmr, imgFormat);
+        TileSetTrimmer.trimTileSet(source, destImage, tmr, imgFormat, packer);
 
         return tset;
     }
