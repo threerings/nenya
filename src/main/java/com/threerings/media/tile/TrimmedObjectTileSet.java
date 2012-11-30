@@ -181,6 +181,16 @@ public class TrimmedObjectTileSet extends TileSet
     }
 
     /**
+     * Convenience function to trim the tile set to a file using the simplest packer.
+     */
+    public static TrimmedObjectTileSet trimObjectTileSet (
+        ObjectTileSet source, OutputStream destImage, String imgFormat)
+        throws IOException
+    {
+        return trimObjectTileSet (source, destImage, imgFormat, new TileSetTrimmer.StripPacker());
+    }
+
+    /**
      * Creates a trimmed object tileset from the supplied source object tileset. The image path
      * must be set by hand to the appropriate path based on where the image data that is written to
      * the <code>destImage</code> parameter is actually stored on the file system. If imgFormat is
@@ -188,7 +198,8 @@ public class TrimmedObjectTileSet extends TileSet
      * information.
      */
     public static TrimmedObjectTileSet trimObjectTileSet (
-        ObjectTileSet source, OutputStream destImage, String imgFormat)
+        ObjectTileSet source, OutputStream destImage, String imgFormat,
+        TileSetTrimmer.Packer packer)
         throws IOException
     {
         final TrimmedObjectTileSet tset = new TrimmedObjectTileSet();
@@ -249,7 +260,7 @@ public class TrimmedObjectTileSet extends TileSet
                 tset._bounds[tileIndex] = new Rectangle(imageX, imageY, trimWidth, trimHeight);
             }
         };
-        TileSetTrimmer.trimTileSet(source, destImage, tmr, imgFormat);
+        TileSetTrimmer.trimTileSet(source, destImage, tmr, imgFormat, packer);
 
 //         Log.info("Trimmed object tileset [bounds=" + StringUtil.toString(tset._bounds) +
 //                  ", metrics=" + StringUtil.toString(tset._ometrics) + "].");

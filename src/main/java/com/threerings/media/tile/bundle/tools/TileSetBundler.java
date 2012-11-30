@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
+import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 
 import net.sf.json.JSONArray;
@@ -58,6 +59,7 @@ import com.threerings.media.tile.TrimmedObjectTileSet;
 import com.threerings.media.tile.bundle.BundleUtil;
 import com.threerings.media.tile.bundle.TileSetBundle;
 import com.threerings.media.tile.tools.xml.TileSetRuleSet;
+import com.threerings.media.tile.util.TileSetTrimmer;
 
 import static com.threerings.media.Log.log;
 
@@ -156,6 +158,15 @@ public class TileSetBundler
         }
 
         /**
+         * Sets the Packer to use when trimming.
+         */
+        public Writer usePacker (Supplier<TileSetTrimmer.Packer> packer)
+        {
+            this.packer = packer;
+            return trimImages(packer != null);
+        }
+
+        /**
          * Sets whether or not we write out raw images.
          */
         public Writer useRawImages (boolean raw)
@@ -196,6 +207,7 @@ public class TileSetBundler
 
         boolean trim = true;
         boolean raw = true;
+        Supplier<TileSetTrimmer.Packer> packer;
         String imageBase;
         JSONConversion.Config json;
     }
@@ -431,7 +443,7 @@ public class TileSetBundler
                         // write the trimmed tileset image to the target file
                         TrimmedObjectTileSet tset =
                             TrimmedObjectTileSet.trimObjectTileSet((ObjectTileSet)set, dest,
-                                target.raw ? FastImageIO.FILE_SUFFIX : "png");
+                                target.raw ? FastImageIO.FILE_SUFFIX : "png", target.packer.get());
                         tset.setImagePath(imagePath);
                         // replace the original set with the trimmed
                         // tileset in the tileset bundle
