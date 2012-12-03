@@ -207,7 +207,11 @@ public class TileSetBundler
 
         boolean trim = true;
         boolean raw = true;
-        Supplier<TileSetTrimmer.Packer> packer;
+        Supplier<TileSetTrimmer.Packer> packer = new Supplier<TileSetTrimmer.Packer>() {
+            public TileSetTrimmer.Packer get () {
+                return new TileSetTrimmer.StripPacker();
+            }
+        };
         String imageBase;
         JSONConversion.Config json;
     }
