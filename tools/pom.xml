@@ -33,6 +33,11 @@
       <artifactId>xml-writer</artifactId>
       <version>0.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.googlecode.playn</groupId>
+      <artifactId>playn-core</artifactId>
+      <version>1.5.1</version>
+    </dependency>
 
     <!-- test/build dependencies -->
     <dependency>
