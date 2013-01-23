@@ -21,6 +21,7 @@ package com.threerings.miso.tools.xml;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.xml.sax.SAXException;
 
@@ -36,8 +37,7 @@ import com.threerings.miso.data.SimpleMisoSceneModel;
 public class SimpleMisoSceneParser
 {
     /**
-     * Constructs a scene parser that parses scenes with the specified XML
-     * path prefix.
+     * Constructs a scene parser that parses scenes with the specified XML path prefix.
      */
     public SimpleMisoSceneParser (String prefix)
     {
@@ -63,15 +63,23 @@ public class SimpleMisoSceneParser
     }
 
     /**
-     * Parses the XML file at the specified path into a scene model
-     * instance.
+     * Parses the XML file at the specified path into a scene model instance.
      */
     public SimpleMisoSceneModel parseScene (String path)
         throws IOException, SAXException
     {
+        return parseScene(new FileInputStream(path));
+    }
+
+    /**
+     * Parses the XML file on the supplied input stream into a scene model instance.
+     */
+    public SimpleMisoSceneModel parseScene (InputStream in)
+        throws IOException, SAXException
+    {
         _model = null;
         _digester.push(this);
-        _digester.parse(new FileInputStream(path));
+        _digester.parse(in);
         return _model;
     }
 
