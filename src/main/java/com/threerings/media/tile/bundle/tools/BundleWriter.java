@@ -77,24 +77,29 @@ public class BundleWriter
     }
 
     /**
-     * Tests if the target is newer than the given time. Note that if we are in directory-mode,
-     * false is returned.
+     * Tests if the target bundle is newer than the given time. Note that if we are in
+     * directory-mode, false is returned.
      */
     public boolean isNewerThan (long newest)
     {
         if (_jar != null) {
             return _target.lastModified() > newest;
         } else {
-            File []files = _target.listFiles();
-            if (files == null) {
-                return false;
-            }
-            for (File file : files) {
-                if (file.lastModified() < newest) {
-                    return false;
-                }
-            }
-            return true;
+            return false;
+        }
+    }
+
+    /**
+     * Tests if a given path within the target bundle is newer than a given time. Note that if
+     * we are in jar mode, false is returned.
+     */
+    public boolean isPathNewerThan (String path, long newest)
+    {
+        if (_jar != null) {
+            return false;
+        } else {
+            File f = new File(_target, path);
+            return f.lastModified() > newest;
         }
     }
 
