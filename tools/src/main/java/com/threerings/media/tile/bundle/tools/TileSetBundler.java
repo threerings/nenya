@@ -43,6 +43,7 @@ import org.xml.sax.SAXException;
 import com.samskivert.io.PersistenceException;
 import com.samskivert.io.StreamUtil;
 import com.samskivert.util.HashIntMap;
+import com.samskivert.util.IntMap;
 
 import com.threerings.resource.FastImageIO;
 
@@ -131,6 +132,9 @@ public class TileSetBundler
         /** Loads images for the bundle. */
         public final ImageProvider improv;
 
+        /** Modification time of the newest source file. */
+        public final long newestSource;
+
         /**
          * Creates a new writer.
          *
@@ -138,11 +142,13 @@ public class TileSetBundler
          * @param bundle contains the tilesets we'd like to save out to the bundle.
          * @param improv the image provider.
          */
-        public Writer (BundleWriter bwriter, TileSetBundle bundle, ImageProvider improv)
+        public Writer (BundleWriter bwriter, TileSetBundle bundle, ImageProvider improv,
+            long newestSource)
         {
             this.bundle = bundle;
             this.bwriter = bwriter;
             this.improv = improv;
+            this.newestSource = newestSource;
         }
 
         /**
@@ -399,7 +405,7 @@ public class TileSetBundler
             }
         };
 
-        return new Writer(target, bundle, improv).imageBase(bundleDesc.getParent());
+        return new Writer(target, bundle, improv, newest).imageBase(bundleDesc.getParent());
     }
 
     /**
@@ -417,99 +423,11 @@ public class TileSetBundler
             // bundle till we're done iterating.
             HashIntMap<TileSet> toUpdate = new HashIntMap<TileSet>();
             while (iditer.hasNext()) {
-                int tileSetId = iditer.next().intValue();
-                TileSet set = target.bundle.getTileSet(tileSetId);
-                String imagePath = set.getImagePath();
-
-                // sanity checks
-                if (imagePath == null) {
-                    log.warning("Tileset contains no image path " +
-                                "[set=" + set + "]. It ain't gonna work.");
-                    continue;
-                }
-
-                // if this is an object tileset, trim it
-                if (target.trim && (set instanceof ObjectTileSet)) {
-                    // set the tileset up with an image provider; we
-                    // need to do this so that we can trim it!
-                    set.setImageProvider(target.improv);
-
-                    // add .raw if requested
-                    if (target.raw) {
-                        imagePath = adjustImagePath(imagePath);
-                    }
-                    OutputStream dest = target.bwriter.startNewFile(imagePath);
-
-                    try {
-                        // create a trimmed object tileset, which will
-                        // write the trimmed tileset image to the target file
-                        TrimmedObjectTileSet tset =
-                            TrimmedObjectTileSet.trimObjectTileSet((ObjectTileSet)set, dest,
-                                target.raw ? FastImageIO.FILE_SUFFIX : "png", target.packer.get());
-                        tset.setImagePath(imagePath);
-                        // replace the original set with the trimmed
-                        // tileset in the tileset bundle
-                        toUpdate.put(tileSetId, tset);
-
-                    } catch (Exception e) {
-                        e.printStackTrace(System.err);
-
-                        String msg = "Error adding tileset to bundle " + imagePath +
-                                     ", " + set.getName() + ": " + e;
-                        throw (IOException) new IOException(msg).initCause(e);
-                    }
-
-                } else {
-                    // read the image file and convert it to our custom
-                    // format in the bundle
-                    File ifile = new File(target.imageBase, imagePath);
-                    try {
-                        BufferedImage image = ImageIO.read(ifile);
-                        if (target.raw && FastImageIO.canWrite(image)) {
-                            imagePath = adjustImagePath(imagePath);
-                            // NOTE: DirectoryTileSetBundler used to check the modification time
-                            // of the target image here. There may be something to it, but it
-                            // looked unnecessary
-                            OutputStream dest = target.bwriter.startNewFile(imagePath);
-                            set.setImagePath(imagePath);
-                            FastImageIO.write(image, dest);
-                        } else {
-                            OutputStream dest = target.bwriter.startNewFile(imagePath);
-                            FileInputStream imgin = new FileInputStream(ifile);
-                            StreamUtil.copy(imgin, dest);
-                        }
-                    } catch (Exception e) {
-                        String msg = "Failure bundling image " + ifile +
-                            ": " + e;
-                        throw (IOException) new IOException(msg).initCause(e);
-                    }
-                }
+                processBundleImage(iditer.next().intValue(), target, toUpdate);
             }
             target.bundle.putAll(toUpdate);
 
-            // now write a serialized representation of the tileset bundle
-            if (target.json != null) {
-                JSONArray array = new JSONArray();
-                for (Iterator<Integer> tileSetId = target.bundle.enumerateTileSetIds();
-                        tileSetId.hasNext(); ) {
-                    JSONObject tset = new JSONObject();
-                    int id = tileSetId.next();
-                    tset.put("id", id);
-                    tset.put("set", target.json.convert(target.bundle.get(id)));
-                    array.add(tset);
-                }
-
-                // now write a serialized representation of the tileset bundle
-                OutputStream fout = target.bwriter.startNewFile(BundleUtil.METADATA_JSON_PATH);
-                fout.write(array.toString().getBytes());
-                fout.close();
-            } else {
-                // object to the bundle jar file
-                ObjectOutputStream oout = new ObjectOutputStream(
-                    target.bwriter.startNewFile(BundleUtil.METADATA_PATH));
-                oout.writeObject(target.bundle);
-                oout.flush();
-            }
+            writeUpdatedBundle(target);
 
             // finally close up the jar file and call ourself done
             target.bwriter.close();
@@ -523,6 +441,120 @@ public class TileSetBundler
             String errmsg = "Failed to create bundle " + target + ": " + e;
             throw (IOException) new IOException(errmsg).initCause(e);
         }
+    }
+
+    protected static void processBundleImage (
+        int tileSetId, Writer target, IntMap<TileSet> toUpdate) throws IOException
+    {
+        TileSet set = target.bundle.getTileSet(tileSetId);
+        String imagePath = set.getImagePath();
+
+        // sanity checks
+        if (imagePath == null) {
+            log.warning("Tileset contains no image path " +
+                        "[set=" + set + "]. It ain't gonna work.");
+            return;
+        }
+
+        File ifile = new File(target.imageBase, imagePath);
+        long sourceTime = Math.max(target.newestSource, ifile.lastModified());
+
+        // if this is an object tileset, trim it
+        if (target.trim && (set instanceof ObjectTileSet)) {
+            // add .raw if requested
+            if (target.raw) {
+                imagePath = adjustImagePath(imagePath);
+            }
+
+            if (target.bwriter.isPathNewerThan(imagePath, sourceTime)) {
+                return;
+            }
+
+            OutputStream dest = target.bwriter.startNewFile(imagePath);
+
+            // set the tileset up with an image provider; we
+            // need to do this so that we can trim it!
+            set.setImageProvider(target.improv);
+
+            try {
+                // create a trimmed object tileset, which will
+                // write the trimmed tileset image to the target file
+                TrimmedObjectTileSet tset =
+                    TrimmedObjectTileSet.trimObjectTileSet((ObjectTileSet)set, dest,
+                        target.raw ? FastImageIO.FILE_SUFFIX : "png", target.packer.get());
+                tset.setImagePath(imagePath);
+                // replace the original set with the trimmed
+                // tileset in the tileset bundle
+                toUpdate.put(tileSetId, tset);
+
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+
+                String msg = "Error adding tileset to bundle " + imagePath +
+                             ", " + set.getName() + ": " + e;
+                throw (IOException) new IOException(msg).initCause(e);
+            }
+
+        } else {
+            // read the image file and convert it to our custom
+            // format in the bundle
+            try {
+                BufferedImage image = ImageIO.read(ifile);
+                if (target.raw && FastImageIO.canWrite(image)) {
+                    imagePath = adjustImagePath(imagePath);
+                    if (!target.bwriter.isPathNewerThan(imagePath, sourceTime)) {
+                        OutputStream dest = target.bwriter.startNewFile(imagePath);
+                        set.setImagePath(imagePath);
+                        FastImageIO.write(image, dest);
+                    }
+                } else {
+                    if (!target.bwriter.isPathNewerThan(imagePath, sourceTime)) {
+                        OutputStream dest = target.bwriter.startNewFile(imagePath);
+                        FileInputStream imgin = new FileInputStream(ifile);
+                        StreamUtil.copy(imgin, dest);
+                    }
+                }
+            } catch (Exception e) {
+                String msg = "Failure bundling image " + ifile +
+                    ": " + e;
+                throw (IOException) new IOException(msg).initCause(e);
+            }
+        }
+    }
+
+    protected static void writeUpdatedBundle (Writer target)
+        throws IOException
+    {
+        String meta = target.json != null ?
+            BundleUtil.METADATA_JSON_PATH : BundleUtil.METADATA_PATH;
+
+        if (target.bwriter.isPathNewerThan(meta, target.newestSource)) {
+            return;
+        }
+
+        // now write a serialized representation of the tileset bundle
+        if (target.json != null) {
+            JSONArray array = new JSONArray();
+            for (Iterator<Integer> tileSetId = target.bundle.enumerateTileSetIds();
+                    tileSetId.hasNext(); ) {
+                JSONObject tset = new JSONObject();
+                int id = tileSetId.next();
+                tset.put("id", id);
+                tset.put("set", target.json.convert(target.bundle.get(id)));
+                array.add(tset);
+            }
+
+            OutputStream fout = target.bwriter.startNewFile(meta);
+            fout.write(array.toString().getBytes());
+            fout.close();
+
+        } else {
+            ObjectOutputStream oout = new ObjectOutputStream(
+                target.bwriter.startNewFile(BundleUtil.METADATA_PATH));
+            oout.writeObject(target.bundle);
+            oout.flush();
+        }
+
     }
 
     /** Replaces the image suffix with <code>.raw</code>. */
