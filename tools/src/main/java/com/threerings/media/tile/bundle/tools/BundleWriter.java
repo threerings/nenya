@@ -84,8 +84,18 @@ public class BundleWriter
     {
         if (_jar != null) {
             return _target.lastModified() > newest;
+        } else {
+            File []files = _target.listFiles();
+            if (files == null) {
+                return false;
+            }
+            for (File file : files) {
+                if (file.lastModified() < newest) {
+                    return false;
+                }
+            }
+            return true;
         }
-        return false;
     }
 
     /**
