@@ -38,6 +38,7 @@
       <artifactId>playn-core</artifactId>
       <version>1.5.1</version>
     </dependency>
+    <!-- if you add a dependency here, be sure to hack it into build.xml, yay Ant! -->
 
     <!-- test/build dependencies -->
     <dependency>
