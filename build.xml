@@ -27,6 +27,7 @@
     <mavendep id="tools" pathProp="tools.path">
       <dependency groupId="commons-digester" artifactId="commons-digester" version="1.8"/>
       <dependency groupId="com.megginson.sax" artifactId="xml-writer" version="0.2"/>
+      <dependency groupId="com.googlecode.playn" artifactId="playn-core" version="1.5.1"/>
     </mavendep>
     <path id="tools.classpath">
       <path refid="core.path"/>
