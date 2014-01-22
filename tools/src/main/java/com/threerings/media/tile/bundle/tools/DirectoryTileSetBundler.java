@@ -152,6 +152,7 @@ public class DirectoryTileSetBundler extends TileSetBundler
             ObjectOutputStream oout = new ObjectOutputStream(fout);
             oout.writeObject(bundle);
             oout.flush();
+            fout.close();
 
             return true;
 
