@@ -121,6 +121,8 @@ public class ComponentBundlerMojo extends AbstractMojo
         ComponentBundler bundler = new ComponentBundler(mapFile, actionDef) {
             @Override protected boolean keepRawPngs () { return keepRawPngs; }
             @Override protected boolean uncompressed () { return false; }
+            @Override protected void logInfo (String message) { getLog().info(message); }
+            @Override protected void logWarn (String message) { getLog().warn(message); }
         };
 
         if (bundleDirectories == null) {

@@ -70,6 +70,13 @@ public abstract class ComponentBundler {
     protected boolean keepRawPngs () { return false; }
     protected boolean uncompressed () { return false; }
 
+    protected void logInfo (String message) {
+        System.out.println(message);
+    }
+    protected void logWarn (String message) {
+        System.err.println(message);
+    }
+
     public void execute (String root, File target, List<Tuple<File,List<String>>> sourceDirs) {
         // load the id broker
         HashMapIDBroker broker = new HashMapIDBroker();
@@ -108,11 +115,11 @@ public abstract class ComponentBundler {
 
         long newest = getNewestDate(sources);
         if (skipIfTargetNewer() && newest < target.lastModified()) {
-            System.out.println(target.getPath() + " is up to date.");
+            logInfo(target.getPath() + " is up to date.");
             return;
         }
 
-        System.out.println("Generating " + target + "...");
+        logInfo("Generating " + target + "...");
 
         try {
             // make sure we can create our bundle file
@@ -133,9 +140,8 @@ public abstract class ComponentBundler {
                     // make sure we have an action tileset definition
                     TileSet aset = actsets.get(info[2]);
                     if (aset == null) {
-                        System.err.println(
-                            "No tileset definition for component action '" + info[2] +
-                            "' [class=" + info[0] + ", name=" + info[1] + "].");
+                        logWarn("No tileset definition for component action '" + info[2] +
+                                "' [class=" + info[0] + ", name=" + info[1] + "].");
                         continue;
                     }
                     aset.setImageProvider(_improv);
@@ -212,13 +218,8 @@ public abstract class ComponentBundler {
                 BufferedImage image = aset.getRawTileSetImage();
                 ImageIO.write(image, "png", fout);
             } catch (Throwable t) {
-                System.err.println(
-                    "Failure storing tileset in jar" +
-                    "[class=" + info[0] + ", name=" + info[1] +
-                    ", action=" + info[2] +
-                    ", srcimg=" + aset.getImagePath() + "].");
-                t.printStackTrace(System.err);
-
+                logWarn("Failure storing tileset in jar [class=" + info[0] + ", name=" + info[1] +
+                        ", action=" + info[2] + ", srcimg=" + aset.getImagePath() + "].");
                 String errmsg = "Failure trimming tileset.";
                 throw new RuntimeException(errmsg, t);
             }
@@ -230,13 +231,8 @@ public abstract class ComponentBundler {
                 tset = trim(aset, fout);
                 tset.setImagePath(ipath);
             } catch (Throwable t) {
-                System.err.println(
-                    "Failure trimming tileset " +
-                    "[class=" + info[0] + ", name=" + info[1] +
-                    ", action=" + info[2] +
-                    ", srcimg=" + aset.getImagePath() + "].");
-                t.printStackTrace(System.err);
-
+                logWarn("Failure trimming tileset [class=" + info[0] + ", name=" + info[1] +
+                        ", action=" + info[2] + ", srcimg=" + aset.getImagePath() + "].");
                 String errmsg = "Failure trimming tileset.";
                 throw new RuntimeException(errmsg, t);
             }
