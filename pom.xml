@@ -49,6 +49,7 @@
   <modules>
     <module>core</module>
     <module>tools</module>
+    <module>maven-plugin</module>
     <module>aslib</module>
   </modules>
 
