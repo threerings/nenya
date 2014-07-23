@@ -52,7 +52,7 @@
     <dependency>
       <groupId>com.threerings</groupId>
       <artifactId>naryalib</artifactId>
-      <version>1.11</version>
+      <version>1.14</version>
       <type>swc</type>
     </dependency>
     <!-- needed for the build, but not an exported dependency -->
