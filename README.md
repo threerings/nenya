@@ -63,7 +63,7 @@ Maven project, add the following to your `pom.xml`:
       <dependency>
         <groupId>com.threerings</groupId>
         <artifactId>nenya</artifactId>
-        <version>1.2</version>
+        <version>1.5</version>
       </dependency>
     </dependencies>
 
@@ -72,9 +72,9 @@ remove the vast majority of the boilerplate above.
 
 If you prefer to download pre-built binaries, those can be had here:
 
-* [nenya-1.2.jar](http://repo2.maven.org/maven2/com/threerings/nenya/1.2/nenya-1.2.jar)
-* [nenya-tools-1.2.jar](http://repo2.maven.org/maven2/com/threerings/nenya-tools/1.2/nenya-tools-1.2.jar)
-* [nenyalib-1.2.swc](http://repo2.maven.org/maven2/com/threerings/nenyalib/1.2/nenyalib-1.2.swc)
+* [nenya-1.5.jar](http://repo2.maven.org/maven2/com/threerings/nenya/1.5/nenya-1.5.jar)
+* [nenya-tools-1.5.jar](http://repo2.maven.org/maven2/com/threerings/nenya-tools/1.5/nenya-tools-1.5.jar)
+* [nenyalib-1.5.swc](http://repo2.maven.org/maven2/com/threerings/nenyalib/1.5/nenyalib-1.5.swc)
 
 Distribution
 ------------
