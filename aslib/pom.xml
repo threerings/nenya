@@ -14,7 +14,7 @@
   <repositories>
     <repository>
       <id>flexlib-repo</id>
-      <url>http://maven.ow2.org/maven2</url>
+      <url>https://repository.sonatype.org/content/groups/forge</url>
     </repository>
     <repository>
       <id>ooo-ext-maven-repo</id>
