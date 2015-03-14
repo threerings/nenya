@@ -19,13 +19,14 @@
 
 package com.threerings.media.tile.bundle.tools;
 
+import java.net.URL;
 import java.util.HashMap;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.samskivert.io.PersistenceException;
-import com.samskivert.test.TestUtil;
 
 import com.threerings.media.tile.TileSetIDBroker;
 
@@ -37,9 +38,9 @@ public class BuildTestTileSetBundle
             TileSetIDBroker broker = new DummyTileSetIDBroker();
 
             // sort out some paths
-            String configPath = TestUtil.getResourcePath(CONFIG_PATH);
-            String descPath = TestUtil.getResourcePath(BUNDLE_DESC_PATH);
-            String targetPath = TestUtil.getResourcePath(TARGET_PATH);
+            String configPath = getResourcePath(CONFIG_PATH);
+            String descPath = getResourcePath(BUNDLE_DESC_PATH);
+            String targetPath = getResourcePath(TARGET_PATH);
 
             // create our bundler and get going
             TileSetBundler bundler = new TileSetBundler(configPath);
@@ -49,6 +50,15 @@ public class BuildTestTileSetBundle
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    protected static String getResourcePath (String path) throws IOException
+    {
+        URL url = BuildTestTileSetBundle.class.getClassLoader().getResource(path);
+        if (url == null) throw new FileNotFoundException(path);
+        if (!"file".equals(url.getProtocol())) throw new FileNotFoundException(
+            "Test resource not available via file URL: " + url);
+        return url.getPath();
     }
 
     /** Dummy tileset id broker that makes up tileset ids (which are consistent in the course of
