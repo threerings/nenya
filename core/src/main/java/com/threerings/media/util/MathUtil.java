@@ -29,8 +29,7 @@ public class MathUtil
     /**
      * Bounds the supplied value within the specified range.
      *
-     * @return low if value < low, high if value > high and value
-     * otherwise.
+     * @return low if {@code value < low}, high if {@code value > high} and value otherwise.
      */
     public static int bound (int low, int value, int high)
     {

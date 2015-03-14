@@ -78,8 +78,8 @@ public class ObjectSet
     }
 
     /**
-     * Returns the object with the specified index. The index must & be
-     * between <code>0</code> and {@link #size}<code>-1</code>.
+     * Returns the object with the specified index. The index must be between {@code 0} and
+     * {@link #size}{@code - 1}.
      */
     public ObjectInfo get (int index)
     {

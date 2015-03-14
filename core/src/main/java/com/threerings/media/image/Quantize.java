@@ -41,12 +41,7 @@ package com.threerings.media.image;
  * - Changed the 'QUICK' constant to false for better quantization.
  * - Fixed an integer overflow that caused a bug quantizing large images.
  *
- * <p><p>
- *
- * Original headers follow:
- * </pre>
- *
- *
+ * <p>Original headers follow:
  *
  * An efficient color quantization algorithm, adapted from the C++
  * implementation quantize.c in <a

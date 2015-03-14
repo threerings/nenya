@@ -26,10 +26,10 @@ package com.threerings.miso.client;
 public interface MultiTileSprite
 {
     /** Returns the number of tiles the sprite occupies along the x-axis.  Note that the origin is
-     * defined to be the tile with the maximal x & y coordinates. */
+     * defined to be the tile with the maximal x and y coordinates. */
     public int getBaseWidth ();
 
     /** Returns the number of tiles the sprite occupies along the y-axis.  Note that the origin is
-     * defined to be the tile with the maximal x & y coordinates. */
+     * defined to be the tile with the maximal x and y coordinates. */
     public int getBaseHeight ();
 }

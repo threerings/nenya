@@ -428,7 +428,7 @@ public class ColorPository implements Serializable
     }
 
     /**
-     * Looks up the requested color record by class & color names.
+     * Looks up the requested color record by class and color names.
      */
     public ColorRecord getColorRecord (String className, String colorName)
     {
