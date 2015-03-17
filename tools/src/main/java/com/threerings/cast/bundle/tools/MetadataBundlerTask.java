@@ -67,12 +67,12 @@ import com.threerings.cast.tools.xml.ClassRuleSet;
  */
 public class MetadataBundlerTask extends Task
 {
-    public void setActiondef (String actiondef)
+    public void setActiondef (File actiondef)
     {
         _actionDef = actiondef;
     }
 
-    public void setClassdef (String classdef)
+    public void setClassdef (File classdef)
     {
         _classDef = classdef;
     }
@@ -250,7 +250,7 @@ public class MetadataBundlerTask extends Task
         return clmap;
     }
 
-    protected ArrayList<?> parseList (Digester digester, String path)
+    protected ArrayList<?> parseList (Digester digester, File path)
         throws BuildException
     {
         try {
@@ -284,7 +284,7 @@ public class MetadataBundlerTask extends Task
         }
     }
 
-    protected String _actionDef;
-    protected String _classDef;
+    protected File _actionDef;
+    protected File _classDef;
     protected File _target;
 }
