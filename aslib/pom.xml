@@ -13,10 +13,6 @@
 
   <repositories>
     <repository>
-      <id>flexlib-repo</id>
-      <url>https://repository.sonatype.org/content/groups/forge</url>
-    </repository>
-    <repository>
       <id>ooo-public</id>
       <url>http://ooo-maven.googlecode.com/hg/repository</url>
     </repository>
