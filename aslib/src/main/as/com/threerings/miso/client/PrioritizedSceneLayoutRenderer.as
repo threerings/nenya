@@ -127,6 +127,13 @@ public class PrioritizedSceneLayoutRenderer
         //trace("scene layout render time", getTimer() - startTime, "ms (manual sort)");
     }
 
+    /** Not used. */
+    public function get collisionDetection () :Function {
+        return null;
+    }
+    public function set collisionDetection (fn :Function) :void {
+    }
+
     /**
      * Adds the front-to-back dependency to our map of all such dependencies.
      */

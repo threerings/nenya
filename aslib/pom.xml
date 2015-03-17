@@ -13,8 +13,12 @@
 
   <repositories>
     <repository>
-      <id>ooo-public</id>
-      <url>http://ooo-maven.googlecode.com/hg/repository</url>
+      <id>flex-mojos-repository</id>
+      <url>http://repository.sonatype.org/content/groups/flexgroup</url>
+    </repository>
+    <repository>
+      <id>ooo-maven-repo</id>
+      <url>https://raw.githubusercontent.com/threerings/maven-repo/master/repository</url>
     </repository>
   </repositories>
 
@@ -25,8 +29,8 @@
   <dependencies>
     <dependency>
       <groupId>com.threerings</groupId>
-      <artifactId>aspirin</artifactId>
-      <version>1.9</version>
+      <artifactId>naryalib</artifactId>
+      <version>${narya.version}</version>
       <type>swc</type>
     </dependency>
     <dependency>
@@ -36,17 +40,9 @@
       <type>swc</type>
     </dependency>
     <dependency>
-      <groupId>com.threerings</groupId>
-      <artifactId>naryalib</artifactId>
-      <version>${narya.version}</version>
-      <type>swc</type>
-    </dependency>
-
-    <!-- comes from ooo-maven; TODO: migrate this from Google Code... -->
-    <dependency>
       <groupId>as3isolib</groupId>
-      <artifactId>as3isolib-fp9</artifactId>
-      <version>r298</version>
+      <artifactId>as3isolib-fp10</artifactId>
+      <version>r314</version>
       <type>swc</type>
     </dependency>
 
