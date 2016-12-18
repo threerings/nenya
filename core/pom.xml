@@ -55,9 +55,9 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>net.javazoom</groupId>
+      <groupId>javazoom</groupId>
       <artifactId>jlayer</artifactId>
-      <version>1.0</version>
+      <version>1.0.1</version>
       <optional>true</optional>
     </dependency>
     <dependency>
