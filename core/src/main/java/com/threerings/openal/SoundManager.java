@@ -77,7 +77,7 @@ public class SoundManager
      */
     public void shutdown ()
     {
-        if (isInitialized()) {
+        if (isInitialized() && !_sharingAL) {
             AL.destroy();
         }
     }
@@ -201,19 +201,23 @@ public class SoundManager
         _rqueue = rqueue;
 
         // initialize the OpenAL sound system
-        try {
-            AL.create("", 44100, 15, false);
-        } catch (Exception e) {
-            log.warning("Failed to initialize sound system.", e);
-            // don't start the background loading thread
-            return;
-        }
+        if (AL.isCreated()) {
+            _sharingAL = true;
+        } else {
+            try {
+                AL.create("", 44100, 15, false);
+            } catch (Exception e) {
+                log.warning("Failed to initialize sound system.", e);
+                // don't start the background loading thread
+                return;
+            }
 
-        int errno = AL10.alGetError();
-        if (errno != AL10.AL_NO_ERROR) {
-            log.warning("Failed to initialize sound system [errno=" + errno + "].");
-            // don't start the background loading thread
-            return;
+            int errno = AL10.alGetError();
+            if (errno != AL10.AL_NO_ERROR) {
+                log.warning("Failed to initialize sound system [errno=" + errno + "].");
+                // don't start the background loading thread
+                return;
+            }
         }
 
         // configure our LRU map with a removal observer
@@ -410,6 +414,9 @@ public class SoundManager
             }
         }
     };
+
+    /** Whether or not we're sharing an AL context that someone else created. */
+    protected boolean _sharingAL;
 
     /** Used to get back from the background thread to our "main" thread. */
     protected RunQueue _rqueue;
