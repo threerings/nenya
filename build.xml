@@ -262,6 +262,18 @@
     </java>
   </target>
 
+  <target name="char-sprite-viz" depends="compile,test-colorpos,test-tsbundles,test-cbundles"
+          description="Runs the character sprite viewer.">
+    <java classname="com.threerings.cast.CharSpriteViz"
+          fork="true" classpathref="test.classpath">
+      <sysproperty key="resource_dir" value="${test-rsrc.dir}"/>
+      <sysproperty key="no_unpack_resources" value="true"/>
+      <arg value="navsail"/>
+      <arg value="smsloop"/>
+      <arg value="sailing"/>
+    </java>
+  </target>
+
   <target name="-as-install" depends="aslib" if="flexsdk.dir">
     <maveninstall file="${deploy.dir}/${ant.project.name}lib.swc" pom="aslib/pom.xml"/>
   </target>
