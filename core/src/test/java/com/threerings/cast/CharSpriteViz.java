@@ -105,6 +105,9 @@ public class CharSpriteViz extends JPanel
 
         _sprite.setLocation(cx, cy);
         _sprite.setOrientation(_orient);
+        // we have to manually tick the sprite because it lazily
+        // recomputes its action frames when ticked
+        _sprite.tick(0L);
         _sprite.paint((Graphics2D)g);
     }
 
