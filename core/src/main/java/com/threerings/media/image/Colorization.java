@@ -73,13 +73,9 @@ public class Colorization
      */
     public int recolorColor (float[] hsv)
     {
-        // for hue, we wrap around
+        // hue will be wrapped-around by HSBtoRGB, we don't need to do it
         float hue = hsv[0] + offsets[0];
-        if (hue > 1.0) {
-            hue -= 1.0;
-        }
-
-        // otherwise we clip
+        // the others we must clip
         float sat = Math.min(Math.max(hsv[1] + offsets[1], 0), 1);
         float val = Math.min(Math.max(hsv[2] + offsets[2], 0), 1);
 
