@@ -179,6 +179,26 @@ public class ColorPository implements Serializable
                 StringUtil.toString(colors.values().iterator()) + "]";
         }
 
+        /**
+         * Compute the HSV values for the root color if not already computed.
+         * This is weird, and used to avoid recomputing it for every single colorization made from
+         * every single ColorRecord in this class. Part of the weirdness is because we
+         * don't serialize these values to ensure backwards compatibility, and so we need to
+         * make sure they're computed prior to being used.
+         */
+        protected void computeHsv ()
+        {
+            if (_hsv == null) {
+                _hsv = Color.RGBtoHSB(source.getRed(), source.getGreen(), source.getBlue(), null);
+                _fhsv = Colorization.toFixedHSV(_hsv, null);
+            }
+        }
+
+        /** The hsv array shared by all Colorizations created from this instance. */
+        protected transient float[] _hsv;
+        /** The fhsv array shared by all Colorizations created from this instance. */
+        protected transient int[] _fhsv;
+
         protected transient ColorRecord[] _starters;
 
         /** Increase this value when object's serialized state is impacted
@@ -227,7 +247,7 @@ public class ColorPository implements Serializable
 //                                            cclass.range, offsets);
 //             }
 //             return _zation;
-            return new Colorization(getColorPrint(), cclass.source, cclass.range, offsets);
+            return new Colorization(getColorPrint(), cclass, offsets);
         }
 
         // from interface Comparable<ColorRecord>

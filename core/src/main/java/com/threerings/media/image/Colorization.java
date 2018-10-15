@@ -58,11 +58,33 @@ public class Colorization
     }
 
     /**
+     * A colorization generated from a ClassRecord.
+     */
+    protected Colorization (int colorizationId, ColorPository.ClassRecord crec, float[] offsets)
+    {
+        this.colorizationId = colorizationId;
+        this.rootColor = crec.source;
+        this.range = crec.range;
+        crec.computeHsv();
+        _hsv = crec._hsv;
+        _fhsv = crec._fhsv;
+        this.offsets = offsets;
+    }
+
+    /**
      * Returns the root color adjusted by the colorization.
      */
     public Color getColorizedRoot ()
     {
         return new Color(recolorColor(_hsv));
+    }
+
+    /**
+     * Get the raw HSV values of the root color.
+     */
+    public float getRootHsv (int index)
+    {
+        return _hsv[index];
     }
 
     /**
