@@ -261,8 +261,8 @@ public class ColorPository implements Serializable
                 ", offsets=" + StringUtil.toString(offsets) + ", starter=" + starter + "]";
         }
 
-        /** Our data represented as a colorization. */
-        protected transient Colorization _zation;
+//        /** Our data represented as a colorization. */
+//        protected transient Colorization _zation;
 
         /** Increase this value when object's serialized state is impacted
          * by a class change (modification of fields, inheritance). */
