@@ -791,7 +791,6 @@ public abstract class FrameManager
 
     /** The name of the high-performance timer class we attempt to load. */
     protected static final String[] PERF_TIMERS = {
-        "com.threerings.media.timer.PerfTimer",
         "com.threerings.media.timer.NanoTimer",
     };
 }
