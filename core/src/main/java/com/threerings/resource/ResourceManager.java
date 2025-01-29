@@ -257,12 +257,20 @@ public class ResourceManager
      */
     public void setLocalePrefix (final String prefix)
     {
+        _localePrefix = prefix;
         setLocaleHandler(
             new LocaleHandler() {
+                public String getPrefix() {
+                    return prefix;
+                }
                 public String getLocalePath (String path) {
                     return PathUtil.appendPath(prefix, path);
                 }
             });
+    }
+
+    public String getLocalePrefix () {
+        return _localePrefix;
     }
 
     /**
@@ -1096,6 +1104,9 @@ public class ResourceManager
 
     /** Converts a path to a locale-specific path. */
     protected LocaleHandler _localeHandler;
+
+    /** Set when we have a simple prefix-based locale handler (needed for YPP). */
+    protected String _localePrefix;
 
     /** Maps resource paths to observed file resources. */
     protected HashMap<String, ObservedResource> _observed = Maps.newHashMap();
