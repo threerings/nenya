@@ -43,7 +43,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <narya.version>1.15</narya.version>
+    <narya.version>1.17-SNAPSHOT</narya.version>
   </properties>
 
   <modules>
@@ -57,10 +57,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.13.0</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <release>10</release>
           <fork>true</fork>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
