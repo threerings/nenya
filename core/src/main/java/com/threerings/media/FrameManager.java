@@ -37,8 +37,6 @@ import com.samskivert.util.StringUtil;
 
 import com.samskivert.swing.RuntimeAdjust;
 
-import com.threerings.util.unsafe.Unsafe;
-
 import com.threerings.media.timer.CalibratingTimer;
 import com.threerings.media.timer.MediaTimer;
 import com.threerings.media.timer.MillisTimer;
@@ -640,7 +638,12 @@ public abstract class FrameManager
                 if (_perfDebug.getValue()) {
                     start = _timer.getElapsedMicros();
                 }
-                Unsafe.sleep(_sleepGranularity.getValue());
+                long millis = _sleepGranularity.getValue();
+                try {
+                    Thread.sleep(millis);
+                } catch (InterruptedException ie) {
+                    log.info("Thread.sleep(" + millis + ") interrupted.");
+                }
 
                 long woke = _timer.getElapsedMicros();
                 if (start > 0L) {
