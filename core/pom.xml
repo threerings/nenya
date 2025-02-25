@@ -11,17 +11,6 @@
   <packaging>jar</packaging>
   <name>Nenya Core</name>
 
-  <repositories>
-    <repository>
-      <id>ooo-repo</id>
-      <url>http://threerings.github.com/maven-repo</url>
-    </repository>
-    <repository>
-      <id>ooo-ext-repo</id>
-      <url>http://ooo-maven.googlecode.com/hg/repository</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <!-- exported dependencies -->
     <dependency>
