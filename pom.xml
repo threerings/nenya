@@ -5,7 +5,7 @@
   <groupId>com.threerings</groupId>
   <artifactId>nenya-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.7</version>
+  <version>1.8-SNAPSHOT</version>
 
   <name>Nenya Parent</name>
   <description>Facilities for making Java games.</description>
@@ -34,7 +34,7 @@
     <connection>scm:git:git://github.com/threerings/nenya.git</connection>
     <developerConnection>scm:git:git@github.com:threerings/nenya.git</developerConnection>
     <url>https://github.com/threerings/nenya/</url>
-    <tag>nenya-1.7</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
