@@ -47,16 +47,16 @@ import net.sf.json.JSONObject;
  *    Config cfg = new Config();
  *    System.out.println(cfg.convert(new Pojo()));
  * </pre>
- * Converting a type universally: <pre>
+ * Converting a type universally: <pre>{@code
     Converter&lt;Color&gt; colorConv = new Converter&lt;Color&gt;() {
         public Object convert (Color c, Config cfg) {
-            return new Integer((c.getRed() << 16) | (c.getGreen()<<8) | c.getBlue());
+            return new Integer((c.getRed() << 16) | (c.getGreen() << 8) | c.getBlue());
         }
     };
 
     cfg.addClassConverter(Color.class, colorConv);
- * </pre>
- * Customizing a specific field of a class:<pre>
+ * }</pre>
+ * Customizing a specific field of a class:<pre>{@code
     FieldAccessor&lt;SomeImpl, Collection&lt;?&gt;&gt; entryConv =
             new FieldAccessor&lt;SomeImpl, Collection&lt;?&gt;&gt;() {
         public Collection&lt;SomeValue&gt; get (SomeImpl impl) {
@@ -66,7 +66,7 @@ import net.sf.json.JSONObject;
     cfg.addFieldConfig(SomeImpl.class, new FieldConfig&lt;SomeImpl&gt;().
         addExclusions("privateStuff").
         addFieldConverter("valueMap", new ConvertCollectionFieldToArray&lt;SomeImpl&gt;(entryConv)));
- * </pre>
+ * }</pre>
  */
 public class JSONConversion
 {
