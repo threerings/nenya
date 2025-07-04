@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-  </parent>
 
   <groupId>com.threerings</groupId>
   <artifactId>nenya-parent</artifactId>
@@ -14,15 +9,15 @@
 
   <name>Nenya Parent</name>
   <description>Facilities for making Java games.</description>
-  <url>http://github.com/threerings/nenya/</url>
+  <url>https://github.com/threerings/nenya/</url>
   <issueManagement>
-    <url>http://github.com/threerings/nenya/issues</url>
+    <url>https://github.com/threerings/nenya/issues</url>
   </issueManagement>
 
   <licenses>
     <license>
       <name>GNU Lesser General Public License (LGPL), Version 2.1</name>
-      <url>http://www.fsf.org/licensing/licenses/lgpl.txt</url>
+      <url>https://www.fsf.org/licensing/licenses/lgpl.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -38,12 +33,12 @@
   <scm>
     <connection>scm:git:git://github.com/threerings/nenya.git</connection>
     <developerConnection>scm:git:git@github.com:threerings/nenya.git</developerConnection>
-    <url>http://github.com/threerings/nenya/</url>
+    <url>https://github.com/threerings/nenya/</url>
   </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <narya.version>1.17-SNAPSHOT</narya.version>
+    <narya.version>1.17</narya.version>
   </properties>
 
   <modules>
@@ -86,12 +81,16 @@
           <quiet>true</quiet>
           <show>public</show>
           <additionalparam>-Xdoclint:all -Xdoclint:-missing</additionalparam>
-          <links>
-            <link>http://samskivert.github.com/samskivert/apidocs/</link>
-            <link>http://docs.guava-libraries.googlecode.com/git/javadoc/</link>
-            <link>http://threerings.github.com/narya/apidocs/</link>
-            <link>http://evgeny-goldin.org/ant/api/</link>
-          </links>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
         </configuration>
       </plugin>
     </plugins>
@@ -147,7 +146,7 @@
     </profile>
 
     <profile>
-      <id>release-sign-artifacts</id>
+      <id>release-extras</id>
       <activation>
         <property><name>performRelease</name><value>true</value></property>
       </activation>
@@ -155,8 +154,34 @@
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.1.2</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.9.1</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.1</version>
+            <version>1.5</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
