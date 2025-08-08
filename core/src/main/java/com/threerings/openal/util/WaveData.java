@@ -52,7 +52,7 @@ import static com.threerings.openal.Log.log;
  *
  * Utitlity class for loading wavefiles.
  *
- * @author Brian Matzon <brian@matzon.dk>
+ * @author Brian Matzon
  * @version $Revision$
  * $Id$
  */
