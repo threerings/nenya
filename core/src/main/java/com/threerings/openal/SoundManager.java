@@ -23,11 +23,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -77,8 +81,13 @@ public class SoundManager
      */
     public void shutdown ()
     {
-        if (isInitialized() && !_sharingAL) {
-            AL.destroy();
+        if (_alcContext != 0L) {
+            ALC10.alcDestroyContext(_alcContext);
+            _alcContext = 0L;
+        }
+        if (_alcDevice != 0L) {
+            ALC10.alcCloseDevice(_alcDevice);
+            _alcDevice = 0L;
         }
     }
 
@@ -201,23 +210,31 @@ public class SoundManager
         _rqueue = rqueue;
 
         // initialize the OpenAL sound system
-        if (AL.isCreated()) {
-            _sharingAL = true;
-        } else {
-            try {
-                AL.create("", 44100, 15, false);
-            } catch (Exception e) {
-                log.warning("Failed to initialize sound system.", e);
+        try {
+            _alcDevice = ALC10.alcOpenDevice((ByteBuffer)null);
+            if (_alcDevice == 0) {
+                log.warning("Failed to create AL device.");
                 // don't start the background loading thread
                 return;
             }
+            ALCCapabilities deviceCaps = ALC.createCapabilities(_alcDevice);
 
-            int errno = AL10.alGetError();
-            if (errno != AL10.AL_NO_ERROR) {
-                log.warning("Failed to initialize sound system [errno=" + errno + "].");
-                // don't start the background loading thread
-                return;
-            }
+            _alcContext = ALC10.alcCreateContext(_alcDevice, (IntBuffer)null);
+            ALC10.alcMakeContextCurrent(_alcContext);
+            AL.createCapabilities(deviceCaps);
+
+            // AL.create("", 44100, 15, false);
+        } catch (Exception e) {
+            log.warning("Failed to initialize sound system.", e);
+            // don't start the background loading thread
+            return;
+        }
+
+        int errno = AL10.alGetError();
+        if (errno != AL10.AL_NO_ERROR) {
+            log.warning("Failed to initialize sound system [errno=" + errno + "].");
+            // don't start the background loading thread
+            return;
         }
 
         // configure our LRU map with a removal observer
@@ -415,8 +432,8 @@ public class SoundManager
         }
     };
 
-    /** Whether or not we're sharing an AL context that someone else created. */
-    protected boolean _sharingAL;
+    protected long _alcDevice;
+    protected long _alcContext;
 
     /** Used to get back from the background thread to our "main" thread. */
     protected RunQueue _rqueue;

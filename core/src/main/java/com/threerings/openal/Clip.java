@@ -22,7 +22,7 @@ package com.threerings.openal;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.openal.AL10;
-import org.lwjgl.util.WaveData;
+import com.threerings.openal.util.WaveData;
 
 /**
  * Contains data for a single sampled sound.

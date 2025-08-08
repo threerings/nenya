@@ -19,9 +19,6 @@
 
 package com.threerings.openal;
 
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 /**
@@ -89,9 +86,13 @@ public class Listener
     public void setOrientation (float ax, float ay, float az, float ux, float uy, float uz)
     {
         if (_ax != ax || _ay != ay || _az != az || _ux != ux || _uy != uy || _uz != uz) {
-            _vbuf.put(_ax = ax).put(_ay = ay).put(_az = az);
-            _vbuf.put(_ux = ux).put(_uy = uy).put(_uz = uz).rewind();
-            AL10.alListener(AL10.AL_ORIENTATION, _vbuf);
+            _vbuf[0] = (_ax = ax);
+            _vbuf[1] = (_ay = ay);
+            _vbuf[2] = (_az = az);
+            _vbuf[3] = (_ux = ux);
+            _vbuf[4] = (_uy = uy);
+            _vbuf[5] = (_uz = uz);
+            AL10.alListenerfv(AL10.AL_ORIENTATION, _vbuf);
         }
     }
 
@@ -115,5 +116,5 @@ public class Listener
     protected float _ax, _ay, _az = -1f, _ux, _uy = 1f, _uz;
 
     /** A buffer for floating point values. */
-    protected FloatBuffer _vbuf = BufferUtils.createFloatBuffer(6);
+    protected float[] _vbuf = new float[6];
 }

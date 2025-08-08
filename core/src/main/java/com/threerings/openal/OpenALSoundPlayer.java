@@ -34,7 +34,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
 import org.lwjgl.openal.AL10;
-import org.lwjgl.util.WaveData;
+import com.threerings.openal.util.WaveData;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
