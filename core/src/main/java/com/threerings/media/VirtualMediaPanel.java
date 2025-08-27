@@ -281,18 +281,22 @@ public class VirtualMediaPanel extends MediaPanel
 
             // and add invalid rectangles for the exposed areas
             if (dy > 0) {
-                shei = Math.max(shei - dy, 0);
-                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, _vbounds.y + height - dy, width, dy);
+                // zoom rounding makes it so copyArea can't always get the full region
+                // so we extend each invalidation region by 1 pixel to make sure we don't leave artifacts
+                int dy2 = dy + 1;
+                shei = Math.max(shei - dy2, 0);
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, _vbounds.y + height - dy2, width, dy2);
             } else if (dy < 0) {
-                sy -= dy;
-                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, _vbounds.y, width, -dy);
+                int dy2 = dy - 1;
+                sy -= dy2;
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, _vbounds.y, width, -dy2);
             }
             if (dx > 0) {
-                // zoom rounding errors make it so we need to account for potential off-by-one errors
                 int dx2 = dx + 1;
                 _metamgr.getRegionManager().invalidateRegion(_vbounds.x + width - dx2, sy, dx2, shei);
             } else if (dx < 0) {
-                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, sy, -dx, shei);
+                int dx2 = dx - 1;
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, sy, -dx2, shei);
             }
 
             addObscurerDirtyRegions(false);
