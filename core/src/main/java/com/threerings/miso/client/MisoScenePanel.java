@@ -118,6 +118,10 @@ public class MisoScenePanel extends VirtualMediaPanel
             _resolver.start();
             _resolvers.put(_ctx, _resolver);
         }
+
+        addZoomListener((oldZoom, newZoom) -> {
+            rethink();
+        });
     }
 
     /**
@@ -716,7 +720,7 @@ public class MisoScenePanel extends VirtualMediaPanel
 
         // compute the tile coordinates of our upper left screen coordinate and request a rethink
         // if they've changed
-        MisoUtil.screenToTile(_metrics, _vbounds.x, _vbounds.y, _tcoords);
+        MisoUtil.screenToTile(_metrics, _nx, _ny, _tcoords);
         if (_ulpos == null || !_tcoords.equals(_ulpos)) {
             // if this is a forced rethink (_ulpos is null), we might delay paint as a result of
             // it, but only if we queue up blocks for resolution in our rethink
