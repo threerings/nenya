@@ -10,12 +10,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ZoomManager {
 
     protected static final double ZOOM_SNAP_THRESHOLD = 0.05;
-    protected static final double ZOOM_OUT_FACTOR = 0.9;
-    protected static final double ZOOM_IN_FACTOR = 1.1;
+    protected static final double[] DEFAULT_ZOOM_STEPS = { 0.25, 0.3333, 0.5, 1.0, 2.0 };
 
     protected double _zoomLevel = 1.0;
     protected double _minZoomLevel = 0.25;
     protected double _maxZoomLevel = 2.0;
+    protected double _zoomSteps[] = DEFAULT_ZOOM_STEPS;
 
     public interface ZoomListener {
 
@@ -54,8 +54,8 @@ public class ZoomManager {
      * Useful when the zoom level changes to update the viewport.
      *
      * @param viewport the rectangle to rescale
-     * @param width the new width
-     * @param height the new height
+     * @param width    the new width
+     * @param height   the new height
      * @return a new rectangle representing the rescaled bounds
      */
     public Rectangle rescaleBounds(Rectangle viewPort, int width, int height) {
@@ -109,14 +109,39 @@ public class ZoomManager {
     }
 
     /**
+     * Sets the zoom steps to use when zooming in and out.
+     *
+     * @param zoomSteps the zoom steps to set
+     */
+    public void setZoomSteps(double[] zoomSteps) {
+        _zoomSteps = zoomSteps;
+    }
+
+    /**
      * Creates a mouse wheel listener that adjusts the zoom level.
      *
      * @return a mouse wheel listener
      */
     public MouseWheelListener createMouseWheelListener() {
         return e -> {
+            int closestStepIndex = 0;
+            double smallestDiff = Math.abs(_zoomLevel - _zoomSteps[0]);
+            for (int i = 0; i < _zoomSteps.length; i++) {
+                double diff = Math.abs(_zoomLevel - _zoomSteps[i]);
+                if (diff < smallestDiff) {
+                    smallestDiff = diff;
+                    closestStepIndex = i;
+                }
+            }
+
             int notches = e.getWheelRotation();
-            scaleZoomLevel(notches > 0 ? ZOOM_OUT_FACTOR : ZOOM_IN_FACTOR);
+            int newIndex = closestStepIndex + (notches > 0 ? -1 : 1);
+            if (newIndex < 0) {
+                newIndex = 0;
+            } else if (newIndex >= _zoomSteps.length) {
+                newIndex = _zoomSteps.length - 1;
+            }
+            setZoomLevel(_zoomSteps[newIndex]);
         };
     }
 
