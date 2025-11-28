@@ -19,26 +19,24 @@
 
 package com.threerings.media;
 
-import java.util.ArrayList;
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
 import com.google.common.collect.Lists;
-
 import com.samskivert.util.RunAnywhere;
-
+import static com.threerings.media.Log.log;
 import com.threerings.media.image.ImageUtil;
 import com.threerings.media.image.Mirage;
 import com.threerings.media.util.MathUtil;
 import com.threerings.media.util.Pathable;
-
-import static com.threerings.media.Log.log;
 
 /**
  * Extends the base media panel with the notion of a virtual coordinate system. All entities in
@@ -67,6 +65,11 @@ public class VirtualMediaPanel extends MediaPanel
     public VirtualMediaPanel (FrameManager framemgr)
     {
         super(framemgr);
+
+        addZoomListener((oldZoom, newZoom) -> {
+            _vbounds = _zoomManager.rescaleBounds(_vbounds, getWidth(), getHeight());
+            _metamgr.getRegionManager().addDirtyRegion(_vbounds);
+        });
     }
 
     /**
@@ -149,7 +152,8 @@ public class VirtualMediaPanel extends MediaPanel
     @Override
     protected void processMouseEvent (MouseEvent event)
     {
-        event.translatePoint(_vbounds.x, _vbounds.y);
+        event.translatePoint(_nx, _ny);
+        _zoomManager.adjustMouseEvent(event, _vbounds);
         super.processMouseEvent(event);
     }
 
@@ -160,7 +164,8 @@ public class VirtualMediaPanel extends MediaPanel
     @Override
     protected void processMouseMotionEvent (MouseEvent event)
     {
-        event.translatePoint(_vbounds.x, _vbounds.y);
+        event.translatePoint(_nx, _ny);
+        _zoomManager.adjustMouseEvent(event, _vbounds);
         super.processMouseMotionEvent(event);
     }
 
@@ -171,7 +176,8 @@ public class VirtualMediaPanel extends MediaPanel
     @Override
     protected void processMouseWheelEvent (MouseWheelEvent event)
     {
-        event.translatePoint(_vbounds.x, _vbounds.y);
+        event.translatePoint(_nx, _ny);
+        _zoomManager.adjustMouseEvent(event, _vbounds);
         super.processMouseWheelEvent(event);
     }
 
@@ -179,7 +185,8 @@ public class VirtualMediaPanel extends MediaPanel
     protected void dirtyScreenRect (Rectangle rect)
     {
         // translate the screen rect into happy coordinates
-        rect.translate(_vbounds.x, _vbounds.y);
+        rect.translate(_nx, _ny);
+        rect = _zoomManager.scaleOnCenter(rect);
         _metamgr.getRegionManager().addDirtyRegion(rect);
     }
 
@@ -201,6 +208,7 @@ public class VirtualMediaPanel extends MediaPanel
         // keep track of the size of the viewport
         _vbounds.width = getWidth();
         _vbounds.height = getHeight();
+        _vbounds = _zoomManager.scaleOnCenter(_vbounds);
 
         // we need to obtain our absolute screen coordinates to work
         // around the Windows copyArea() bug
@@ -212,7 +220,7 @@ public class VirtualMediaPanel extends MediaPanel
     {
         // Adjust for any scrolling we're currently doing.
         super.addObscurerDirtyRegion(
-            new Rectangle(region.x - _dx, region.y - _dy, region.width, region.height));
+                new Rectangle(region.x - (int) _dx, region.y - (int) _dy, region.width, region.height));
     }
 
     /**
@@ -235,47 +243,60 @@ public class VirtualMediaPanel extends MediaPanel
 
     protected void adjustBoundsCenter ()
     {
-        int width = getWidth(), height = getHeight();
+        int width = _vbounds.width, height = _vbounds.height;
 
         // adjusts our view location to track any pathable we might be tracking
         trackPathable();
 
+        // our offset is from the center of the view panel, so we need to adjust
+        // coordinates to account for zoom.
+        Point viewCenter = ZoomManager.center(_vbounds);
+        Point panelCenter = new Point(getWidth() / 2, getHeight() / 2);
+        int offsetX = viewCenter.x - panelCenter.x;
+        int offsetY = viewCenter.y - panelCenter.y;
+
         // if we have a new target location, we'll need to generate dirty
         // regions for the area exposed by the scrolling
-        if (_nx != _vbounds.x || _ny != _vbounds.y) {
+        if (_nx != offsetX || _ny != offsetY) {
             // determine how far we'll be moving on this tick
-            int dx = _nx - _vbounds.x, dy = _ny - _vbounds.y;
+            int dx = _nx - offsetX, dy = _ny - offsetY;
 
 //             log.info("Scrolling into place [n=(" + _nx + ", " + _ny +
 //                      "), t=(" + _vbounds.x + ", " + _vbounds.y +
 //                      "), d=(" + dx + ", " + dy +
 //                      "), width=" + width + ", height=" + height + "].");
 
-            _dx = dx;
-            _dy = dy;
-
-            // these are used to prevent the vertical strip from
-            // overlapping the horizontal strip
-            int sy = _ny, shei = height;
-
-            // and add invalid rectangles for the exposed areas
-            if (dy > 0) {
-                shei = Math.max(shei - dy, 0);
-                _metamgr.getRegionManager().invalidateRegion(_nx, _ny + height - dy, width, dy);
-            } else if (dy < 0) {
-                sy -= dy;
-                _metamgr.getRegionManager().invalidateRegion(_nx, _ny, width, -dy);
-            }
-            if (dx > 0) {
-                _metamgr.getRegionManager().invalidateRegion(_nx + width - dx, sy, dx, shei);
-            } else if (dx < 0) {
-                _metamgr.getRegionManager().invalidateRegion(_nx, sy, -dx, shei);
-            }
-
+            _dx += dx * getZoomLevel();
+            _dy += dy * getZoomLevel();
 
             // now go ahead and update our location so that changes in between here and the call
             // to paint() for this tick don't booch everything
-            _vbounds.x = _nx; _vbounds.y = _ny;
+            _vbounds.x += dx;
+            _vbounds.y += dy;
+
+            // these are used to prevent the vertical strip from
+            // overlapping the horizontal strip
+            int sy = _vbounds.y, shei = height;
+
+            // and add invalid rectangles for the exposed areas
+            if (dy > 0) {
+                // zoom rounding makes it so copyArea can't always get the full region
+                // so we extend each invalidation region by 1 pixel to make sure we don't leave artifacts
+                int dy2 = dy + 1;
+                shei = Math.max(shei - dy2, 0);
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, _vbounds.y + height - dy2, width, dy2);
+            } else if (dy < 0) {
+                int dy2 = dy - 1;
+                sy -= dy2;
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, _vbounds.y, width, -dy2);
+            }
+            if (dx > 0) {
+                int dx2 = dx + 1;
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x + width - dx2, sy, dx2, shei);
+            } else if (dx < 0) {
+                int dx2 = dx - 1;
+                _metamgr.getRegionManager().invalidateRegion(_vbounds.x, sy, -dx2, shei);
+            }
 
             addObscurerDirtyRegions(false);
 
@@ -313,8 +334,8 @@ public class VirtualMediaPanel extends MediaPanel
             return;
         }
 
-        int width = getWidth(), height = getHeight();
-        int nx = _vbounds.x, ny = _vbounds.y;
+        int width = _vbounds.width, height = _vbounds.height;
+        int nx = _nx, ny = _ny;
 
         // figure out where to move
         switch (_fmode) {
@@ -356,11 +377,12 @@ public class VirtualMediaPanel extends MediaPanel
     @Override
     protected void paint (Graphics2D gfx, Rectangle[] dirty)
     {
-        // if we're scrolling, go ahead and do the business
-        if (_dx != 0 || _dy != 0) {
+        int dx = (int) Math.round(_dx);
+        int dy = (int) Math.round(_dy);
+        if (dx != 0 || dy != 0) {
             int width = getWidth(), height = getHeight();
-            int cx = (_dx > 0) ? _dx : 0;
-            int cy = (_dy > 0) ? _dy : 0;
+            int cx = (dx > 0) ? dx : 0;
+            int cy = (dy > 0) ? dy : 0;
 
             // set the clip to the bounds of the component (we can't assume the clip is anything
             // sensible upon entry to paint() because the frame manager expects us to set our own
@@ -373,14 +395,14 @@ public class VirtualMediaPanel extends MediaPanel
             if (RunAnywhere.isWindows()) {
                 gfx.translate(-_abounds.x, -_abounds.y);
                 gfx.copyArea(_abounds.x + cx, _abounds.y + cy,
-                             width - Math.abs(_dx),
-                             height - Math.abs(_dy), -_dx, -_dy);
+                        width - Math.abs(dx),
+                        height - Math.abs(dy), -dx, -dy);
                 gfx.translate(_abounds.x, _abounds.y);
             } else if (RunAnywhere.isMacOS()) {
                 try {
                     gfx.copyArea(cx, cy,
-                             width - Math.abs(_dx),
-                             height - Math.abs(_dy), -_dx, -_dy);
+                            width - Math.abs(dx),
+                            height - Math.abs(dy), -dx, -dy);
                 } catch (Exception e) {
                     // HACK when it throws an exception trying to do the copy area, just repaint
                     // everything
@@ -388,29 +410,41 @@ public class VirtualMediaPanel extends MediaPanel
                 }
             } else {
                 gfx.copyArea(cx, cy,
-                             width - Math.abs(_dx),
-                             height - Math.abs(_dy), -_dx, -_dy);
+                        width - Math.abs(dx),
+                        height - Math.abs(dy), -dx, -dy);
             }
 
             // and clear out our scroll deltas
-            _dx = 0; _dy = 0;
+            _dx -= dx;
+            _dy -= dy;
         }
 
+        AffineTransform originalTransform = gfx.getTransform();
+
+        int centerX = _vbounds.x + _vbounds.width / 2;
+        int centerY = _vbounds.y + _vbounds.height / 2;
+
+        // if we zoom too quickly, the zoomManager scale may not be in sync with the paint tick
+        // so we check based on the actual view bounds to be safe
+        double scale = getWidth() / (double) _vbounds.width;
+
         // translate into happy space
-        gfx.translate(-_vbounds.x, -_vbounds.y);
+        gfx.translate(getWidth() / 2, getHeight() / 2);
+        gfx.scale(scale, scale);
+        gfx.translate(-centerX, -centerY);
 
         // now do the actual painting
         super.paint(gfx, dirty);
 
         // translate back out of happy space
-        gfx.translate(_vbounds.x, _vbounds.y);
+        gfx.setTransform(originalTransform);
     }
 
     @Override
     protected void constrainToBounds (Rectangle dirty)
     {
         SwingUtilities.computeIntersection(
-            _vbounds.x, _vbounds.y, getWidth(), getHeight(), dirty);
+                _vbounds.x, _vbounds.y, _vbounds.width, _vbounds.height, dirty);
     }
 
     @Override
@@ -429,14 +463,48 @@ public class VirtualMediaPanel extends MediaPanel
         }
     }
 
+    protected void enableZoom() {
+        addMouseWheelListener(_zoomManager.createMouseWheelListener());
+    }
+
+    protected void enableZoom(double min, double max) {
+        enableZoom();
+        setZoomConstraints(min, max);
+    }
+
+    protected void setZoomConstraints(double min, double max) {
+        _zoomManager.setMinZoomLevel(min);
+        _zoomManager.setMaxZoomLevel(max);
+    }
+
+    protected void setZoomLevel(double zoom) {
+        _zoomManager.setZoomLevel(zoom);
+    }
+
+    protected double getZoomLevel() {
+        return _zoomManager.getZoomLevel();
+    }
+
+    protected void addZoomListener(ZoomManager.ZoomListener listener) {
+        _zoomManager.addZoomListener(listener);
+    }
+
+    protected void removeZoomListener(ZoomManager.ZoomListener listener) {
+        _zoomManager.removeZoomListener(listener);
+    }
+
+    protected ZoomManager _zoomManager = new ZoomManager();
+
     /** Our viewport bounds in virtual coordinates. */
     protected Rectangle _vbounds = new Rectangle();
 
     /** Our target offsets to be effected on the next tick. */
     protected int _nx, _ny;
 
-    /** Our scroll offsets. */
-    protected int _dx, _dy;
+    /**
+     * Our scroll offsets in real pixels.
+     */
+    protected double _dx, _dy;
 
     /** Our tiling background image. */
     protected Mirage _background;
