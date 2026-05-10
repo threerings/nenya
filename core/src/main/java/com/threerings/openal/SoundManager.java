@@ -219,11 +219,17 @@ public class SoundManager
             }
             ALCCapabilities deviceCaps = ALC.createCapabilities(_alcDevice);
 
-            _alcContext = ALC10.alcCreateContext(_alcDevice, (IntBuffer)null);
+            // Match the pre-LWJGL3 AL.create("", 44100, 15, false). Without explicit attribs,
+            // OpenAL picks driver defaults (often 48 kHz / 50 Hz), resamples our 44.1 kHz assets,
+            // and audibly degrades quality. To move to a modern 48 kHz mixer, use 48000 / 60 here.
+            IntBuffer attribs = BufferUtils.createIntBuffer(7);
+            attribs.put(ALC10.ALC_FREQUENCY).put(44100);
+            attribs.put(ALC10.ALC_REFRESH).put(15);
+            attribs.put(ALC10.ALC_SYNC).put(ALC10.ALC_FALSE);
+            attribs.put(0).flip();
+            _alcContext = ALC10.alcCreateContext(_alcDevice, attribs);
             ALC10.alcMakeContextCurrent(_alcContext);
             AL.createCapabilities(deviceCaps);
-
-            // AL.create("", 44100, 15, false);
         } catch (Exception e) {
             log.warning("Failed to initialize sound system.", e);
             // don't start the background loading thread
