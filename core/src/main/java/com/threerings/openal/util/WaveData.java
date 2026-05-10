@@ -212,7 +212,7 @@ public class WaveData {
             if(available <= 0) {
                 available = ais.getFormat().getChannels() * (int) ais.getFrameLength() * ais.getFormat().getSampleSizeInBits() / 8;
             }
-            byte[] buf = new byte[ais.available()];
+            byte[] buf = new byte[available];
             int read = 0, total = 0;
             while ((read = ais.read(buf, total, buf.length - total)) != -1
                    && total < buf.length) {
