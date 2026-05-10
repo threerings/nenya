@@ -62,17 +62,71 @@ import static com.threerings.openal.Log.log;
 public class SoundManager
 {
     /**
-     * Creates, initializes and returns the singleton sound manager instance.
+     * Initialization properties for the sound manager.
+     *
+     * @param frequency TODO
+     * @param refresh TODO
+     * @param sync TODO
+     */
+    public static class InitArgs
+    {
+       public InitArgs (int frequency, int refresh, boolean sync)
+       {
+           _frequency = frequency;
+           _refresh = refresh;
+           _sync = sync;
+       }
+
+       public int frequency () { return _frequency; }
+       public int refresh () { return _refresh; }
+       public boolean sync () { return _sync; }
+
+       private final int _frequency, _refresh;
+       private final boolean _sync;
+    }
+
+    // TODO: Should be this:::: ARGH!
+    //public static record InitArgs (int frequency, int refresh, boolean sync) {}
+
+    // To move to a modern 48 kHz mixer, use 48000 / 60 here. (OpenAL picks driver
+    // defaults (often 48 kHz / 50 Hz), resamples our 44.1 kHz assets, and audibly degrades quality.
+    public static InitArgs getDefaultInitArgs ()
+    {
+        return new InitArgs(48000, 60, false);
+    }
+
+    // Match the pre-LWJGL3 AL.create("", 44100, 15, false).
+    public static InitArgs getLegacyInitArgs ()
+    {
+        return new InitArgs(44100, 15, false);
+    }
+
+    /**
+     * Creates, initializes and returns the singleton sound manager instance with default
+     * parameters.
      *
      * @param rqueue a queue that the sound manager can use to post short runnables that must be
      * executed on the same thread from which all other sound methods will be called.
      */
     public static SoundManager createSoundManager (RunQueue rqueue)
     {
+        return createSoundManager(rqueue, getDefaultInitArgs());
+    }
+
+    /**
+     * Creates, initializes and returns the singleton sound manager instance.
+     *
+     * @param rqueue a queue that the sound manager can use to post short runnables that must be
+     * executed on the same thread from which all other sound methods will be called.
+     *
+     * @param args init arg for creating the openAL context, or null to not pass init args.
+     */
+    public static SoundManager createSoundManager (RunQueue rqueue, InitArgs args)
+    {
         if (_soundmgr != null) {
             throw new IllegalStateException("A sound manager has already been created.");
         }
-        _soundmgr = new SoundManager(rqueue);
+        _soundmgr = new SoundManager(rqueue, args);
         return _soundmgr;
     }
 
@@ -205,7 +259,12 @@ public class SoundManager
     /**
      * Creates a sound manager and initializes the OpenAL sound subsystem.
      */
-    protected SoundManager (RunQueue rqueue)
+    protected SoundManager (RunQueue rqueue) // provided for backwards compatibility..?
+    {
+        this(rqueue, null);
+    }
+
+    protected SoundManager (RunQueue rqueue, InitArgs args)
     {
         _rqueue = rqueue;
 
@@ -219,17 +278,19 @@ public class SoundManager
             }
             ALCCapabilities deviceCaps = ALC.createCapabilities(_alcDevice);
 
-            // Match the pre-LWJGL3 AL.create("", 44100, 15, false). Without explicit attribs,
-            // OpenAL picks driver defaults (often 48 kHz / 50 Hz), resamples our 44.1 kHz assets,
-            // and audibly degrades quality. To move to a modern 48 kHz mixer, use 48000 / 60 here.
-            IntBuffer attribs = BufferUtils.createIntBuffer(7);
-            attribs.put(ALC10.ALC_FREQUENCY).put(44100);
-            attribs.put(ALC10.ALC_REFRESH).put(15);
-            attribs.put(ALC10.ALC_SYNC).put(ALC10.ALC_FALSE);
-            attribs.put(0).flip();
+            IntBuffer attribs;
+            if (args == null) attribs = null;
+            else {
+                attribs = BufferUtils.createIntBuffer(7);
+                attribs.put(ALC10.ALC_FREQUENCY).put(args.frequency());
+                attribs.put(ALC10.ALC_REFRESH).put(args.refresh());
+                attribs.put(ALC10.ALC_SYNC).put(args.sync() ? ALC10.ALC_TRUE : ALC10.ALC_FALSE);
+                attribs.put(0).flip();
+            }
             _alcContext = ALC10.alcCreateContext(_alcDevice, attribs);
             ALC10.alcMakeContextCurrent(_alcContext);
             AL.createCapabilities(deviceCaps);
+
         } catch (Exception e) {
             log.warning("Failed to initialize sound system.", e);
             // don't start the background loading thread
