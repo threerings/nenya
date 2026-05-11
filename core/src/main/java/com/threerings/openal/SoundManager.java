@@ -88,17 +88,17 @@ public class SoundManager
     // TODO: Should be this:::: ARGH!
     //public static record InitArgs (int frequency, int refresh, boolean sync) {}
 
-    // To move to a modern 48 kHz mixer, use 48000 / 60 here. (OpenAL picks driver
-    // defaults (often 48 kHz / 50 Hz), resamples our 44.1 kHz assets, and audibly degrades quality.
+    // Match the pre-LWJGL3 AL.create("", 44100, 15, false).
     public static InitArgs getDefaultInitArgs ()
     {
-        return new InitArgs(48000, 60, false);
+        return new InitArgs(44100, 15, false);
     }
 
-    // Match the pre-LWJGL3 AL.create("", 44100, 15, false).
-    public static InitArgs getLegacyInitArgs ()
+    // To move to a modern 48 kHz mixer, use 48000 / 60 here. (OpenAL picks driver
+    // defaults (often 48 kHz / 50 Hz), resamples our 44.1 kHz assets, and audibly degrades quality.
+    public static InitArgs getModernInitArgs ()
     {
-        return new InitArgs(44100, 15, false);
+        return new InitArgs(48000, 60, false);
     }
 
     /**
