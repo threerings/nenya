@@ -68,25 +68,7 @@ public class SoundManager
      * @param refresh TODO
      * @param sync TODO
      */
-    public static class InitArgs
-    {
-       public InitArgs (int frequency, int refresh, boolean sync)
-       {
-           _frequency = frequency;
-           _refresh = refresh;
-           _sync = sync;
-       }
-
-       public int frequency () { return _frequency; }
-       public int refresh () { return _refresh; }
-       public boolean sync () { return _sync; }
-
-       private final int _frequency, _refresh;
-       private final boolean _sync;
-    }
-
-    // TODO: Should be this:::: ARGH!
-    //public static record InitArgs (int frequency, int refresh, boolean sync) {}
+    public static record InitArgs (int frequency, int refresh, boolean sync) {}
 
     // Match the pre-LWJGL3 AL.create("", 44100, 15, false).
     public static InitArgs getDefaultInitArgs ()
