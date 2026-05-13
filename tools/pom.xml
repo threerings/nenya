@@ -60,6 +60,13 @@
       <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- needed by junit -->
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>3.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -81,6 +88,7 @@
           <systemPropertyVariables>
             <resource_dir>target/test-classes/rsrc</resource_dir>
             <no_unpack_resources>true</no_unpack_resources>
+            <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
         </configuration>
       </plugin>
