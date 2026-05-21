@@ -71,9 +71,17 @@ public class SoundManager
     public static record InitArgs (int frequency, int refresh, boolean sync) {}
 
     // Match the pre-LWJGL3 AL.create("", 44100, 15, false).
-    public static InitArgs getDefaultInitArgs ()
+    public static InitArgs getLegacyInitArgs ()
     {
         return new InitArgs(44100, 15, false);
+    }
+
+    /**
+     * Get the "default" initialization args.
+     */
+    public static InitArgs getDefaultInitArgs ()
+    {
+        return new InitArgs(44100, 30, false);
     }
 
     // To move to a modern 48 kHz mixer, use 48000 / 60 here. (OpenAL picks driver
