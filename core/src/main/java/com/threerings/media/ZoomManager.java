@@ -53,7 +53,7 @@ public class ZoomManager {
      * Rescales the given bounds rectangle based on the current zoom level.
      * Useful when the zoom level changes to update the viewport.
      *
-     * @param viewport the rectangle to rescale
+     * @param viewPort the rectangle to rescale
      * @param width    the new width
      * @param height   the new height
      * @return a new rectangle representing the rescaled bounds
@@ -97,7 +97,7 @@ public class ZoomManager {
      * center of the viewport.
      *
      * @param viewPort the viewport rectangle
-     * @param toAdjust the point to adjust
+     * @param screenPoint the point to adjust
      * @return a new point representing the adjusted coordinates
      */
     public Point screenToVirtual(Rectangle viewPort, Point screenPoint) {
