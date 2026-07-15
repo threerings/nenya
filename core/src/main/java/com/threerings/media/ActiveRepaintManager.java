@@ -19,8 +19,6 @@
 
 package com.threerings.media;
 
-import java.applet.Applet;
-
 import java.util.Iterator;
 import java.util.Map;
 
@@ -55,10 +53,10 @@ import static com.threerings.media.Log.log;
 public class ActiveRepaintManager extends RepaintManager
 {
     /**
-     * Components that are rooted in this component (which must be a {@link Window} or an {@link
-     * Applet}) will be rendered into the offscreen buffer managed by the frame manager. Other
-     * components will be rendered into separate offscreen buffers and repainted in the normal
-     * Swing manner.
+     * Components that are rooted in this component (which must be a {@link Window}; we used to
+     * support {@code Applet} which is why the API is weird) will be rendered into the offscreen
+     * buffer managed by the frame manager. Other components will be rendered into separate
+     * offscreen buffers and repainted in the normal Swing manner.
      */
     public ActiveRepaintManager (Component root)
     {
@@ -106,7 +104,7 @@ public class ActiveRepaintManager extends RepaintManager
             return;
         }
 
-        // make sure that the component is actually in a window or applet that is showing
+        // make sure that the component is actually in a window that is showing
         if (getRoot(vroot) == null) {
             if (DEBUG) {
                 log.info("Skipping rootless component",
@@ -176,7 +174,7 @@ public class ActiveRepaintManager extends RepaintManager
             if (hidden) {
                 return null;
             }
-            if (c instanceof Window || c instanceof Applet) {
+            if (c instanceof Window) {
                 return c;
             }
         }

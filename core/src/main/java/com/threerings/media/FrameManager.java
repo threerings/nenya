@@ -19,8 +19,6 @@
 
 package com.threerings.media;
 
-import java.applet.Applet;
-
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
@@ -100,8 +98,7 @@ public abstract class FrameManager
     }
 
     /**
-     * Provides a bridge between either {@link ManagedJFrame} or {@link ManagedJApplet} and the
-     * frame manager.
+     * Provides a bridge between {@link ManagedJFrame} and the frame manager.
      */
     public static interface ManagedRoot
     {
@@ -344,7 +341,7 @@ public abstract class FrameManager
             if (!c.isVisible() || !c.isDisplayable()) {
                 return null;
             }
-            if (c instanceof Window || c instanceof Applet) {
+            if (c instanceof Window) {
                 return c;
             }
             rect.x += c.getX();
