@@ -334,6 +334,15 @@ public class VirtualMediaPanel extends MediaPanel
             return;
         }
 
+        // if the pathable hasn't been located yet, skip tracking this tick. Sprites default their
+        // location to Integer.MIN_VALUE until setLocation() is called, and forcing our view
+        // location to that sentinel yields bogus dirty regions (rejected by the RegionManager,
+        // leaving stale/torn pixels) and a mis-scrolled frame. We'll track it on a later tick once
+        // the pathable has a real position.
+        if (_fpath.getX() == Integer.MIN_VALUE || _fpath.getY() == Integer.MIN_VALUE) {
+            return;
+        }
+
         int width = _vbounds.width, height = _vbounds.height;
         int nx = _nx, ny = _ny;
 
