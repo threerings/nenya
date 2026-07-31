@@ -14,14 +14,9 @@
   <dependencies>
     <!-- exported dependencies -->
     <dependency>
-      <groupId>com.samskivert</groupId>
-      <artifactId>samskivert</artifactId>
-      <version>1.10</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>33.4.0-jre</version>
+      <groupId>com.threerings</groupId>
+      <artifactId>ooo-util</artifactId>
+      <version>1.6-SNAPSHOT</version>
     </dependency>
 
     <!-- optional dependencies -->
