@@ -86,7 +86,8 @@ public class CompiledConfigTask extends Task
 
         // if we have a single file and target specified, do those
         if (_configdef != null) {
-            parse(parser, _configdef, _target == null ? getTarget(_configdef) : _target);
+            parse(parser, _configdef,
+                _target == null ? getTarget(_configdef, getProject().getBaseDir()) : _target);
         }
 
         // deal with the filesets
@@ -95,18 +96,28 @@ public class CompiledConfigTask extends Task
             File fromDir = fs.getDir(getProject());
             for (String file : ds.getIncludedFiles()) {
                 File source = new File(fromDir, file);
-                parse(parser, source, getTarget(source));
+                parse(parser, source, getTarget(source, fromDir));
             }
         }
     }
 
-    protected File getTarget (File source)
+    /**
+     * Computes a fileset match's rerooted target path under {@link #_dest}, preserving its
+     * path relative to {@code fromDir} (the fileset's own {@code dir}, not necessarily the same
+     * as the Ant project's basedir, e.g. when the fileset points outside the project's own
+     * directory tree).
+     *
+     * @param source the matched source file, expected to be rooted under {@code fromDir}.
+     * @param fromDir the fileset's own base directory.
+     * @return the rerooted, .dat-suffixed target file, or {@code null} if {@link #_dest} isn't set.
+     */
+    protected File getTarget (File source, File fromDir)
     {
         if (_dest == null) {
             return null;
         }
 
-        String baseDir = getProject().getBaseDir().getPath();
+        String baseDir = fromDir.getPath();
         File target = new File(source.getPath().replace(baseDir, _dest.getPath()));
         target = new File(FileUtil.resuffix(target, ".xml", ".dat"));
         return target;
