@@ -65,6 +65,16 @@ public class TileSetBundlerTask extends Task
     }
 
     /**
+     * Sets an alternate root directory for generated bundle jars, mirroring each bundle.xml's
+     * path relative to its own fileset's {@code dir} rather than writing the jar alongside it.
+     * Leave unset to keep the default same-directory-as-source behavior.
+     */
+    public void setDest (File dest)
+    {
+        _dest = dest;
+    }
+
+    /**
      * Note whether we are supposed to use the raw png files directly in the bundle or try to
      *  re-encode them.
      */
@@ -155,8 +165,11 @@ public class TileSetBundlerTask extends Task
     protected BundleWriter createWriter (File fromDir, String path)
         throws IOException
     {
-        return new BundleWriter(
-            new File(path.substring(0, path.length()-4) + ".jar"), _uncompressed);
+        String jarPath = path.substring(0, path.length()-4) + ".jar";
+        File target = (_dest == null)
+            ? new File(jarPath)
+            : new File(jarPath.replace(fromDir.getPath(), _dest.getPath()));
+        return new BundleWriter(target, _uncompressed);
     }
 
     protected void ensureSet (Object value, String errmsg)
@@ -169,6 +182,10 @@ public class TileSetBundlerTask extends Task
 
     protected File _config;
     protected File _mapfile;
+
+    /** An alternate root for generated bundle jars, or {@code null} to write them alongside
+     * their bundle.xml. */
+    protected File _dest;
 
     /** A list of filesets that contain tileset bundle definitions. */
     protected ArrayList<FileSet> _filesets = Lists.newArrayList();

@@ -139,6 +139,11 @@ public class BundleWriter
             throws IOException
         {
             if (jar == null) {
+                File parent = _target.getParentFile();
+                if (parent != null && !parent.isDirectory() && !parent.mkdirs() &&
+                        !parent.isDirectory()) {
+                    throw new IOException("Failed to create parent directory: " + parent);
+                }
                 FileOutputStream fout = new FileOutputStream(_target);
                 Manifest manifest = new Manifest();
                 jar = new JarOutputStream(fout, manifest);

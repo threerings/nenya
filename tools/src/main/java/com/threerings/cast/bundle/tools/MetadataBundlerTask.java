@@ -152,6 +152,10 @@ public class MetadataBundlerTask extends Task
     protected OutputStream createOutputStream (File target)
         throws IOException
     {
+        File parent = target.getParentFile();
+        if (!parent.isDirectory() && !parent.mkdirs() && !parent.isDirectory()) {
+            throw new IOException("Failed to create parent directory: " + parent);
+        }
         JarOutputStream jout = new JarOutputStream(new FileOutputStream(target));
         jout.setLevel(Deflater.BEST_COMPRESSION);
         return jout;
