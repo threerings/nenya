@@ -81,6 +81,12 @@ public class CompileFringeConfigurationTask extends Task
             throw new BuildException("Failure parsing config definition", e);
         }
 
+        // create the target directory if necessary
+        File parent = _target.getParentFile();
+        if (!parent.isDirectory() && !parent.mkdirs()) {
+            throw new BuildException("Failed to create parent directory '" + parent + "'.");
+        }
+
         try {
             // and write it on out
             CompiledConfig.saveConfig(_target, config);
