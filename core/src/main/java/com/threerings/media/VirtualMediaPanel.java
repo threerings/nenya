@@ -185,9 +185,28 @@ public class VirtualMediaPanel extends MediaPanel
     protected void dirtyScreenRect (Rectangle rect)
     {
         // translate the screen rect into happy coordinates
-        rect.translate(_nx, _ny);
-        rect = _zoomManager.scaleOnCenter(rect);
-        _metamgr.getRegionManager().addDirtyRegion(rect);
+        _metamgr.getRegionManager().addDirtyRegion(screenToVirtual(rect));
+    }
+
+    /**
+     * Converts a rectangle in screen (component) coordinates to virtual coordinates, inverting
+     * the transform applied in {@link #paint(Graphics2D, Rectangle[])}: the view is scaled about
+     * the centre of the component. The result is grown to whole virtual pixels.
+     *
+     * @param rect the screen rectangle; not modified.
+     * @return the virtual rectangle that paints into (at least) the screen rectangle.
+     */
+    protected Rectangle screenToVirtual (Rectangle rect)
+    {
+        double scale = (_vbounds.width == 0) ? 1.0 : getWidth() / (double) _vbounds.width;
+        int centerX = _vbounds.x + _vbounds.width / 2;
+        int centerY = _vbounds.y + _vbounds.height / 2;
+        int halfW = getWidth() / 2, halfH = getHeight() / 2;
+        int x0 = (int) Math.floor(centerX + (rect.x - halfW) / scale);
+        int y0 = (int) Math.floor(centerY + (rect.y - halfH) / scale);
+        int x1 = (int) Math.ceil(centerX + (rect.x + rect.width - halfW) / scale);
+        int y1 = (int) Math.ceil(centerY + (rect.y + rect.height - halfH) / scale);
+        return new Rectangle(x0, y0, x1 - x0, y1 - y0);
     }
 
     @Override
@@ -205,10 +224,14 @@ public class VirtualMediaPanel extends MediaPanel
     {
         super.setBounds(x, y, width, height);
 
-        // keep track of the size of the viewport
-        _vbounds.width = getWidth();
-        _vbounds.height = getHeight();
-        _vbounds = _zoomManager.scaleOnCenter(_vbounds);
+        // keep track of the size of the viewport: width/zoom by height/zoom virtual pixels
+        // about the same virtual centre as before. Any move the view then needs is left to
+        // adjustBoundsCenter(), which scrolls and invalidates properly. (Writing the screen size
+        // into the virtual bounds and shrinking about *that* centre shifted the view by a
+        // quarter screen on every relayout when zoomed, and the next tick's scroll back stamped
+        // a copy of one corner of the screen into the opposite one.)
+        Rectangle base = _vbounds.isEmpty() ? new Rectangle(0, 0, width, height) : _vbounds;
+        _vbounds = _zoomManager.rescaleBounds(base, getWidth(), getHeight());
 
         // we need to obtain our absolute screen coordinates to work
         // around the Windows copyArea() bug
