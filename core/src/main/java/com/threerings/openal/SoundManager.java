@@ -25,13 +25,19 @@ import java.util.List;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.EXTDisconnect;
+import org.lwjgl.openal.SOFTReopenDevice;
+import org.lwjgl.openal.SOFTSystemEventProc;
+import org.lwjgl.openal.SOFTSystemEvents;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -125,6 +131,7 @@ public class SoundManager
      */
     public void shutdown ()
     {
+        unregisterDeviceEvents();
         if (_alcContext != 0L) {
             ALC10.alcDestroyContext(_alcContext);
             _alcContext = 0L;
@@ -267,19 +274,16 @@ public class SoundManager
                 return;
             }
             ALCCapabilities deviceCaps = ALC.createCapabilities(_alcDevice);
+            _alcCaps = deviceCaps;
 
-            IntBuffer attribs;
-            if (args == null) attribs = null;
-            else {
-                attribs = BufferUtils.createIntBuffer(7);
-                attribs.put(ALC10.ALC_FREQUENCY).put(args.frequency());
-                attribs.put(ALC10.ALC_REFRESH).put(args.refresh());
-                attribs.put(ALC10.ALC_SYNC).put(args.sync() ? ALC10.ALC_TRUE : ALC10.ALC_FALSE);
-                attribs.put(0).flip();
-            }
-            _alcContext = ALC10.alcCreateContext(_alcDevice, attribs);
+            // keep the attribute list: alcReopenDeviceSOFT takes the same list as
+            // alcCreateContext, and we want the moved device configured identically
+            _alcAttribs = createContextAttribs(args);
+            _alcContext = ALC10.alcCreateContext(_alcDevice, _alcAttribs);
             ALC10.alcMakeContextCurrent(_alcContext);
             AL.createCapabilities(deviceCaps);
+
+            registerDeviceEvents(deviceCaps);
 
         } catch (Exception e) {
             log.warning("Failed to initialize sound system.", e);
@@ -313,6 +317,163 @@ public class SoundManager
         // start up the background loader thread
         _loader.setDaemon(true);
         _loader.start();
+    }
+
+    /**
+     * Builds the attribute list handed to {@code alcCreateContext} (and later to
+     * {@code alcReopenDeviceSOFT}).
+     *
+     * @param args the configuration to encode, or null for the library defaults.
+     * @return a direct, zero-terminated buffer positioned at zero, or null if {@code args} is
+     * null. LWJGL only accepts direct NIO buffers for native calls, hence {@link BufferUtils}.
+     */
+    protected static IntBuffer createContextAttribs (InitArgs args)
+    {
+        if (args == null) {
+            return null;
+        }
+        IntBuffer attribs = BufferUtils.createIntBuffer(7);
+        attribs.put(ALC10.ALC_FREQUENCY).put(args.frequency());
+        attribs.put(ALC10.ALC_REFRESH).put(args.refresh());
+        attribs.put(ALC10.ALC_SYNC).put(args.sync() ? ALC10.ALC_TRUE : ALC10.ALC_FALSE);
+        attribs.put(0).flip();
+        return attribs;
+    }
+
+    /**
+     * Asks OpenAL to tell us when the system's default playback device changes or a playback
+     * device is unplugged, so that {@link #reopenDevice} can move our output to the new default.
+     *
+     * <p>Why this is needed: {@code alcOpenDevice(NULL)} binds the device handle to whatever
+     * endpoint was the default <em>at that moment</em> and OpenAL Soft never moves it on its
+     * own. Without this, a player who switches Windows from speakers to a headset mid-session
+     * keeps hearing the game on the speakers (or hears nothing at all if the old endpoint went
+     * away). Both pieces we rely on are OpenAL Soft extensions: {@code ALC_SOFT_system_events}
+     * (the notification) and {@code ALC_SOFT_reopen_device} (the move). Each is checked on the
+     * device's capabilities; when either is missing we log once and keep the old behaviour.
+     *
+     * <p>What the JVM side allows, and why the callback is shaped the way it is:
+     * <ul>
+     * <li> The callback fires on a thread owned by the audio system (WASAPI's MMDevice
+     * notification thread on Windows, a CoreAudio thread on macOS), not on any thread this
+     * class knows about. LWJGL attaches that thread to the JVM for the duration of the call
+     * and detaches it afterwards, so it is a valid Java thread while inside the callback but
+     * has no OpenAL context, no AWT/Swing ownership and none of our locks.
+     * <li> The extension spec forbids AL/ALC calls from inside the callback ("AL and ALC
+     * functions may not be called in the callback") and OpenAL Soft's author has confirmed that
+     * calling {@code alcReopenDeviceSOFT} there deadlocks against the notification lock. So the
+     * callback does two thread-safe things only: it sets an {@link AtomicBoolean} and posts a
+     * runnable to {@link #_rqueue}, which is where every other OpenAL call this class makes
+     * already happens.
+     * <li> Windows reports one default change as several events (one per device role), and a
+     * hotplug can produce a removal and a default change together. The flag coalesces the burst
+     * into a single reopen.
+     * <li> {@link SOFTSystemEventProc} is an LWJGL {@code Callback}: it owns a native trampoline
+     * that is not reclaimed by the garbage collector. We hold the only reference in
+     * {@link #_eventProc} and release it in {@link #unregisterDeviceEvents}, after first
+     * clearing the registration so a late event cannot land on freed memory.
+     * <li> OpenAL Soft keeps a single process-wide event callback. This class is already a
+     * singleton ({@link #createSoundManager}), so nothing else in the process competes for it.
+     * </ul>
+     *
+     * @param caps the capabilities of the device we just opened; used to check for the two
+     * extensions.
+     */
+    protected void registerDeviceEvents (ALCCapabilities caps)
+    {
+        if (!caps.ALC_SOFT_reopen_device) {
+            log.info("OpenAL lacks ALC_SOFT_reopen_device; output will not follow the " +
+                     "default device.");
+            return;
+        }
+        if (!caps.ALC_SOFT_system_events) {
+            log.info("OpenAL lacks ALC_SOFT_system_events; output will not follow the " +
+                     "default device.");
+            return;
+        }
+
+        _eventProc = SOFTSystemEventProc.create(
+            (eventType, deviceType, device, length, message, userParam) -> {
+                // foreign thread: no OpenAL calls, no blocking, no logging; see the JavaDoc
+                if (deviceType != SOFTSystemEvents.ALC_PLAYBACK_DEVICE_SOFT) {
+                    return;
+                }
+                if (_reopenPending.compareAndSet(false, true)) {
+                    _rqueue.postRunnable(this::reopenDevice);
+                }
+            });
+        SOFTSystemEvents.alcEventCallbackSOFT(_eventProc, 0L);
+
+        IntBuffer events = BufferUtils.createIntBuffer(2);
+        events.put(SOFTSystemEvents.ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT);
+        events.put(SOFTSystemEvents.ALC_EVENT_TYPE_DEVICE_REMOVED_SOFT).flip();
+        if (!SOFTSystemEvents.alcEventControlSOFT(events, true)) {
+            log.warning("OpenAL refused device event registration; output will not follow " +
+                        "the default device [error=" + ALC10.alcGetError(_alcDevice) + "].");
+            unregisterDeviceEvents();
+            return;
+        }
+        log.info("Following the default audio device [device=" + describeDevice() + "].");
+    }
+
+    /**
+     * Undoes {@link #registerDeviceEvents}. Safe to call when nothing was registered. The order
+     * matters: disable the events, clear the callback, then free the trampoline, so that a
+     * notification racing with shutdown finds either a live callback or none, never a freed one.
+     */
+    protected void unregisterDeviceEvents ()
+    {
+        if (_eventProc == null) {
+            return;
+        }
+        IntBuffer events = BufferUtils.createIntBuffer(2);
+        events.put(SOFTSystemEvents.ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT);
+        events.put(SOFTSystemEvents.ALC_EVENT_TYPE_DEVICE_REMOVED_SOFT).flip();
+        SOFTSystemEvents.alcEventControlSOFT(events, false);
+        SOFTSystemEvents.nalcEventCallbackSOFT(0L, 0L);
+        _eventProc.free();
+        _eventProc = null;
+    }
+
+    /**
+     * Moves our output to the current default playback device. Runs on the {@link #_rqueue}
+     * thread in response to a device event; never call it from the event callback itself.
+     *
+     * <p>{@code alcReopenDeviceSOFT} keeps the context, sources, buffers and streams intact and
+     * simply re-associates the device handle with a new endpoint, so playing sounds and the
+     * music stream carry on with at most a short gap. On failure the library leaves the device
+     * on its previous endpoint and we log; the next event will try again.
+     */
+    protected void reopenDevice ()
+    {
+        _reopenPending.set(false);
+        if (_alcDevice == 0L) {
+            return;
+        }
+        String before = describeDevice();
+        // the ByteBuffer overload is the one that accepts NULL, meaning "the default device"
+        if (!SOFTReopenDevice.alcReopenDeviceSOFT(_alcDevice, (ByteBuffer)null, _alcAttribs)) {
+            log.warning("Failed to move audio to the default device [was=" + before +
+                        ", error=" + ALC10.alcGetError(_alcDevice) + "].");
+            return;
+        }
+        log.info("Moved audio to the default device [was=" + before +
+                 ", now=" + describeDevice() + "].");
+    }
+
+    /**
+     * Returns a short description of the endpoint our device is currently bound to, for
+     * logging. Reports the OpenAL device name and whether the endpoint is still connected.
+     */
+    protected String describeDevice ()
+    {
+        String name = ALC10.alcGetString(_alcDevice, ALC11.ALC_ALL_DEVICES_SPECIFIER);
+        if (!_alcCaps.ALC_EXT_disconnect) {
+            return name;
+        }
+        boolean connected =
+            ALC10.alcGetInteger(_alcDevice, EXTDisconnect.ALC_CONNECTED) == ALC10.ALC_TRUE;
+        return name + (connected ? "" : " (disconnected)");
     }
 
     /**
@@ -491,6 +652,18 @@ public class SoundManager
 
     protected long _alcDevice;
     protected long _alcContext;
+
+    /** The capabilities of {@link #_alcDevice}, kept for extension checks after startup. */
+    protected ALCCapabilities _alcCaps;
+
+    /** The attribute list our context was created with, reused when the device is reopened. */
+    protected IntBuffer _alcAttribs;
+
+    /** Receives device notifications from OpenAL; null when following is unavailable. */
+    protected SOFTSystemEventProc _eventProc;
+
+    /** Set by the event callback, cleared by {@link #reopenDevice}; folds bursts into one move. */
+    protected final AtomicBoolean _reopenPending = new AtomicBoolean();
 
     /** Used to get back from the background thread to our "main" thread. */
     protected RunQueue _rqueue;
