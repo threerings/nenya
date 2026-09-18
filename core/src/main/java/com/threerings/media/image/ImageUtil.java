@@ -131,13 +131,13 @@ public class ImageUtil
         // convert the colors to HSV
         float[] hsv = new float[3];
         int[] fhsv = new int[3];
+        final int RGB_MASK = 0xFFFFFF;
         for (int ii = 0; ii < size; ii++) {
             int value = rgbs[ii];
 
-            // don't fiddle with alpha pixels
-            if ((value & 0xFF000000) == 0) {
-                continue;
-            }
+            // if the alpha is 0 just skip the pixel
+            int alphaWhite = value | RGB_MASK;
+            if (alphaWhite == RGB_MASK) continue;
 
             // convert the color to HSV
             int red = (value >> 16) & 0xFF;
@@ -152,7 +152,7 @@ public class ImageUtil
                 if (cz != null && cz.matches(hsv, fhsv)) {
                     // massage the HSV bands and update the RGBs array, keeping the entry's own
                     // alpha so a translucent (anti-aliased) shade of the colour stays translucent
-                    rgbs[ii] = (value & 0xFF000000) | (cz.recolorColor(hsv) & 0xFFFFFF);
+                    rgbs[ii] = alphaWhite & cz.recolorColor(hsv); // recolorColor alpha is 0xFF
                     break;
                 }
             }
