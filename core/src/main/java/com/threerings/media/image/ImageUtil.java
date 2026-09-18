@@ -150,8 +150,9 @@ public class ImageUtil
             for (int z = 0; z < zcount; z++) {
                 Colorization cz = zations[z];
                 if (cz != null && cz.matches(hsv, fhsv)) {
-                    // massage the HSV bands and update the RGBs array
-                    rgbs[ii] = cz.recolorColor(hsv);
+                    // massage the HSV bands and update the RGBs array, keeping the entry's own
+                    // alpha so a translucent (anti-aliased) shade of the colour stays translucent
+                    rgbs[ii] = (value & 0xFF000000) | (cz.recolorColor(hsv) & 0xFFFFFF);
                     break;
                 }
             }
