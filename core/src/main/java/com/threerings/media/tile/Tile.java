@@ -105,11 +105,20 @@ public class Tile // implements Cloneable
     }
 
     /**
-     * Returns the estimated memory usage of our underlying tile image.
+     * Returns the estimated memory usage of our underlying tile image, or zero if this tile has no
+     * image.
+     *
+     * <p>A tile legitimately has no image when its tileset came from a repository configured with a
+     * null {@code ImageManager} — a metadata-only repository, as a server that cares about tile
+     * footprints but never renders will use. {@link #setImage} already tolerates a null mirage;
+     * this accessor must too, because {@code TileSet.reportCachePerformance} totals it over the
+     * process-wide tile cache, which can hold tiles from BOTH a metadata-only repository and a
+     * rendering one. Without this guard, having any metadata-only tile in that cache makes an
+     * unrelated rendering tileset throw out of {@code getTile}.
      */
     public long getEstimatedMemoryUsage ()
     {
-        return _mirage.getEstimatedMemoryUsage();
+        return (_mirage == null) ? 0 : _mirage.getEstimatedMemoryUsage();
     }
 
     /**
