@@ -222,16 +222,19 @@ public class VirtualMediaPanel extends MediaPanel
     @Override
     public void setBounds (int x, int y, int width, int height)
     {
+        int owidth = getWidth(), oheight = getHeight();
         super.setBounds(x, y, width, height);
 
-        // keep track of the size of the viewport: width/zoom by height/zoom virtual pixels
-        // about the same virtual centre as before. Any move the view then needs is left to
-        // adjustBoundsCenter(), which scrolls and invalidates properly. (Writing the screen size
-        // into the virtual bounds and shrinking about *that* centre shifted the view by a
-        // quarter screen on every relayout when zoomed, and the next tick's scroll back stamped
-        // a copy of one corner of the screen into the opposite one.)
-        Rectangle base = _vbounds.isEmpty() ? new Rectangle(0, 0, width, height) : _vbounds;
-        _vbounds = _zoomManager.rescaleBounds(base, getWidth(), getHeight());
+        // resize the viewport without moving the view: rebuild it around the offset it already
+        // had, which is how adjustBoundsCenter() measures where the view is. Anchor it anywhere
+        // else and that method scrolls it back next tick, copyAreaing the buffer sideways.
+        int offsetX = 0, offsetY = 0;
+        if (!_vbounds.isEmpty()) {
+            Point vcenter = ZoomManager.center(_vbounds);
+            offsetX = vcenter.x - owidth / 2;
+            offsetY = vcenter.y - oheight / 2;
+        }
+        _vbounds = _zoomManager.boundsForOffset(offsetX, offsetY, getWidth(), getHeight());
 
         // we need to obtain our absolute screen coordinates to work
         // around the Windows copyArea() bug
