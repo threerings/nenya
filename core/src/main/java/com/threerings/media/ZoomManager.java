@@ -66,6 +66,24 @@ public class ZoomManager {
     }
 
     /**
+     * Builds a viewport of width/zoom by height/zoom virtual pixels whose centre sits the given
+     * offset from the centre of a width by height panel. Inverts the offset {@link #center}
+     * yields, so rebuilding a viewport with its own offset resizes it without moving the view.
+     *
+     * @param offsetX the desired horizontal offset of the viewport centre from the panel centre.
+     * @param offsetY the desired vertical offset of the viewport centre from the panel centre.
+     * @param width the panel width, in screen pixels.
+     * @param height the panel height, in screen pixels.
+     * @return a new rectangle representing the viewport in virtual coordinates.
+     */
+    public Rectangle boundsForOffset(int offsetX, int offsetY, int width, int height) {
+        int newWidth = (int) (width / _zoomLevel);
+        int newHeight = (int) (height / _zoomLevel);
+        return new Rectangle(offsetX + width / 2 - newWidth / 2,
+                offsetY + height / 2 - newHeight / 2, newWidth, newHeight);
+    }
+
+    /**
      * Scales the given viewport rectangle based on the current zoom level,
      * centering the scaling on the viewport's center.
      *
