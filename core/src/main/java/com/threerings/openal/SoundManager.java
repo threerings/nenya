@@ -679,7 +679,7 @@ public class SoundManager
 
     /** Contains a mapping of all loaded clips. */
     protected LRUHashMap<String, ClipBuffer> _clips =
-        new LRUHashMap<String, ClipBuffer>(DEFAULT_CACHE_SIZE, _sizer);
+        new LRUHashMap<String, ClipBuffer>(DEFAULT_CACHE_SIZE, ClipBuffer::getSize);
 
     /** Contains a queue of clip buffers waiting to be loaded. */
     protected Queue<ClipBuffer> _toLoad;
@@ -699,14 +699,6 @@ public class SoundManager
     /** The one and only sound manager, here for an exclusive performance by special request.
      * Available for all your sound playing needs. */
     protected static SoundManager _soundmgr;
-
-    /** Used to compute the in-memory size of sound samples. */
-    protected static LRUHashMap.ItemSizer<ClipBuffer> _sizer =
-        new LRUHashMap.ItemSizer<ClipBuffer>() {
-        public int computeSize (ClipBuffer item) {
-            return item.getSize();
-        }
-    };
 
     /** Default to a cache size of one megabyte. */
     protected static final int DEFAULT_CACHE_SIZE = 8 * 1024 * 1024;
