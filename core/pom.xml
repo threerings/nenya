@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.lwjgl</groupId>
       <artifactId>lwjgl-openal</artifactId>
-      <version>3.4.1</version>
+      <version>3.4.3</version>
       <optional>true</optional>
     </dependency>
     <dependency>
