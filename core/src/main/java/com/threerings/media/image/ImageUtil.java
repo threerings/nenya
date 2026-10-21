@@ -42,7 +42,6 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
-
 import com.samskivert.swing.Label;
 
 /**
