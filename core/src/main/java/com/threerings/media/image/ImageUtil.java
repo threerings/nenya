@@ -130,7 +130,6 @@ public class ImageUtil
         // convert the colors to HSV
         float[] hsv = new float[3];
         int[] fhsv = new int[3];
-        final int RGB_MASK = 0xFFFFFF;
         for (int ii = 0; ii < size; ii++) {
             int value = rgbs[ii];
 
@@ -178,7 +177,6 @@ public class ImageUtil
         Map<Integer, Integer> recolored = new HashMap<Integer, Integer>();
         float[] hsv = new float[3];
         int[] fhsv = new int[3];
-        final int RGB_MASK = 0xFFFFFF;
         int zcount = zations.length;
         for (int ii = 0, nn = argbs.length; ii < nn; ii++) {
             int value = argbs[ii];
@@ -187,7 +185,7 @@ public class ImageUtil
             int alphaWhite = value | RGB_MASK;
             if (alphaWhite == RGB_MASK) continue;
 
-            int rgb = value | ~RGB_MASK;
+            int rgb = value | TRANS_MASK;
             Integer nrgb = recolored.get(rgb);
             if (nrgb == null) {
                 // convert the color to HSV
@@ -647,9 +645,9 @@ public class ImageUtil
     /** The graphics configuration for the default screen device. */
     protected static GraphicsConfiguration _gc;
 
-    /** Used when seeking fully transparent pixels for outlining. */
-    protected static final int TRANS_MASK = (0xFF << 24);
-
     /** Used when outlining. */
     protected static final int RGB_MASK = 0x00FFFFFF;
+
+    /** Used when seeking fully transparent pixels for outlining. */
+    protected static final int TRANS_MASK = ~RGB_MASK;
 }
