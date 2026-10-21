@@ -20,7 +20,9 @@
 package com.threerings.media.image;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -39,8 +41,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-
-import com.samskivert.util.Logger;
 
 import com.samskivert.swing.Label;
 
@@ -87,9 +87,10 @@ public class ImageUtil
     }
 
     /**
-     * Used to recolor images by shifting bands of color (in HSV color space) to a new hue. The
-     * source images must be 8-bit color mapped images, as the recoloring process works by
-     * analysing the color map and modifying it.
+     * Used to recolor images by shifting bands of color (in HSV color space) to a new hue. Color
+     * mapped images are recolored by analysing the color map and modifying it; other images (24
+     * or 32-bit) are recolored pixel by pixel using the same color matching, yielding the same
+     * results for the same source colors.
      */
     public static BufferedImage recolorImage (
         BufferedImage image, Color rootColor, float[] dists, float[] offsets)
@@ -114,13 +115,11 @@ public class ImageUtil
     public static BufferedImage recolorImage (BufferedImage image, Colorization[] zations)
     {
         ColorModel cm = image.getColorModel();
-        if (!(cm instanceof IndexColorModel)) {
-            throw new RuntimeException(Logger.format(
-                "Unable to recolor images with non-index color model", "cm", cm.getClass()));
+        if (!(cm instanceof IndexColorModel icm)) {
+            return recolorDirectImage(image, zations);
         }
 
         // now process the image
-        IndexColorModel icm = (IndexColorModel)cm;
         int size = icm.getMapSize();
         int zcount = zations.length;
         int[] rgbs = new int[size];
@@ -131,7 +130,6 @@ public class ImageUtil
         // convert the colors to HSV
         float[] hsv = new float[3];
         int[] fhsv = new int[3];
-        final int RGB_MASK = 0xFFFFFF;
         for (int ii = 0; ii < size; ii++) {
             int value = rgbs[ii];
 
@@ -163,6 +161,57 @@ public class ImageUtil
             icm.getPixelSize(), size, rgbs, 0, icm.hasAlpha(),
             icm.getTransparentPixel(), icm.getTransferType());
         return new BufferedImage(nicm, image.getRaster(), false, null);
+    }
+
+    /**
+     * Recolors a non-color mapped (24 or 32-bit) image pixel by pixel, matching and shifting each
+     * pixel's color exactly as {@link #recolorImage(BufferedImage,Colorization[])} does each
+     * color map entry, and keeping each pixel's own alpha. The result is an ARGB image.
+     */
+    protected static BufferedImage recolorDirectImage (BufferedImage image, Colorization[] zations)
+    {
+        int width = image.getWidth(), height = image.getHeight();
+        int[] argbs = image.getRGB(0, 0, width, height, null, 0, width);
+
+        // art has far fewer distinct colors than pixels, so recolor each color only once
+        Map<Integer, Integer> recolored = new HashMap<Integer, Integer>();
+        float[] hsv = new float[3];
+        int[] fhsv = new int[3];
+        int zcount = zations.length;
+        for (int ii = 0, nn = argbs.length; ii < nn; ii++) {
+            int value = argbs[ii];
+
+            // if the alpha is 0 just skip the pixel
+            int alphaWhite = value | RGB_MASK;
+            if (alphaWhite == RGB_MASK) continue;
+
+            int rgb = value | TRANS_MASK;
+            Integer nrgb = recolored.get(rgb);
+            if (nrgb == null) {
+                // convert the color to HSV
+                int red = (rgb >> 16) & 0xFF;
+                int green = (rgb >> 8) & 0xFF;
+                int blue = (rgb >> 0) & 0xFF;
+                Color.RGBtoHSB(red, green, blue, hsv);
+                Colorization.toFixedHSV(hsv, fhsv);
+
+                // see if this color matches any of our colorizations and recolor it if it does
+                nrgb = rgb;
+                for (int z = 0; z < zcount; z++) {
+                    Colorization cz = zations[z];
+                    if (cz != null && cz.matches(hsv, fhsv)) {
+                        nrgb = cz.recolorColor(hsv);
+                        break;
+                    }
+                }
+                recolored.put(rgb, nrgb);
+            }
+            argbs[ii] = alphaWhite & nrgb;
+        }
+
+        BufferedImage nimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        nimage.setRGB(0, 0, width, height, argbs, 0, width);
+        return nimage;
     }
 
     /**
@@ -596,9 +645,9 @@ public class ImageUtil
     /** The graphics configuration for the default screen device. */
     protected static GraphicsConfiguration _gc;
 
-    /** Used when seeking fully transparent pixels for outlining. */
-    protected static final int TRANS_MASK = (0xFF << 24);
-
     /** Used when outlining. */
     protected static final int RGB_MASK = 0x00FFFFFF;
+
+    /** Used when seeking fully transparent pixels for outlining. */
+    protected static final int TRANS_MASK = ~RGB_MASK;
 }
