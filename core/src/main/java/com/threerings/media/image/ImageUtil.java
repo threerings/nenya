@@ -115,12 +115,11 @@ public class ImageUtil
     public static BufferedImage recolorImage (BufferedImage image, Colorization[] zations)
     {
         ColorModel cm = image.getColorModel();
-        if (!(cm instanceof IndexColorModel)) {
+        if (!(cm instanceof IndexColorModel icm)) {
             return recolorDirectImage(image, zations);
         }
 
         // now process the image
-        IndexColorModel icm = (IndexColorModel)cm;
         int size = icm.getMapSize();
         int zcount = zations.length;
         int[] rgbs = new int[size];
@@ -181,14 +180,14 @@ public class ImageUtil
         int[] fhsv = new int[3];
         final int RGB_MASK = 0xFFFFFF;
         int zcount = zations.length;
-        for (int ii = 0; ii < argbs.length; ii++) {
+        for (int ii = 0, nn = argbs.length; ii < nn; ii++) {
             int value = argbs[ii];
 
             // if the alpha is 0 just skip the pixel
             int alphaWhite = value | RGB_MASK;
             if (alphaWhite == RGB_MASK) continue;
 
-            int rgb = value & RGB_MASK;
+            int rgb = value | ~RGB_MASK;
             Integer nrgb = recolored.get(rgb);
             if (nrgb == null) {
                 // convert the color to HSV
@@ -203,13 +202,13 @@ public class ImageUtil
                 for (int z = 0; z < zcount; z++) {
                     Colorization cz = zations[z];
                     if (cz != null && cz.matches(hsv, fhsv)) {
-                        nrgb = cz.recolorColor(hsv) & RGB_MASK;
+                        nrgb = cz.recolorColor(hsv);
                         break;
                     }
                 }
                 recolored.put(rgb, nrgb);
             }
-            argbs[ii] = (value & ~RGB_MASK) | nrgb;
+            argbs[ii] = alphaWhite & nrgb;
         }
 
         BufferedImage nimage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
