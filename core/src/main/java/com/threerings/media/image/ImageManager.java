@@ -33,6 +33,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -495,7 +497,7 @@ public class ImageManager
                 BufferedImage cimage = ImageUtil.recolorImage(_source, zations);
                 _colorized.add(new Tuple<Colorization[], BufferedImage>(zations, cimage));
                 synchronized (cache) {
-                    cache.adjustSize((int)ImageUtil.getEstimatedMemoryUsage(cimage));
+                    cache.adjustSize((int)getColorizedMemoryUsage(cimage));
                 }
                 return cimage;
 
@@ -512,10 +514,21 @@ public class ImageManager
             long usage = ImageUtil.getEstimatedMemoryUsage(_source);
             if (_colorized != null) {
                 for (Tuple<Colorization[], BufferedImage> tup : _colorized) {
-                    usage += ImageUtil.getEstimatedMemoryUsage(tup.right);
+                    usage += getColorizedMemoryUsage(tup.right);
                 }
             }
             return usage;
+        }
+
+        /** Returns the memory a colorized copy adds: only its palette, if it shares our raster. */
+        protected long getColorizedMemoryUsage (BufferedImage cimage)
+        {
+            if (cimage.getRaster().getDataBuffer() != _source.getRaster().getDataBuffer()) {
+                return ImageUtil.getEstimatedMemoryUsage(cimage);
+            }
+            ColorModel cm = cimage.getColorModel();
+            return (cm instanceof IndexColorModel) ?
+                (long)((IndexColorModel)cm).getMapSize() * 4 : 0L;
         }
 
         @Override
