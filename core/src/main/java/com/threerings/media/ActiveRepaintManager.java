@@ -25,9 +25,10 @@ import java.util.Map;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Window;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 import javax.swing.CellRendererPane;
 import javax.swing.JComponent;
@@ -384,14 +385,20 @@ public class ActiveRepaintManager extends RepaintManager
                     dumpHierarchy(comp);
                 }
 
-                // otherwise, repaint with standard swing double buffers
-                Image obuf = getOffscreenBuffer(ocomp, _cbounds.width, _cbounds.height);
-                Graphics og = null, cg = null;
+                // otherwise, repaint through a buffer of our own at the screen's scale: a
+                // logical-size buffer would be stretched, and blurred, on a scaled display
+                AffineTransform dt = ocomp.getGraphicsConfiguration().getDefaultTransform();
+                BufferedImage obuf = getScaledBuffer(ocomp, _cbounds.width, _cbounds.height, dt);
+                Graphics2D og = null;
+                Graphics cg = null;
                 try {
-                    og = obuf.getGraphics();
+                    og = obuf.createGraphics();
+                    og.scale(dt.getScaleX(), dt.getScaleY());
                     ocomp.paint(og);
                     cg = ocomp.getGraphics();
-                    cg.drawImage(obuf, 0, 0, null);
+                    cg.drawImage(obuf, 0, 0, _cbounds.width, _cbounds.height,
+                        0, 0, scaled(_cbounds.width, dt.getScaleX()),
+                        scaled(_cbounds.height, dt.getScaleY()), null);
 
                 } finally {
                     if (og != null) {
@@ -408,6 +415,39 @@ public class ActiveRepaintManager extends RepaintManager
         _spare.clear();
 
         return true;
+    }
+
+    /**
+     * Returns a buffer at least big enough to paint a component of the supplied logical size on
+     * a display with the supplied transform, reusing the last one while it's big enough.
+     *
+     * @param comp the component to be painted.
+     * @param width the logical width to paint.
+     * @param height the logical height to paint.
+     * @param dt the default transform of the component's display.
+     * @return the buffer, whose contents are left over from its last use.
+     */
+    protected BufferedImage getScaledBuffer (
+        Component comp, int width, int height, AffineTransform dt)
+    {
+        int pw = scaled(width, dt.getScaleX()), ph = scaled(height, dt.getScaleY());
+        if (_scaledBuf == null || _scaledBuf.getWidth() < pw || _scaledBuf.getHeight() < ph) {
+            if (_scaledBuf != null) {
+                pw = Math.max(pw, _scaledBuf.getWidth());
+                ph = Math.max(ph, _scaledBuf.getHeight());
+                _scaledBuf.flush();
+            }
+            _scaledBuf = comp.getGraphicsConfiguration().createCompatibleImage(pw, ph);
+        }
+        return _scaledBuf;
+    }
+
+    /**
+     * @return a logical length in device pixels at the supplied scale.
+     */
+    protected static int scaled (int length, double scale)
+    {
+        return (int)Math.ceil(length * scale);
     }
 
     /**
@@ -431,6 +471,9 @@ public class ActiveRepaintManager extends RepaintManager
 
     /** The root of our interface. */
     protected Component _root;
+
+    /** The buffer through which components outside our root are painted, reused. */
+    protected BufferedImage _scaledBuf;
 
     /** A list of invalid components. */
     protected Object[] _invalid;
