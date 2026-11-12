@@ -571,29 +571,27 @@ public class MediaPanel extends JComponent
                 }
             }
 
-            if (_activeSprite instanceof ArmingSprite) {
-                ((ArmingSprite) _activeSprite).setArmed(true);
+            if (_activeSprite instanceof ArmingSprite arming) {
+                arming.setArmed(true);
             }
         }
 
         @Override
         public void mouseReleased (MouseEvent me) {
-            if (_activeSprite instanceof ArmingSprite) {
-                ((ArmingSprite)_activeSprite).setArmed(false);
+            if (_activeSprite instanceof ArmingSprite arming) {
+                arming.setArmed(false);
             }
 
-            if ((_activeSprite instanceof ActionSprite) &&
+            if (_activeSprite instanceof ActionSprite as &&
                     _activeSprite.hitTest(me.getX(), me.getY())) {
                 ActionEvent event;
-                if (_activeSprite instanceof CommandSprite) {
-                    CommandSprite cs = (CommandSprite) _activeSprite;
+                if (as instanceof CommandSprite cs) {
                     event = new CommandEvent(
                         MediaPanel.this, cs.getActionCommand(),
                         cs.getCommandArgument(), me.getWhen(),
                         me.getModifiers());
 
                 } else {
-                    ActionSprite as = (ActionSprite) _activeSprite;
                     event = new ActionEvent(
                         MediaPanel.this, ActionEvent.ACTION_PERFORMED,
                         as.getActionCommand(), me.getWhen(), me.getModifiers());
@@ -610,9 +608,8 @@ public class MediaPanel extends JComponent
 
         @Override
         public void mouseDragged (MouseEvent me) {
-            if (_activeSprite instanceof ArmingSprite) {
-                ((ArmingSprite) _activeSprite).setArmed(
-                    _activeSprite.hitTest(me.getX(), me.getY()));
+            if (_activeSprite instanceof ArmingSprite arming) {
+                arming.setArmed(_activeSprite.hitTest(me.getX(), me.getY()));
             }
         }
 
@@ -622,12 +619,12 @@ public class MediaPanel extends JComponent
             if (_activeSprite == s) {
                 return;
             }
-            if (_activeSprite instanceof HoverSprite) {
-                ((HoverSprite) _activeSprite).setHovered(false);
+            if (_activeSprite instanceof HoverSprite hover) {
+                hover.setHovered(false);
             }
             _activeSprite = s;
-            if (_activeSprite instanceof HoverSprite) {
-                ((HoverSprite) _activeSprite).setHovered(true);
+            if (_activeSprite instanceof HoverSprite hover) {
+                hover.setHovered(true);
             }
         }
 
@@ -640,8 +637,7 @@ public class MediaPanel extends JComponent
             for (int ii = 0, nn = list.size(); ii < nn; ii++) {
                 Object o = list.get(ii);
                 if ((o instanceof HoverSprite || o instanceof ActionSprite) &&
-                        (!(o instanceof DisableableSprite) ||
-                         ((DisableableSprite) o).isEnabled())) {
+                        (!(o instanceof DisableableSprite ds) || ds.isEnabled())) {
                     return (Sprite) o;
                 }
             }

@@ -411,11 +411,11 @@ public class MisoScenePanel extends VirtualMediaPanel
         }
 
         if (e.getButton() == MouseEvent.BUTTON1) {
-            if (_hobject instanceof Sprite) {
-                handleSpritePressed((Sprite)_hobject, e.getX(), e.getY());
+            if (_hobject instanceof Sprite sprite) {
+                handleSpritePressed(sprite, e.getX(), e.getY());
                 return;
-            } else if (_hobject instanceof SceneObject) {
-                handleObjectPressed((SceneObject)_hobject, e.getX(), e.getY());
+            } else if (_hobject instanceof SceneObject sobj) {
+                handleObjectPressed(sobj, e.getX(), e.getY());
                 return;
             }
         }
@@ -1133,17 +1133,11 @@ public class MisoScenePanel extends VirtualMediaPanel
     protected void hoverObjectChanged (Object oldHover, Object newHover)
     {
         // deal with objects that care about being hovered over
-        if (oldHover instanceof SceneObject) {
-            SceneObject oldhov = (SceneObject)oldHover;
-            if (oldhov.setHovered(false)) {
-                _remgr.invalidateRegion(oldhov.bounds);
-            }
+        if (oldHover instanceof SceneObject oldhov && oldhov.setHovered(false)) {
+            _remgr.invalidateRegion(oldhov.bounds);
         }
-        if (newHover instanceof SceneObject) {
-            SceneObject newhov = (SceneObject)newHover;
-            if (newhov.setHovered(true)) {
-                _remgr.invalidateRegion(newhov.bounds);
-            }
+        if (newHover instanceof SceneObject newhov && newhov.setHovered(true)) {
+            _remgr.invalidateRegion(newhov.bounds);
         }
 
         // dirty the indicators associated with the hover objects

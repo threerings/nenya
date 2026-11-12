@@ -279,12 +279,11 @@ public class DirtyItemList
             // sprites occupy only a single tile, so leftmost and rightmost tiles are equivalent
             lx = rx = ox;
             ly = ry = oy;
-            if (obj instanceof SceneObject) {
-                ObjectTile tile = ((SceneObject)obj).tile;
+            if (obj instanceof SceneObject sobj) {
+                ObjectTile tile = sobj.tile;
                 lx -= (tile.getBaseWidth() - 1);
                 ry -= (tile.getBaseHeight() - 1);
-            } else if (obj instanceof MultiTileSprite) {
-                MultiTileSprite mts = (MultiTileSprite)obj;
+            } else if (obj instanceof MultiTileSprite mts) {
                 lx -= (mts.getBaseWidth() - 1);
                 ry -= (mts.getBaseHeight() - 1);
             }
@@ -295,8 +294,8 @@ public class DirtyItemList
          * falls within the given dirty rectangle is actually drawn.
          */
         public void paint (Graphics2D gfx) {
-            if (obj instanceof Sprite) {
-                ((Sprite)obj).paint(gfx);
+            if (obj instanceof Sprite sprite) {
+                sprite.paint(gfx);
             } else {
                 ((SceneObject)obj).paint(gfx);
             }
@@ -314,8 +313,8 @@ public class DirtyItemList
          * display object which may have a custom render priority.
          */
         public int getRenderPriority () {
-            if (obj instanceof SceneObject) {
-                return ((SceneObject)obj).getPriority();
+            if (obj instanceof SceneObject sobj) {
+                return sobj.getPriority();
             } else {
                 return 0;
             }
@@ -332,12 +331,11 @@ public class DirtyItemList
         @Override
         public boolean equals (Object other) {
             // we're never equal to something that's not our kind
-            if (!(other instanceof DirtyItem)) {
+            if (!(other instanceof DirtyItem b)) {
                 return false;
             }
 
             // sprites are equivalent if they're the same sprite
-            DirtyItem b = (DirtyItem)other;
             return obj.equals(b.obj);
         }
 
@@ -407,10 +405,7 @@ public class DirtyItemList
         public int compare (DirtyItem da, DirtyItem db) {
             // if the two objects are scene objects and they overlap, we
             // compare them solely based on their human assigned priority
-            if ((da.obj instanceof SceneObject) &&
-                (db.obj instanceof SceneObject)) {
-                SceneObject soa = (SceneObject)da.obj;
-                SceneObject sob = (SceneObject)db.obj;
+            if (da.obj instanceof SceneObject soa && db.obj instanceof SceneObject sob) {
                 if (soa.objectFootprintOverlaps(sob)) {
                     int result = soa.getPriority() - sob.getPriority();
                     if (DEBUG_COMPARE) {
@@ -593,8 +588,8 @@ public class DirtyItemList
             // it would break something...
             if ((da.obj instanceof MultiTileSprite || db.obj instanceof MultiTileSprite) &&
                 (da.lx <= db.rx && da.rx >= db.lx && da.ry <= db.ly && da.ly >= db.ry)) {
-                int aRender = (da.obj instanceof Sprite) ? ((Sprite)da.obj).getRenderOrder() : 0;
-                int bRender = (db.obj instanceof Sprite) ? ((Sprite)db.obj).getRenderOrder() : 0;
+                int aRender = (da.obj instanceof Sprite as) ? as.getRenderOrder() : 0;
+                int bRender = (db.obj instanceof Sprite bs) ? bs.getRenderOrder() : 0;
                 // we're comparing two sprites co-existing on the same
                 // tile, first check their render order
                 int rocomp = aRender - bRender;
@@ -658,9 +653,8 @@ public class DirtyItemList
                 return depthDiff;
             } else {
                 // If there's a priority difference, break our tie on that.
-                if (o1.obj instanceof SceneObject && o2.obj instanceof SceneObject) {
-                    int priDiff = ((SceneObject)o1.obj).getPriority() -
-                        ((SceneObject)o2.obj).getPriority();
+                if (o1.obj instanceof SceneObject so1 && o2.obj instanceof SceneObject so2) {
+                    int priDiff = so1.getPriority() - so2.getPriority();
                     if (priDiff != 0) {
                         return priDiff;
                     }

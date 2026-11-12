@@ -208,8 +208,8 @@ public class ComponentClass implements Serializable
     @Override
     public boolean equals (Object other)
     {
-        if (other instanceof ComponentClass) {
-            return name.equals(((ComponentClass)other).name);
+        if (other instanceof ComponentClass oclass) {
+            return name.equals(oclass.name);
         } else {
             return false;
         }

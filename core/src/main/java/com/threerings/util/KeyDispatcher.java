@@ -197,7 +197,7 @@ public class KeyDispatcher
     protected boolean isTypeableTarget (Component target)
     {
         return target.isShowing() &&
-            (((target instanceof JTextComponent) && ((JTextComponent) target).isEditable()) ||
+            (((target instanceof JTextComponent tcomp) && tcomp.isEditable()) ||
              (target instanceof JComboBox) ||
              (target instanceof JTable) ||
              (target instanceof JRootPane));

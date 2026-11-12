@@ -62,10 +62,9 @@ public class AutoFringer
 
         @Override
         public boolean equals (Object obj) {
-            if (!(obj instanceof FringeTile)) {
+            if (!(obj instanceof FringeTile fObj)) {
                 return false;
             }
-            FringeTile fObj = (FringeTile)obj;
             return _passable == fObj._passable && Arrays.equals(_fringeId, fObj._fringeId);
         }
 
@@ -269,8 +268,8 @@ public class AutoFringer
         }
         Graphics2D gfx = (Graphics2D)ftimg.getGraphics();
         try {
-            if (stamp instanceof Tile) {
-                ((Tile)stamp).paint(gfx, 0, 0);
+            if (stamp instanceof Tile tile) {
+                tile.paint(gfx, 0, 0);
             } else {
                 gfx.drawImage((BufferedImage)stamp, 0, 0, null);
             }

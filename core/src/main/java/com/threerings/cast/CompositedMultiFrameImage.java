@@ -116,8 +116,7 @@ public class CompositedMultiFrameImage
      */
     protected CompositedMirage createCompositedMirage (int index)
     {
-        if (_sources.length == 1 && _sources[0].frames instanceof TileSetFrameImage) {
-            TileSetFrameImage frames = (TileSetFrameImage)_sources[0].frames;
+        if (_sources.length == 1 && _sources[0].frames instanceof TileSetFrameImage frames) {
             Rectangle tbounds = new Rectangle();
             frames.getTrimmedBounds(_orient, index, tbounds);
             int x = frames.getXOrigin(_orient, index) - tbounds.x;

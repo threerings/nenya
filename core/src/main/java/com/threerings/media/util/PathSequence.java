@@ -71,8 +71,8 @@ public class PathSequence
                 long initStamp;
                 // if we just finished a timed path, we can figure out how long ago it really
                 // finished and init the next path at that time in the past.
-                if (_curPath instanceof TimedPath) {
-                    initStamp = _lastInit + ((TimedPath) _curPath)._duration;
+                if (_curPath instanceof TimedPath tpath) {
+                    initStamp = _lastInit + tpath._duration;
                 } else {
                     // we don't know
                     initStamp = timeStamp;

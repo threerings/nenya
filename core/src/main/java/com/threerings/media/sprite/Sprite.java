@@ -378,8 +378,8 @@ public abstract class Sprite extends AbstractMedia
         }
 
         public boolean apply (Object observer) {
-            if (observer instanceof PathObserver) {
-                ((PathObserver)observer).pathCancelled(_sprite, _path);
+            if (observer instanceof PathObserver pobs) {
+                pobs.pathCancelled(_sprite, _path);
             }
             return true;
         }
@@ -398,8 +398,8 @@ public abstract class Sprite extends AbstractMedia
         }
 
         public boolean apply (Object observer) {
-            if (observer instanceof PathObserver) {
-                ((PathObserver)observer).pathCompleted(_sprite, _path, _when);
+            if (observer instanceof PathObserver pobs) {
+                pobs.pathCompleted(_sprite, _path, _when);
             }
             return true;
         }

@@ -76,8 +76,8 @@ public class SafeScrollPane extends JScrollPane
                 // queue up a revalidate for said view, so we have to do
                 // it here
                 Component c = getView();
-                if (c instanceof JComponent) {
-                    ((JComponent)c).revalidate();
+                if (c instanceof JComponent jc) {
+                    jc.revalidate();
                 }
             }
         };

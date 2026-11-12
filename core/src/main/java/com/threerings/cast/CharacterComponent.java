@@ -93,8 +93,8 @@ public class CharacterComponent implements Serializable
     @Override
     public boolean equals (Object other)
     {
-        if (other instanceof CharacterComponent) {
-            return componentId == ((CharacterComponent)other).componentId;
+        if (other instanceof CharacterComponent ocomp) {
+            return componentId == ocomp.componentId;
         } else {
             return false;
         }

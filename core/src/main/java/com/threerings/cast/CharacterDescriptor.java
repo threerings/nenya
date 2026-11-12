@@ -107,12 +107,11 @@ public class CharacterDescriptor
     @Override
     public boolean equals (Object other)
     {
-        if (!(other instanceof CharacterDescriptor)) {
+        if (!(other instanceof CharacterDescriptor odesc)) {
             return false;
         }
 
         // both the component ids and the colorizations must be equal
-        CharacterDescriptor odesc = (CharacterDescriptor)other;
         if (!Arrays.equals(_components, odesc._components)) {
             return false;
         }

@@ -355,8 +355,8 @@ public class BundledComponentRepository
                         !StandardActions.SHADOW_TYPE.equals(type)) {
                         log.warning("Unable to locate tileset for action '" + imgpath + "' " +
                                     component + ".");
-                        if (_wipeOnFailure && _bundle instanceof FileResourceBundle) {
-                            ((FileResourceBundle)_bundle).wipeBundle(false);
+                        if (_wipeOnFailure && _bundle instanceof FileResourceBundle fbundle) {
+                            fbundle.wipeBundle(false);
                         }
                     }
                     return null;
@@ -485,8 +485,8 @@ public class BundledComponentRepository
 
         public void getTrimmedBounds (int orient, int index, Rectangle bounds) {
             Tile tile = getTile(orient, index);
-            if (tile instanceof TrimmedTile) {
-                ((TrimmedTile)tile).getTrimmedBounds(bounds);
+            if (tile instanceof TrimmedTile ttile) {
+                ttile.getTrimmedBounds(bounds);
             } else {
                 bounds.setBounds(0, 0, tile.getWidth(), tile.getHeight());
             }

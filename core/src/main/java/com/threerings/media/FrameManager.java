@@ -218,8 +218,8 @@ public abstract class FrameManager
      */
     public float getMaxTimerDriftRatio ()
     {
-        if (_timer instanceof CalibratingTimer) {
-            return ((CalibratingTimer)_timer).getMaxDriftRatio();
+        if (_timer instanceof CalibratingTimer ctimer) {
+            return ctimer.getMaxDriftRatio();
         } else {
             return 1.0F;
         }
@@ -230,8 +230,8 @@ public abstract class FrameManager
      */
     public void clearMaxTimerDriftRatio ()
     {
-        if (_timer instanceof CalibratingTimer) {
-            ((CalibratingTimer)_timer).clearMaxDriftRatio();
+        if (_timer instanceof CalibratingTimer ctimer) {
+            ctimer.clearMaxDriftRatio();
         }
     }
 
@@ -362,7 +362,7 @@ public abstract class FrameManager
 
         // set up our custom repaint manager
         _repainter = new ActiveRepaintManager(
-            (_root instanceof Component) ? (Component)_root : _window);
+            (_root instanceof Component rcomp) ? rcomp : _window);
         RepaintManager.setCurrentManager(_repainter);
 
         // turn off double buffering for the whole business because we handle repaints

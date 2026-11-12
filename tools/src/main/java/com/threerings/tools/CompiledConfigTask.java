@@ -79,10 +79,9 @@ public class CompiledConfigTask extends Task
         } catch (Exception e) {
             throw new BuildException("Error instantiating config parser", e);
         }
-        if (!(pobj instanceof CompiledConfigParser)) {
+        if (!(pobj instanceof CompiledConfigParser parser)) {
             throw new BuildException("Invalid parser class: " + _parser);
         }
-        CompiledConfigParser parser = (CompiledConfigParser)pobj;
 
         // if we have a single file and target specified, do those
         if (_configdef != null) {

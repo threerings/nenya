@@ -726,8 +726,7 @@ public class JavaSoundPlayer extends SoundPlayer
         @Override
         public boolean equals (Object o)
         {
-            if (o instanceof SoundKey) {
-                SoundKey that = (SoundKey) o;
+            if (o instanceof SoundKey that) {
                 return this.pkgPath.equals(that.pkgPath) && this.key.equals(that.key);
             }
             return false;

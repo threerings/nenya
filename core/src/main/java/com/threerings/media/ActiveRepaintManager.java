@@ -81,7 +81,7 @@ public class ActiveRepaintManager extends RepaintManager
             }
 
             // skip non-Swing components
-            if (!(c instanceof JComponent)) {
+            if (!(c instanceof JComponent jc)) {
                 continue;
             }
 
@@ -90,7 +90,7 @@ public class ActiveRepaintManager extends RepaintManager
             // jovially ignore its claims here and restore order to the universe; see bug #403550
             // for more fallout from Sun's fuckup
             if (!(c instanceof JTextField) && !(c instanceof JScrollPane) &&
-                ((JComponent)c).isValidateRoot()) {
+                jc.isValidateRoot()) {
                 vroot = c;
                 break;
             }
@@ -317,9 +317,9 @@ public class ActiveRepaintManager extends RepaintManager
                     break;
                 }
 
-                if (c instanceof JComponent) {
+                if (c instanceof JComponent jc) {
                     // make a note of the first opaque parent we find
-                    if (ocomp == null && ((JComponent)c).isOpaque()) {
+                    if (ocomp == null && jc.isOpaque()) {
                         ocomp = c;
                         // we need to obtain the opaque parent's coordinates in the root coordinate
                         // system for when we repaint

@@ -148,12 +148,11 @@ public class ChatGlyph extends Animation
             // update our label position
             _lpos.translate(dx, dy);
 
-            if (_shape instanceof Area) {
-                ((Area) _shape).transform(
-                    AffineTransform.getTranslateInstance(dx, dy));
+            if (_shape instanceof Area area) {
+                area.transform(AffineTransform.getTranslateInstance(dx, dy));
 
-            } else if (_shape instanceof Polygon) {
-                ((Polygon) _shape).translate(dx, dy);
+            } else if (_shape instanceof Polygon poly) {
+                poly.translate(dx, dy);
 
             } else {
                 log.warning("Unable to translate shape", "glyph", this, "shape", _shape + "]!");

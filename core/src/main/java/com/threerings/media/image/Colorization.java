@@ -138,8 +138,8 @@ public class Colorization
     @Override
     public boolean equals (Object other)
     {
-        if (other instanceof Colorization) {
-            return ((Colorization)other).colorizationId == colorizationId;
+        if (other instanceof Colorization ocolor) {
+            return ocolor.colorizationId == colorizationId;
         } else {
             return false;
         }

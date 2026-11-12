@@ -84,7 +84,7 @@ public class BackFrameManager extends FrameManager
             // we cache our frame's graphics object so that we can avoid
             // instantiating a new one on every tick
             if (_fgfx == null) {
-                Component comp = (_root instanceof Component) ? (Component)_root : _window;
+                Component comp = (_root instanceof Component rcomp) ? rcomp : _window;
                 _fgfx = (Graphics2D)(comp.getGraphics());
             }
             _fgfx.drawImage(_backimg, 0, 0, null);

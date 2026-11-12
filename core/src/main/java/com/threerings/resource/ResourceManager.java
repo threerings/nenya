@@ -987,8 +987,8 @@ public class ResourceManager
 
                 int count = 0;
                 for (ResourceBundle bundle : _bundles) {
-                    if (bundle instanceof FileResourceBundle &&
-                        !((FileResourceBundle)bundle).sourceIsReady()) {
+                    if (bundle instanceof FileResourceBundle fbundle &&
+                        !fbundle.sourceIsReady()) {
                         log.warning("Bundle failed to initialize " + bundle + ".");
                     }
                     if (_obs != null) {

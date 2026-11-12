@@ -47,8 +47,7 @@ public class Tile // implements Cloneable
 
         @Override
         public boolean equals (Object other) {
-            if (other instanceof Key) {
-                Key okey = (Key)other;
+            if (other instanceof Key okey) {
                 return (tileSet == okey.tileSet &&
                         tileIndex == okey.tileIndex &&
                         Arrays.equals(zations, okey.zations));

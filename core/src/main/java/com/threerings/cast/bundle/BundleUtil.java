@@ -89,8 +89,8 @@ public class BundleUtil
             if (wipeOnFailure) {
                 StreamUtil.close(bin);
                 bin = null;
-                if (bundle instanceof FileResourceBundle) {
-                    ((FileResourceBundle)bundle).wipeBundle(false);
+                if (bundle instanceof FileResourceBundle fbundle) {
+                    fbundle.wipeBundle(false);
                 }
             }
             throw ioe;

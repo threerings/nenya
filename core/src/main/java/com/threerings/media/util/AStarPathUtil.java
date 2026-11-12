@@ -347,8 +347,8 @@ public class AStarPathUtil
          */
         protected boolean isStepValid (int sx, int sy, int dx, int dy) {
             // not traversable if the destination itself fails test
-            if (tpred instanceof ExtendedTraversalPred) {
-                if (!((ExtendedTraversalPred)tpred).canTraverse(trav, sx, sy, dx, dy)) {
+            if (tpred instanceof ExtendedTraversalPred etpred) {
+                if (!etpred.canTraverse(trav, sx, sy, dx, dy)) {
                     return false;
                 }
             } else if (!isTraversable(dx, dy)) {

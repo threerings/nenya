@@ -227,9 +227,8 @@ public interface AnimationFrameSequencer extends FrameSequencer
             }
 
             public boolean apply (Object observer) {
-                if (observer instanceof SequencedAnimationObserver) {
-                    ((SequencedAnimationObserver)observer).frameReached(
-                        _anim, _when, _frameIdx, _frameSeq);
+                if (observer instanceof SequencedAnimationObserver sobs) {
+                    sobs.frameReached(_anim, _when, _frameIdx, _frameSeq);
                 }
                 return true;
             }

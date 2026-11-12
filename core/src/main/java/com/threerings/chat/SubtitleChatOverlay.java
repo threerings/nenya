@@ -709,18 +709,18 @@ public class SubtitleChatOverlay extends ChatOverlay
     {
         String localtype = message.localtype;
 
-        if (message instanceof TellFeedbackMessage) {
-            if (((TellFeedbackMessage)message).isFailure()) {
+        if (message instanceof TellFeedbackMessage tfmsg) {
+            if (tfmsg.isFailure()) {
                 return ChatLogic.FEEDBACK;
             }
             return (history || isApprovedLocalType(localtype)) ?
                 ChatLogic.TELLFEEDBACK : ChatLogic.IGNORECHAT;
 
-        } else if (message instanceof UserMessage) {
+        } else if (message instanceof UserMessage umsg) {
             int type = _logic.decodeType(localtype);
             if (type != 0) {
                 // factor in the mode
-                return _logic.adjustTypeByMode(((UserMessage) message).mode, type);
+                return _logic.adjustTypeByMode(umsg.mode, type);
             }
             // if we're showing from history, include specialized chat messages
             if (history) {
@@ -728,9 +728,9 @@ public class SubtitleChatOverlay extends ChatOverlay
             }
             // otherwise fall through and IGNORECHAT
 
-        } else if (message instanceof SystemMessage) {
+        } else if (message instanceof SystemMessage smsg) {
             if (history || isApprovedLocalType(localtype)) {
-                switch (((SystemMessage) message).attentionLevel) {
+                switch (smsg.attentionLevel) {
                 case SystemMessage.INFO:
                     return ChatLogic.INFO;
                 case SystemMessage.FEEDBACK:

@@ -80,8 +80,8 @@ public class MultiFrameAnimation extends Animation
 
         // reset our frame sequencer
         setFrameIndex(_seeker.init(_frames));
-        if (_seeker instanceof AnimationFrameSequencer) {
-            ((AnimationFrameSequencer) _seeker).setAnimation(this);
+        if (_seeker instanceof AnimationFrameSequencer sequencer) {
+            sequencer.setAnimation(this);
         }
     }
 
