@@ -21,7 +21,6 @@ package com.threerings.media.image;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -38,7 +37,6 @@ import java.awt.image.IndexColorModel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import com.samskivert.util.LRUHashMap;
 import com.samskivert.util.StringUtil;
@@ -128,7 +126,6 @@ public class ImageManager
                 return (int)value.getEstimatedMemoryUsage();
             }
         });
-        _ccache.setTracking(true);
     }
 
     /**
@@ -307,7 +304,6 @@ public class ImageManager
         synchronized (_ccache) {
             _ccache.put(key, crec);
         }
-        _keySet.add(key);
 
         // periodically report our image cache performance
         reportCachePerformance();
@@ -451,16 +447,13 @@ public class ImageManager
         // compute our estimated memory usage
         long size = 0;
 
-        int[] eff = null;
         synchronized (_ccache) {
             Iterator<CacheRecord> iter = _ccache.values().iterator();
             while (iter.hasNext()) {
                 size += iter.next().getEstimatedMemoryUsage();
             }
-            eff = _ccache.getTrackedEffectiveness();
         }
-        log.info("ImageManager LRU", "mem", ((size / 1024) + "k"), "size", _ccache.size(),
-            "hits", eff[0], "misses", eff[1], "totalKeys", _keySet.size());
+        log.info("ImageManager LRU", "mem", ((size / 1024) + "k"), "size", _ccache.size());
     }
 
     /** Maintains a source image and a set of colorized versions in the image cache. */
@@ -552,8 +545,6 @@ public class ImageManager
     /** A cache of loaded images. */
     protected LRUHashMap<ImageKey, CacheRecord> _ccache;
 
-    /** The set of all keys we've ever seen. */
-    protected HashSet<ImageKey> _keySet = Sets.newHashSet();
 
     /** Throttle our cache status logging to once every 300 seconds. */
     protected Throttle _cacheStatThrottle = new Throttle(1, 300000L);

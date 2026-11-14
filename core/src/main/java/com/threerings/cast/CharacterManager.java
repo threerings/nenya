@@ -87,7 +87,6 @@ public class CharacterManager
                 return (int)value.getEstimatedMemoryUsage();
             }
         });
-        _frameCache.setTracking(true); // TODO
     }
 
     /**
@@ -182,10 +181,8 @@ public class CharacterManager
         // periodically report our frame image cache performance
         if (!_cacheStatThrottle.throttleOp()) {
             long size = getEstimatedCacheMemoryUsage();
-            int[] eff = _frameCache.getTrackedEffectiveness();
             log.debug("CharacterManager LRU [mem=" + (size / 1024) + "k" +
-                      ", size=" + _frameCache.size() + ", hits=" + eff[0] +
-                      ", misses=" + eff[1] + "].");
+                      ", size=" + _frameCache.size() + ", actions=" + _actionFrames.size() + "].");
         }
 
         return frames;
@@ -430,10 +427,15 @@ public class CharacterManager
     /** A table of our action sequences. */
     protected Map<String, ActionSequence> _actions = Maps.newHashMap();
 
-    /** A table of composited action sequences (these don't reference the
-     * actual image data directly and thus take up little memory). */
+    /** The most recently used composited action sequences. Each is small, as it references no
+     * image data directly, but every look of every character seen in every action gets one, so
+     * the table is capped; one rebuilt after eviction composites its frames afresh. */
     protected Map<Tuple<CharacterDescriptor, String>, ActionFrames> _actionFrames =
-        Maps.newHashMap();
+        new LRUHashMap<Tuple<CharacterDescriptor, String>, ActionFrames>(MAX_ACTION_FRAMES);
+
+    /** How many composited action sequences to keep: room for every character in the busiest
+     * scenes, in every action they are likely to take while in view. */
+    protected static final int MAX_ACTION_FRAMES = 4096;
 
     /** A cache of composited animation frames. */
     protected LRUHashMap<CompositedFramesKey, CompositedMultiFrameImage> _frameCache;
