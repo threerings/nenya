@@ -19,6 +19,7 @@
 
 package com.threerings.media.tile;
 
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 
 import java.util.Iterator;
@@ -206,6 +207,7 @@ public abstract class TileSet
         // first look in the active set; if it's in use by anyone or in the cache, it will be in
         // the active set
         synchronized (_atiles) {
+            purgeCollectedTiles();
             _key.tileSet = this;
             _key.tileIndex = tileIndex;
             _key.zations = zations;
@@ -221,7 +223,7 @@ public abstract class TileSet
             tile.key = new Tile.Key(this, tileIndex, zations);
             initTile(tile, tileIndex, zations);
             synchronized (_atiles) {
-                _atiles.put(tile.key, new SoftReference<Tile>(tile));
+                _atiles.put(tile.key, new TileRef(tile, _collected));
             }
         }
 
@@ -375,6 +377,48 @@ public abstract class TileSet
     }
 
     /**
+     * Returns how many tiles the active set holds an entry for, including any the garbage
+     * collector has cleared since the set was last purged.
+     *
+     * @return the number of entries in the active tile set.
+     */
+    public static int getActiveTileCount ()
+    {
+        synchronized (_atiles) {
+            return _atiles.size();
+        }
+    }
+
+    /**
+     * Removes the entries for tiles the garbage collector has cleared. An entry's key holds its
+     * tileset, and colorized tilesets are made fresh for each character look, so entries left
+     * behind would keep every tileset ever drawn, and grow the set without bound. Call while
+     * holding the {@link #_atiles} lock.
+     */
+    protected static void purgeCollectedTiles ()
+    {
+        for (TileRef ref; (ref = (TileRef)_collected.poll()) != null; ) {
+            // a tile recreated under the same key has a fresh entry, which must stay
+            if (_atiles.get(ref.key) == ref) {
+                _atiles.remove(ref.key);
+            }
+        }
+    }
+
+    /** A soft reference to an active tile that remembers the key it is filed under. */
+    protected static class TileRef extends SoftReference<Tile>
+    {
+        /** The key this tile is filed under in the active set. */
+        public final Key key;
+
+        public TileRef (Tile tile, ReferenceQueue<Tile> queue)
+        {
+            super(tile, queue);
+            key = tile.key;
+        }
+    }
+
+    /**
      * Reports statistics detailing the image manager cache performance and the current size of the
      * cached images.
      */
@@ -431,8 +475,11 @@ public abstract class TileSet
      * a class change (modification of fields, inheritance). */
     private static final long serialVersionUID = 1;
 
-    /** A map containing weak references to all "active" tiles. */
+    /** A map containing soft references to all "active" tiles. */
     protected static Map<Key, SoftReference<Tile>> _atiles = Maps.newHashMap();
+
+    /** Where the garbage collector queues the references to the tiles it clears. */
+    protected static ReferenceQueue<Tile> _collected = new ReferenceQueue<Tile>();
 
     /** A key used to look things up in the cache without creating craploads of keys unduly. */
     protected static Tile.Key _key = new Tile.Key(null, 0, null);
