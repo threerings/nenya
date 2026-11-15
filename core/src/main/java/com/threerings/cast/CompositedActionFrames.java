@@ -164,9 +164,8 @@ public class CompositedActionFrames
 
         @Override
         public boolean equals (Object other) {
-            CompositedFramesKey okey = (CompositedFramesKey)other;
-            return ((getOwner() == okey.getOwner()) &&
-                    (_orient == okey._orient));
+            return other instanceof CompositedFramesKey okey &&
+                getOwner() == okey.getOwner() && _orient == okey._orient;
         }
 
         @Override

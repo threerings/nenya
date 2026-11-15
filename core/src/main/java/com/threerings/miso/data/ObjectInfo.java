@@ -149,11 +149,8 @@ public class ObjectInfo extends SimpleStreamableObject
     @Override
     public boolean equals (Object other)
     {
-        if (other instanceof ObjectInfo ooi) {
-            return (x == ooi.x && y == ooi.y && tileId == ooi.tileId);
-        } else {
-            return false;
-        }
+        return other instanceof ObjectInfo ooi &&
+            x == ooi.x && y == ooi.y && tileId == ooi.tileId;
     }
 
     @Override

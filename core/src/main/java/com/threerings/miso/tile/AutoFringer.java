@@ -62,10 +62,8 @@ public class AutoFringer
 
         @Override
         public boolean equals (Object obj) {
-            if (!(obj instanceof FringeTile fObj)) {
-                return false;
-            }
-            return _passable == fObj._passable && Arrays.equals(_fringeId, fObj._fringeId);
+            return obj instanceof FringeTile fObj &&
+                _passable == fObj._passable && Arrays.equals(_fringeId, fObj._fringeId);
         }
 
         @Override

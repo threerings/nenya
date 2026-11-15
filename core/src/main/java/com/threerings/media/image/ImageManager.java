@@ -80,11 +80,8 @@ public class ImageManager
         @Override
         public boolean equals (Object other)
         {
-            if (!(other instanceof ImageKey okey)) {
-                return false;
-            }
-
-            return ((okey.daprov.getIdent().equals(daprov.getIdent())) && (okey.path.equals(path)));
+            return other instanceof ImageKey okey &&
+                okey.daprov.getIdent().equals(daprov.getIdent()) && okey.path.equals(path);
         }
 
         @Override

@@ -330,13 +330,8 @@ public class DirtyItemList
 
         @Override
         public boolean equals (Object other) {
-            // we're never equal to something that's not our kind
-            if (!(other instanceof DirtyItem b)) {
-                return false;
-            }
-
             // sprites are equivalent if they're the same sprite
-            return obj.equals(b.obj);
+            return other instanceof DirtyItem b && obj.equals(b.obj);
         }
 
         @Override

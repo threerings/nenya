@@ -107,38 +107,11 @@ public class CharacterDescriptor
     @Override
     public boolean equals (Object other)
     {
-        if (!(other instanceof CharacterDescriptor odesc)) {
-            return false;
-        }
-
-        // both the component ids and the colorizations must be equal
-        if (!Arrays.equals(_components, odesc._components)) {
-            return false;
-        }
-
-        Colorization[][] zations = odesc._zations;
-        if (zations == null && _zations == null) {
-            // if neither has colorizations, we're clear
-            return true;
-
-        } else if (zations == null || _zations == null) {
-            // if one has colorizations whilst the other doesn't, they
-            // can't be equal
-            return false;
-        }
-
-        // otherwise, all of the colorizations must be equal as well
-        int zlength = zations.length;
-        if (zlength != _zations.length) {
-            return false;
-        }
-        for (int ii = 0; ii < zlength; ii++) {
-            if (!Arrays.equals(_zations[ii], zations[ii])) {
-                return false;
-            }
-        }
-
-        return Arrays.equals(_xlations, odesc._xlations);
+        // the component ids, colorizations and translations must all be equal
+        return other instanceof CharacterDescriptor odesc &&
+            Arrays.equals(_components, odesc._components) &&
+            Arrays.deepEquals(_zations, odesc._zations) &&
+            Arrays.equals(_xlations, odesc._xlations);
     }
 
     @Override
